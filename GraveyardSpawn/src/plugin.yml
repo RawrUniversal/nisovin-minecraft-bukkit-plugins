@@ -1,0 +1,7 @@
+name: GraveyardSpawn
+main: com.nisovin.GraveyardSpawn.GraveyardSpawn
+version: 1.0
+commands:
+    gy:
+        description: Manipulate graveyards.
+        usage: /<command> [add|remove|tp|list] [name]
