@@ -1,7 +1,0 @@
-name: IronGates
-main: com.nisovin.IronGates.IronGates
-version: 1.0
-commands:
-    gate:
-        description: Create iron gates
-        usage: /<command>

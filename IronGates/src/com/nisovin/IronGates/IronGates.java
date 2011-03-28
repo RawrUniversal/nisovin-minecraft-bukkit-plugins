@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,7 +26,6 @@ public class IronGates extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		loadGates();
-		//getServer().createWorld("secondworld", Environment.NORMAL);
 
 		IGPlayerListener playerListener = new IGPlayerListener(this);
 

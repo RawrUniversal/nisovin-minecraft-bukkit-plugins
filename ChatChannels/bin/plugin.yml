@@ -1,8 +1,0 @@
-name: ChatChannels
-main: com.nisovin.ChatChannels.ChatChannels
-version: 1.0
-commands:
-    channel:
-        description: Change channel preferences
-        usage: /<command>
-        aliases: [ch]
