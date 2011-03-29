@@ -14,9 +14,11 @@ public class PixieDust extends JavaPlugin {
 
 	public static int FLY_ITEM = 0;
 	public static boolean REQUIRE_ITEM_WHILE_FLYING = false;
+	public static int ACTIVATION_PITCH = 75;
 	public static int TICK_DELAY = 0;
 	public static int TICK_INTERVAL = 15;
 	public static int FLY_SPEED = 20;
+	public static int Y_OFFSET = 6;
 	public static String FLY_START = "You are now flying!";
 	public static String FLY_STOP = "You are no longer flying.";
 	

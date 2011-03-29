@@ -21,7 +21,7 @@ public class PDPlayerListener extends PlayerListener {
 	
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
 		Player p = event.getPlayer();
-		if (p.getLocation().getPitch() < -80 && p.getItemInHand().getTypeId() == PixieDust.FLY_ITEM) {
+		if (p.getLocation().getPitch() < PixieDust.ACTIVATION_PITCH*-1 && p.getItemInHand().getTypeId() == PixieDust.FLY_ITEM) {
 			if (flyers.containsKey(p.getName())) {
 				plugin.getServer().getScheduler().cancelTask(flyers.get(p.getName()));
 				flyers.remove(p.getName());
@@ -56,7 +56,7 @@ public class PDPlayerListener extends PlayerListener {
 				Vector v = p.getLocation().getDirection();
 				
 				v.setX(v.getX()*speed);
-				v.setY((v.getY()+0.6)*speed);
+				v.setY((v.getY()+(PixieDust.Y_OFFSET / 10F))*speed);
 				v.setZ(v.getZ()*speed);
 				
 				p.setVelocity(v);
