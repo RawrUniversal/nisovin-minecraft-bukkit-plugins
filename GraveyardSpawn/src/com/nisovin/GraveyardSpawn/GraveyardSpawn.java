@@ -24,16 +24,11 @@ public class GraveyardSpawn extends JavaPlugin {
 	public List<Graveyard> graveyards;
 
 	@Override
-	public void onEnable() {
-				
-		loadGraveyards();
-		
-		GYPlayerListener playerListener = new GYPlayerListener(this);
-		
+	public void onEnable() {				
+		loadGraveyards();		
+		GYPlayerListener playerListener = new GYPlayerListener(this);		
 		this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Priority.Normal, this);
-		
-		//this.getServer().getLogger().info("GraveyardSpawn v" + getVersion())
-		
+		this.getServer().getLogger().info("GraveyardSpawn plugin loaded!");
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {

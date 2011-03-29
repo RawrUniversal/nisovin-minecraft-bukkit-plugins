@@ -9,6 +9,7 @@ public class Graveyard {
 	private String name;
 	private World world;
 	private int x, y, z;
+	private float rot;
 	
 	public Graveyard(String line, Server server) {
 		String [] data = line.split(",");
@@ -18,24 +19,26 @@ public class Graveyard {
 		int x = Integer.parseInt(data[2]);
 		int y = Integer.parseInt(data[3]);
 		int z = Integer.parseInt(data[4]);
+		float rot = Float.parseFloat(data[5]);
 		
-		setup(name, world, x, y, z);
+		setup(name, world, x, y, z, rot);
 	}
 	
-	public Graveyard(String name, World world, int x, int y, int z) {
-		setup(name, world, x, y, z);
+	public Graveyard(String name, World world, int x, int y, int z, float rot) {
+		setup(name, world, x, y, z, rot);
 	}
 	
 	public Graveyard(String name, Location loc) {
-		setup(name, loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+		setup(name, loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getYaw());
 	}
 	
-	private void setup(String name, World world, int x, int y, int z) {
+	private void setup(String name, World world, int x, int y, int z, float rot) {
 		this.name = name;
 		this.world = world;
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.rot = rot;
 	}
 	
 	public String getName() {
@@ -43,7 +46,7 @@ public class Graveyard {
 	}
 	
 	public Location getLocation() {
-		return new Location(world, x + 0.5, y, z + 0.5);
+		return new Location(world, x + 0.5, y, z + 0.5, rot, 0F);
 	}
 	
 	public double calculateDistanceFrom(Player player) {
@@ -55,7 +58,7 @@ public class Graveyard {
 	}
 	
 	public String getSaveString() {
-		return name + "," + world.getName() + "," + x + "," + y + "," + z;
+		return name + "," + world.getName() + "," + x + "," + y + "," + z + "," + rot;
 	}
 	
 }
