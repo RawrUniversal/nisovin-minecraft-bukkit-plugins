@@ -35,7 +35,7 @@ public class Channel {
 			if (p != null && p.isOnline()) {
 				String msg = ChatColor.WHITE + "[" + color + name + ChatColor.WHITE + "] <" + from.getName() + "> " + message;
 				p.sendMessage(msg);
-				ChatChannels.server.getLogger().info(msg);
+				ChatChannels.server.getLogger().info(ChatColor.stripColor(msg));
 			}
 		}
 	}

@@ -7,8 +7,6 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ChatChannels extends JavaPlugin {
@@ -36,10 +34,9 @@ public class ChatChannels extends JavaPlugin {
 			}
 		}
 		
-		CCPlayerListener playerListener = new CCPlayerListener(this);
+		new CCPlayerListener(this);
 		
-		this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Normal, this);
-		this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.High, this);
+		this.getServer().getLogger().info("ChatChannels plugin loaded!");
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
