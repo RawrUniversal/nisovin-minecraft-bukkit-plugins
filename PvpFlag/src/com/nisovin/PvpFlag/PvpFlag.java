@@ -46,7 +46,7 @@ public class PvpFlag extends JavaPlugin {
 		Long lastActivity = lastPvpActivity.get(player.getName());
 		if (lastActivity == null) {
 			return false;
-		} else if (lastActivity + COMBAT_DURATION > System.currentTimeMillis()) {
+		} else if (lastActivity + COMBAT_DURATION*1000 > System.currentTimeMillis()) {
 			return true;
 		} else {
 			return false;
