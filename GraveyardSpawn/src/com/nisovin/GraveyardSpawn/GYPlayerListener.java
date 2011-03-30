@@ -31,25 +31,26 @@ public class GYPlayerListener extends PlayerListener {
 			}
 			
 			if (closest != null) {
-				//plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new DeathRespawn(p, p.getLocation()), 50);
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DeathRespawn(p, p.getLocation()), 10);
 				event.setRespawnLocation(closest.getLocation());
 			}
 		}
 	}
 	
 	public class DeathRespawn implements Runnable {
-		Player player;
+		String playerName;
 		Location location;
 		public DeathRespawn(Player p, Location l) {
-			player = p;
+			playerName = p.getName();
 			location = l;
 		}
 		
 		public void run() {
-			//player.sendMessage("You're alive!");
+			Player player = plugin.getServer().getPlayer(playerName);
 			player.getInventory().addItem(new ItemStack(Material.COMPASS, 1));
-			//player.updateInventory();
 			player.setCompassTarget(location);
+			player.sendMessage("You have have respawned at a graveyard!");
+			player.sendMessage("Use the compass to find your way back to where you died.");
 		}
 	}
 	
