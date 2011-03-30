@@ -1,0 +1,8 @@
+name: MagicSystem
+main: com.nisovin.MagicSystem.MagicSystem
+version: 1.0
+commands:
+    cast:
+        description: Cast a spell
+        usage: /<command>
+        aliases: [c]
