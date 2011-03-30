@@ -21,7 +21,7 @@ public class PDPlayerListener extends PlayerListener {
 	
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
 		Player p = event.getPlayer();
-		if (p.getLocation().getPitch() < PixieDust.ACTIVATION_PITCH*-1 && p.getItemInHand().getTypeId() == PixieDust.FLY_ITEM) {
+		if (p.isOp() && p.getLocation().getPitch() < PixieDust.ACTIVATION_PITCH*-1 && p.getItemInHand().getTypeId() == PixieDust.FLY_ITEM) {
 			if (flyers.containsKey(p.getName())) {
 				plugin.getServer().getScheduler().cancelTask(flyers.get(p.getName()));
 				flyers.remove(p.getName());

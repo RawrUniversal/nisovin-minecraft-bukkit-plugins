@@ -19,11 +19,13 @@ public class PDEntityListener extends EntityListener {
 		if (event.getEntity() instanceof Player && event.getCause() == DamageCause.FALL) {
 			Player p = (Player)event.getEntity();
 			
-			plugin.getServer().getScheduler().cancelTask(PDPlayerListener.flyers.get(p.getName()));
-			PDPlayerListener.flyers.remove(p.getName());
-			p.sendMessage(PixieDust.FLY_STOP);
-			
-			event.setCancelled(true);
+			if (PDPlayerListener.flyers.containsKey(p.getName())) {
+				plugin.getServer().getScheduler().cancelTask(PDPlayerListener.flyers.get(p.getName()));
+				PDPlayerListener.flyers.remove(p.getName());
+				p.sendMessage(PixieDust.FLY_STOP);
+				
+				event.setCancelled(true);
+			}
 		}
 	}
 	
