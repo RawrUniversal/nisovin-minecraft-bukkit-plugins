@@ -21,6 +21,9 @@ public class GraveyardSpawn extends JavaPlugin {
 
 	private final String GRAVEYARD_FILE_PATH = "graveyards.txt";
 	
+	public boolean SIGN_DROP = true;
+	public int SIGN_REMOVE_DELAY = 300;
+	
 	public List<Graveyard> graveyards;
 
 	@Override
