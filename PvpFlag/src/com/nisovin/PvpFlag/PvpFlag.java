@@ -10,8 +10,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class PvpFlag extends JavaPlugin {
 
-	public int COMBAT_DURATION = 15;
+	public int COMBAT_DURATION = 30;
 	public boolean COLOR_NAMEPLATES = true;
+	public boolean OP_OVERRIDE = true;
 
 	public HashSet<String> flagged = new HashSet<String>();
 	public HashMap<String, Long> lastPvpActivity = new HashMap<String, Long>();
@@ -20,6 +21,11 @@ public class PvpFlag extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		loadFlaggedList();
+		
+		Configuration config = getConfiguration();
+		COMBAT_DURATION = config.getInt("combat-duration", 30);
+		COLOR_NAMEPLATES = config.getBoolean("color-nameplates", true);
+		OP_OVERRIDE = config.getBoolean("op-override", true);
 		
 		new PvpPlayerListener(this);
 		new PvpEntityListener(this);

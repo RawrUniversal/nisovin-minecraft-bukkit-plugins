@@ -21,7 +21,7 @@ public class PvpEntityListener extends EntityListener {
 			Player attacker = event.getDamager();
 			Player defender = event.getEntity();
 			
-			if (!plugin.isFlagged(defender) || !plugin.isFlagged(attacker)) {
+			if ( (!plugin.isFlagged(defender) || !plugin.isFlagged(attacker)) && (!attacker.isOp() || !plugin.OP_OVERRIDE) ) {
 				event.setCancelled(true);
 			} else {
 				plugin.setLastActivity(attacker);
