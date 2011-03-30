@@ -1,0 +1,7 @@
+name: PvpFlag
+main: com.nisovin.PvpFlag.PvpFlag
+version: 1.0
+commands:
+    pvp:
+        description: Change your PvP flag.
+        usage: /<command> [on|off]
