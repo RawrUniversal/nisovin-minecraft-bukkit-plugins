@@ -1,5 +1,11 @@
 package com.nisovin.PvpFlag;
 
+import org.bukkit.ChatColor;
+import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerListener;
+
 public class PvpPlayerListener extends PlayerListener {
 
 	private PvpFlag plugin;
@@ -9,7 +15,7 @@ public class PvpPlayerListener extends PlayerListener {
 		
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, this, Event.Priority.Monitor, plugin);
 		if (plugin.COLOR_NAMEPLATES) {
-			plugin.getServer().getPluginManager().registerEvent(Event.Type.COMMAND_PREPROCESS, this, Event.Priority.Normal, plugin);
+			plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Normal, plugin);
 		}
 	
 	}
@@ -24,8 +30,8 @@ public class PvpPlayerListener extends PlayerListener {
 	
 	public void onPlayerCommandPreprocess(PlayerChatEvent event) {
 		if (event.getMessage().equals("_nameplate_color_check")) {
-			if (plugin.isFlagged(player)) {
-				event.setMessage("_nameplate_color_" + ChatColor.RED.getCode());
+			if (plugin.isFlagged(event.getPlayer())) {
+				event.setMessage("_nameplate_color_set_" + ChatColor.RED.getCode());
 			}
 			event.setCancelled(true);
 		}

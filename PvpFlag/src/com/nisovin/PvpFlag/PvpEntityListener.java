@@ -1,5 +1,11 @@
 package com.nisovin.PvpFlag;
 
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityListener;
+
 public class PvpEntityListener extends EntityListener {
 
 	private PvpFlag plugin;
@@ -7,7 +13,7 @@ public class PvpEntityListener extends EntityListener {
 	public PvpEntityListener(PvpFlag plugin) {
 		this.plugin = plugin;
 		
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, this, Event.Priority.Normal, plugin);
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGED, this, Event.Priority.Normal, plugin);
 	}
 	
 	public void onEntityDamage(EntityDamageEvent event) {
@@ -18,8 +24,8 @@ public class PvpEntityListener extends EntityListener {
 	
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (!event.isCancelled() && event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-			Player attacker = event.getDamager();
-			Player defender = event.getEntity();
+			Player attacker = (Player)event.getDamager();
+			Player defender = (Player)event.getEntity();
 			
 			if ( (!plugin.isFlagged(defender) || !plugin.isFlagged(attacker)) && (!attacker.isOp() || !plugin.OP_OVERRIDE) ) {
 				event.setCancelled(true);
