@@ -1,7 +1,29 @@
+package com.nisovin.GraveyardSpawn;
+
+import java.util.HashMap;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityListener;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 public class GYEntityListener extends EntityListener {
+	
+	private GraveyardSpawn plugin;
 	
 	private HashMap<String, String> lastDamage = new HashMap<String, String>();
 	private HashMap<String, String> graveSigns = new HashMap<String, String>();
+	
+	public GYEntityListener(GraveyardSpawn plugin) {
+		this.plugin = plugin;
+	}
 	
 	public void onEntityDamage(EntityDamageEvent evt) {
 		if (!evt.isCancelled() && evt.getEntity() instanceof Player) {
@@ -17,27 +39,27 @@ public class GYEntityListener extends EntityListener {
 					if (attacker instanceof Player) {
 						lastDamage.put(defender.getName(), "killed by|" + ((Player)attacker).getName());
 					} else if (attacker instanceof Zombie) {
-						lastDamage.put(defender.getName(), "mauled by|a zombie";
+						lastDamage.put(defender.getName(), "mauled by|a zombie");
 					} else if (attacker instanceof Skeleton) {
-						lastDamage.put(defender.getName(), "shot by|a skeleton";
+						lastDamage.put(defender.getName(), "shot by|a skeleton");
 					} else if (attacker instanceof Spider) {
-						lastDamage.put(defender.getName(), "bitten by|a spider";
+						lastDamage.put(defender.getName(), "bitten by|a spider");
 					} else if (attacker instanceof Creeper) {
-						lastDamage.put(defender.getName(), "blown up by|a creeper";
+						lastDamage.put(defender.getName(), "blown up by|a creeper");
 					} else if (attacker instanceof PigZombie) {
-						lastDamage.put(defender.getName(), "mauled by|a pig zombie";
+						lastDamage.put(defender.getName(), "mauled by|a pig zombie");
 					} else if (attacker instanceof Giant) {
-						lastDamage.put(defender.getName(), "smashed by|a giant";
+						lastDamage.put(defender.getName(), "smashed by|a giant");
 					} else {
 						lastDamage.put(defender.getName(), "");
 					}
 				} else if (evt.getCause() == DamageCause.FALL) {
 					// fell
-					lastDamage.put(defender.getName(), "crushed by|the ground";
+					lastDamage.put(defender.getName(), "crushed by|the ground");
 				} else if (evt.getCause() == DamageCause.FIRE || evt.getCause() == DamageCause.FIRE_TICK) {
-					lastDamage.put(defender.getName(), "died while|on fire";
+					lastDamage.put(defender.getName(), "died while|on fire");
 				} else if (evt.getCause() == DamageCause.LAVA) {
-					lastDamage.put(defender.getName(), "melted by|lava";
+					lastDamage.put(defender.getName(), "melted by|lava");
 				} else {
 					lastDamage.put(defender.getName(), "|");
 				}
@@ -59,7 +81,7 @@ public class GYEntityListener extends EntityListener {
 			if (ground.getType() != Material.AIR && ground.getRelative(0,1,0).getType() == Material.AIR && ground.getRelative(0,2,0).getType() == Material.AIR) {
 				Block signBlock = ground.getRelative(0,1,0);
 				signBlock.setType(Material.SIGN);
-				Sign sign = signBlock.getState();
+				Sign sign = (Sign)signBlock.getState();
 				sign.setLine(0, "R.I.P.");
 				sign.setLine(1, player.getName());
 				String text = lastDamage.get(player.getName());
