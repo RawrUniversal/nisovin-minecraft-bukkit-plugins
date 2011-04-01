@@ -21,8 +21,8 @@ public class ChatChannels extends JavaPlugin {
 		server = getServer();
 		
 		try {
-			ircBot = new IrcBot(this, "NislandBot");
-			ircBot.connect("irc.esper.net","#nisland",null);
+			ircBot = new IrcBot(this, "HatuBot");
+			ircBot.connect("irc.esper.net","#hatu",null);
 		} catch (IrcException e) {
 		}
 		
@@ -146,6 +146,9 @@ public class ChatChannels extends JavaPlugin {
 	public void onDisable() {
 		for (Player p : getServer().getOnlinePlayers()) {
 			p.sendMessage("You have left all channels (plugin unloaded).");
+		}
+		if (ircBot != null && ircBot.isConnected()) {
+			ircBot.quitServer("Chat plugin unloaded.");
 		}
 		
 	}

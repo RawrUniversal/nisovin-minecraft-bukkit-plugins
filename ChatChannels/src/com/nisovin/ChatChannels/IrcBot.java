@@ -55,6 +55,8 @@ public class IrcBot extends PircBot {
 			commandWho(source);
 		} else if (inList(command[0], new String[]{"!inirc","!irclist","!listening"})) {
 			commandInIRC(source);
+		} else if (inList(command[0], new String[]{"!seen","!lastseen"}) && command.length == 2) {
+			commandSeen(source, command[1]);
 		} else if (inList(command[0], new String[]{"!say","!broadcast"})) {
 			commandForceSend(sender, command);
 		} else if (inList(command[0], new String[]{"!script","!run","!runscript"}) && command.length == 2) {
@@ -96,6 +98,35 @@ public class IrcBot extends PircBot {
 			sendMessage(source, "Players in IRC channel: " + playerList;
 		} else {
 			sendMessage(source, "IRC channel unavailable.");
+		}
+	}
+	
+	public void commandSeen(String sender, String name) {
+		Player p = plugin.getServer().getPlayer(name);
+		if (p != null && p.isOnline()) {
+			sendMessage(sender, name + " is currently logged in.");
+		} else {
+			boolean success = false;
+			
+			File folder = new File(plugin.getServer().getWorlds().get(0).getName() + "/players");
+			if (folder.exists()) {
+				File [] playerFiles = folder.listFiles("*.dat");
+				for (File file : playerFiles) {
+					String fileName = file.getName().split(".")[0];
+					if (fileName.equalsIgnoreCase(name)) {
+						long lastSeen = System.currentTimeMillis() - file.lastModified();
+						lastSeen /= 1000;
+						lastSeen /= 60;
+						lastSeen /= 60;
+						String msg = fileName + " was last logged in " + (lastSeen%24) + " days, " + (lastSeen/24) + " hours ago.";
+						sendMessage(sender, msg);
+					}
+				}
+			}
+			
+			if (!success) {
+				sendMessage(sender, name + " hasn't logged in.");
+			}
 		}
 	}
 	
