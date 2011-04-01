@@ -30,12 +30,22 @@ public class Channel {
 	}
 	
 	public void sendMessage(Player from, String message) {
+		sendMessage(from.getName(), message);
+	}
+	
+	public void sendMessage(String from, String message) {
 		for (String s : playersInChannel) {
 			Player p = ChatChannels.server.getPlayer(s);
 			if (p != null && p.isOnline()) {
-				String msg = ChatColor.WHITE + "[" + color + name + ChatColor.WHITE + "] <" + from.getName() + "> " + message;
+				String msg = ChatColor.WHITE + "[" + color + name + ChatColor.WHITE + "] <" + from + "> " + message;
 				p.sendMessage(msg);
 				ChatChannels.server.getLogger().info(ChatColor.stripColor(msg));
+			}
+		}
+		if (name.equals("IRC")) {
+			IrcBot bot = ChatChannels.ircBot;
+			if (bot != null && bot.isConnected()) {
+				bot.relayMessage(from, message);
 			}
 		}
 	}
@@ -74,6 +84,25 @@ public class Channel {
 	
 	public String getColoredName() {
 		return color + name + ChatColor.WHITE;
+	}
+	
+	public boolean hasPassword() {
+		return !password.equals("");
+	}
+	
+	public boolean alwaysMaintain() {
+		return !destroyOnEmpty;
+	}
+	
+	public List<String> getChannelList() {
+		ArrayList<String> inChannel = new ArrayList<String>();
+		for (String s : playersInChannel) {
+			Player p = ChatChannels.server.getPlayer(s);
+			if (p != null && p.isOnline()) {
+				inChannel.add(p);
+			}
+		}
+		return inChannel;
 	}
 	
 }

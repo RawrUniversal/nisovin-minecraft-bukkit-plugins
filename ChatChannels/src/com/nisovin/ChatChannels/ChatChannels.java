@@ -14,15 +14,28 @@ public class ChatChannels extends JavaPlugin {
 	public static Server server;
 	public HashMap<String, Channel> channels = new HashMap<String, Channel>();
 	public HashMap<String, Channel> activeChannels = new HashMap<String, Channel>();
+	public static IrcBot ircBot;
 
 	@Override
 	public void onEnable() {
 		server = getServer();
 		
+		try {
+			ircBot = new IrcBot(this, "NislandBot");
+			ircBot.connect("irc.esper.net","#nisland",null);
+		} catch (IrcException e) {
+		}
+		
 		Channel global = new Channel("Global", "", ChatColor.AQUA, false);
-		Channel admin = new Channel("Admin", "pass", ChatColor.YELLOW, false);
 		channels.put("global", global);
+		
+		Channel admin = new Channel("Admin", "pass", ChatColor.YELLOW, false);
 		channels.put("admin", admin);
+		
+		if (ircBot.isConnected()) {
+			Channel irc = new Channel("IRC", "", ChatColor.GREEN, false);
+			channels.put("irc", irc);
+		}
 		
 		for (Player p : getServer().getOnlinePlayers()) {
 			global.join(p);
@@ -94,15 +107,29 @@ public class ChatChannels extends JavaPlugin {
 				} else if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
 					String list = "";
 					for (Channel channel : channels.values()) {
+						int count = channel.getChannelList().size();
 						if (channel.isInChannel(p)) {
 							if (list.equals("")) {
-								list = channel.getColoredName();
+								list = channel.getColoredName() + " (" + count + ")";
 							} else {
-								list += ", " + channel.getColoredName();
+								list += ", " + channel.getColoredName() + " (" + count + ")";
 							}
 						}
 					}
 					p.sendMessage("You are in channels: " + list);
+				} else if (args.length == 1 && args[0].equalsIgnoreCase("all")) {
+					String list = "";
+					for (Channel channel : channels.values()) {
+						int count = channel.getChannelList().size();
+						if (!channel.hasPassword() && (count > 0 || channel.alwaysMaintain())) {
+							if (list.equals("")) {
+								list = channel.getColoredName() + " (" + count + ")";
+							} else {
+								list += ", " + channel.getColoredName() + " (" + count + ")";
+							}
+						}
+					}
+					p.sendMessage("Available channels: " + list);
 				}
 				return true;
 			}
