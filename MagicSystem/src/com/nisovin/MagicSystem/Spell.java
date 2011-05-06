@@ -14,6 +14,7 @@ public abstract class Spell {
 	protected String name;
 	protected String description;
 	protected ItemStack[] cost;
+	protected int healthCost = 0;
 	protected int cooldown;
 	protected int broadcastRange;
 	protected String strCost;
@@ -32,7 +33,9 @@ public abstract class Spell {
 			for (int i = 0; i < costList.size(); i++) {
 				if (costList.get(i).contains(" ")) {
 					String [] data = costList.get(i).split(" ");
-					if (data[0].contains(":")) {
+					if (data[0].equalsIgnoreCase("health")) {
+						healthCost = Integer.parseInt(data[1]);
+					} else if (data[0].contains(":")) {
 						String [] subdata = data[0].split(":");
 						cost[i] = new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1]));
 					} else {
@@ -113,8 +116,11 @@ public abstract class Spell {
 	}
 	
 	protected boolean hasReagents(Player player, ItemStack[] reagents) {
-		if (reagents == null) {
+		if (reagents == null && healthCost <= 0) {
 			return true;
+		}
+		if (player.getHealth() <= healthCost) { // TODO: add option to allow death from health cost
+			return false;
 		}
 		for (ItemStack item : reagents) {
 			if (!player.getInventory().contains(item)) {
@@ -137,6 +143,9 @@ public abstract class Spell {
 			for (ItemStack item : reagents) {
 				player.getInventory().remove(item);
 			}
+		}
+		if (healthCost > 0) {
+			player.setHealth(player.getHealth() - healthCost);
 		}
 	}
 	
