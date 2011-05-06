@@ -13,8 +13,12 @@ public abstract class EnhanceSpell extends Spell {
 	protected int useCostInterval;
 	protected int numUses;
 	protected int duration; // TODO
+	protected String strFade;
+	private boolean castWithItem;
+	private boolean castByCommand;
 	
 	private HashMap<String,Integer> useCounter;
+	private HashMap<String,Long> durationStartTime;
 	
 	public EnhanceSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -44,6 +48,41 @@ public abstract class EnhanceSpell extends Spell {
 		
 		if (useCost != null && useCostInterval > 0) {
 			useCounter = new HashMap<String,Integer>();
+		}
+		if (duration > 0) {
+			durationStartTime = new HashMap<String,Long>();
+		}
+		
+		castWithItem = config.getBoolean("spells." + spellName + ".can-cast-with-item", true);
+		castByCommand = config.getBoolean("spells." + spellName + ".can-cast-by-command", true);
+	}
+	
+	public boolean canCastWithItem() {
+		return castWithItem;
+	}
+	
+	public boolean canCastByCommand() {
+		return castByCommand;
+	}
+	
+	protected void startSpellDuration(Player player) {
+		if (duration > 0 && durationStartTime != null) {
+			durationStartTime.put(player.getName(), System.currentTimeMillis());
+		}
+	}
+	
+	protected boolean isExpired(Player player) {
+		if (duration <= 0 || durationStartTime == null) {
+			return false;
+		} else {
+			Long startTime = durationStartTime.get(player.getName());
+			if (startTime == null) {
+				return false;
+			} else if (startTime + duration > System.currentTimeMillis()) {
+				return false;
+			} else {
+				return true;
+			}			
 		}
 	}
 	
@@ -84,7 +123,10 @@ public abstract class EnhanceSpell extends Spell {
 	}
 	
 	protected void turnOff(Player player) {
-		useCounter.remove(player.getName());
+		if (useCounter != null) useCounter.remove(player.getName());
+		if (durationStartTime != null) durationStartTime.remove(player.getName());
 	}
+	
+	protected abstract void turnOff();
 	
 }

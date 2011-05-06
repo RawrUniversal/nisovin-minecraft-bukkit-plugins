@@ -23,25 +23,34 @@ public class SafefallSpell extends EnhanceSpell {
 	
 	public SafefallSpell(Configuration config) {
 		super(config, SPELL_NAME);
-		MagicSystem.entityDamageListeners.add(this);
-		
+		addListener(Event.Type.ENTITY_DAMAGE);		
 		safefallers = new HashSet<String>();
 	}
 
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+		if (safefallers.contains(player.getName()) {
+			safefallers.remove(player.getName());
+			sendMessage(player, strFade);
+		} else if (state == SpellState.NORMAL) {
+			safefallers.add(player.getName());
+		}
 		return false;
 	}
 
 	@Override
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player) {
+		if (!event.isCancelled() && event.getEntity() instanceof Player) {
 			Player player = (Player)event.getEntity();
 			if (safefallers.contains(player.getName())) {
-				addUse(player);
-				boolean ok = chargeUseCost(player);
-				if (ok) {
-					event.setCancelled(true);
+				if (isExpired(player)) {
+					turnOff(player);
+				} else {
+					addUse(player);
+					boolean ok = chargeUseCost(player);
+					if (ok) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		}
@@ -50,6 +59,12 @@ public class SafefallSpell extends EnhanceSpell {
 	@Override
 	protected void turnOff(Player player) {
 		super.turnOff(player);
+		safefallers.remove(player.getName());
+	}
+	
+	@Override
+	protected void turnOff() {
+		
 	}
 	
 }

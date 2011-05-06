@@ -17,6 +17,9 @@ public class Spellbook {
 	private ArrayList<WandSpell> wandSpells = new ArrayList<WandSpell>();
 	private int activeWandSpell = -1;
 	
+	private HashMap<Integer,ArrayList<Spell>> spells;
+	private HashMap<Integer,Integer> activeSpells;
+	
 	public Spellbook(Player player, MagicSystem plugin) {
 		this.plugin = plugin;
 		this.playerName = player.getName();
@@ -31,8 +34,16 @@ public class Spellbook {
 					Spell spell = MagicSystem.spells.get(line);
 					if (spell != null) {
 						allSpells.add(spell);
-						if (spell instanceof WandSpell) {
-							wandSpells.add((WandSpell)spell);
+						if (spell.canCastWithItem()) {
+							int castItem = spell.getCastItem();
+							if (spells.containsKey(castItem)) {
+								spells.get(castItem).add(spell);
+							} else {
+								ArrayList<Spell> temp = new ArrayList<Spell>();
+								temp.add(spell);
+								spells.put(castItem, temp);
+								activeSpells.put(castItem, -1);
+							}
 						}
 					}
 				}
@@ -51,7 +62,21 @@ public class Spellbook {
 		return null;
 	}
 	
-	public Spell nextSpell(SpellType type) {
+	public Spell nextSpell(int castItem) {
+		Integer i = activeSpells.get(castItem);
+		if (i != null) {
+			i++;
+			ArrayList<Spell> spells = spells.get(castItem);
+			if (i > spells.size()) {
+				i = 0;
+			}
+			return spells.get(i);
+		} else {
+			return null;
+		}
+	}
+	
+	/*public Spell nextSpell(SpellType type) {
 		if (type == SpellType.WAND_SPELL) {
 			activeWandSpell++;
 			if (activeWandSpell >= wandSpells.size()) {
@@ -61,9 +86,18 @@ public class Spellbook {
 		} else {
 			return null;
 		}
+	}*/
+	
+	public Spell getActiveSpell(int castItem) {
+		Integer i = activeSpells.get(castItem);
+		if (i != null && i != -1) {
+			return spells.get(castItem).get(i);
+		} else {
+			return null;
+		}		
 	}
 	
-	public Spell getActiveSpell(SpellType type) {
+	/*public Spell getActiveSpell(SpellType type) {
 		if (type == SpellType.WAND_SPELL) {
 			if (activeWandSpell == -1) {
 				return null;
@@ -73,7 +107,7 @@ public class Spellbook {
 		} else {
 			return null;
 		}		
-	}
+	}*/
 	
 	public void addSpell(Spell spell) {
 		if (spell instanceof WandSpell) {

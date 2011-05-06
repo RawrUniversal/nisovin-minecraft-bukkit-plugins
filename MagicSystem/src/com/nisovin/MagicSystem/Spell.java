@@ -13,6 +13,7 @@ public abstract class Spell {
 	protected String internalName;
 	protected String name;
 	protected String description;
+	protected int castItem;
 	protected ItemStack[] cost;
 	protected int healthCost = 0;
 	protected int cooldown;
@@ -27,6 +28,7 @@ public abstract class Spell {
 		this.internalName = spellName;
 		this.name = config.getString("spells." + spellName + ".name", spellName);
 		this.description = config.getString("spells." + spellName + ".description", "");
+		this.castItem = config.getInt("spells." + spellName + ".cast-item", 280);
 		List<String> costList = config.getStringList("spells." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
 			cost = new ItemStack [costList.size()];
@@ -78,14 +80,19 @@ public abstract class Spell {
 			if (state == SpellCastState.NORMAL) {
 				setCooldown(player);
 				removeReagents(player);
-				// TODO: send messages
+				sendMessage(player, strCastSelf);
+				sendMessageNear(player, strCastOthers);
 			} else if (state == SpellCastState.ON_COOLDOWN) {
-				player.sendMessage(MagicSystem.strOnCooldown);
+				sendMessage(player, MagicSystem.strOnCooldown);
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
-				player.sendMessage(MagicSystem.strMissingReagents);
+				sendMessage(player, MagicSystem.strMissingReagents);
 			}
 		}
 	}
+	
+	public abstract boolean canCastWithItem();
+	
+	public abstract boolean canCastByCommand();
 	
 	public String getCostStr() {
 		if (strCost == null || strCost.equals("")) {
@@ -155,6 +162,19 @@ public abstract class Spell {
 		}
 	}
 	
+	protected void sendMessageNear(Player player, String message) {
+		sendMessageNear(player, message, MagicSystem.broadcastRange);
+	}
+	
+	protected void sendMessageNear(Player player, String message, int range) {
+		List<Entity> entities = player.getNearbyEntities(range/2, range/2, range/2);
+		for (Entity entity : entities) {
+			if (entity instanceof Player && entity != player) {
+				((Player)entity).sendMessage(message);
+			}
+		}
+	}
+	
 	protected abstract boolean castSpell(Player player, SpellCastState state, String[] args);
 
 	public String getInternalName() {
@@ -165,8 +185,24 @@ public abstract class Spell {
 		return this.name;
 	}
 	
-	public void onEntityDamage(EntityDamageEvent event) {		
+	public int getCastItem() {
+		return this.castItem;
 	}
+	
+	protected void addListener(Event.Type eventType) {
+		MagicSystem.addSpellListener(eventType, this);
+	}
+	
+	protected void removeListener(Event.Type eventType) {
+		MagicSystem.removeSpellListener(eventType, this);
+	}
+	
+	public void onPlayerJoin(PlayerJoinEvent event) {}
+	public void onPlayerQuit(PlayerQuitEvent event) {}
+	public void onEntityDamage(EntityDamageEvent event) {}	
+	public void onEntityTarget(EntityTargetEvent event) {}	
+	public void onBlockBreak(BlockBreakEvent event) {}
+	public void onBlockPlace(BlockPlaceEvent event) {}
 	
 	protected enum SpellCastState {
 		NORMAL,

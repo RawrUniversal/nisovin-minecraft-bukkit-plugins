@@ -22,7 +22,7 @@ public class MagicSystem extends JavaPlugin {
 	public static HashMap<String,Spell> spells = new HashMap<String,Spell>();
 	public static HashMap<String,Spellbook> spellbooks = new HashMap<String,Spellbook>();
 	
-	public static HashSet<Spell> entityDamageListeners = new HashSet<Spell>();
+	public static HashMap<Event.Type,HashSet<Spell>> listeners = new HashMap<Event.Type,HashSet<Spell>>();
 	
 	@Override
 	public void onEnable() {
@@ -52,6 +52,21 @@ public class MagicSystem extends JavaPlugin {
 		
 	}
 	
+	public static addSpellListener(Event.Type eventType, Spell spell) {
+		HashSet<Spell> spells = listeners.get(eventType);
+		if (spells == null) {
+			spells = new HashSet<Spell>();
+			listeners.put(eventType, spells);
+		}
+		spells.add(spell);
+	}
+	
+	public static removeSpellListener(Event.Type eventType, Spell spell) {
+		HashSet<Spell> spells = listeners.get(eventType);
+		if (spells != null) {
+			spells.remove(spell);
+		}
+	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
@@ -65,7 +80,7 @@ public class MagicSystem extends JavaPlugin {
 				if (spellbook != null) {
 					spell = spellbook.getSpellByName(args[0]);
 				}
-				if (spell != null) {
+				if (spell != null && spell.canCastByCommand()) {
 					String[] spellArgs = null;
 					if (args.length > 1) {
 						spellArgs = new String[args.length-1];

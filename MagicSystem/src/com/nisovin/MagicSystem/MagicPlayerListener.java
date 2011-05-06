@@ -40,11 +40,10 @@ public class MagicPlayerListener extends PlayerListener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
 			ItemStack inHand = event.getPlayer().getItemInHand();
-			if (inHand.getTypeId() == MagicSystem.wandSpellItem) {
-				WandSpell newSpell = (WandSpell)MagicSystem.spellbooks.get(event.getPlayer().getName()).nextSpell(SpellType.WAND_SPELL);
-				event.getPlayer().sendMessage("You are now using the " + newSpell.getName() + " spell.");
+			Spell spell = MagicSystem.spellbooks.get(event.getPlayer().getName()).nextSpell(inHand);
+			if (spell != null) {
+				event.getPlayer().sendMessage("You are now using the " + spell.getName() + " spell.");
 			}
-		} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 		}
 	}
 	
@@ -52,11 +51,8 @@ public class MagicPlayerListener extends PlayerListener {
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
 		if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
 			ItemStack inHand = event.getPlayer().getItemInHand();
-			Spell spell = null;
-			if (inHand.getTypeId() == MagicSystem.wandSpellItem) {
-				spell = MagicSystem.spellbooks.get(event.getPlayer().getName()).getActiveSpell(SpellType.WAND_SPELL);
-			}
-			if (spell != null) {
+			Spell spell = MagicSystem.spellbooks.get(event.getPlayer().getName()).getActiveSpell(inHand);
+			if (spell != null && spell.canCastWithItem()) {
 				spell.cast(event.getPlayer());
 			}			
 		}
