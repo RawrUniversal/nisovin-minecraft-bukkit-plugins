@@ -14,6 +14,8 @@ import com.nisovin.MagicSystem.Spells.*;
 
 public class MagicSystem extends JavaPlugin {
 
+	public MagicSystem plugin;
+
 	public static int broadcastRange;
 	public static String strOnCooldown;
 	public static String strMissingReagents;
@@ -26,6 +28,7 @@ public class MagicSystem extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		plugin = this;
 		
 		// make sure directories are created
 		this.getDataFolder().mkdir();
@@ -50,6 +53,10 @@ public class MagicSystem extends JavaPlugin {
 		
 		new MagicPlayerListener(this);
 		
+	}
+	
+	public static Spellbook getSpellbook(Player player) {
+		return spellbooks.get(player.getName());
 	}
 	
 	public static addSpellListener(Event.Type eventType, Spell spell) {

@@ -13,11 +13,8 @@ public class Spellbook {
 	
 	private String playerName;
 	
-	private HashSet<Spell> allSpells = new HashSet<Spell>();
-	private ArrayList<WandSpell> wandSpells = new ArrayList<WandSpell>();
-	private int activeWandSpell = -1;
-	
-	private HashMap<Integer,ArrayList<Spell>> spells;
+	private HashSet<Spell> allSpells = new HashSet<Spell>();	
+	private HashMap<Integer,ArrayList<Spell>> itemSpells;
 	private HashMap<Integer,Integer> activeSpells;
 	
 	public Spellbook(Player player, MagicSystem plugin) {
@@ -25,8 +22,20 @@ public class Spellbook {
 		this.playerName = player.getName();
 		
 		// load spells from file
+		if (!player.isOp()) {
+			loadFromFile();
+		} else {
+			// give all spells to ops
+			for (Spell spell : MagicSystem.spells) {
+				allSpells.add(spell);
+				addSpell(spell);
+			}
+		}
+	}
+	
+	private void loadFromFile() {
 		try {
-			Scanner scanner = new Scanner(new File(plugin.getDataFolder(), "spellbooks/" + playerName + ".txt"));
+			Scanner scanner = new Scanner(new File(plugin.getDataFolder(), "spellbooks/" + playerName.toLowerCase() + ".txt"));
 			while (scanner.hasNext()) {
 				String line = scanner.nextLine();
 				System.out.println(line);
@@ -35,21 +44,13 @@ public class Spellbook {
 					if (spell != null) {
 						allSpells.add(spell);
 						if (spell.canCastWithItem()) {
-							int castItem = spell.getCastItem();
-							if (spells.containsKey(castItem)) {
-								spells.get(castItem).add(spell);
-							} else {
-								ArrayList<Spell> temp = new ArrayList<Spell>();
-								temp.add(spell);
-								spells.put(castItem, temp);
-								activeSpells.put(castItem, -1);
-							}
+							addSpell(spell);
 						}
 					}
 				}
 			}
 			scanner.close();
-		} catch (Exception e) {			
+		} catch (Exception e) {
 		}
 	}
 	
@@ -76,18 +77,6 @@ public class Spellbook {
 		}
 	}
 	
-	/*public Spell nextSpell(SpellType type) {
-		if (type == SpellType.WAND_SPELL) {
-			activeWandSpell++;
-			if (activeWandSpell >= wandSpells.size()) {
-				activeWandSpell = 0;
-			}
-			return wandSpells.get(activeWandSpell);
-		} else {
-			return null;
-		}
-	}*/
-	
 	public Spell getActiveSpell(int castItem) {
 		Integer i = activeSpells.get(castItem);
 		if (i != null && i != -1) {
@@ -97,28 +86,38 @@ public class Spellbook {
 		}		
 	}
 	
-	/*public Spell getActiveSpell(SpellType type) {
-		if (type == SpellType.WAND_SPELL) {
-			if (activeWandSpell == -1) {
-				return null;
-			} else {
-				return wandSpells.get(activeWandSpell);
-			} 
-		} else {
-			return null;
-		}		
-	}*/
+	public boolean hasSpell(Spell spell) {
+		return allSpells.contains(spell);
+	}
 	
 	public void addSpell(Spell spell) {
-		if (spell instanceof WandSpell) {
-			wandSpells.add((WandSpell)spell);
+		int item = spell.getCastItem();
+		ArrayList<Spell> temp = itemSpells.get(item);
+		if (temp != null) {
+			temp.add(spell);
+		} else {
+			temp = new ArrayList<Spell>();
+			itemSpells.put(item, temp);
+			activeSpells.put(item, -1);
 		}
 	}
 	
 	public void removeSpell(Spell spell) {
-		if (spell instanceof WandSpell) {
-			wandSpells.remove((WandSpell)spell);
+		int item = spell.getCastItem();
+		ArrayList<Spell> temp = itemSpells.get(item);
+		if (temp != null) {
+			temp.remove(spell);
+			if (temp.size() == 0) {
+				itemSpells.remove(item);
+				activeSpells.remove(item);
+			} else {
+				activeSpells.put(item, -1);
+			}
 		}
+	}
+	
+	public void save() {
+		// TODO
 	}
 	
 	public enum SpellType {
