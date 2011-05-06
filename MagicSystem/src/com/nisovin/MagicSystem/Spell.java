@@ -4,13 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
 
 public abstract class Spell {
 
+	protected String internalName;
 	protected String name;
 	protected String description;
-	protected int [][] cost;
+	protected ItemStack[] cost;
 	protected int cooldown;
 	protected int broadcastRange;
 	protected String strCost;
@@ -18,17 +21,26 @@ public abstract class Spell {
 	protected String strCastOthers;
 	
 	private HashMap<String, Long> lastCast;
-
+	
 	public Spell(Configuration config, String spellName) {
+		this.internalName = spellName;
 		this.name = config.getString("spells." + spellName + ".name", spellName);
 		this.description = config.getString("spells." + spellName + ".description", "");
 		List<String> costList = config.getStringList("spells." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
-			cost = new int [costList.size()][2];
+			cost = new ItemStack [costList.size()];
 			for (int i = 0; i < costList.size(); i++) {
-				String [] data = costList.get(i).split(" ");
-				cost[i][0] = Integer.parseInt(data[0]);
-				cost[i][1] = Integer.parseInt(data[1]);
+				if (costList.get(i).contains(" ")) {
+					String [] data = costList.get(i).split(" ");
+					if (data[0].contains(":")) {
+						String [] subdata = data[0].split(":");
+						cost[i] = new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1]));
+					} else {
+						cost[i] = new ItemStack(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+					}
+				} else {
+					cost[i] = new ItemStack(Integer.parseInt(costList.get(i)));
+				}
 			}
 		} else {
 			cost = null;
@@ -44,7 +56,11 @@ public abstract class Spell {
 		}
 	}
 
-	public void cast(Player player) {
+	public final void cast(Player player) {
+		cast(player, null);
+	}
+	
+	public final void cast(Player player, String[] args) {
 		SpellCastState state;
 		if (onCooldown(player)) {
 			state = SpellCastState.ON_COOLDOWN;
@@ -54,11 +70,12 @@ public abstract class Spell {
 			state = SpellCastState.NORMAL;
 		}
 		
-		boolean handleIt = castSpell(player, state);
-		if (handleIt) {
+		boolean handled = castSpell(player, state, args);
+		if (!handled) {
 			if (state == SpellCastState.NORMAL) {
 				setCooldown(player);
 				removeReagents(player);
+				// TODO: send messages
 			} else if (state == SpellCastState.ON_COOLDOWN) {
 				player.sendMessage(MagicSystem.strOnCooldown);
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
@@ -95,15 +112,32 @@ public abstract class Spell {
 		}
 	}
 	
+	protected boolean hasReagents(Player player, ItemStack[] reagents) {
+		if (reagents == null) {
+			return true;
+		}
+		for (ItemStack item : reagents) {
+			if (!player.getInventory().contains(item)) {
+				return false;
+			}
+		}
+		return true;		
+	}
+	
 	protected boolean hasReagents(Player player) {
-		return true;
+		return hasReagents(player, cost);
 	}
 	
 	protected void removeReagents(Player player) {
 		removeReagents(player, cost);
 	}
 	
-	protected void removeReagents(Player player, int [][] reagents) {
+	protected void removeReagents(Player player, ItemStack[] reagents) {
+		if (reagents != null) {
+			for (ItemStack item : reagents) {
+				player.getInventory().remove(item);
+			}
+		}
 	}
 	
 	protected void sendMessage(Player player, String message) {
@@ -112,8 +146,19 @@ public abstract class Spell {
 		}
 	}
 	
-	protected abstract boolean castSpell(Player player, SpellCastState state);
+	protected abstract boolean castSpell(Player player, SpellCastState state, String[] args);
 
+	public String getInternalName() {
+		return this.internalName;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public void onEntityDamage(EntityDamageEvent event) {		
+	}
+	
 	protected enum SpellCastState {
 		NORMAL,
 		ON_COOLDOWN,

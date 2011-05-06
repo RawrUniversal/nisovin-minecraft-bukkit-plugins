@@ -13,14 +13,21 @@ public class BlinkSpell extends WandSpell {
 	
 	private static final String SPELL_NAME = "blink";
 	
-	private int range = -1;
 	private String strCantBlink = null;
+	
+	public static void load(Configuration config) {
+		if (config.getBoolean("spells." + SPELL_NAME + ".enabled", true)) {
+			MagicSystem.spells.put(SPELL_NAME, new BlinkSpell(config));
+		}
+	}
 	
 	public BlinkSpell(Configuration config) {
 		super(config, SPELL_NAME);
+		
+		strCantBlink = config.getString("spells." + SPELL_NAME + ".str-cant-blink", "You can't blink there.");
 	}
 	
-	protected boolean castSpell(Player player, SpellCastState state) {
+	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			BlockIterator iter = new BlockIterator(player);
 			Block prev = null;
@@ -45,26 +52,20 @@ public class BlinkSpell extends WandSpell {
 					loc = prev.getLocation();
 				}
 				if (loc != null) {
+					loc.setX(loc.getX()+.5);
+					loc.setZ(loc.getZ()+.5);
 					loc.setPitch(player.getLocation().getPitch());
 					loc.setYaw(player.getLocation().getYaw());
-					player.teleportTo(loc);
+					player.teleport(loc);
 					sendMessage(player, strCastSelf);
 					// TODO: send messages to others
 				} else {
 					sendMessage(player, strCantBlink);
-					return false;
+					return true;
 				}
 			}
 		}
-		return true;
-	}
-
-	private boolean inRange(Location loc1, Location loc2, int range) {
-		return sq(loc1.getX()-loc2.getX()) + sq(loc1.getY()-loc2.getY()) + sq(loc1.getZ()-loc2.getZ()) < sq(range);
-	}
-	
-	private double sq(double n) {
-		return n*n;
+		return false;
 	}
 
 }
