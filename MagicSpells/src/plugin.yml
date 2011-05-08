@@ -1,0 +1,8 @@
+name: MagicSpells
+main: com.nisovin.MagicSpells.MagicSpells
+version: 1.0
+commands:
+    cast:
+        description: Cast a spell
+        usage: /<command>
+        aliases: [c]
