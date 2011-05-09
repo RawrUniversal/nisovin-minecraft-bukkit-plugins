@@ -1,5 +1,7 @@
 package com.nisovin.MagicSpells;
 
+import java.util.HashSet;
+
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
@@ -27,11 +29,25 @@ public class MagicPlayerListener extends PlayerListener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Spellbook spellbook = new Spellbook(event.getPlayer(), plugin);
 		MagicSpells.spellbooks.put(event.getPlayer().getName(), spellbook);
+		
+		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_JOIN);
+		if (spells != null) {
+			for (Spell spell : spells) {
+				spell.onPlayerJoin(event);
+			}
+		}
 	}
 	
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		MagicSpells.spellbooks.remove(event.getPlayer().getName());
+		
+		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_QUIT);
+		if (spells != null) {
+			for (Spell spell : spells) {
+				spell.onPlayerQuit(event);
+			}
+		}
 	}
 	
 	@Override

@@ -40,13 +40,14 @@ public abstract class Spell {
 		List<String> costList = config.getStringList("spells." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
 			cost = new ItemStack [costList.size()];
+			String[] data, subdata;
 			for (int i = 0; i < costList.size(); i++) {
 				if (costList.get(i).contains(" ")) {
-					String [] data = costList.get(i).split(" ");
+					data = costList.get(i).split(" ");
 					if (data[0].equalsIgnoreCase("health")) {
 						healthCost = Integer.parseInt(data[1]);
 					} else if (data[0].contains(":")) {
-						String [] subdata = data[0].split(":");
+						subdata = data[0].split(":");
 						cost[i] = new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1]));
 					} else {
 						cost[i] = new ItemStack(Integer.parseInt(data[0]), Integer.parseInt(data[1]));

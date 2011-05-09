@@ -36,6 +36,15 @@ public class MagicSpells extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		load();
+		
+		// load listeners
+		new MagicPlayerListener(this);
+		new MagicEntityListener(this);
+		new MagicBlockListener(this);
+	}
+	
+	public void load() {
 		plugin = this;
 		
 		// create storage stuff
@@ -63,11 +72,6 @@ public class MagicSpells extends JavaPlugin {
 				castForFree.set(i, castForFree.get(i).toLowerCase());
 			}
 		}
-		
-		// load listeners
-		new MagicPlayerListener(this);
-		new MagicEntityListener(this);
-		new MagicBlockListener(this);
 		
 		// load spells
 		BlinkSpell.load(config);
@@ -112,7 +116,7 @@ public class MagicSpells extends JavaPlugin {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
 		}
 		
-		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");
+		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");		
 	}
 	
 	public static Spellbook getSpellbook(Player player) {
@@ -142,7 +146,7 @@ public class MagicSpells extends JavaPlugin {
 				sender.sendMessage(textColor + strCastUsage);
 			} else if (sender.isOp() && args[0].equals("reload")) {
 				onDisable();
-				onEnable();
+				load();
 				sender.sendMessage(textColor + "MagicSpells config reloaded.");
 			} else if (sender instanceof Player) {
 				Player player = (Player)sender;

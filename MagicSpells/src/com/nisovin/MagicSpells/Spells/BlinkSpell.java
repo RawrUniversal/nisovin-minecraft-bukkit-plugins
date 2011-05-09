@@ -37,8 +37,9 @@ public class BlinkSpell extends InstantSpell {
 			BlockIterator iter = new BlockIterator(player);
 			Block prev = null;
 			Block found = null;
+			Block b;
 			while (iter.hasNext()) {
-				Block b = iter.next();
+				b = iter.next();
 				if (b.getType() == Material.AIR) {
 					prev = b;
 				} else {

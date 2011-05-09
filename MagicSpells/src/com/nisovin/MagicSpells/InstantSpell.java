@@ -46,14 +46,15 @@ public abstract class InstantSpell extends Spell {
 				
 		LivingEntity target = null;
 		double distance = 0;
+		double dx, dy, dz, dist, xzAngle, yAngle;
 		for (LivingEntity entity : entities) {
-			double dx = entity.getLocation().getX() - px;
-			double dy = entity.getLocation().getY() - py;
-			double dz = entity.getLocation().getZ() - pz;
+			dx = entity.getLocation().getX() - px;
+			dy = entity.getLocation().getY() - py;
+			dz = entity.getLocation().getZ() - pz;
 			if (Math.abs(dx) < range && Math.abs(dy) < range && Math.abs(dz) < range && (targetPlayers || !(entity instanceof Player))) {
-				double dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
-				double xzAngle = Math.atan2(entity.getLocation().getZ() - player.getLocation().getZ(), entity.getLocation().getX() - player.getLocation().getX()) * 57.295F - 90;
-				double yAngle = Math.asin(dy / dist) * -57.295F;
+				dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
+				xzAngle = Math.atan2(entity.getLocation().getZ() - player.getLocation().getZ(), entity.getLocation().getX() - player.getLocation().getX()) * 57.295F - 90;
+				yAngle = Math.asin(dy / dist) * -57.295F;
 				
 				if (angleDiff(xzAngle, player.getLocation().getYaw()) < variance && Math.abs(yAngle - player.getLocation().getPitch()) < variance && (target == null || dist < distance)) {
 					target = (LivingEntity)entity;
@@ -61,6 +62,8 @@ public abstract class InstantSpell extends Spell {
 				}			
 			}	
 		}
+		
+		entities = null;
 		
 		return target;
 	}
