@@ -22,18 +22,27 @@ public class MagicSpells extends JavaPlugin {
 	public static ChatColor textColor;
 	public static int broadcastRange;
 	public static List<String> castForFree;
+	public static String strCastUsage;
+	public static String strUnknownSpell;
+	public static String strSpellChange;
 	public static String strOnCooldown;
 	public static String strMissingReagents;
 	
-	public static HashMap<String,Spell> spells = new HashMap<String,Spell>(); // map internal names to spells
-	public static HashMap<String,Spell> spellNames = new HashMap<String,Spell>(); // map configured names to spells
-	public static HashMap<String,Spellbook> spellbooks = new HashMap<String,Spellbook>();
+	public static HashMap<String,Spell> spells; // map internal names to spells
+	public static HashMap<String,Spell> spellNames; // map configured names to spells
+	public static HashMap<String,Spellbook> spellbooks; // player spellbooks
 	
-	public static HashMap<Event.Type,HashSet<Spell>> listeners = new HashMap<Event.Type,HashSet<Spell>>();
+	public static HashMap<Event.Type,HashSet<Spell>> listeners;
 	
 	@Override
 	public void onEnable() {
 		plugin = this;
+		
+		// create storage stuff
+		spells = new HashMap<String,Spell>();
+		spellNames = new HashMap<String,Spell>();
+		spellbooks = new HashMap<String,Spellbook>();
+		listeners = new HashMap<Event.Type,HashSet<Spell>>();
 		
 		// make sure directories are created
 		this.getDataFolder().mkdir();
@@ -43,8 +52,11 @@ public class MagicSpells extends JavaPlugin {
 		Configuration config = this.getConfiguration();
 		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
-		strOnCooldown = config.getString("str-on-cooldown", "That spell is on cooldown.");
-		strMissingReagents = config.getString("str-missing-reagents", "You do not have the reagents for that spell.");
+		strCastUsage = config.getString("general.str-cast-usage", "Usage: /cast <spell>. Use /cast list to see a list of spells.");
+		strUnknownSpell = config.getString("general.str-unknown-spell", "You do not know a spell with that name.");
+		strSpellChange = config.getString("general.str-spell-change", "You are now using the %s spell.");
+		strOnCooldown = config.getString("general.str-on-cooldown", "That spell is on cooldown.");
+		strMissingReagents = config.getString("general.str-missing-reagents", "You do not have the reagents for that spell.");
 		castForFree = config.getStringList("general.cast-for-free", null);
 		if (castForFree != null) {
 			for (int i = 0; i < castForFree.size(); i++) {
@@ -100,7 +112,7 @@ public class MagicSpells extends JavaPlugin {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
 		}
 		
-		
+		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");
 	}
 	
 	public static Spellbook getSpellbook(Player player) {
@@ -125,11 +137,15 @@ public class MagicSpells extends JavaPlugin {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
-		if (sender instanceof Player && command.getName().equalsIgnoreCase("cast")) {
-			Player player = (Player)sender;
+		if (command.getName().equalsIgnoreCase("cast")) {
 			if (args.length == 0) {
-				// TODO: show help
-			} else {
+				sender.sendMessage(textColor + strCastUsage);
+			} else if (sender.isOp() && args[0].equals("reload")) {
+				onDisable();
+				onEnable();
+				sender.sendMessage(textColor + "MagicSpells config reloaded.");
+			} else if (sender instanceof Player) {
+				Player player = (Player)sender;
 				Spellbook spellbook = spellbooks.get(player.getName());
 				Spell spell = null;
 				if (spellbook != null) {
@@ -145,7 +161,7 @@ public class MagicSpells extends JavaPlugin {
 					}
 					spell.cast(player, spellArgs);
 				} else {
-					// TODO: send unknown spell message
+					player.sendMessage(textColor + strUnknownSpell);
 				}
 			}
 			return true;

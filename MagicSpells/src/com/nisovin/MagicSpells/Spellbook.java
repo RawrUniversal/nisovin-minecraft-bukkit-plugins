@@ -90,7 +90,6 @@ public class Spellbook {
 	}
 	
 	public boolean hasSpell(Spell spell) {
-		System.out.println("size:"+allSpells.size());
 		return allSpells.contains(spell);
 	}
 	

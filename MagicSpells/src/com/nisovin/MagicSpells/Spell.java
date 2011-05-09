@@ -222,7 +222,7 @@ public abstract class Spell {
 	}
 	
 	protected void sendMessage(Player player, String message) {
-		if (message != null && message != "") {
+		if (message != null && !message.equals("")) {
 			player.sendMessage(MagicSpells.textColor + message);
 		}
 	}
@@ -232,10 +232,12 @@ public abstract class Spell {
 	}
 	
 	protected void sendMessageNear(Player player, String message, int range) {
-		List<Entity> entities = player.getNearbyEntities(range/2, range/2, range/2);
-		for (Entity entity : entities) {
-			if (entity instanceof Player && entity != player) {
-				((Player)entity).sendMessage(MagicSpells.textColor + message);
+		if (message != null && !message.equals("")) {
+			List<Entity> entities = player.getNearbyEntities(range/2, range/2, range/2);
+			for (Entity entity : entities) {
+				if (entity instanceof Player && entity != player) {
+					((Player)entity).sendMessage(MagicSpells.textColor + message);
+				}
 			}
 		}
 	}

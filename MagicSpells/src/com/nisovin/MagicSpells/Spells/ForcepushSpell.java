@@ -14,6 +14,7 @@ public class ForcepushSpell extends InstantSpell {
 
 	private static final String SPELL_NAME = "forcepush";
 	
+	private boolean targetPlayers;
 	private int force;
 	private int yForce;
 	
@@ -30,6 +31,7 @@ public class ForcepushSpell extends InstantSpell {
 	public ForcepushSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
+		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		force = config.getInt("spells." + spellName + ".pushback-force", 30);
 		yForce = config.getInt("spells." + spellName + ".additional-vertical-force", 15);
 	}
@@ -37,7 +39,7 @@ public class ForcepushSpell extends InstantSpell {
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			knockback(player, range, false);
+			knockback(player, range, targetPlayers);
 		}
 		return false;
 	}

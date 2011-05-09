@@ -36,11 +36,11 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			ItemStack inHand = event.getPlayer().getItemInHand();
 			Spell spell = MagicSpells.spellbooks.get(event.getPlayer().getName()).nextSpell(inHand.getTypeId());
 			if (spell != null) {
-				event.getPlayer().sendMessage("You are now using the " + spell.getName() + " spell.");
+				spell.sendMessage(event.getPlayer(), spell.formatMessage(MagicSpells.strSpellChange, "%s", spell.getName()));
 			}
 		}
 	}
