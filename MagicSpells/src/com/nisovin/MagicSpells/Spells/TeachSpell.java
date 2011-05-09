@@ -77,6 +77,8 @@ public class TeachSpell extends CommandSpell {
 								targetSpellbook.save();
 								sendMessage(players.get(0), formatMessage(strCastTarget, "%a", player.getName(), "%s", spell.getName(), "%t", players.get(0).getName()));
 								sendMessage(player, formatMessage(strCastSelf, "%a", player.getName(), "%s", spell.getName(), "%t", players.get(0).getName()));
+								setCooldown(player);
+								removeReagents(player);
 							}
 						}
 					}

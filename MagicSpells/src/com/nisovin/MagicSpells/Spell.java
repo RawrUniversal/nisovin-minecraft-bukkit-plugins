@@ -216,10 +216,11 @@ public abstract class Spell {
 	protected String formatMessage(String message, String... replacements) {
 		if (message == null) return null;
 		
+		String msg = message.clone();
 		for (int i = 0; i < replacements.length; i+=2) {
-			message = message.replace(replacements[i], replacements[i+1]);
+			msg = msg.replace(replacements[i], replacements[i+1]);
 		}
-		return message;
+		return msg;
 	}
 	
 	protected void sendMessage(Player player, String message) {
