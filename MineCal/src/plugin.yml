@@ -1,0 +1,7 @@
+name: MineCal
+main: com.nisovin.MineCal.MineCal
+version: 0.3
+commands:
+    today:
+        description: Show today's date
+        usage: /<command>
