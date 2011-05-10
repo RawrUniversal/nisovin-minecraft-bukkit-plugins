@@ -1,3 +1,11 @@
+package com.nisovin.MagicSpells.Util;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+
 public class BlockPlatform {
 
 	private Material platformType;
@@ -25,12 +33,12 @@ public class BlockPlatform {
 	
 	public void createPlatform() {
 		Set<Block> platform = new HashSet<Block>();
-		Block block;
 		
 		// get platform blocks
 		if (type.equals("square")) {
+			Block block;
 			for (int x = center.getX()-size; x <= center.getX()+size; x++) {
-				for (int z = center.getZ()-size, z <= center.getZ()+size; z++) {
+				for (int z = center.getZ()-size; z <= center.getZ()+size; z++) {
 					int y = center.getY();
 					block = center.getWorld().getBlockAt(x,y,z);
 					if (block.getType() == replaceType || blocks.contains(block)) {
@@ -43,7 +51,7 @@ public class BlockPlatform {
 		
 		// remove old platform blocks
 		if (moving) {
-			for (block : blocks) {
+			for (Block block : blocks) {
 				if (!platform.contains(block) && block.getType() == platformType) {
 					block.setType(replaceType);
 				}
@@ -51,7 +59,7 @@ public class BlockPlatform {
 		}
 		
 		// add new platform blocks
-		for (block : platform) {
+		for (Block block : platform) {
 			if (!blocks.contains(block)) {
 				block.setType(platformType);
 			}
@@ -63,9 +71,31 @@ public class BlockPlatform {
 		}
 	}
 	
-	public void movePlatform(Block center) {
-		this.center = center;
-		createPlatform();
+	public boolean movePlatform(Block center) {
+		if (!center.getLocation().equals(this.center.getLocation())) {
+			this.center = center;
+			createPlatform();
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void destroyPlatform() {		
+		// remove platform blocks
+		if (moving) {
+			for (Block block : blocks) {
+				if (block.getType() == platformType) {
+					block.setType(replaceType);
+				}
+			}
+		}
+		blocks = null;
+	}
+	
+	
+	public Block getCenter () {
+		return this.center;
 	}
 	
 

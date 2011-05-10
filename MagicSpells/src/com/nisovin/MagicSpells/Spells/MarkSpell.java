@@ -6,8 +6,6 @@ import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -15,6 +13,7 @@ import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.CommandSpell;
 import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.MagicSpells.Util.MagicLocation;
 
 public class MarkSpell extends CommandSpell {
 	
@@ -22,7 +21,7 @@ public class MarkSpell extends CommandSpell {
 	
 	private boolean permanentMarks;
 	
-	public static HashMap<String,Location> marks;
+	public static HashMap<String,MagicLocation> marks;
 	
 	public static void load(Configuration config) {
 		load(config, SPELL_NAME);
@@ -39,7 +38,7 @@ public class MarkSpell extends CommandSpell {
 		
 		permanentMarks = config.getBoolean("spells." + spellName + ".permanent-marks", true);
 		
-		marks = new HashMap<String,Location>();
+		marks = new HashMap<String,MagicLocation>();
 		
 		if (permanentMarks) {
 			loadMarks();
@@ -52,7 +51,7 @@ public class MarkSpell extends CommandSpell {
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		//((CraftPlayer)player).getHandle().a(new ChunkCoordinates(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()));
 		if (state == SpellCastState.NORMAL) {
-			marks.put(player.getName(), player.getLocation());
+			marks.put(player.getName(), new MagicLocation(player.getLocation()));
 			if (permanentMarks) {
 				saveMarks();
 			}
@@ -75,8 +74,7 @@ public class MarkSpell extends CommandSpell {
 				if (!line.equals("")) {
 					try {
 						String[] data = line.split(":");
-						World world = MagicSpells.plugin.getServer().getWorld(data[1]);
-						Location loc = new Location(world, Double.parseDouble(data[2]), Double.parseDouble(data[3]), Double.parseDouble(data[4]), Float.parseFloat(data[5]), Float.parseFloat(data[6]));
+						MagicLocation loc = new MagicLocation(data[1], Double.parseDouble(data[2]), Double.parseDouble(data[3]), Double.parseDouble(data[4]), Float.parseFloat(data[5]), Float.parseFloat(data[6]));
 						marks.put(data[0], loc);
 					} catch (Exception e) {
 						MagicSpells.plugin.getServer().getLogger().severe("MagicSpells: Failed to load mark: " + line);
@@ -92,8 +90,8 @@ public class MarkSpell extends CommandSpell {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(MagicSpells.plugin.getDataFolder(), "marks.txt"), false));
 			for (String name : marks.keySet()) {
-				Location loc = marks.get(name);
-				writer.append(name + ":" + loc.getWorld().getName() + ":" + loc.getX() + ":" + loc.getY() + ":" + loc.getZ() + ":" + loc.getYaw() + ":" + loc.getPitch());
+				MagicLocation loc = marks.get(name);
+				writer.append(name + ":" + loc.getWorld() + ":" + loc.getX() + ":" + loc.getY() + ":" + loc.getZ() + ":" + loc.getYaw() + ":" + loc.getPitch());
 				writer.newLine();
 			}
 			writer.close();

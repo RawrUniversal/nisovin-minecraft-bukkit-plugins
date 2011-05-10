@@ -10,13 +10,15 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
 
-public abstract class Spell {
+public abstract class Spell implements Comparable<Spell> {
 
 	protected String internalName;
 	protected String name;
@@ -216,7 +218,7 @@ public abstract class Spell {
 	protected String formatMessage(String message, String... replacements) {
 		if (message == null) return null;
 		
-		String msg = message.clone();
+		String msg = message;
 		for (int i = 0; i < replacements.length; i+=2) {
 			msg = msg.replace(replacements[i], replacements[i+1]);
 		}
@@ -272,6 +274,8 @@ public abstract class Spell {
 	
 	public void onPlayerJoin(PlayerJoinEvent event) {}
 	public void onPlayerQuit(PlayerQuitEvent event) {}
+	public void onPlayerInteract(PlayerInteractEvent event) {}
+	public void onPlayerMove(PlayerMoveEvent event) {}
 	public void onEntityDamage(EntityDamageEvent event) {}	
 	public void onEntityTarget(EntityTargetEvent event) {}	
 	public void onBlockBreak(BlockBreakEvent event) {}
@@ -281,6 +285,11 @@ public abstract class Spell {
 		NORMAL,
 		ON_COOLDOWN,
 		MISSING_REAGENTS
+	}
+	
+	@Override
+	public int compareTo(Spell spell) {
+		return this.name.compareTo(spell.name);
 	}
 
 }

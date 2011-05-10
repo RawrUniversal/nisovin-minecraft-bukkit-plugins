@@ -45,8 +45,11 @@ public class RecallSpell extends CommandSpell {
 				sendMessage(player, strNoMark);
 				return true;
 			} else {
-				Location mark = MarkSpell.marks.get(player.getName());
-				if (!allowCrossWorld && mark.getWorld() != player.getLocation().getWorld()) {
+				Location mark = MarkSpell.marks.get(player.getName()).getLocation();
+				if (mark == null) {
+					sendMessage(player, strNoMark);
+					return true;
+				} else if (!allowCrossWorld && !mark.getWorld().getName().equals(player.getLocation().getWorld().getName())) {
 					// can't cross worlds
 					sendMessage(player, strOtherWorld);
 					return true;

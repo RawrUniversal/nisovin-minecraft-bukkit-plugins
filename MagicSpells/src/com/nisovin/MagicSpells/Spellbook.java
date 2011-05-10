@@ -4,19 +4,27 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
+import org.bukkit.plugin.Plugin;
 
 import org.bukkit.entity.Player;
 
 public class Spellbook {
 
-	MagicSpells plugin;
+	private MagicSpells plugin;
+	
+	private static PermissionHandler permissionHandler = null;
 	
 	private String playerName;
 	
-	private HashSet<Spell> allSpells = new HashSet<Spell>();	
+	private TreeSet<Spell> allSpells = new TreeSet<Spell>();	
 	private HashMap<Integer,ArrayList<Spell>> itemSpells = new HashMap<Integer,ArrayList<Spell>>();
 	private HashMap<Integer,Integer> activeSpells = new HashMap<Integer,Integer>();
 	
@@ -32,6 +40,28 @@ public class Spellbook {
 			for (Spell spell : MagicSpells.spells.values()) {
 				addSpell(spell);
 			}
+		}
+		
+		// add spells granted by permissions
+		if (permissionHandler != null) {
+			for (Spell spell : MagicSpells.spells.values()) {
+				if (!hasSpell(spell) && permissionHandler.has(player, "magicspells.grant." + spell.getInternalName())) {
+					addSpell(spell);
+				}
+			}
+		}
+		
+		// sort spells
+		for (ArrayList<Spell> spells : itemSpells.values()) {
+			Collections.sort(spells);
+		}
+	}
+	
+	public boolean canLearn(Spell spell) {
+		if (permissionHandler == null) {
+			return true;
+		} else {
+			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.learn." + spell.getInternalName());
 		}
 	}
 	
@@ -61,7 +91,7 @@ public class Spellbook {
 		return null;
 	}
 	
-	public HashSet<Spell> getSpells() {
+	public Set<Spell> getSpells() {
 		return this.allSpells;
 	}
 	
@@ -135,6 +165,18 @@ public class Spellbook {
 			plugin.getServer().getLogger().severe("Error saving player spellbook: " + playerName);
 		}
 		
+	}
+	
+	public static void initPermissions() {
+		Plugin permissionsPlugin = MagicSpells.plugin.getServer().getPluginManager().getPlugin("Permissions");
+
+		if (permissionHandler == null) {
+			if (permissionsPlugin != null) {
+				permissionHandler = ((Permissions) permissionsPlugin).getHandler();
+			} else {
+				MagicSpells.plugin.getServer().getLogger().info("MagicSpells: enable-permissions enabled, but no Permissions plugin found.");
+			}
+		}
 	}
 	
 }

@@ -68,8 +68,8 @@ public class TeachSpell extends CommandSpell {
 						} else {
 							// yay! can learn!
 							Spellbook targetSpellbook = MagicSpells.getSpellbook(players.get(0));
-							if (targetSpellbook == null) {
-								// fail: no spellbook for some reason
+							if (targetSpellbook == null || !targetSpellbook.canLearn(spell)) {
+								// fail: no spellbook for some reason or can't learn the spell
 								sendMessage(player, strCantLearn);
 								return true;
 							} else {

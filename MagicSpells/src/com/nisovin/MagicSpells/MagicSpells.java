@@ -73,6 +73,11 @@ public class MagicSpells extends JavaPlugin {
 			}
 		}
 		
+		// load permissions
+		if (config.getBoolean("general.use-permissions", false)) {
+			Spellbook.initPermissions();
+		}
+		
 		// load spells
 		BlinkSpell.load(config);
 		CombustSpell.load(config);
@@ -87,7 +92,9 @@ public class MagicSpells extends JavaPlugin {
 		PrayerSpell.load(config);
 		RecallSpell.load(config);
 		SafefallSpell.load(config);
+		SpellbookSpell.load(config);
 		TeachSpell.load(config);
+		WindwalkSpell.load(config);
 		ZapSpell.load(config);
 		
 		// load spell copies
@@ -175,6 +182,11 @@ public class MagicSpells extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
+		for (Spell spell : spells.values()) {
+			if (spell instanceof BuffSpell) {
+				((BuffSpell)spell).turnOff();
+			}
+		}
 		spells = null;
 		spellNames = null;
 		spellbooks = null;
