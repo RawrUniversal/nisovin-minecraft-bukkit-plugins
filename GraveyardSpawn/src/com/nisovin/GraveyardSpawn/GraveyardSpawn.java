@@ -63,7 +63,7 @@ public class GraveyardSpawn extends JavaPlugin {
 					boolean success = false;
 					for (Graveyard gy : graveyards) {
 						if (gy.getName().equalsIgnoreCase(args[1])) {
-							p.teleportTo(gy.getLocation());
+							p.teleport(gy.getLocation());
 							p.sendMessage("You have teleported to graveyard '" + gy.getName() + "'.");
 							success = true;
 							break;

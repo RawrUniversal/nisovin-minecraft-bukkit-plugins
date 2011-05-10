@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 public class Gate {
 
 	private String name;
-	private int key;
+	public int key;
 	private boolean consume;
 	private Location entrance;
 	private Location exit;
@@ -41,15 +41,21 @@ public class Gate {
 	}
 	
 	public void teleportPlayerToExit(Player player) {
-		if (key == -1 || player.getItemInHand().getTypeId() == key) {
-			Location l = new Location(exit.getWorld(), exit.getBlockX() + .5, exit.getBlockY(), exit.getBlockZ() + .5);
-			l.setYaw(exit.getYaw());
-			player.teleportTo(l);
-		}
+		Location l = new Location(exit.getWorld(), exit.getBlockX() + .5, exit.getBlockY(), exit.getBlockZ() + .5);
+		l.setYaw(exit.getYaw());
+		player.teleport(l);
 	}
 	
 	public String getName() {
 		return name;
+	}
+	
+	public Location getEntrance() {
+		return entrance;
+	}
+	
+	public Location getExit() {
+		return exit;
 	}
 	
 	public String getEntranceString() {

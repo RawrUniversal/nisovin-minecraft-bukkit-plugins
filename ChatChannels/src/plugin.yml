@@ -6,3 +6,13 @@ commands:
         description: Change channel preferences
         usage: /<command>
         aliases: [ch]
+    join:
+        description: Join a channel
+        usage: /<command> <channel> [pass]
+    leave:
+        description: Leave a channel
+        usage: /<command> <channel>
+    yell:
+        description: Yell
+        usage: /<command> <message>
+        aliases: [y]

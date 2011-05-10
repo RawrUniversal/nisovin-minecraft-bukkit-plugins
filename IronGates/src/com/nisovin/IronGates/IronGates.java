@@ -29,7 +29,8 @@ public class IronGates extends JavaPlugin {
 
 		IGPlayerListener playerListener = new IGPlayerListener(this);
 
-		this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, playerListener, Priority.Normal, this);
+		//this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, playerListener, Priority.Normal, this);
+		this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {

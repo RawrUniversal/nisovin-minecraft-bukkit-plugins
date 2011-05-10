@@ -1,6 +1,8 @@
 package com.nisovin.ChatChannels;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -30,23 +32,48 @@ public class Channel {
 	}
 	
 	public void sendMessage(Player from, String message) {
-		sendMessage(from.getName(), message);
+		sendMessage(from.getDisplayName(), message);
 	}
 	
 	public void sendMessage(String from, String message) {
-		for (String s : playersInChannel) {
-			Player p = ChatChannels.server.getPlayer(s);
-			if (p != null && p.isOnline()) {
-				String msg = ChatColor.WHITE + "[" + color + name + ChatColor.WHITE + "] <" + from + "> " + message;
+		String msg = ChatColor.WHITE + "[" + color + name + ChatColor.WHITE + "] <" + from + ChatColor.WHITE + "> " + message;
+		if (!this.name.equals("Local")) {
+			// normal chat (including IRC)
+			for (String s : playersInChannel) {
+				Player p = ChatChannels.server.getPlayer(s);
+				if (p != null && p.isOnline()) {				
+					p.sendMessage(msg);
+				}
+			}
+		} else {
+			// local chat only
+			int range = 50;
+			Player player = ChatChannels.server.getPlayer(from);
+			Player[] allPlayers = ChatChannels.server.getOnlinePlayers();
+			ArrayList<Player> sendTo = new ArrayList<Player>();
+			for (Player p : allPlayers) {
+				if (playersInChannel.contains(p.getName()) &&
+						Math.abs(p.getLocation().getX() - player.getLocation().getX()) < range &&
+						Math.abs(p.getLocation().getY() - player.getLocation().getY()) < range && 
+						Math.abs(p.getLocation().getZ() - player.getLocation().getZ()) < range) {
+					sendTo.add(p);
+				}
+			}
+			for (Player p : sendTo) {
 				p.sendMessage(msg);
-				ChatChannels.server.getLogger().info(ChatColor.stripColor(msg));
+			}
+			if (sendTo.size() == 1) {
+				player.sendMessage("Nobody heard you! Type '/join Global' to join global chat.");
 			}
 		}
-		if (name.equals("IRC")) {
-			IrcBot bot = ChatChannels.ircBot;
-			if (bot != null && bot.isConnected()) {
+		ChatChannels.server.getLogger().info(ChatColor.stripColor(msg));
+		IrcBot bot = ChatChannels.ircBot;
+		if (bot != null && bot.isConnected()) {
+			// irc chat
+			if (this.name.equals("Global") && !from.startsWith("IRC-")) {
 				bot.relayMessage(from, message);
 			}
+			bot.relayAll(name, from, message);
 		}
 	}
 	
@@ -69,8 +96,9 @@ public class Channel {
 	
 	public void leave(Player player) {
 		playersInChannel.remove(player.getName());
-		if (destroyOnEmpty && playersInChannel.size() == 0) {
-			// TODO
+		if (destroyOnEmpty && getChannelList().size() == 0) {
+			// TODO: delete channel
+			//playersInChannel.clear();
 		}
 	}
 	
@@ -86,6 +114,10 @@ public class Channel {
 		return color + name + ChatColor.WHITE;
 	}
 	
+	public String getPassword() {
+		return password;
+	}
+	
 	public boolean hasPassword() {
 		return !password.equals("");
 	}
@@ -99,7 +131,7 @@ public class Channel {
 		for (String s : playersInChannel) {
 			Player p = ChatChannels.server.getPlayer(s);
 			if (p != null && p.isOnline()) {
-				inChannel.add(p);
+				inChannel.add(s);
 			}
 		}
 		return inChannel;

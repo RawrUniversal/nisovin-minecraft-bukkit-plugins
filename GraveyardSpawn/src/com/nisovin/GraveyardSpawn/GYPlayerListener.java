@@ -19,8 +19,8 @@ public class GYPlayerListener extends PlayerListener {
 		Player p = event.getPlayer();
 		
 		if (plugin.graveyards.size() > 0) {
-			Graveyard closest = null;
-			double dist = 0;
+			Graveyard closest = new Graveyard("temphome", event.getRespawnLocation());
+			double dist = closest.calculateDistanceFrom(p);
 			
 			for (Graveyard gy : plugin.graveyards) {
 				double thisDist = gy.calculateDistanceFrom(p);
@@ -31,7 +31,7 @@ public class GYPlayerListener extends PlayerListener {
 			}
 			
 			if (closest != null) {
-				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DeathRespawn(p, p.getLocation()), 10);
+				//plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DeathRespawn(p, p.getLocation()), 10);
 				event.setRespawnLocation(closest.getLocation());
 			}
 		}

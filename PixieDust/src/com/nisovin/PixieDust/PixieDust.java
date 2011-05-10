@@ -31,7 +31,7 @@ public class PixieDust extends JavaPlugin {
 		PDEntityListener entityListener = new PDEntityListener(this);
 
 		this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, playerListener, Priority.Normal, this);
-		this.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGED, entityListener, Priority.Normal, this);
+		this.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Normal, this);
 		
 		
 	}
@@ -74,8 +74,6 @@ public class PixieDust extends JavaPlugin {
 			}
 		} else {
 			Configuration config = new Configuration(file);
-			int test = config.getInt("settings.fly-item", 1000);
-			getServer().getLogger().severe("int: " + test);
 			FLY_ITEM = config.getInt("settings.fly-item", FLY_ITEM);
 			REQUIRE_ITEM_WHILE_FLYING = config.getBoolean("settings.require-item-while-flying", REQUIRE_ITEM_WHILE_FLYING);
 			TICK_DELAY = config.getInt("settings.tick-delay", TICK_DELAY);
