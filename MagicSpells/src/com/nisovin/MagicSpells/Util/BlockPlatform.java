@@ -41,7 +41,7 @@ public class BlockPlatform {
 				for (int z = center.getZ()-size; z <= center.getZ()+size; z++) {
 					int y = center.getY();
 					block = center.getWorld().getBlockAt(x,y,z);
-					if (block.getType() == replaceType || blocks.contains(block)) {
+					if (block.getType() == replaceType || (blocks != null && blocks.contains(block))) {
 						// only add if it's a replaceable block or if it is already part of the platform
 						platform.add(block);
 					}
@@ -60,9 +60,9 @@ public class BlockPlatform {
 		
 		// add new platform blocks
 		for (Block block : platform) {
-			if (!blocks.contains(block)) {
+			//if (blocks == null || !blocks.contains(block)) {
 				block.setType(platformType);
-			}
+			//}
 		}
 		
 		// update platform block set

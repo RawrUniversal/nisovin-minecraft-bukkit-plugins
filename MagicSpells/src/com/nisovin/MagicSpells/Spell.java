@@ -232,7 +232,7 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	protected void sendMessageNear(Player player, String message) {
-		sendMessageNear(player, message, MagicSpells.broadcastRange);
+		sendMessageNear(player, message, broadcastRange);
 	}
 	
 	protected void sendMessageNear(Player player, String message, int range) {

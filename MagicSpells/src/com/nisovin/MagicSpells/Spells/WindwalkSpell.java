@@ -89,6 +89,7 @@ public class WindwalkSpell extends BuffSpell {
 		if (platform != null) {
 			platform.destroyPlatform();
 			windwalkers.remove(player.getName());
+			sendMessage(player, strFade);
 		}
 	}
 	

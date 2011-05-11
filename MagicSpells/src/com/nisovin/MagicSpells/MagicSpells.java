@@ -59,6 +59,7 @@ public class MagicSpells extends JavaPlugin {
 		
 		// load config
 		Configuration config = this.getConfiguration();
+		config.load();
 		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		strCastUsage = config.getString("general.str-cast-usage", "Usage: /cast <spell>. Use /cast list to see a list of spells.");
@@ -84,6 +85,7 @@ public class MagicSpells extends JavaPlugin {
 		EntombSpell.load(config);
 		ExplodeSpell.load(config);
 		ForcepushSpell.load(config);
+		FrostwalkSpell.load(config);
 		GillsSpell.load(config);
 		HelpSpell.load(config);
 		LightningSpell.load(config);
@@ -123,7 +125,8 @@ public class MagicSpells extends JavaPlugin {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
 		}
 		
-		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");		
+		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");
+		
 	}
 	
 	public static Spellbook getSpellbook(Player player) {
