@@ -19,7 +19,8 @@ public class DrunkEffects implements Runnable {
 	
 	@Override
 	public void run() {
-		for (String p : plugin.getDrunks().keySet()) {
+		for (Object o : plugin.getDrunks().keySet().toArray()) {
+			String p = (String)o;
 			Player player = plugin.getServer().getPlayer(p);
 			if (player == null || !player.isOnline()) {
 				plugin.getDrunks().remove(p);
