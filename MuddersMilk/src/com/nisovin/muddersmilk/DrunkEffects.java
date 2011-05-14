@@ -41,7 +41,7 @@ public class DrunkEffects implements Runnable {
 							player.getWorld().dropItemNaturally(player.getLocation(), item);
 							player.setItemInHand(null);
 						} else {
-							player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(item.getType(), item.getAmount(), item.getDurability()));
+							player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(item.getType(), 1, item.getDurability()));
 							item.setAmount(item.getAmount()-1);
 							player.setItemInHand(item);
 						}
