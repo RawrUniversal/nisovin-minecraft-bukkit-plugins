@@ -94,7 +94,7 @@ public abstract class Spell implements Comparable<Spell> {
 				sendMessage(player, strCastSelf);
 				sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getName()));
 			} else if (state == SpellCastState.ON_COOLDOWN) {
-				sendMessage(player, MagicSpells.strOnCooldown);
+				sendMessage(player, formatMessage(MagicSpells.strOnCooldown, "%c", getCooldown(player)+""));
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
 				sendMessage(player, MagicSpells.strMissingReagents);
 			}
@@ -125,6 +125,19 @@ public abstract class Spell implements Comparable<Spell> {
 			}
 		}
 		return false;
+	}
+	
+	protected int getCooldown(Player player) {
+		if (cooldown <= 0) {
+			return 0;
+		}
+		
+		Long casted = lastCast.get(player.getName());
+		if (casted != null) {
+			return (int)(cooldown - ((System.currentTimeMillis()-casted)/1000));
+		} else {
+			return 0;
+		}
 	}
 	
 	protected void setCooldown(Player player) {
