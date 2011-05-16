@@ -41,7 +41,7 @@ public class BlockPlatform {
 				for (int z = center.getZ()-size; z <= center.getZ()+size; z++) {
 					int y = center.getY();
 					block = center.getWorld().getBlockAt(x,y,z);
-					if (block.getType() == replaceType || (blocks != null && blocks.contains(block))) {
+					if ((block.getType() == replaceType && (block.getY() == 127 || block.getRelative(0,1,0).getType() == Material.AIR)) || (blocks != null && blocks.contains(block))) {
 						// only add if it's a replaceable block or if it is already part of the platform
 						platform.add(block);
 					}
