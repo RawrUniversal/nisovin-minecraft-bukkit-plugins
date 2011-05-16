@@ -43,35 +43,30 @@ public class TeachSpell extends CommandSpell {
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			if (args.length != 2) {
+			if (args == null || args.length != 2) {
 				// fail: missing args
 				sendMessage(player, strUsage);
-				return true;
 			} else {
 				List<Player> players = MagicSpells.plugin.getServer().matchPlayer(args[0]);
 				if (players.size() != 1) {
 					// fail: no player match
 					sendMessage(player, strNoTarget);
-					return true;
 				} else {
 					Spell spell = MagicSpells.spellNames.get(args[1]);
 					if (spell == null) {
 						// fail: no spell match
 						sendMessage(player, strNoSpell);
-						return true;
 					} else {
 						Spellbook spellbook = MagicSpells.getSpellbook(player);
 						if (spellbook == null || !spellbook.hasSpell(spell)) {
 							// fail: player doesn't have spell
 							sendMessage(player, strNoSpell);
-							return true;
 						} else {
 							// yay! can learn!
 							Spellbook targetSpellbook = MagicSpells.getSpellbook(players.get(0));
 							if (targetSpellbook == null || !targetSpellbook.canLearn(spell)) {
 								// fail: no spellbook for some reason or can't learn the spell
 								sendMessage(player, strCantLearn);
-								return true;
 							} else {
 								targetSpellbook.addSpell(spell);
 								targetSpellbook.save();
@@ -84,6 +79,7 @@ public class TeachSpell extends CommandSpell {
 					}
 				}
 			}
+			return true;
 		}
 		return false;
 	}

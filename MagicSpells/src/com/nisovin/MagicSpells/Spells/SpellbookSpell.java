@@ -79,13 +79,11 @@ public class SpellbookSpell extends CommandSpell {
 	
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
-		System.out.println("hi");
 		if (state == SpellCastState.NORMAL) {
-			if (args.length < 1 || args.length > 2 || (args.length == 2 && !args[1].matches("^[0-9]+$"))) {
+			if (args == null || args.length < 1 || args.length > 2 || (args.length == 2 && !args[1].matches("^[0-9]+$"))) {
 				// fail: show usage string
 				sendMessage(player, strUsage);
 			} else {
-				System.out.println("hi2");
 				Spell spell = MagicSpells.getSpellbook(player).getSpellByName(args[0]);
 				if (spell == null) {
 					// fail: no such spell
@@ -100,7 +98,6 @@ public class SpellbookSpell extends CommandSpell {
 						sendMessage(player, strHasSpellbook);
 					} else {
 						// create spellbook
-						System.out.println("hi3");
 						bookLocations.add(new MagicLocation(target.getLocation()));
 						bookSpells.add(spell.getInternalName());
 						if (args.length == 1) {
@@ -108,9 +105,7 @@ public class SpellbookSpell extends CommandSpell {
 						} else {
 							bookUses.add(Integer.parseInt(args[1]));
 						}
-						System.out.println("hi4");
 						saveSpellbooks();
-						System.out.println("hi5");
 						sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
 						setCooldown(player);
 						removeReagents(player);
@@ -215,13 +210,9 @@ public class SpellbookSpell extends CommandSpell {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(MagicSpells.plugin.getDataFolder(), "books.txt"), false));
 			MagicLocation loc;
 			for (int i = 0; i < bookLocations.size(); i++) {
-				System.out.println("save1");
 				loc = bookLocations.get(i);
-				System.out.println("save2");
 				writer.write(loc.getWorld() + ":" + (int)loc.getX() + ":" + (int)loc.getY() + ":" + (int)loc.getZ() + ":");
-				System.out.println("save3");
 				writer.write(bookSpells.get(i) + ":" + bookUses.get(i));
-				System.out.println("save4");
 				writer.newLine();
 			}
 			writer.close();

@@ -35,7 +35,7 @@ public class HelpSpell extends CommandSpell {
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			if (args.length == 0) {
+			if (args == null || args.length == 0) {
 				sendMessage(player, strUsage);
 			} else {
 				Spell spell = MagicSpells.spellNames.get(args[0]);
