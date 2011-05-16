@@ -1,9 +1,12 @@
 package com.nisovin.MagicSpells;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -21,6 +24,7 @@ public class MagicSpells extends JavaPlugin {
 
 	public static ChatColor textColor;
 	public static int broadcastRange;
+	public static boolean useHealthBars;
 	public static List<String> castForFree;
 	public static String strCastUsage;
 	public static String strUnknownSpell;
@@ -58,10 +62,12 @@ public class MagicSpells extends JavaPlugin {
 		new File(this.getDataFolder(), "spellbooks").mkdir();
 		
 		// load config
+		loadConfigFromJar();
 		Configuration config = this.getConfiguration();
 		config.load();
 		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
+		useHealthBars = config.getBoolean("general.use-health-bars", false);
 		strCastUsage = config.getString("general.str-cast-usage", "Usage: /cast <spell>. Use /cast list to see a list of spells.");
 		strUnknownSpell = config.getString("general.str-unknown-spell", "You do not know a spell with that name.");
 		strSpellChange = config.getString("general.str-spell-change", "You are now using the %s spell.");
@@ -87,6 +93,7 @@ public class MagicSpells extends JavaPlugin {
 		ForcepushSpell.load(config);
 		FrostwalkSpell.load(config);
 		GillsSpell.load(config);
+		HealSpell.load(config);
 		HelpSpell.load(config);
 		LightningSpell.load(config);
 		ListSpell.load(config);
@@ -152,7 +159,7 @@ public class MagicSpells extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
 		if (command.getName().equalsIgnoreCase("cast")) {
-			if (args.length == 0) {
+			if (args == null || args.length == 0) {
 				sender.sendMessage(textColor + strCastUsage);
 			} else if (sender.isOp() && args[0].equals("reload")) {
 				onDisable();
@@ -181,6 +188,34 @@ public class MagicSpells extends JavaPlugin {
 			return true;
 		}
 		return false;
+	}
+	
+	public void loadConfigFromJar() {
+		File configFile = new File(this.getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            InputStream fis = getClass().getResourceAsStream("/config.yml");
+            FileOutputStream fos = null;
+            try {
+            	fos = new FileOutputStream(configFile);
+                byte[] buf = new byte[1024];
+                int i = 0;
+                while ((i = fis.read(buf)) != -1) {
+                    fos.write(buf, 0, i);
+                }
+            } catch (Exception e) {
+            	getServer().getLogger().log(Level.SEVERE, "Failed to load config from JAR", e);
+            } finally {
+            	try {
+	                if (fis != null) {
+	                    fis.close();
+	                }
+	                if (fos != null) {
+	                    fos.close();
+	                }
+            	} catch (Exception e) {            		
+            	}
+            }
+        }
 	}
 	
 	@Override
