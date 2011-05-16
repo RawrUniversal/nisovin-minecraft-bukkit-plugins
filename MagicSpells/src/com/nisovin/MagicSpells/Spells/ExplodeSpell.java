@@ -47,6 +47,7 @@ public class ExplodeSpell extends InstantSpell {
 			if (target == null || target.getType() == Material.AIR) {
 				// fail: no target
 				sendMessage(player, strNoTarget);
+				return true;
 			} else {
 				// backfire chance
 				if (backfireChance > 0) {
@@ -58,11 +59,11 @@ public class ExplodeSpell extends InstantSpell {
 				boolean goAhead = true;
 				if (requireTntPerm) {
 					// check permissions
-					BlockCanBuildEvent event = new BlockCanBuildEvent(target, Material.TNT.getId(), true);
-					MagicSpells.plugin.getServer().getPluginManager().callEvent(event);
-					if (!event.isBuildable()) {
-						goAhead = false;
-					}
+					//BlockCanBuildEvent event = new BlockCanBuildEvent(target, Material.TNT.getId(), true);
+					//MagicSpells.plugin.getServer().getPluginManager().callEvent(event);
+					//if (!event.isBuildable()) {
+					//	goAhead = false;
+					//
 				}
 				if (goAhead) {
 					createExplosion(target.getLocation(), explosionSize);
