@@ -34,7 +34,7 @@ public class BlinkSpell extends InstantSpell {
 	
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			BlockIterator iter = new BlockIterator(player);
+			BlockIterator iter = new BlockIterator(player, range>0?range:500);
 			Block prev = null;
 			Block found = null;
 			Block b;
