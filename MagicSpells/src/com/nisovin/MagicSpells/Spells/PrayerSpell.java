@@ -5,6 +5,7 @@ import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.InstantSpell;
 import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.healthbars.HealthBars;
 
 public class PrayerSpell extends InstantSpell {
 	
@@ -42,6 +43,9 @@ public class PrayerSpell extends InstantSpell {
 					health = 20;
 				}
 				player.setHealth(health);
+				if (MagicSpells.useHealthBars) {
+					HealthBars.queueHealthUpdate(player);
+				}
 			}
 		}
 		return false;
