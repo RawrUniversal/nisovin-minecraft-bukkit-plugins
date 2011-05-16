@@ -38,6 +38,19 @@ public abstract class InstantSpell extends Spell {
 	}
 	
 	protected LivingEntity getTargetedEntity(Player player, int range, int variance, boolean targetPlayers) {
+		return getTargetedEntity(player, range, variance, targetPlayers, true);
+	}
+	
+	protected Player getTargetedPlayer(Player player, int range, int variance) {
+		LivingEntity entity = getTargetedEntity(player, range, variance, true, false);
+		if (entity instanceof Player) {
+			return (Player)entity;
+		} else {
+			return null;
+		}
+	}
+	
+	protected LivingEntity getTargetedEntity(Player player, int range, int variance, boolean targetPlayers, boolean targetNonPlayers) {
 		List<LivingEntity> entities = player.getWorld().getLivingEntities();
 		
 		double px = player.getLocation().getX();
@@ -51,7 +64,7 @@ public abstract class InstantSpell extends Spell {
 			dx = entity.getLocation().getX() - px;
 			dy = entity.getLocation().getY() - py;
 			dz = entity.getLocation().getZ() - pz;
-			if (Math.abs(dx) < range && Math.abs(dy) < range && Math.abs(dz) < range && (targetPlayers || !(entity instanceof Player))) {
+			if (Math.abs(dx) < range && Math.abs(dy) < range && Math.abs(dz) < range && (targetPlayers || !(entity instanceof Player)) && (targetNonPlayers || entity instanceof Player)) {
 				dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
 				xzAngle = Math.atan2(entity.getLocation().getZ() - player.getLocation().getZ(), entity.getLocation().getX() - player.getLocation().getX()) * 57.295F - 90;
 				yAngle = Math.asin(dy / dist) * -57.295F;
