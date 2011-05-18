@@ -25,7 +25,9 @@ public class MagicSpells extends JavaPlugin {
 	public static ChatColor textColor;
 	public static int broadcastRange;
 	public static boolean useHealthBars;
+	public static boolean opsHaveAllSpells;
 	public static List<String> castForFree;
+	public static boolean freecastNoCooldown;
 	public static String strCastUsage;
 	public static String strUnknownSpell;
 	public static String strSpellChange;
@@ -68,6 +70,7 @@ public class MagicSpells extends JavaPlugin {
 		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		useHealthBars = config.getBoolean("general.use-health-bars", false);
+		opsHaveAllSpells = config.getBoolean("general.ops-have-all-spells", true);
 		strCastUsage = config.getString("general.str-cast-usage", "Usage: /cast <spell>. Use /cast list to see a list of spells.");
 		strUnknownSpell = config.getString("general.str-unknown-spell", "You do not know a spell with that name.");
 		strSpellChange = config.getString("general.str-spell-change", "You are now using the %s spell.");
@@ -79,6 +82,7 @@ public class MagicSpells extends JavaPlugin {
 				castForFree.set(i, castForFree.get(i).toLowerCase());
 			}
 		}
+		freecastNoCooldown = config.getBoolean("general.freecast-no-cooldown", true);
 		
 		// load permissions
 		if (config.getBoolean("general.use-permissions", false)) {

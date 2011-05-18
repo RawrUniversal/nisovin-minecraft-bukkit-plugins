@@ -33,7 +33,7 @@ public class Spellbook {
 		this.playerName = player.getName();
 		
 		// load spells from file
-		if (!player.isOp()) {
+		if (!player.isOp() || !MagicSpells.opsHaveAllSpells) {
 			loadFromFile();
 		} else {
 			// give all spells to ops

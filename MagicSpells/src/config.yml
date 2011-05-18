@@ -8,10 +8,12 @@ general:
     broadcast-range: 20
     use-permissions: false
     use-health-bars: false
+    ops-have-all-spells: true
     cast-for-free:
         - admin1
         - admin2
         - joemagicuser
+    freecast-no-cooldown: true
 spells:
 
     list:
