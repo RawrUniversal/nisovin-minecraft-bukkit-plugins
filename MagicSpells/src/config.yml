@@ -185,6 +185,7 @@ spells:
         description: Teleports you to your marked location.
         cooldown: 300
         max-range: -1
+        allow-cross-world: true
         cost:
             - 331 1
             - 265 1

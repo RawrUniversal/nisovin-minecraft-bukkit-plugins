@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.InstantSpell;
