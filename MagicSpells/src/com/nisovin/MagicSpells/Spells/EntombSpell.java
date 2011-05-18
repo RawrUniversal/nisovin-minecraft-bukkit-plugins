@@ -20,6 +20,7 @@ public class EntombSpell extends InstantSpell {
 	private int precision;
 	private int tombBlockType;
 	private int tombDuration;
+	private boolean closeTopAndBottom;
 	private String strNoTarget;
 	
 	public static void load(Configuration config) {
@@ -39,6 +40,7 @@ public class EntombSpell extends InstantSpell {
 		precision = config.getInt("spells." + spellName + ".precision", 20);
 		tombBlockType = config.getInt("spells." + spellName + ".tomb-block-type", Material.GLASS.getId());
 		tombDuration = config.getInt("spells." + spellName + ".tomb-duration", 20);
+		closeTopAndBottom = config.getBoolean("spells." + spellName + ".close-top-and-bottom", true);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "");
 	}
 
@@ -96,6 +98,18 @@ public class EntombSpell extends InstantSpell {
 				if (temp.getType() == Material.AIR) {
 					temp.setTypeId(tombBlockType);
 					tombBlocks.add(temp);
+				}
+				if (closeTopAndBottom) {
+					temp = feet.getRelative(0,-1,0);
+					if (temp.getType() == Material.AIR) {
+						temp.setTypeId(tombBlockType);
+						tombBlocks.add(temp);
+					}
+					temp = feet.getRelative(0,2,0);
+					if (temp.getType() == Material.AIR) {
+						temp.setTypeId(tombBlockType);
+						tombBlocks.add(temp);
+					}
 				}
 				
 				if (tombDuration > 0 && tombBlocks.size() > 0) {
