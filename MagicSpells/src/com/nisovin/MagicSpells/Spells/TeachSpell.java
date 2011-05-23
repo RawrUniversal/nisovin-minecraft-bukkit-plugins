@@ -18,6 +18,7 @@ public class TeachSpell extends CommandSpell {
 	private String strNoTarget;
 	private String strNoSpell;
 	private String strCantLearn;
+	private String strAlreadyKnown;
 	private String strCastTarget;
 	
 	public static void load(Configuration config) {
@@ -37,6 +38,7 @@ public class TeachSpell extends CommandSpell {
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No such player.");
 		strNoSpell = config.getString("spells." + spellName + ".str-no-spell", "You do not know a spell by that name.");
 		strCantLearn = config.getString("spells." + spellName + ".str-cant-learn", "That person cannot learn that spell.");
+		strAlreadyKnown = config.getString("spells." + spellName + ".str-already-known", "That person already knows that spell.");
 		strCastTarget = config.getString("spells." + spellName + ".str-cast-target", "%a has taught you the %s spell.");
 	}
 	
@@ -67,6 +69,9 @@ public class TeachSpell extends CommandSpell {
 							if (targetSpellbook == null || !targetSpellbook.canLearn(spell)) {
 								// fail: no spellbook for some reason or can't learn the spell
 								sendMessage(player, strCantLearn);
+							} else if (targetSpellbook.hasSpell(spell)) {
+								// fail: target already knows spell
+								sendMessage(player, strAlreadyKnown);
 							} else {
 								targetSpellbook.addSpell(spell);
 								targetSpellbook.save();
