@@ -1,3 +1,13 @@
+package com.nisovin.MagicSpells.Util;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+
+import com.nisovin.MagicSpells.MagicSpells;
+
 public class TemporaryBlockSet implements Runnable {
 	
 	private static HashSet<TemporaryBlockSet> blockSets = new HashSet<TemporaryBlockSet>();
@@ -16,7 +26,7 @@ public class TemporaryBlockSet implements Runnable {
 		blockSets.add(this);
 	}
 	
-	public void addBlock(Block block) {
+	public void add(Block block) {
 		if (block.getType() == original) {
 			block.setType(replaceWith);
 			blocks.add(block);

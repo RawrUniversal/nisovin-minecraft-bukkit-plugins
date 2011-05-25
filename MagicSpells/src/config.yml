@@ -211,6 +211,44 @@ spells:
         str-cost: 2 redstone dust, plus 1 feather each time you fall
         str-cast-self: You feel lighter.
         str-fade: Your normal weight returns.
+    telekinesis:
+        description: Manipulate switches and buttons remotely.
+        cast-item: 280
+        cooldown: 15
+        range: 20
+        cost:
+            - 331 1
+        str-cost: 1 redstone dust
+        str-no-target: You must target a switch or button.
+    volley:
+        description: Send a volley of arrows at your targeted location.
+        cast-item: 283
+        cooldown: 45
+        range: 30
+        arrows: 10
+        speed: 20
+        spread: 150
+        cost:
+            - 331 3
+            - 262 2
+        str-cost: 3 redstone dust and 2 arrows
+        str-cast-self: You fire a volley of magic arrows.
+        str-cast-others: "%a fires a volley of arrows."
+        str-no-target: No target found.
+    wall:
+        description: Creates a temporary wall to block your enemies.
+        cast-item: 280
+        cooldown: 15
+        range: 3
+        wall-width: 5
+        wall-height: 3
+        wall-type: 45
+        wall-duration: 15
+        cost:
+            - 331 2
+            - 1 2
+        str-cost: 2 redstone dust and 2 stone
+        str-no-target: Unable to create a wall.
     windwalk:
         description: Lets you walk on a platform of air.
         cast-item: 317

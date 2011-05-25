@@ -107,6 +107,9 @@ public class MagicSpells extends JavaPlugin {
 		SafefallSpell.load(config);
 		SpellbookSpell.load(config);
 		TeachSpell.load(config);
+		TelekinesisSpell.load(config);
+		VolleySpell.load(config);
+		WallSpell.load(config);
 		WindwalkSpell.load(config);
 		ZapSpell.load(config);
 		
