@@ -151,6 +151,7 @@ public class Spellbook {
 				activeSpells.put(item, -1);
 			}
 		}
+		allSpells.remove(spell);
 	}
 	
 	public void save() {

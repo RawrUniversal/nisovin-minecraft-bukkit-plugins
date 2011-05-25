@@ -32,6 +32,14 @@ spells:
         str-cant-learn: That person cannot learn that spell.
         str-cast-self: You have taught %t the %s spell.
         str-cast-target: "%a has taught you the %s spell."
+    forget:
+        description: Make a player forget a spell.
+        str-usage: "Usage: /cast forget <target> <spell>"
+        str-no-target: No such player.
+        str-no-spell: You do not know a spell by that name.
+        str-doesnt-know: That person does not know that spell.
+        str-cast-self: You made %t forget the %s spell.
+        str-cast-target: "%a has made you forget the %s spell."
     spellbook:
         description: Create a spellbook that teaches a spell.
         default-uses: -1

@@ -95,6 +95,7 @@ public class MagicSpells extends JavaPlugin {
 		EntombSpell.load(config);
 		ExplodeSpell.load(config);
 		ForcepushSpell.load(config);
+		ForgetSpell.load(config);
 		FrostwalkSpell.load(config);
 		GillsSpell.load(config);
 		HealSpell.load(config);
