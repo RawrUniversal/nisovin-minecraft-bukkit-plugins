@@ -54,18 +54,18 @@ public class SpellbookSpell extends CommandSpell {
 	public SpellbookSpell(Configuration config, String spellName) {
 		super(config,spellName);
 		
-		defaultUses = config.getInt("spell." + spellName + ".default-uses", -1);
-		destroyBookcase = config.getBoolean("spell." + spellName + ".destroy-when-used-up", false);
+		defaultUses = config.getInt("spells." + spellName + ".default-uses", -1);
+		destroyBookcase = config.getBoolean("spells." + spellName + ".destroy-when-used-up", false);
 		spellbookBlock = Material.getMaterial(config.getInt("spell." + spellName + ".spellbook-block", Material.BOOKSHELF.getId()));
-		strUsage = config.getString("spell." + spellName + ".str-usage", "Usage: /cast spellbook <spell> [uses]");
-		strNoSpell = config.getString("spell." + spellName + ".str-no-spell", "You do not know a spell by that name.");
-		strNoTarget = config.getString("spell." + spellName + ".str-no-target", "You must target a bookcase to create a spellbook.");
-		strHasSpellbook = config.getString("spell." + spellName + ".str-has-spellbook", "That bookcase already has a spellbook.");
-		strCantDestroy = config.getString("spell." + spellName + ".str-cant-destroy", "You cannot destroy a bookcase with a spellbook.");
-		strLearnError = config.getString("spell." + spellName + ".str-learn-error", "");
-		strCantLearn = config.getString("spell." + spellName + ".str-cant-learn", "You cannot learn the spell in this spellbook.");
-		strAlreadyKnown = config.getString("spell." + spellName + ".str-already-known", "You already know the %s spell.");
-		strLearned = config.getString("spell." + spellName + ".str-learned", "You have learned the %s spell!");
+		strUsage = config.getString("spells." + spellName + ".str-usage", "Usage: /cast spellbook <spell> [uses]");
+		strNoSpell = config.getString("spells." + spellName + ".str-no-spell", "You do not know a spell by that name.");
+		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You must target a bookcase to create a spellbook.");
+		strHasSpellbook = config.getString("spells." + spellName + ".str-has-spellbook", "That bookcase already has a spellbook.");
+		strCantDestroy = config.getString("spells." + spellName + ".str-cant-destroy", "You cannot destroy a bookcase with a spellbook.");
+		strLearnError = config.getString("spells." + spellName + ".str-learn-error", "");
+		strCantLearn = config.getString("spells." + spellName + ".str-cant-learn", "You cannot learn the spell in this spellbook.");
+		strAlreadyKnown = config.getString("spells." + spellName + ".str-already-known", "You already know the %s spell.");
+		strLearned = config.getString("spells." + spellName + ".str-learned", "You have learned the %s spell!");
 		
 		bookLocations = new ArrayList<MagicLocation>();
 		bookSpells = new ArrayList<String>();

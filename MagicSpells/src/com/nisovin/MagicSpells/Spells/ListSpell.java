@@ -28,8 +28,8 @@ public class ListSpell extends CommandSpell {
 	public ListSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		strNoSpells = config.getString("spell." + spellName + ".str-no-spells", "You do not know any spells.");
-		strPrefix = config.getString("spell." + spellName + ".str-prefix", "Known spells:");
+		strNoSpells = config.getString("spells." + spellName + ".str-no-spells", "You do not know any spells.");
+		strPrefix = config.getString("spells." + spellName + ".str-prefix", "Known spells:");
 	}
 
 	@Override
