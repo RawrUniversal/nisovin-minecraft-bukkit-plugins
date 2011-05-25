@@ -74,7 +74,11 @@ public class MagicPlayerListener extends PlayerListener {
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
 		if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
 			ItemStack inHand = event.getPlayer().getItemInHand();
-			Spell spell = MagicSpells.spellbooks.get(event.getPlayer().getName()).getActiveSpell(inHand.getTypeId());
+			Spell spell = null;
+			try {
+				spell = MagicSpells.spellbooks.get(event.getPlayer().getName()).getActiveSpell(inHand.getTypeId());
+			} catch (NullPointerException e) {				
+			}
 			if (spell != null && spell.canCastWithItem()) {
 				spell.cast(event.getPlayer());
 			}			
