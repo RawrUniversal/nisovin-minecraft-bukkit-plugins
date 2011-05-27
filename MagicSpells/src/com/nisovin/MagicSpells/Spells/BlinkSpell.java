@@ -67,7 +67,7 @@ public class BlinkSpell extends InstantSpell {
 					sendMessage(player, strCantBlink);
 					return true;
 				}
-			}
+			} else {
 				sendMessage(player, strCantBlink);
 				return true;
 			}
