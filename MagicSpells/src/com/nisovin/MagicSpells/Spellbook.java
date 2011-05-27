@@ -51,9 +51,14 @@ public class Spellbook {
 			}
 		}
 		
-		// sort spells
-		for (ArrayList<Spell> spells : itemSpells.values()) {
-			Collections.sort(spells);
+		// sort spells or pre-select if just one
+		for (Integer i : itemSpells.keySet()) {
+			ArrayList<Spell> spells = itemSpells.get(i);
+			if (spells.size() == 1) {
+				activeSpells.put(i, 0);
+			} else {
+				Collections.sort(spells);				
+			}
 		}
 	}
 	
@@ -98,13 +103,17 @@ public class Spellbook {
 	public Spell nextSpell(int castItem) {
 		Integer i = activeSpells.get(castItem);
 		if (i != null) {
-			i++;
 			ArrayList<Spell> spells = itemSpells.get(castItem);
-			if (i >= spells.size()) {
-				i = 0;
+			if (spells.size() > 1 || i.equals(-1)) {
+				i++;
+				if (i >= spells.size()) {
+					i = 0;
+				}
+				activeSpells.put(castItem, i);
+				return spells.get(i);
+			} else {
+				return null;
 			}
-			activeSpells.put(castItem, i);
-			return spells.get(i);
 		} else {
 			return null;
 		}
