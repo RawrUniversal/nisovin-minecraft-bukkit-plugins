@@ -114,7 +114,7 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	protected boolean onCooldown(Player player) {
-		if (cooldown == 0) {
+		if (cooldown == 0 || (MagicSpells.freecastNoCooldown && MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase()))) {
 			return false;
 		}
 		
