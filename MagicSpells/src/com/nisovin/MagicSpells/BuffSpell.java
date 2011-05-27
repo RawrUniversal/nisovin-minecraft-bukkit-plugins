@@ -109,7 +109,7 @@ public abstract class BuffSpell extends Spell {
 	}
 	
 	protected boolean chargeUseCost(Player player) {
-		if (useCost != null && useCostInterval > 0 && useCounter != null) {
+		if (useCost != null && useCostInterval > 0 && useCounter != null && useCounter.containsKey(player.getName())) {
 			int uses = useCounter.get(player.getName());
 			if (uses % useCostInterval == 0) {
 				if (hasReagents(player, useCost)) {
