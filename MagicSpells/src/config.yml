@@ -17,14 +17,17 @@ general:
 spells:
 
     list:
+        name: list
         description: List all the spells you know.
         str-prefix: "Known spells:"
         str-no-spells: You do not know any spells.
     help:
+        name: help
         description: Get information about a specified spell.
         str-usage: "Usage: /cast help <spell>"
         str-no-spell: You do not know a spell by that name.
     teach:
+        name: teach
         description: Teach a spell to another player.
         str-usage: "Usage: /cast teach <target> <spell>"
         str-no-target: No such player.
@@ -33,6 +36,7 @@ spells:
         str-cast-self: You have taught %t the %s spell.
         str-cast-target: "%a has taught you the %s spell."
     forget:
+        name: forget
         description: Make a player forget a spell.
         str-usage: "Usage: /cast forget <target> <spell>"
         str-no-target: No such player.
@@ -41,6 +45,7 @@ spells:
         str-cast-self: You made %t forget the %s spell.
         str-cast-target: "%a has made you forget the %s spell."
     spellbook:
+        name: spellbook
         description: Create a spellbook that teaches a spell.
         default-uses: -1
         destroy-when-used-up: false
@@ -55,6 +60,7 @@ spells:
         str-learned: You have learned the %s spell!
 
     blink:
+        name: blink
         description: Teleport a short distance.
         cast-item: 280
         cooldown: 8
@@ -66,6 +72,7 @@ spells:
         str-cast-others: "%a blinks away!"
         str-cant-blink: You cannot blink there.
     combust:
+        name: combust
         description: Set a target on fire.
         cast-item: 283
         cooldown: 10
@@ -79,6 +86,7 @@ spells:
         str-cost: 1 redstone dust and 1 coal
         str-no-target: No target found.
     entomb:
+        name: entomb
         description: Encase an enemy in glass.
         cast-item: 280
         cooldown: 5
@@ -93,6 +101,7 @@ spells:
         str-cost: 3 redstone dust and 1 glass
         str-no-target: No target found.
     explode:
+        name: explode
         description: Create an explosion.
         cast-item: 283
         cooldown: 30
@@ -107,6 +116,7 @@ spells:
         str-cast-self: Boom!
         str-cast-others: Boom!
     forcepush:
+        name: forcepush
         description: Push back your enemies.
         cast-item: 280
         cooldown: 8
@@ -120,6 +130,7 @@ spells:
         str-cast-self: You push back your enemies!
         str-cast-others: "%a pushes back his enemies."
     frostwalk:
+        name: frostwalk
         description: Lets you walk on water.
         cast-item: 317
         size: 2
@@ -135,6 +146,7 @@ spells:
         str-cast-others: "%a can now walk on water!"
         str-fade: You can no longer walk on water.
     gills:
+        name: gills
         description: Allows you to breath underwater.
         cast-item: 294
         cooldown: 60
@@ -149,6 +161,7 @@ spells:
         str-cast-self: You form gills on your neck!
         str-fade: Your gills disappear.
     heal:
+        name: heal
         description: Heals a target player.
         cast-item: 280
         heal-amount: 10
@@ -163,6 +176,7 @@ spells:
         str-no-target: No target to heal.
         str-max-health: "%t is already at max health."
     lightning:
+        name: lightning
         description: Call down lightning.
         cast-item: 283
         cooldown: 15
@@ -173,6 +187,7 @@ spells:
         str-cast-self: You call down lightning.
         str-cast-others: "%a calls down lightning."
     mark:
+        name: mark
         description: Marks your location for later recall.
         cooldown: 43200
         permanent-marks: true
@@ -182,6 +197,7 @@ spells:
         str-cost: 5 redstone dust and 5 iron bars
         str-cast-self: You have marked your location.
     prayer:
+        name: prayer
         description: Heals yourself for five hearts.
         cast-item: 38
         cooldown: 15
@@ -192,6 +208,7 @@ spells:
         str-cast-self: You have healed yourself.
         str-at-full-health: You are already at full health.
     recall:
+        name: recall
         description: Teleports you to your marked location.
         cooldown: 300
         max-range: -1
@@ -206,6 +223,7 @@ spells:
         str-too-far: Your marked location is too far away.
         str-cast-others: "%a disappears!"
     safefall:
+        name: safefall
         description: Allows you to fall without taking damage.
         cast-item: 294
         cooldown: 60
@@ -220,6 +238,7 @@ spells:
         str-cast-self: You feel lighter.
         str-fade: Your normal weight returns.
     telekinesis:
+        name: telekinesis
         description: Manipulate switches and buttons remotely.
         cast-item: 280
         cooldown: 15
@@ -229,6 +248,7 @@ spells:
         str-cost: 1 redstone dust
         str-no-target: You must target a switch or button.
     volley:
+        name: volley
         description: Send a volley of arrows at your targeted location.
         cast-item: 283
         cooldown: 45
@@ -244,6 +264,7 @@ spells:
         str-cast-others: "%a fires a volley of arrows."
         str-no-target: No target found.
     wall:
+        name: wall
         description: Creates a temporary wall to block your enemies.
         cast-item: 280
         cooldown: 15
@@ -258,6 +279,7 @@ spells:
         str-cost: 2 redstone dust and 2 stone
         str-no-target: Unable to create a wall.
     windwalk:
+        name: windwalk
         description: Lets you walk on a platform of air.
         cast-item: 317
         cooldown: 30
@@ -272,6 +294,7 @@ spells:
         str-cast-others: "%a is now walking on air!"
         str-fade: You are no longer walking on air.
     zap:
+        name: zap
         description: Instantly destroys a block.
         cast-item: 294
         cooldown: 0
