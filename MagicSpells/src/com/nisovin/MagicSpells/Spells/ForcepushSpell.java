@@ -2,6 +2,7 @@ package com.nisovin.MagicSpells.Spells;
 
 import java.util.List;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -46,6 +47,20 @@ public class ForcepushSpell extends InstantSpell {
 	
 	public void knockback(Player player, int range, boolean targetPlayers) {
 	    Vector p = player.getLocation().toVector();
+		List<Entity> entities = player.getNearbyEntities(range*2, range*2, range*2);
+		Vector e, v;
+		for (Entity entity : entities) {
+			if (entity instanceof LivingEntity && (targetPlayers || !(entity instanceof Player))) {
+				e = entity.getLocation().toVector();
+				v = e.subtract(p).normalize().multiply(force/10.0);
+				v.setY(v.getY() * (yForce/10.0));
+				entity.setVelocity(v);
+			}
+	    }
+	}
+	
+	/*public void knockback(Player player, int range, boolean targetPlayers) {
+	    Vector p = player.getLocation().toVector();
 		List<LivingEntity> entities = player.getWorld().getLivingEntities();
 		double dx, dy, dz;
 		Vector e, v;
@@ -64,6 +79,6 @@ public class ForcepushSpell extends InstantSpell {
 		e = null;
 		v = null;
 		entities = null;
-	}
+	}*/
 
 }
