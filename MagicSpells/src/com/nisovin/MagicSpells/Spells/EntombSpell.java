@@ -34,7 +34,7 @@ public class EntombSpell extends InstantSpell {
 	}
 	
 	public EntombSpell(Configuration config, String spellName) {
-		super(config, SPELL_NAME);
+		super(config, spellName);
 
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		precision = config.getInt("spells." + spellName + ".precision", 20);
