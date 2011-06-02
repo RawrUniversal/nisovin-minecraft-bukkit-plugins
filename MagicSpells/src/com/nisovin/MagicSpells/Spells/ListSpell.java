@@ -1,5 +1,6 @@
 package com.nisovin.MagicSpells.Spells;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 
@@ -52,6 +53,11 @@ public class ListSpell extends CommandSpell {
 			}
 			return true;
 		}		
+		return false;
+	}
+	
+	@Override
+	public boolean castFromConsole(CommandSender sender, String[] args) {
 		return false;
 	}
 

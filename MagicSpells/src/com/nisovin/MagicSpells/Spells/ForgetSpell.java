@@ -2,6 +2,7 @@ package com.nisovin.MagicSpells.Spells;
 
 import java.util.List;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 
@@ -82,6 +83,38 @@ public class ForgetSpell extends CommandSpell {
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean castFromConsole(CommandSender sender, String[] args) {
+		if (args == null || args.length != 2) {
+			// fail: missing args
+			sender.sendMessage(strUsage);
+		} else {
+			List<Player> players = MagicSpells.plugin.getServer().matchPlayer(args[0]);
+			if (players.size() != 1) {
+				// fail: no player match
+				sender.sendMessage(strNoTarget);
+			} else {
+				Spell spell = MagicSpells.spellNames.get(args[1]);
+				if (spell == null) {
+					// fail: no spell match
+					sender.sendMessage(strNoSpell);
+				} else {
+					Spellbook targetSpellbook = MagicSpells.getSpellbook(players.get(0));
+					if (targetSpellbook == null || !targetSpellbook.hasSpell(spell)) {
+						// fail: no spellbook for some reason or can't learn the spell
+						sender.sendMessage(strDoesntKnow);
+					} else {
+						targetSpellbook.removeSpell(spell);
+						targetSpellbook.save();
+						sendMessage(players.get(0), formatMessage(strCastTarget, "%a", "Console", "%s", spell.getName(), "%t", players.get(0).getName()));
+						sender.sendMessage(formatMessage(strCastSelf, "%a", "Console", "%s", spell.getName(), "%t", players.get(0).getName()));
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 }

@@ -2,12 +2,14 @@ package com.nisovin.MagicSpells.Spells;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -200,9 +202,8 @@ public class SpellbookSpell extends CommandSpell {
 					}
 				}
 			}
-		} catch (Exception e) {			
-			MagicSpells.plugin.getServer().getLogger().severe("MagicSpells: Error loading spellbooks");
-		}
+		} catch (FileNotFoundException e) {
+		} 
 	}
 	
 	private void saveSpellbooks() {
@@ -219,6 +220,11 @@ public class SpellbookSpell extends CommandSpell {
 		} catch (Exception e) {
 			MagicSpells.plugin.getServer().getLogger().severe("MagicSpells: Error saving spellbooks");
 		}
+	}
+	
+	@Override
+	public boolean castFromConsole(CommandSender sender, String[] args) {
+		return false;
 	}
 	
 }

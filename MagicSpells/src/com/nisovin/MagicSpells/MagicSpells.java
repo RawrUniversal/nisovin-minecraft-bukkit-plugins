@@ -192,6 +192,25 @@ public class MagicSpells extends JavaPlugin {
 				} else {
 					player.sendMessage(textColor + strUnknownSpell);
 				}
+			} else { // not a player
+				Spell spell = spellNames.get(args[0]);
+				if (spell == null) {
+					sender.sendMessage("Unknown spell.");
+				} else if (spell instanceof CommandSpell) {
+					String[] spellArgs = null;
+					if (args.length > 1) {
+						spellArgs = new String[args.length-1];
+						for (int i = 1; i < args.length; i++) {
+							spellArgs[i-1] = args[i];
+						}
+					}
+					boolean ok = ((CommandSpell)spell).castFromConsole(sender, spellArgs);
+					if (!ok) {
+						sender.sendMessage("Cannot cast that spell from console.");
+					}
+				} else {
+					sender.sendMessage("Cannot cast that spell from console.");					
+				}
 			}
 			return true;
 		}

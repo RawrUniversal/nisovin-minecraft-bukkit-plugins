@@ -1,5 +1,6 @@
 package com.nisovin.MagicSpells;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.util.config.Configuration;
 
 public abstract class CommandSpell extends Spell {
@@ -15,5 +16,7 @@ public abstract class CommandSpell extends Spell {
 	public boolean canCastByCommand() {
 		return true;
 	}
+	
+	public abstract boolean castFromConsole(CommandSender sender, String[] args);
 
 }

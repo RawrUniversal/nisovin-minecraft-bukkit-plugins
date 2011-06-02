@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -98,6 +99,11 @@ public class MarkSpell extends CommandSpell {
 		} catch (Exception e) {
 			MagicSpells.plugin.getServer().getLogger().severe("MagicSpells: Error saving marks");
 		}		
+	}
+	
+	@Override
+	public boolean castFromConsole(CommandSender sender, String[] args) {
+		return false;
 	}
 
 }
