@@ -1,0 +1,7 @@
+name: CraftBall
+main: com.nisovin.craftball.CraftBall
+version: 1.0
+commands:
+    craftballreload:
+        description: Reloads the CraftBall configuration.
+        usage: /<command>
