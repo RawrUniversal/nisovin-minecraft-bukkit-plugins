@@ -5,6 +5,7 @@ import java.util.HashSet;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
@@ -46,7 +47,7 @@ public class GillsSpell extends BuffSpell {
 
 	@Override
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (!event.isCancelled() && event.getEntity() instanceof Player) {
+		if (!event.isCancelled() && event.getEntity() instanceof Player && event.getCause() == DamageCause.DROWNING) {
 			Player player = (Player)event.getEntity();
 			if (fishes.contains(player.getName())) {
 				if (isExpired(player)) {
