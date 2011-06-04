@@ -23,18 +23,20 @@ public class DrunkEffects implements Runnable {
 			String p = (String)o;
 			Player player = plugin.getServer().getPlayer(p);
 			if (player == null || !player.isOnline()) {
-				plugin.getDrunks().remove(p);
+				if (plugin.soberOnLogout) { 
+					plugin.getDrunks().remove(p);
+				}
 			} else {
 				int drunkLevel = plugin.getDrunks().get(p);
 				
 				// stagger
-				if (random.nextInt(10) < 3+drunkLevel) {
-					Vector v = new Vector((random.nextDouble()-.5)/2 * drunkLevel, 0, (random.nextDouble()-.5)/2 * drunkLevel);
+				if (random.nextInt(100) < plugin.chanceToStagger+drunkLevel*plugin.chanceToStaggerPerLevel) {
+					Vector v = new Vector((random.nextDouble()-.5) * (plugin.staggerIntensity/10.0) * drunkLevel, 0, (random.nextDouble()-.5) * (plugin.staggerIntensity/10.0) * drunkLevel);
 					player.setVelocity(v);
 				}
 				
 				// drop item
-				if (random.nextInt(100) < (10+drunkLevel*2)) {
+				if (random.nextInt(100) < (plugin.chanceToDropItem+drunkLevel*plugin.chanceToDropItemPerLevel)) {
 					ItemStack item = player.getItemInHand();
 					if (item != null && item.getAmount() > 0) {
 						if (item.getAmount() == 1) {
@@ -49,11 +51,11 @@ public class DrunkEffects implements Runnable {
 				}
 				
 				// sober up
-				if (random.nextInt(100) < 15) {
+				if (random.nextInt(100) < plugin.chanceToSober) {
 					drunkLevel--;
 					if (drunkLevel == 0) {
 						plugin.getDrunks().remove(p);
-						player.sendMessage(ChatColor.YELLOW + "You are now sober.");
+						player.sendMessage(ChatColor.YELLOW + plugin.soberStr);
 						if (plugin.getDrunks().size() == 0) {
 							plugin.stopEffects();
 						}
