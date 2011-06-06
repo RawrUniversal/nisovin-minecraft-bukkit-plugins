@@ -78,7 +78,9 @@ public abstract class Spell implements Comparable<Spell> {
 	
 	public final void cast(Player player, String[] args) {
 		SpellCastState state;
-		if (onCooldown(player)) {
+		if (!MagicSpells.getSpellbook(player).canCast(this)) {
+			state = SpellCastState.CANT_CAST;
+		} else if (onCooldown(player)) {
 			state = SpellCastState.ON_COOLDOWN;
 		} else if (!hasReagents(player)) {
 			state = SpellCastState.MISSING_REAGENTS;
@@ -97,6 +99,8 @@ public abstract class Spell implements Comparable<Spell> {
 				sendMessage(player, formatMessage(MagicSpells.strOnCooldown, "%c", getCooldown(player)+""));
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
 				sendMessage(player, MagicSpells.strMissingReagents);
+			} else if (state == SpellCastState.CANT_CAST) {
+				sendMessage(player, MagicSpells.strCantCast);
 			}
 		}
 	}
@@ -297,7 +301,8 @@ public abstract class Spell implements Comparable<Spell> {
 	protected enum SpellCastState {
 		NORMAL,
 		ON_COOLDOWN,
-		MISSING_REAGENTS
+		MISSING_REAGENTS,
+		CANT_CAST
 	}
 	
 	@Override

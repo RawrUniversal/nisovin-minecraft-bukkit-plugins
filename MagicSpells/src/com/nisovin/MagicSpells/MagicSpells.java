@@ -33,6 +33,7 @@ public class MagicSpells extends JavaPlugin {
 	public static String strSpellChange;
 	public static String strOnCooldown;
 	public static String strMissingReagents;
+	public static String strCantCast;
 	
 	public static HashMap<String,Spell> spells; // map internal names to spells
 	public static HashMap<String,Spell> spellNames; // map configured names to spells
@@ -76,6 +77,7 @@ public class MagicSpells extends JavaPlugin {
 		strSpellChange = config.getString("general.str-spell-change", "You are now using the %s spell.");
 		strOnCooldown = config.getString("general.str-on-cooldown", "That spell is on cooldown.");
 		strMissingReagents = config.getString("general.str-missing-reagents", "You do not have the reagents for that spell.");
+		strCantCast = config.getString("general.str-cant-cast", "You can't cast that spell right now.");
 		castForFree = config.getStringList("general.cast-for-free", null);
 		if (castForFree != null) {
 			for (int i = 0; i < castForFree.size(); i++) {

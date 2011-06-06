@@ -4,6 +4,7 @@ general:
     str-spell-change: You are now using the %s spell.
     str-on-cooldown: That spell is on cooldown (%c seconds remaining).
     str-missing-reagents: You do not have the required reagents for that spell.
+    str-cant-cast: You can't cast that spell right now.
     text-color: 3
     broadcast-range: 20
     use-permissions: false
@@ -32,6 +33,7 @@ spells:
         str-usage: "Usage: /cast teach <target> <spell>"
         str-no-target: No such player.
         str-no-spell: You do not know a spell by that name.
+        str-cant-teach: You can't teach that spell.
         str-cant-learn: That person cannot learn that spell.
         str-cast-self: You have taught %t the %s spell.
         str-cast-target: "%a has taught you the %s spell."
@@ -52,6 +54,7 @@ spells:
         str-use: "Usage: /cast spellbook <spell> [uses]"
         str-cast-self: You have created a spellbook with the %s spell.
         str-no-spell: You do not know a spell by that name.
+        str-cant-teach: You can't create a spellbook with that spell.
         str-no-target: You must target a bookcase to create a spellbook.
         str-has-spellbook: That bookcase already has a spellbook.
         str-cant-destroy: You cannot destroy a bookcase with a spellbook.

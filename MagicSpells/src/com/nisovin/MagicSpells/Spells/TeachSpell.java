@@ -18,6 +18,7 @@ public class TeachSpell extends CommandSpell {
 	private String strUsage;
 	private String strNoTarget;
 	private String strNoSpell;
+	private String strCantTeach;
 	private String strCantLearn;
 	private String strAlreadyKnown;
 	private String strCastTarget;
@@ -38,6 +39,7 @@ public class TeachSpell extends CommandSpell {
 		strUsage = config.getString("spells." + spellName + ".str-usage", "Usage: /cast teach <target> <spell>");
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No such player.");
 		strNoSpell = config.getString("spells." + spellName + ".str-no-spell", "You do not know a spell by that name.");
+		strCantTeach = config.getString("spells." + spellName + ".str-cant-teach", "You can't teach that spell.");
 		strCantLearn = config.getString("spells." + spellName + ".str-cant-learn", "That person cannot learn that spell.");
 		strAlreadyKnown = config.getString("spells." + spellName + ".str-already-known", "That person already knows that spell.");
 		strCastTarget = config.getString("spells." + spellName + ".str-cast-target", "%a has taught you the %s spell.");
@@ -64,6 +66,9 @@ public class TeachSpell extends CommandSpell {
 						if (spellbook == null || !spellbook.hasSpell(spell)) {
 							// fail: player doesn't have spell
 							sendMessage(player, strNoSpell);
+						} else if (!spellbook.canTeach(spell)) {
+							// fail: cannot teach
+							sendMessage(player, strCantTeach);
 						} else {
 							// yay! can learn!
 							Spellbook targetSpellbook = MagicSpells.getSpellbook(players.get(0));

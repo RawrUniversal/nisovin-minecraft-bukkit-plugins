@@ -31,6 +31,7 @@ public class SpellbookSpell extends CommandSpell {
 	private Material spellbookBlock;
 	private String strUsage;
 	private String strNoSpell;
+	private String strCantTeach;
 	private String strNoTarget;
 	private String strHasSpellbook;
 	private String strCantDestroy;
@@ -61,6 +62,7 @@ public class SpellbookSpell extends CommandSpell {
 		spellbookBlock = Material.getMaterial(config.getInt("spell." + spellName + ".spellbook-block", Material.BOOKSHELF.getId()));
 		strUsage = config.getString("spells." + spellName + ".str-usage", "Usage: /cast spellbook <spell> [uses]");
 		strNoSpell = config.getString("spells." + spellName + ".str-no-spell", "You do not know a spell by that name.");
+		strCantTeach = config.getString("spells." + spellName + ".str-cant-teach", "You can't create a spellbook with that spell.");
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You must target a bookcase to create a spellbook.");
 		strHasSpellbook = config.getString("spells." + spellName + ".str-has-spellbook", "That bookcase already has a spellbook.");
 		strCantDestroy = config.getString("spells." + spellName + ".str-cant-destroy", "You cannot destroy a bookcase with a spellbook.");
@@ -90,6 +92,9 @@ public class SpellbookSpell extends CommandSpell {
 				if (spell == null) {
 					// fail: no such spell
 					sendMessage(player, strNoSpell);
+				} else if (!MagicSpells.getSpellbook(player).canTeach(spell)) {
+					// fail: can't teach
+					sendMessage(player, strCantTeach);
 				} else {
 					Block target = player.getTargetBlock(null, 10);
 					if (target == null || target.getType() != spellbookBlock) {

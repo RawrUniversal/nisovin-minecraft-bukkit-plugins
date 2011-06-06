@@ -24,21 +24,23 @@ public class Spellbook {
 	
 	private String playerName;
 	
-	private TreeSet<Spell> allSpells = new TreeSet<Spell>();	
+	private TreeSet<Spell> allSpells = new TreeSet<Spell>();
 	private HashMap<Integer,ArrayList<Spell>> itemSpells = new HashMap<Integer,ArrayList<Spell>>();
 	private HashMap<Integer,Integer> activeSpells = new HashMap<Integer,Integer>();
+	private HashMap<Spell,Integer> customBindings = new HashMap<Spell,Integer>();
 	
 	public Spellbook(Player player, MagicSpells plugin) {
 		this.plugin = plugin;
 		this.playerName = player.getName();
 		
 		// load spells from file
-		if (!player.isOp() || !MagicSpells.opsHaveAllSpells) {
-			loadFromFile();
-		} else {
+		loadFromFile();
+		if (player.isOp() && MagicSpells.opsHaveAllSpells) {
 			// give all spells to ops
 			for (Spell spell : MagicSpells.spells.values()) {
-				addSpell(spell);
+				if (!allSpells.contains(spell)) {
+					addSpell(spell);
+				}
 			}
 		}
 		
@@ -70,15 +72,39 @@ public class Spellbook {
 		}
 	}
 	
+	public boolean canCast(Spell spell) {
+		if (permissionHandler == null) {
+			return true;
+		} else {
+			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.cast." + spell.getInternalName());
+		}
+	}
+	
+	public boolean canTeach(Spell spell) {
+		if (permissionHandler == null) {
+			return true;
+		} else {
+			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.teach." + spell.getInternalName());
+		}
+	}
+	
 	private void loadFromFile() {
 		try {
 			Scanner scanner = new Scanner(new File(plugin.getDataFolder(), "spellbooks/" + playerName.toLowerCase() + ".txt"));
 			while (scanner.hasNext()) {
 				String line = scanner.nextLine();
 				if (!line.equals("")) {
-					Spell spell = MagicSpells.spells.get(line);
-					if (spell != null) {
-						addSpell(spell);
+					if (!line.contains(":")) {
+						Spell spell = MagicSpells.spells.get(line);
+						if (spell != null) {
+							addSpell(spell);
+						}
+					} else {
+						String[] data = line.split(":");
+						Spell spell = MagicSpells.spells.get(data[0]);
+						if (spell != null && data[1].matches("^[0-9]+$")) {
+							addSpell(spell, Integer.parseInt(data[1]));
+						}
 					}
 				}
 			}
@@ -133,9 +159,17 @@ public class Spellbook {
 	}
 	
 	public void addSpell(Spell spell) {
+		addSpell(spell, -1);
+	}
+	
+	public void addSpell(Spell spell, int castItem) {
 		allSpells.add(spell);
 		if (spell.canCastWithItem()) {
 			int item = spell.getCastItem();
+			if (castItem > 0) {
+				item = castItem;
+				customBindings.put(spell, castItem);
+			}
 			ArrayList<Spell> temp = itemSpells.get(item);
 			if (temp != null) {
 				temp.add(spell);
@@ -150,6 +184,9 @@ public class Spellbook {
 	
 	public void removeSpell(Spell spell) {
 		int item = spell.getCastItem();
+		if (customBindings.containsKey(spell)) {
+			item = customBindings.remove(spell);
+		}
 		ArrayList<Spell> temp = itemSpells.get(item);
 		if (temp != null) {
 			temp.remove(spell);
@@ -168,13 +205,15 @@ public class Spellbook {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(plugin.getDataFolder(), "spellbooks/" + playerName.toLowerCase() + ".txt"), false));
 			for (Spell spell : allSpells) {
 				writer.append(spell.getInternalName());
+				if (customBindings.containsKey(spell)) {
+					writer.append(":" + customBindings.get(spell));
+				}
 				writer.newLine();
 			}
 			writer.close();
 		} catch (Exception e) {
 			plugin.getServer().getLogger().severe("Error saving player spellbook: " + playerName);
-		}
-		
+		}		
 	}
 	
 	public static void initPermissions() {
