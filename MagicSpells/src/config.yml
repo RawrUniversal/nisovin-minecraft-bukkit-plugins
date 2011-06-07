@@ -62,6 +62,13 @@ spells:
         str-cant-learn: You cannot learn the spell in this spellbook.
         str-already-known: You already know the %s spell.
         str-learned: You have learned the %s spell!
+    bind:
+        name: bind
+        description: Binds a spell to a wand item.
+        str-cast-self: You have successfully bound the %s spell to the item you are holding.
+        str-usage: You must specify a spell name and hold an item in your hand.
+        str-no-spell: You do not know a spell by that name.
+        str-cant-bind: That spell cannot be bound to an item.
 
     blink:
         name: blink
@@ -119,6 +126,38 @@ spells:
         str-no-target: You cannot create an explosion there.
         str-cast-self: Boom!
         str-cast-others: Boom!
+    fireball:
+        name: fireball
+        description: Throw a fiery ball of destruction.
+        cast-item: 283
+        cooldown: 15
+        range: 30
+        cost: 
+            - 331 3
+            - 263 2
+        str-cost: 3 redstone dust and 2 coal
+        str-no-target: You cannot throw a fireball there.
+        str-cast-self: You throw a fiery ball of destruction!
+        str-cast-others: "%a throws a fiery ball of destruction!"
+    flamewalk:
+        name: flamewalk
+        description: Burn your enemies around you as you walk.
+        cast-item: 317
+        cooldown: 30
+        range: 8
+        fire-ticks: 100
+        tick-interval: 100
+        target-players: false
+        duration: 120
+        cost:
+            - 331 5
+            - 263 2
+        use-cost:
+            - 331 1
+        use-cost-interval: 15
+        str-cost: 5 redstone, 2 coal, plus 1 redstone occasionally
+        str-cast-self: You begin to burn your enemies around you.
+        str-fade: You are no longer burning your enemies.
     forcepush:
         name: forcepush
         description: Push back your enemies.
@@ -179,6 +218,32 @@ spells:
         str-cast-target: "%a has healed you."
         str-no-target: No target to heal.
         str-max-health: "%t is already at max health."
+    invulnerability:
+        name: invulnerability
+        description: Makes you invulnerable to damage.
+        cast-item: 280
+        damage-causes:
+            - block explosion
+            - contact
+            - drowning
+            - entity attack
+            - entity explosion
+            - fall
+            - fire
+            - fire tick
+            - lava
+            - lightning
+            - suffocation
+        duration: 60
+        cost: 
+        	- 331 5
+        use-cost: 
+        	- 331 1
+        use-cost-interval: 5
+        str-cost: 5 redstone dust, plus 1 occasionally
+        str-cast-self: You feel your skin harden.
+        str-cast-others: "%a's skin hardens."
+        str-fade: You feel your skin return to normal.
     lightning:
         name: lightning
         description: Call down lightning.
@@ -211,6 +276,17 @@ spells:
         str-cost: 1 redstone dust
         str-cast-self: You have healed yourself.
         str-at-full-health: You are already at full health.
+    purge:
+    	name: purge
+    	description: Kill all monsters and animals around you.
+    	cast-item: 283
+    	cooldown: 60
+    	range: 15
+    	cost:
+    		- 331 3
+    	str-cost: 3 redstone dust
+    	str-cast-self: You purge all life around you.
+    	str-cast-others: "%a purges all nearby life."
     recall:
         name: recall
         description: Teleports you to your marked location.

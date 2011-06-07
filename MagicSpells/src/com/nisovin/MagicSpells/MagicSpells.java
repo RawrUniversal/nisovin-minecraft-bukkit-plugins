@@ -94,20 +94,26 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// load spells
+		BindSpell.load(config);
 		BlinkSpell.load(config);
 		CombustSpell.load(config);
 		EntombSpell.load(config);
 		ExplodeSpell.load(config);
+		FireballSpell.load(config);
+		FlamewalkSpell.load(config);
 		ForcepushSpell.load(config);
 		ForgetSpell.load(config);
 		FrostwalkSpell.load(config);
 		GillsSpell.load(config);
 		HealSpell.load(config);
 		HelpSpell.load(config);
+		InvulnerabilitySpell.load(config);
+		LifewalkSpell.load(config);
 		LightningSpell.load(config);
 		ListSpell.load(config);
 		MarkSpell.load(config);
 		PrayerSpell.load(config);
+		PurgeSpell.load(config);
 		RecallSpell.load(config);
 		SafefallSpell.load(config);
 		SpellbookSpell.load(config);

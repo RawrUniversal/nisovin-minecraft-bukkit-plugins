@@ -1,9 +1,26 @@
+package com.nisovin.MagicSpells.Spells;
+
+import java.util.HashSet;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.config.Configuration;
+
+import com.nisovin.MagicSpells.BuffSpell;
+import com.nisovin.MagicSpells.MagicSpells;
+
 public class FlamewalkSpell extends BuffSpell {
 
 	private static final String SPELL_NAME = "flamewalk";
 	
 	private int range;
-	private int fireDuration;
+	private int fireTicks;
+	private int tickInterval;
 	private boolean targetPlayers;
 	
 	private HashSet<String> flamewalkers;
@@ -22,8 +39,9 @@ public class FlamewalkSpell extends BuffSpell {
 	public FlamewalkSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		range = config.getInt("spells." + spellName + ".range", 15);
+		range = config.getInt("spells." + spellName + ".range", 8);
 		fireTicks = config.getInt("spells." + spellName + ".fire-ticks", 80);
+		tickInterval = config.getInt("spells." + spellName + ".tick-interval", 100);
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		
 		flamewalkers = new HashSet<String>();
@@ -74,7 +92,7 @@ public class FlamewalkSpell extends BuffSpell {
 		}
 		
 		public void run() {
-			for (String s : lifewalkers) {
+			for (String s : flamewalkers) {
 				Player player = Bukkit.getServer().getPlayer(s);
 				if (player != null) {
 					List<Entity> entities = player.getNearbyEntities(range*2, range*2, range*2);
@@ -85,14 +103,14 @@ public class FlamewalkSpell extends BuffSpell {
 								Bukkit.getServer().getPluginManager().callEvent(event);
 								if (!event.isCancelled()) {
 									entity.setFireTicks(fireTicks);
-									addUse();
-									chargeUseCost();
+									addUse(player);
+									chargeUseCost(player);
 								}
 							}
 						} else if (entity instanceof LivingEntity) {
 							entity.setFireTicks(fireTicks);
-							addUse();
-							chargeUseCost();
+							addUse(player);
+							chargeUseCost(player);
 						}
 					}
 				}

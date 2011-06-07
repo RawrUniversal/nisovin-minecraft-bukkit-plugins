@@ -1,3 +1,18 @@
+package com.nisovin.MagicSpells.Spells;
+
+import java.util.HashSet;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+import org.bukkit.util.config.Configuration;
+
+import com.nisovin.MagicSpells.BuffSpell;
+import com.nisovin.MagicSpells.MagicSpells;
+
 public class LifewalkSpell extends BuffSpell {
 
 	private static final String SPELL_NAME = "lifewalk";
@@ -29,12 +44,12 @@ public class LifewalkSpell extends BuffSpell {
 		lifewalkers = new HashSet<String>();
 		random = new Random();
 		
-		tickInterval = config.getInt("spells." + spellName + ".tick-interval", 40);
-		redFlowerChance = config.getInt("spells." + spellName + ".red-flower-chance", 10);
-		yellowFlowerChance = config.getInt("spells." + spellName + ".yellow-flower-chance", 10);
+		tickInterval = config.getInt("spells." + spellName + ".tick-interval", 15);
+		redFlowerChance = config.getInt("spells." + spellName + ".red-flower-chance", 15);
+		yellowFlowerChance = config.getInt("spells." + spellName + ".yellow-flower-chance", 15);
 		saplingChance = config.getInt("spells." + spellName + ".sapling-chance", 5);
-		tallgrassChance = config.getInt("spells." + spellName + ".tallgrass-chance", 15);
-		fernChance = config.getInt("spells." + spellName + ".fern-chance", 10);
+		tallgrassChance = config.getInt("spells." + spellName + ".tallgrass-chance", 25);
+		fernChance = config.getInt("spells." + spellName + ".fern-chance", 15);
 	}
 
 	@Override
@@ -87,41 +102,41 @@ public class LifewalkSpell extends BuffSpell {
 				if (player != null) {
 					Block feet = player.getLocation().getBlock();
 					Block ground = feet.getRelative(BlockFace.DOWN);
-					if (block.getType() == Material.AIR && (ground.getType() == Material.DIRT || ground.getType() == Material.GRASS)) {
+					if (feet.getType() == Material.AIR && (ground.getType() == Material.DIRT || ground.getType() == Material.GRASS)) {
 						if (ground.getType() == Material.DIRT) {
 							ground.setType(Material.GRASS);
 						}
 						int rand = random.nextInt(100);
 						if (rand < redFlowerChance) {
-							feet.setType(Material.RED_FLOWER);
-							addUse();
-							chargeUseCost();
+							feet.setType(Material.RED_ROSE);
+							addUse(player);
+							chargeUseCost(player);
 						} else {
 							rand -= redFlowerChance;
 							if (rand < yellowFlowerChance) {
 								feet.setType(Material.YELLOW_FLOWER);
-								addUse();
-								chargeUseCost();
+								addUse(player);
+								chargeUseCost(player);
 							} else {
 								rand -= yellowFlowerChance;
 								if (rand < saplingChance) {
 									feet.setType(Material.SAPLING);
-									addUse();
-									chargeUseCost();
+									addUse(player);
+									chargeUseCost(player);
 								} else {
 									rand -= saplingChance;
 									if (rand < tallgrassChance) {
-										feet.setType(Material.TALLGRASS);
-										feet.setData(1);
-										addUse();
-										chargeUseCost();
+										feet.setTypeId(31);
+										feet.setData((byte)1);
+										addUse(player);
+										chargeUseCost(player);
 									} else {
 										rand -= tallgrassChance;
 										if (rand < fernChance) {
-											feet.setType(Material.TALLGRASS);
-											feet.setData(2);
-											addUse();
-											chargeUseCost();
+											feet.setTypeId(31);
+											feet.setData((byte)2);
+											addUse(player);
+											chargeUseCost(player);
 										}
 									}
 								}

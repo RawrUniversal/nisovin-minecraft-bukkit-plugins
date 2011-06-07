@@ -1,3 +1,15 @@
+package com.nisovin.MagicSpells.Spells;
+
+import java.util.List;
+
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.util.config.Configuration;
+
+import com.nisovin.MagicSpells.InstantSpell;
+import com.nisovin.MagicSpells.MagicSpells;
+
 public class PurgeSpell extends InstantSpell {
 
 	private static final String SPELL_NAME = "purge";
