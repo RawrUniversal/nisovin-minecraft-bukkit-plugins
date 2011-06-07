@@ -108,8 +108,8 @@ public class ForgetSpell extends CommandSpell {
 					} else {
 						targetSpellbook.removeSpell(spell);
 						targetSpellbook.save();
-						sendMessage(players.get(0), formatMessage(strCastTarget, "%a", "Console", "%s", spell.getName(), "%t", players.get(0).getName()));
-						sender.sendMessage(formatMessage(strCastSelf, "%a", "Console", "%s", spell.getName(), "%t", players.get(0).getName()));
+						sendMessage(players.get(0), formatMessage(strCastTarget, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getName()));
+						sender.sendMessage(formatMessage(strCastSelf, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getName()));
 					}
 				}
 			}

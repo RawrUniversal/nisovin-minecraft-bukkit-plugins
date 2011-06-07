@@ -5,6 +5,7 @@ general:
     str-on-cooldown: That spell is on cooldown (%c seconds remaining).
     str-missing-reagents: You do not have the required reagents for that spell.
     str-cant-cast: You can't cast that spell right now.
+    str-console-name: Admin
     text-color: 3
     broadcast-range: 20
     use-permissions: false
