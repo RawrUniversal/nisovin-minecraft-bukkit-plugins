@@ -18,6 +18,7 @@ public class ForcepushSpell extends InstantSpell {
 	private boolean targetPlayers;
 	private int force;
 	private int yForce;
+	private int maxYForce;
 	
 	public static void load(Configuration config) {
 		load(config, SPELL_NAME);
@@ -35,6 +36,7 @@ public class ForcepushSpell extends InstantSpell {
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		force = config.getInt("spells." + spellName + ".pushback-force", 30);
 		yForce = config.getInt("spells." + spellName + ".additional-vertical-force", 15);
+		maxYForce = config.getInt("spells." + spellName + ".max-vertical-force", 20);
 	}
 
 	@Override
@@ -54,6 +56,9 @@ public class ForcepushSpell extends InstantSpell {
 				e = entity.getLocation().toVector();
 				v = e.subtract(p).normalize().multiply(force/10.0);
 				v.setY(v.getY() * (yForce/10.0));
+				if (v.getY() > (maxYForce/10.0)) {
+					v.setY(maxYForce/10.0);
+				}
 				entity.setVelocity(v);
 			}
 	    }

@@ -166,6 +166,7 @@ spells:
         range: 10
         pushback-force: 30
         additional-vertical-force: 15
+        max-vertical-force: 20
         target-players: false
         cost:
             - 331 3
@@ -236,9 +237,9 @@ spells:
             - suffocation
         duration: 60
         cost: 
-        	- 331 5
+            - 331 5
         use-cost: 
-        	- 331 1
+            - 331 1
         use-cost-interval: 5
         str-cost: 5 redstone dust, plus 1 occasionally
         str-cast-self: You feel your skin harden.
@@ -277,16 +278,16 @@ spells:
         str-cast-self: You have healed yourself.
         str-at-full-health: You are already at full health.
     purge:
-    	name: purge
-    	description: Kill all monsters and animals around you.
-    	cast-item: 283
-    	cooldown: 60
-    	range: 15
-    	cost:
-    		- 331 3
-    	str-cost: 3 redstone dust
-    	str-cast-self: You purge all life around you.
-    	str-cast-others: "%a purges all nearby life."
+        name: purge
+        description: Kill all monsters and animals around you.
+        cast-item: 283
+        cooldown: 60
+        range: 15
+        cost:
+            - 331 3
+        str-cost: 3 redstone dust
+        str-cast-self: You purge all life around you.
+        str-cast-others: "%a purges all nearby life."
     recall:
         name: recall
         description: Teleports you to your marked location.
