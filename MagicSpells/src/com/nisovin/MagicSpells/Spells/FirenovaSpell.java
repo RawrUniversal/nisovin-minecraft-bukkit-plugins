@@ -19,7 +19,6 @@ public class FirenovaSpell extends InstantSpell {
 
 	private static final String SPELL_NAME = "firenova";
 
-	private int fireRings;
 	private int tickSpeed;
 	private boolean checkPlugins;
 	
@@ -39,7 +38,6 @@ public class FirenovaSpell extends InstantSpell {
 		super(config, spellName);
 		addListener(Event.Type.ENTITY_DAMAGE);
 		
-		fireRings = config.getInt("spells." + spellName + ".fire-rings", 5);
 		tickSpeed = config.getInt("spells." + spellName + ".tick-speed", 5);
 		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		
@@ -67,7 +65,7 @@ public class FirenovaSpell extends InstantSpell {
 				// check if nearby players are taking damage
 				Vector v = player.getLocation().toVector();
 				for (Player p : fireImmunity) {
-					if (p.getLocation().toVector().distanceSquared(v) < fireRings*fireRings) {
+					if (p.getLocation().toVector().distanceSquared(v) < range*range) {
 						// nearby, check plugins for pvp
 						EntityDamageByEntityEvent evt = new EntityDamageByEntityEvent(p, player, DamageCause.ENTITY_ATTACK, event.getDamage());
 						Bukkit.getServer().callEvent(evt);
@@ -109,7 +107,7 @@ public class FirenovaSpell extends InstantSpell {
 			fireBlocks.clear();
 						
 			i += 1;
-			if (i <= fireRings) {
+			if (i <= range) {
 				// set next ring on fire
 				int bx = center.getX();
 				int y = center.getY();

@@ -19,6 +19,9 @@ public class StonevisionSpell extends BuffSpell {
 	
 	private static final String SPELL_NAME = "stonevision";
 	
+	private int range;
+	private int transparentType;
+	
 	private HashMap<String,TransparentBlockSet> seers;
 	
 	public static void load(Configuration config) {
@@ -37,6 +40,9 @@ public class StonevisionSpell extends BuffSpell {
 		
 		addListener(Event.Type.PLAYER_MOVE);
 		
+		range = config.getInt("spells." + spellName + ".range", 4);
+		transparentType = config.getInt("spells." + spellName + ".transparent-type", Material.STONE.getId());
+		
 		seers = new HashMap<String, TransparentBlockSet>();
 	}
 
@@ -45,7 +51,7 @@ public class StonevisionSpell extends BuffSpell {
 		if (seers.containsKey(player.getName())) {
 			turnOff(player);
 		} else if (state == SpellCastState.NORMAL) {
-			seers.put(player.getName(), new TransparentBlockSet(player, 4, Material.STONE.getId()));
+			seers.put(player.getName(), new TransparentBlockSet(player, range, transparentType));
 		}
 		return false;
 	}

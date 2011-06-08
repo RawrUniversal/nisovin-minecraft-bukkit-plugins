@@ -16,6 +16,7 @@ general:
         - admin2
         - joemagicuser
     freecast-no-cooldown: true
+    ignore-default-bindings: false
 spells:
 
     list:
@@ -64,6 +65,7 @@ spells:
         str-learned: You have learned the %s spell!
     bind:
         name: bind
+        enable: true
         description: Binds a spell to a wand item.
         str-cast-self: You have successfully bound the %s spell to the item you are holding.
         str-usage: You must specify a spell name and hold an item in your hand.
@@ -91,6 +93,7 @@ spells:
         precision: 15
         fire-ticks: 100
         target-players: false
+        check-plugins: true
         cost:
             - 331 1
             - 263 1
@@ -119,6 +122,7 @@ spells:
         range: 25
         explosion-size: 4
         backfire-chance: 3
+        check-plugins: true
         cost:
             - 331 5
             - 289 1
@@ -139,6 +143,20 @@ spells:
         str-no-target: You cannot throw a fireball there.
         str-cast-self: You throw a fiery ball of destruction!
         str-cast-others: "%a throws a fiery ball of destruction!"
+    firenova:
+        name: firenova
+        description: Summon an expanding ring of fire.
+        cast-item: 283
+        cooldown: 10
+        range: 5
+        tick-speed: 10
+        check-plugins: true
+        cost:
+            - 331 2
+            - 263 1
+        str-cost: 2 redstone dust and 1 coal
+        str-cast-self: You summon an expanding ring of fire.
+        str-cast-others: "%a summons an expanding ring of fire."
     flamewalk:
         name: flamewalk
         description: Burn your enemies around you as you walk.
@@ -271,11 +289,29 @@ spells:
         cast-item: 283
         cooldown: 15
         range: 20
+        no-damage: false
+        require-entity-target: false
+        precision: 20
+        target-players: false
+        check-plugins: true
         cost:
             - 331 2
         str-cost: 2 redstone dust
         str-cast-self: You call down lightning.
         str-cast-others: "%a calls down lightning."
+    lightwalk:
+        name: lightwalk
+        description: Light your path.
+        cast-item: 317
+        cost:
+            - 331 3
+            - 50 3
+        use-cost:
+            - 331 1
+        use-cost-interval: 25
+        str-cost: 3 redstone and 3 torches, plus 1 redstone occasionally
+        str-cast-self: Light appears at your feet.
+        str-fade: The light at your feet goes out.
     mark:
         name: mark
         description: Marks your location for later recall.
@@ -338,6 +374,21 @@ spells:
         str-cost: 2 redstone dust, plus 1 feather each time you fall
         str-cast-self: You feel lighter.
         str-fade: Your normal weight returns.
+    stonevision:
+        name: stonevision
+        description: See through stone.
+        cast-item: 317
+        range: 4
+        transparent-type: 1
+        cooldown: 60
+        duration: 30
+        cost: 
+            - 331 4
+            - 1 2
+            - 20 2
+        str-cost: 4 redstonedust, 2 stone and 2 glass
+        str-cast-self: You can see through stone!
+        str-fade: You can no longer see through stone.
     telekinesis:
         name: telekinesis
         description: Manipulate switches and buttons remotely.
