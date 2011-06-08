@@ -22,6 +22,7 @@ public class FlamewalkSpell extends BuffSpell {
 	private int fireTicks;
 	private int tickInterval;
 	private boolean targetPlayers;
+	private boolean checkPlugins;
 	
 	private HashSet<String> flamewalkers;
 	private Burner burner;
@@ -43,6 +44,7 @@ public class FlamewalkSpell extends BuffSpell {
 		fireTicks = config.getInt("spells." + spellName + ".fire-ticks", 80);
 		tickInterval = config.getInt("spells." + spellName + ".tick-interval", 100);
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
+		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		
 		flamewalkers = new HashSet<String>();
 	}
@@ -99,13 +101,16 @@ public class FlamewalkSpell extends BuffSpell {
 					for (Entity entity : entities) {
 						if (entity instanceof Player) {
 							if (entity != player && targetPlayers) {
-								EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.FIRE, 1);
-								Bukkit.getServer().getPluginManager().callEvent(event);
-								if (!event.isCancelled()) {
-									entity.setFireTicks(fireTicks);
-									addUse(player);
-									chargeUseCost(player);
+								if (checkPlugins) {
+									EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.FIRE, 1);
+									Bukkit.getServer().getPluginManager().callEvent(event);
+									if (event.isCancelled()) {
+										continue;
+									}
 								}
+								entity.setFireTicks(fireTicks);
+								addUse(player);
+								chargeUseCost(player);
 							}
 						} else if (entity instanceof LivingEntity) {
 							entity.setFireTicks(fireTicks);

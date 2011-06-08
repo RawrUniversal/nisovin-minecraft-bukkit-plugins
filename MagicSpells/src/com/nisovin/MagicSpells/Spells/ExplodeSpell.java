@@ -16,7 +16,7 @@ public class ExplodeSpell extends InstantSpell {
 	
 	private static final String SPELL_NAME = "explode";
 	
-	private boolean requireTntPerm;
+	private boolean checkPlugins;
 	private int explosionSize;
 	private int backfireChance;
 	private String strNoTarget;
@@ -34,7 +34,7 @@ public class ExplodeSpell extends InstantSpell {
 	public ExplodeSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		requireTntPerm = config.getBoolean("spells." + spellName + ".require-build-tnt-perm", true);
+		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		explosionSize = config.getInt("spells." + spellName + ".explosion-size", 4);
 		backfireChance = config.getInt("spells." + spellName + ".backfire-chance", 0);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "Cannot explode there.");
@@ -55,18 +55,18 @@ public class ExplodeSpell extends InstantSpell {
 						target = player.getLocation().getBlock();
 					}					
 				}
-				boolean goAhead = true;
-				if (requireTntPerm) {
-					// check permissions
-					//BlockCanBuildEvent event = new BlockCanBuildEvent(target, Material.TNT.getId(), true);
-					//MagicSpells.plugin.getServer().getPluginManager().callEvent(event);
-					//if (!event.isBuildable()) {
-					//	goAhead = false;
-					//
+				if (checkPlugins) {
+					// check plugins
+					EntityTNTPrimed e = new EntityTNTPrimed(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ());
+					CraftTNTPrimed c = new CraftTNTPrimed(Bukkit.getServer(), e);
+					ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize, false);
+					Bukkit.getServer().getPluginManager().callEvent(event);
+					if (event.isCancelled()) {
+						sendMessage(player, strNoTarget);
+						return false;
+					}
 				}
-				if (goAhead) {
-					createExplosion(target.getLocation(), explosionSize);
-				}
+				createExplosion(target.getLocation(), explosionSize);
 			}
 		}
 		return false;

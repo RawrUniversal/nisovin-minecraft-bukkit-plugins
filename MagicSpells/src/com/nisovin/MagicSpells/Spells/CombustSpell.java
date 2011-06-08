@@ -14,6 +14,7 @@ public class CombustSpell extends InstantSpell {
 	private boolean targetPlayers;
 	private int fireTicks;
 	private int precision;
+	private boolean checkPlugins;
 	private String strNoTarget;
 	
 	public static void load(Configuration config) {
@@ -32,6 +33,7 @@ public class CombustSpell extends InstantSpell {
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		fireTicks = config.getInt("spells." + spellName + ".fire-ticks", 100);
 		precision = config.getInt("spells." + spellName + ".precision", 20);
+		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "");
 	}
 	
@@ -43,6 +45,15 @@ public class CombustSpell extends InstantSpell {
 				sendMessage(player, strNoTarget);
 				return true;
 			} else {
+				if (target instanceof Player && checkPlugins) {
+					// call other plugins
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.FIRE_TICK, 1);
+					Bukkit.getServer().getPluginManager().callEvent(event);
+					if (event.isCancelled()) {
+						sendMessage(player, strNoTarget);
+						return true;
+					}
+				}
 				target.setFireTicks(fireTicks);
 				// TODO: manually send messages with replacements
 			}

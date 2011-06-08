@@ -21,6 +21,7 @@ public class FirenovaSpell extends InstantSpell {
 
 	private int fireRings;
 	private int tickSpeed;
+	private boolean checkPlugins;
 	
 	private HashSet<Player> fireImmunity;
 	
@@ -40,6 +41,7 @@ public class FirenovaSpell extends InstantSpell {
 		
 		fireRings = config.getInt("spells." + spellName + ".fire-rings", 5);
 		tickSpeed = config.getInt("spells." + spellName + ".tick-speed", 5);
+		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		
 		fireImmunity = new HashSet<Player>();
 	}
@@ -55,11 +57,27 @@ public class FirenovaSpell extends InstantSpell {
 
 	@Override
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player && (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK)) {
-			Player p = (Player)event.getEntity();
-			if (fireImmunity.contains(p)) {
+		if (event.getEntity() instanceof Player && (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK) && fireImmunity.size() > 0) {
+			Player player = (Player)event.getEntity();
+			if (fireImmunity.contains(player)) {
+				// caster is taking damage, cancel it
 				event.setCancelled(true);
-				p.setFireTicks(0);
+				player.setFireTicks(0);
+			} else if (checkPlugins) {
+				// check if nearby players are taking damage
+				Vector v = player.getLocation().toVector();
+				for (Player p : fireImmunity) {
+					if (p.getLocation().toVector().distanceSquared(v) < fireRings*fireRings) {
+						// nearby, check plugins for pvp
+						EntityDamageByEntityEvent evt = new EntityDamageByEntityEvent(p, player, DamageCause.ENTITY_ATTACK, event.getDamage());
+						Bukkit.getServer().callEvent(evt);
+						if (evt.isCancelled()) {
+							event.setCancelled(true);
+							player.setFireTicks(0);
+							break;
+						}
+					}
+				}
 			}
 		}
 	}

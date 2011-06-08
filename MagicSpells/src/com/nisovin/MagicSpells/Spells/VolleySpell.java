@@ -47,10 +47,11 @@ public class VolleySpell extends InstantSpell {
 			if (target == null || target.getType() == Material.AIR) {
 				sendMessage(player, strNoTarget);
 				return true;
-			} else {
+			} else {				
 				Vector v = target.getLocation().toVector().subtract(spawn.toVector()).normalize();
 				for (int i = 0; i < arrows; i++) {
-					player.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
+					Arrow a = player.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
+					((CraftArrow)a).getHandle().shooter = ((CraftPlayer)player).getHandle();
 				}
 			}
 		}
