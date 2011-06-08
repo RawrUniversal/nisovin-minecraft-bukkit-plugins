@@ -169,6 +169,8 @@ public class Spellbook {
 			if (castItem > 0) {
 				item = castItem;
 				customBindings.put(spell, castItem);
+			} else if (MagicSpells.ignoreDefaultBindings) {
+				return; // no cast item provided and ignoring default, so just stop here
 			}
 			ArrayList<Spell> temp = itemSpells.get(item);
 			if (temp != null) {

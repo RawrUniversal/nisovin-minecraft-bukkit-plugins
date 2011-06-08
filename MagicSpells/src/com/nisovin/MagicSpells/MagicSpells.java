@@ -28,6 +28,7 @@ public class MagicSpells extends JavaPlugin {
 	public static boolean opsHaveAllSpells;
 	public static List<String> castForFree;
 	public static boolean freecastNoCooldown;
+	public static boolean ignoreDefaultBindings;
 	public static String strCastUsage;
 	public static String strUnknownSpell;
 	public static String strSpellChange;
@@ -87,6 +88,7 @@ public class MagicSpells extends JavaPlugin {
 			}
 		}
 		freecastNoCooldown = config.getBoolean("general.freecast-no-cooldown", true);
+		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
 		
 		// load permissions
 		if (config.getBoolean("general.use-permissions", false)) {
@@ -100,6 +102,7 @@ public class MagicSpells extends JavaPlugin {
 		EntombSpell.load(config);
 		ExplodeSpell.load(config);
 		FireballSpell.load(config);
+		FirenovaSpell.load(config);
 		FlamewalkSpell.load(config);
 		ForcepushSpell.load(config);
 		ForgetSpell.load(config);
@@ -110,6 +113,7 @@ public class MagicSpells extends JavaPlugin {
 		InvulnerabilitySpell.load(config);
 		LifewalkSpell.load(config);
 		LightningSpell.load(config);
+		LightwalkSpell.load(config);
 		ListSpell.load(config);
 		MarkSpell.load(config);
 		PrayerSpell.load(config);
@@ -117,6 +121,7 @@ public class MagicSpells extends JavaPlugin {
 		RecallSpell.load(config);
 		SafefallSpell.load(config);
 		SpellbookSpell.load(config);
+		StonevisionSpell.load(config);
 		TeachSpell.load(config);
 		TelekinesisSpell.load(config);
 		VolleySpell.load(config);
