@@ -54,7 +54,7 @@ public class RecallSpell extends CommandSpell {
 					// can't cross worlds
 					sendMessage(player, strOtherWorld);
 					return true;
-				} else if (maxRange > 0 && mark.toVector().distanceSquared(player.getLocation().toVector()) > maxRange) {
+				} else if (maxRange > 0 && mark.toVector().distanceSquared(player.getLocation().toVector()) > maxRange*maxRange) {
 					// too far
 					sendMessage(player, strTooFar);
 					return true;
