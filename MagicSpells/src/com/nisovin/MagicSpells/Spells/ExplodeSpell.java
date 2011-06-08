@@ -66,14 +66,14 @@ public class ExplodeSpell extends InstantSpell {
 						return false;
 					}
 				}
-				createExplosion(target.getLocation(), explosionSize);
+				createExplosion(player, target.getLocation(), explosionSize);
 			}
 		}
 		return false;
 	}
 	
-	public void createExplosion(Location location, float size) {
-		((CraftWorld)location.getWorld()).getHandle().createExplosion(null, location.getX(), location.getY(), location.getZ(), size, false);
+	public void createExplosion(Player player, Location location, float size) {
+		((CraftWorld)location.getWorld()).getHandle().createExplosion(checkPlugins?((CraftPlayer)player).getHandle():null, location.getX(), location.getY(), location.getZ(), size, false);
 	}
 	
 }
