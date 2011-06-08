@@ -245,6 +245,26 @@ spells:
         str-cast-self: You feel your skin harden.
         str-cast-others: "%a's skin hardens."
         str-fade: You feel your skin return to normal.
+    lifewalk:
+        name: lifewalk
+        description: Flowers grow in your footsteps!
+        cast-item: 317
+        tick-interval: 15
+        red-flower-chance: 15
+        yellow-flower-chance: 15
+        sapling-chance: 5
+        tallgrass-chance: 25
+        fern-chance: 15
+        cost:
+            - 331 2
+            - 38 1
+        use-cost:
+            - 331 1
+        use-cost-interval: 20
+        str-cost: 2 redstone and 1 rose, plus 1 redstone every few seconds
+        str-cast: Flowers grow in your footsteps!
+        str-cast-others: Flowers grow in %a's footsteps!
+        str-fade: Flowers no longer grow in your footsteps.
     lightning:
         name: lightning
         description: Call down lightning.
