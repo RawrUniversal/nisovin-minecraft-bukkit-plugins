@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -295,6 +296,7 @@ public abstract class Spell implements Comparable<Spell> {
 	public void onPlayerMove(PlayerMoveEvent event) {}
 	public void onEntityDamage(EntityDamageEvent event) {}	
 	public void onEntityTarget(EntityTargetEvent event) {}	
+	public void onExplosionPrime(ExplosionPrimeEvent event) {}	
 	public void onBlockBreak(BlockBreakEvent event) {}
 	public void onBlockPlace(BlockPlaceEvent event) {}
 	

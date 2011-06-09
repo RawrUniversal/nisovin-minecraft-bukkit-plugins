@@ -18,7 +18,11 @@ public class FireballSpell extends InstantSpell {
 
 	private static final String SPELL_NAME = "fireball";
 	
+	private boolean noExplosion;
+	private boolean noFire;
 	private String strNoTarget;
+	
+	private HashSet<EntityFireball> fireballs;
 	
 	public static void load(Configuration config) {
 		load(config, SPELL_NAME);
@@ -33,7 +37,12 @@ public class FireballSpell extends InstantSpell {
 	public FireballSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
+		noExplosion = config.getBoolean("spells." + spellName + ".no-explosion", false);
+		noFire = config.getBoolean("spells." + spellName + ".no-fire", false);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You cannot throw a fireball there.");
+		
+		fireballs = new HashSet<EntityFireball>();
+		addListener(Event.Type.EXPLOSION_PRIME);
 	}
 
 	@Override
@@ -55,9 +64,31 @@ public class FireballSpell extends InstantSpell {
 				Vector v = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(2));
 				fireball.setPosition(v.getX(), v.getY(), v.getZ());
 				((CraftWorld)player.getWorld()).getHandle().addEntity(fireball);
+				fireballs.add(fireball);
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public void onExplosionPrime(ExplosionPrimeEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		
+		if (((CraftEntity)event.getEntity()).getHandle() instanceof EntityFireball) {
+			EntityFireball fireball = (EntityFireball)(((CraftEntity)event.getEntity()).getHandle());
+			if (fireballs.contains(fireball)) {
+				if (noExplosion) {
+					event.setCancelled(true);
+				} else if (noFire) {
+					event.setFire(false);
+				} else {
+					event.setFire(true);
+				}
+				fireballs.remove(fireball);
+			}
+		}
 	}
 	
 	
