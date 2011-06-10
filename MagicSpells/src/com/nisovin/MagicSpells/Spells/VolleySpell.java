@@ -1,8 +1,13 @@
 package com.nisovin.MagicSpells.Spells;
 
+import net.minecraft.server.EntityArrow;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.entity.CraftArrow;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
@@ -51,7 +56,7 @@ public class VolleySpell extends InstantSpell {
 				Vector v = target.getLocation().toVector().subtract(spawn.toVector()).normalize();
 				for (int i = 0; i < arrows; i++) {
 					Arrow a = player.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
-					((CraftArrow)a).getHandle().shooter = ((CraftPlayer)player).getHandle();
+					((EntityArrow)((CraftArrow)a).getHandle()).shooter = ((CraftPlayer)player).getHandle();
 				}
 			}
 		}

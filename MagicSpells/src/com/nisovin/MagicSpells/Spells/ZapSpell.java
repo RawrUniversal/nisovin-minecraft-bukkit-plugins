@@ -45,7 +45,7 @@ public class ZapSpell extends InstantSpell {
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get targeted block
-			Block target = player.getTargetBlock(null, range>0?range:500);
+			Block target = player.getTargetBlock(null, range>0?range:100);
 			if (target != null) {
 				// check for disallowed block
 				for (int i = 0; i < disallowedBlockTypes.length; i++) {
@@ -64,7 +64,6 @@ public class ZapSpell extends InstantSpell {
 				} else {
 					// drop block
 					if (dropBlock) {
-						// TODO: fix this
 						target.getWorld().dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1, target.getData()));
 					}
 					// remove block

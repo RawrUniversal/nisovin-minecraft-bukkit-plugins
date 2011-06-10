@@ -136,6 +136,7 @@ spells:
         cast-item: 283
         cooldown: 15
         range: 30
+        no-fire: false
         cost: 
             - 331 3
             - 263 2
@@ -299,6 +300,7 @@ spells:
         str-cost: 2 redstone dust
         str-cast-self: You call down lightning.
         str-cast-others: "%a calls down lightning."
+        str-no-target: Unable to find target.
     lightwalk:
         name: lightwalk
         description: Light your path.

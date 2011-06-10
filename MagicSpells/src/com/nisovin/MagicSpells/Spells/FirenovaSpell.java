@@ -8,8 +8,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.InstantSpell;
@@ -68,7 +70,7 @@ public class FirenovaSpell extends InstantSpell {
 					if (p.getLocation().toVector().distanceSquared(v) < range*range) {
 						// nearby, check plugins for pvp
 						EntityDamageByEntityEvent evt = new EntityDamageByEntityEvent(p, player, DamageCause.ENTITY_ATTACK, event.getDamage());
-						Bukkit.getServer().callEvent(evt);
+						Bukkit.getServer().getPluginManager().callEvent(evt);
 						if (evt.isCancelled()) {
 							event.setCancelled(true);
 							player.setFireTicks(0);

@@ -2,11 +2,18 @@ package com.nisovin.MagicSpells.Spells;
 
 import java.util.Random;
 
+import net.minecraft.server.EntityTNTPrimed;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.InstantSpell;
@@ -58,7 +65,7 @@ public class ExplodeSpell extends InstantSpell {
 				if (checkPlugins) {
 					// check plugins
 					EntityTNTPrimed e = new EntityTNTPrimed(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ());
-					CraftTNTPrimed c = new CraftTNTPrimed(Bukkit.getServer(), e);
+					CraftTNTPrimed c = new CraftTNTPrimed((CraftServer)Bukkit.getServer(), e);
 					ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize, false);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {

@@ -102,7 +102,7 @@ public class FlamewalkSpell extends BuffSpell {
 						if (entity instanceof Player) {
 							if (entity != player && targetPlayers) {
 								if (checkPlugins) {
-									EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.FIRE, 1);
+									EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, 1);
 									Bukkit.getServer().getPluginManager().callEvent(event);
 									if (event.isCancelled()) {
 										continue;

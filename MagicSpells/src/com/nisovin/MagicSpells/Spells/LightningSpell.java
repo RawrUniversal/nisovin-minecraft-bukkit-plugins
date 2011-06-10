@@ -1,7 +1,11 @@
 package com.nisovin.MagicSpells.Spells;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.MagicSpells;
@@ -17,6 +21,7 @@ public class LightningSpell extends InstantSpell {
 	private boolean checkPlugins;
 	private boolean noDamage;
 	private String strCastFail;
+	private String strNoTarget;
 	
 	public static void load(Configuration config) {
 		load(config, SPELL_NAME);
@@ -37,6 +42,7 @@ public class LightningSpell extends InstantSpell {
 		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		noDamage = config.getBoolean("spells." + spellName + ".no-damage", false);
 		strCastFail = config.getString("spells." + spellName + ".str-cast-fail", "");
+		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "Unable to find target.");
 	}
 
 	@Override
@@ -46,14 +52,17 @@ public class LightningSpell extends InstantSpell {
 			if (requireEntityTarget) {
 				LivingEntity e = getTargetedEntity(player, range>0?range:100, precision, targetPlayers);
 				if (e != null && e instanceof Player && checkPlugins) {
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, e, DamageCause.FIRE, 1);
-					Bukkit.getServer().callEvent(event);
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, e, DamageCause.ENTITY_ATTACK, 1);
+					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						e = null;
 					}					
 				}
 				if (e != null) {
 					target = e.getLocation().getBlock();
+				} else {
+					sendMessage(player, strNoTarget);
+					return true;
 				}
 			} else {
 				target = player.getTargetBlock(null, range>0?range:500);

@@ -1,13 +1,19 @@
 package com.nisovin.MagicSpells.Spells;
 
+import java.util.HashSet;
+
 import net.minecraft.server.EntityFireball;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
@@ -81,6 +87,32 @@ public class FireballSpell extends InstantSpell {
 			if (fireballs.contains(fireball)) {
 				if (noExplosion) {
 					event.setCancelled(true);
+					Location loc = fireball.getBukkitEntity().getLocation();
+					final HashSet<Block> fires = new HashSet<Block>();
+					for (int x = loc.getBlockX()-1; x <= loc.getBlockX()+1; x++) {
+						for (int y = loc.getBlockY()-1; y <= loc.getBlockY()+1; y++) {
+							for (int z = loc.getBlockZ()-1; z <= loc.getBlockZ()+1; z++) {
+								if (loc.getWorld().getBlockTypeIdAt(x,y,z) == 0) {
+									Block b = loc.getWorld().getBlockAt(x,y,z);
+									b.setTypeIdAndData(Material.FIRE.getId(), (byte)15, false);
+									fires.add(b);
+								}
+							}
+						}						
+					}
+					fireball.die();
+					if (fires.size() > 0) {
+						Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+							@Override
+							public void run() {
+								for (Block b : fires) {
+									if (b.getType() == Material.FIRE) {
+										b.setType(Material.AIR);
+									}
+								}
+							}							
+						}, 20);
+					}
 				} else if (noFire) {
 					event.setFire(false);
 				} else {

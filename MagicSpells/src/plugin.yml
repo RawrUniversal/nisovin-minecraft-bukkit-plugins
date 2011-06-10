@@ -1,6 +1,7 @@
 name: MagicSpells
 main: com.nisovin.MagicSpells.MagicSpells
-version: 0.5
+version: 0.6
+author: nisovin
 commands:
     cast:
         description: Cast a spell

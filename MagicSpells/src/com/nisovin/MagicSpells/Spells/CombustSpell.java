@@ -1,7 +1,10 @@
 package com.nisovin.MagicSpells.Spells;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.MagicSpells;
@@ -47,7 +50,7 @@ public class CombustSpell extends InstantSpell {
 			} else {
 				if (target instanceof Player && checkPlugins) {
 					// call other plugins
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.FIRE_TICK, 1);
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, 1);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
