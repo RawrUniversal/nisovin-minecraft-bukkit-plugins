@@ -1,5 +1,6 @@
 package com.nisovin.MagicSpells;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -54,60 +55,49 @@ public abstract class InstantSpell extends Spell {
 	}
 	
 	protected LivingEntity getTargetedEntity(Player player, int range, int variance, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos) {
-		// check LOS
-		/*if (checkLos) {
-			BlockIterator i = new BlockIterator(player, range);
-			int r = 0;
-			Block b;
-			while (i.hasNext()) {
-				b = i.next();
-				if (!MagicSpells.losTransparentBlocks.contains(b.getTypeId())) {
-					range = r;
-					break;
-				} else {
-					r++;
+		// get nearby living entities, filtered by player targeting options
+		List<Entity> ne = player.getNearbyEntities(range, range, range);
+		ArrayList<LivingEntity> entities = new ArrayList<LivingEntity>(); 
+		for (Entity e : ne) {
+			if (e instanceof LivingEntity) {
+				if ((targetPlayers || !(e instanceof Player)) && (targetNonPlayers || e instanceof Player)) {
+					entities.add((LivingEntity)e);
 				}
 			}
-		}*/
+		}
 		
-		List<Entity> entities = player.getNearbyEntities(range, range, range);
-		
-		double px = player.getLocation().getX();
-		double py = player.getLocation().getY();
-		double pz = player.getLocation().getZ();
-				
+		// find target
 		LivingEntity target = null;
-		double distance = 0;
-		double dx, dy, dz, dist, xzAngle, yAngle;
-		for (Entity entity : entities) {
-			if (entity instanceof LivingEntity) {
-				dx = entity.getLocation().getX() - px;
-				dy = entity.getLocation().getY() - py;
-				dz = entity.getLocation().getZ() - pz;
-				if (/*Math.abs(dx) < range && Math.abs(dy) < range && Math.abs(dz) < range &&*/ (targetPlayers || !(entity instanceof Player)) && (targetNonPlayers || entity instanceof Player)) {
-					dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
-					xzAngle = Math.atan2(entity.getLocation().getZ() - player.getLocation().getZ(), entity.getLocation().getX() - player.getLocation().getX()) * 57.295F - 90;
-					yAngle = Math.asin(dy / dist) * -57.295F;
-					
-					if (angleDiff(xzAngle, player.getLocation().getYaw()) < variance && Math.abs(yAngle - player.getLocation().getPitch()) < variance && (target == null || dist < distance)) {
-						target = (LivingEntity)entity;
-						distance = dist;
-					}			
-				}	
+		BlockIterator bi = new BlockIterator(player, range);
+		Block b;
+		Location l;
+		int bx, by, bz;
+		double ex, ey, ez;
+		// loop through player's line of sight
+		while (bi.hasNext()) {
+			b = bi.next();
+			bx = b.getX();
+			by = b.getY();
+			bz = b.getZ();			
+			if (checkLos && !MagicSpells.losTransparentBlocks.contains(b.getTypeId())) {
+				// line of sight is broken, stop without target
+				break;
+			} else {
+				// check for entities near this block in the line of sight
+				for (LivingEntity e : entities) {
+					l = e.getLocation();
+					ex = l.getX();
+					ey = l.getY();
+					ez = l.getZ();
+					if ((bx-.75 <= ex && ex <= bx+1.75) && (bz-.75 <= ez && ez <= bz+1.75) && (by-1 <= ey && ey <= by+2.5)) {
+						// entity is close enough, set target and stop
+						target = e;
+						break;
+					}
+				}
 			}
 		}
 		
-		entities = null;
-		
 		return target;
-	}
-
-	private double angleDiff(double angle1, double angle2) {
-		double a = Math.abs(angle1-angle2) % 360;
-		if (a <= 180) {
-			return a;
-		} else {
-			return 360-a;
-		}
 	}
 }
