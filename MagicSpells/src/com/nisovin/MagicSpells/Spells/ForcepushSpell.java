@@ -49,7 +49,7 @@ public class ForcepushSpell extends InstantSpell {
 	
 	public void knockback(Player player, int range, boolean targetPlayers) {
 	    Vector p = player.getLocation().toVector();
-		List<Entity> entities = player.getNearbyEntities(range*2, range*2, range*2);
+		List<Entity> entities = player.getNearbyEntities(range, range, range);
 		Vector e, v;
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity && (targetPlayers || !(entity instanceof Player))) {

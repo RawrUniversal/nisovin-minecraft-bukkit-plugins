@@ -97,7 +97,7 @@ public class FlamewalkSpell extends BuffSpell {
 			for (String s : flamewalkers) {
 				Player player = Bukkit.getServer().getPlayer(s);
 				if (player != null) {
-					List<Entity> entities = player.getNearbyEntities(range*2, range*2, range*2);
+					List<Entity> entities = player.getNearbyEntities(range, range, range);
 					for (Entity entity : entities) {
 						if (entity instanceof Player) {
 							if (entity != player && targetPlayers) {
