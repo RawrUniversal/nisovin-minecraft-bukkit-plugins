@@ -13,6 +13,7 @@ public class HealSpell extends InstantSpell {
 	
 	private int healAmount;
 	private int precision;
+	private boolean obeyLos;
 	private String strNoTarget;
 	private String strMaxHealth;
 	private String strCastTarget;
@@ -32,6 +33,7 @@ public class HealSpell extends InstantSpell {
 		
 		healAmount = config.getInt("spells." + spellName + ".heal-amount", 10);
 		precision = config.getInt("spells." + spellName + ".precision", 15);
+		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No target to heal.");
 		strMaxHealth = config.getString("spells." + spellName + ".str-max-health", "%t is already at max health.");
 		strCastTarget = config.getString("spells." + spellName + ".str-cast-target", "%a healed you.");
@@ -40,7 +42,7 @@ public class HealSpell extends InstantSpell {
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Player target = getTargetedPlayer(player, range, precision);
+			Player target = getTargetedPlayer(player, range, precision, obeyLos);
 			if (target == null) {
 				sendMessage(player, strNoTarget);
 			} else if (target.getHealth() == 20) {

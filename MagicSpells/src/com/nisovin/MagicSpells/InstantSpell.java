@@ -3,8 +3,11 @@ package com.nisovin.MagicSpells;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.config.Configuration;
 
 public abstract class InstantSpell extends Spell {
@@ -37,12 +40,12 @@ public abstract class InstantSpell extends Spell {
 		return n*n;
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, int range, int variance, boolean targetPlayers) {
-		return getTargetedEntity(player, range, variance, targetPlayers, true);
+	protected LivingEntity getTargetedEntity(Player player, int range, int variance, boolean targetPlayers, boolean checkLos) {
+		return getTargetedEntity(player, range, variance, targetPlayers, true, checkLos);
 	}
 	
-	protected Player getTargetedPlayer(Player player, int range, int variance) {
-		LivingEntity entity = getTargetedEntity(player, range, variance, true, false);
+	protected Player getTargetedPlayer(Player player, int range, int variance, boolean checkLos) {
+		LivingEntity entity = getTargetedEntity(player, range, variance, true, false, checkLos);
 		if (entity instanceof Player) {
 			return (Player)entity;
 		} else {
@@ -50,8 +53,24 @@ public abstract class InstantSpell extends Spell {
 		}
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, int range, int variance, boolean targetPlayers, boolean targetNonPlayers) {
-		List<LivingEntity> entities = player.getWorld().getLivingEntities();
+	protected LivingEntity getTargetedEntity(Player player, int range, int variance, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos) {
+		// check LOS
+		/*if (checkLos) {
+			BlockIterator i = new BlockIterator(player, range);
+			int r = 0;
+			Block b;
+			while (i.hasNext()) {
+				b = i.next();
+				if (!MagicSpells.losTransparentBlocks.contains(b.getTypeId())) {
+					range = r;
+					break;
+				} else {
+					r++;
+				}
+			}
+		}*/
+		
+		List<Entity> entities = player.getNearbyEntities(range, range, range);
 		
 		double px = player.getLocation().getX();
 		double py = player.getLocation().getY();
@@ -60,20 +79,22 @@ public abstract class InstantSpell extends Spell {
 		LivingEntity target = null;
 		double distance = 0;
 		double dx, dy, dz, dist, xzAngle, yAngle;
-		for (LivingEntity entity : entities) {
-			dx = entity.getLocation().getX() - px;
-			dy = entity.getLocation().getY() - py;
-			dz = entity.getLocation().getZ() - pz;
-			if (Math.abs(dx) < range && Math.abs(dy) < range && Math.abs(dz) < range && (targetPlayers || !(entity instanceof Player)) && (targetNonPlayers || entity instanceof Player)) {
-				dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
-				xzAngle = Math.atan2(entity.getLocation().getZ() - player.getLocation().getZ(), entity.getLocation().getX() - player.getLocation().getX()) * 57.295F - 90;
-				yAngle = Math.asin(dy / dist) * -57.295F;
-				
-				if (angleDiff(xzAngle, player.getLocation().getYaw()) < variance && Math.abs(yAngle - player.getLocation().getPitch()) < variance && (target == null || dist < distance)) {
-					target = (LivingEntity)entity;
-					distance = dist;
-				}			
-			}	
+		for (Entity entity : entities) {
+			if (entity instanceof LivingEntity) {
+				dx = entity.getLocation().getX() - px;
+				dy = entity.getLocation().getY() - py;
+				dz = entity.getLocation().getZ() - pz;
+				if (/*Math.abs(dx) < range && Math.abs(dy) < range && Math.abs(dz) < range &&*/ (targetPlayers || !(entity instanceof Player)) && (targetNonPlayers || entity instanceof Player)) {
+					dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
+					xzAngle = Math.atan2(entity.getLocation().getZ() - player.getLocation().getZ(), entity.getLocation().getX() - player.getLocation().getX()) * 57.295F - 90;
+					yAngle = Math.asin(dy / dist) * -57.295F;
+					
+					if (angleDiff(xzAngle, player.getLocation().getYaw()) < variance && Math.abs(yAngle - player.getLocation().getPitch()) < variance && (target == null || dist < distance)) {
+						target = (LivingEntity)entity;
+						distance = dist;
+					}			
+				}	
+			}
 		}
 		
 		entities = null;

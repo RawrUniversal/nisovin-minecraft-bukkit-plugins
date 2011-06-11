@@ -18,6 +18,7 @@ public class EntombSpell extends InstantSpell {
 
 	private boolean targetPlayers;
 	private int precision;
+	private boolean obeyLos;
 	private int tombBlockType;
 	private int tombDuration;
 	private boolean closeTopAndBottom;
@@ -38,6 +39,7 @@ public class EntombSpell extends InstantSpell {
 
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		precision = config.getInt("spells." + spellName + ".precision", 20);
+		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
 		tombBlockType = config.getInt("spells." + spellName + ".tomb-block-type", Material.GLASS.getId());
 		tombDuration = config.getInt("spells." + spellName + ".tomb-duration", 20);
 		closeTopAndBottom = config.getBoolean("spells." + spellName + ".close-top-and-bottom", true);
@@ -47,7 +49,7 @@ public class EntombSpell extends InstantSpell {
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, range, precision, targetPlayers);
+			LivingEntity target = getTargetedEntity(player, range, precision, targetPlayers, obeyLos);
 			if (target != null) {
 				int x = target.getLocation().getBlockX();
 				int y = target.getLocation().getBlockY();

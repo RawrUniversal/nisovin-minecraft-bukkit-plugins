@@ -17,6 +17,7 @@ public class LightningSpell extends InstantSpell {
 	
 	private boolean requireEntityTarget;
 	private int precision;
+	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
 	private boolean noDamage;
@@ -38,6 +39,7 @@ public class LightningSpell extends InstantSpell {
 		
 		requireEntityTarget = config.getBoolean("spells." + spellName + ".require-entity-target", false);
 		precision = config.getInt("spells." + spellName + ".precision", 20);
+		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		noDamage = config.getBoolean("spells." + spellName + ".no-damage", false);
@@ -50,7 +52,7 @@ public class LightningSpell extends InstantSpell {
 		if (state == SpellCastState.NORMAL) {
 			Block target = null;
 			if (requireEntityTarget) {
-				LivingEntity e = getTargetedEntity(player, range>0?range:100, precision, targetPlayers);
+				LivingEntity e = getTargetedEntity(player, range>0?range:100, precision, targetPlayers, obeyLos);
 				if (e != null && e instanceof Player && checkPlugins) {
 					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, e, DamageCause.ENTITY_ATTACK, 1);
 					Bukkit.getServer().getPluginManager().callEvent(event);

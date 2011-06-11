@@ -3,12 +3,15 @@ package com.nisovin.MagicSpells;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
+
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,6 +32,7 @@ public class MagicSpells extends JavaPlugin {
 	public static List<String> castForFree;
 	public static boolean freecastNoCooldown;
 	public static boolean ignoreDefaultBindings;
+	public static List<Integer> losTransparentBlocks;
 	public static String strCastUsage;
 	public static String strUnknownSpell;
 	public static String strSpellChange;
@@ -89,6 +93,25 @@ public class MagicSpells extends JavaPlugin {
 		}
 		freecastNoCooldown = config.getBoolean("general.freecast-no-cooldown", true);
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
+		losTransparentBlocks = config.getIntList("general.los-transparent-blocks", null);
+		System.out.println(losTransparentBlocks);
+		if (losTransparentBlocks == null || losTransparentBlocks.size() == 0) {
+			System.out.println("loading default");
+			losTransparentBlocks = new ArrayList<Integer>();
+			losTransparentBlocks.add(Material.AIR.getId());
+			losTransparentBlocks.add(Material.TORCH.getId());
+			losTransparentBlocks.add(Material.REDSTONE_WIRE.getId());
+			losTransparentBlocks.add(Material.REDSTONE_TORCH_ON.getId());
+			losTransparentBlocks.add(Material.REDSTONE_TORCH_OFF.getId());
+			losTransparentBlocks.add(Material.YELLOW_FLOWER.getId());
+			losTransparentBlocks.add(Material.RED_ROSE.getId());
+			losTransparentBlocks.add(Material.BROWN_MUSHROOM.getId());
+			losTransparentBlocks.add(Material.RED_MUSHROOM.getId());
+			losTransparentBlocks.add(Material.LONG_GRASS.getId());
+			losTransparentBlocks.add(Material.DEAD_BUSH.getId());
+			losTransparentBlocks.add(Material.DIODE_BLOCK_ON.getId());
+			losTransparentBlocks.add(Material.DIODE_BLOCK_OFF.getId());
+		}
 		
 		// load permissions
 		if (config.getBoolean("general.use-permissions", false)) {
