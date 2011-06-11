@@ -13,6 +13,7 @@ public class ListSpell extends CommandSpell {
 	
 	private static final String SPELL_NAME = "list";
 	
+	private int lineLength = 60;
 	private String strNoSpells;
 	private String strPrefix;
 	
@@ -49,7 +50,15 @@ public class ListSpell extends CommandSpell {
 						s += ", " + spell.getName();
 					}
 				}
-				sendMessage(player, strPrefix + " " + s);
+				s = strPrefix + " " + s;
+				while (s.length() > lineLength) {
+					int i = s.substring(0, lineLength).lastIndexOf(' ');
+					sendMessage(player, s.substring(0, i));
+					s = s.substring(i+1);
+				}
+				if (s.length() > 0) {
+					sendMessage(player, s);
+				}
 			}
 			return true;
 		}		
