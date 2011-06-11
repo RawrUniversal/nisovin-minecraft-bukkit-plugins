@@ -1,5 +1,7 @@
 general:
-    str-cast-usage: "Usage: /cast <spell>. Use /cast list to see a list of spells."
+    str-cast-usage: |
+        Usage: /cast <spell>. 
+        Use /cast list to see a list of spells.
     str-unknown-spell: You do not know a spell with that name.
     str-spell-change: You are now using the %s spell.
     str-on-cooldown: That spell is on cooldown (%c seconds remaining).

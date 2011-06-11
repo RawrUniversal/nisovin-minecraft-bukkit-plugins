@@ -243,9 +243,14 @@ public abstract class Spell implements Comparable<Spell> {
 		return msg;
 	}
 	
-	protected void sendMessage(Player player, String message) {
+	static protected void sendMessage(Player player, String message) {
 		if (message != null && !message.equals("")) {
-			player.sendMessage(MagicSpells.textColor + message);
+			String [] msgs = message.replaceAll("&([0-9a-f])", "\u00A7$1").split("\n");
+			for (String msg : msgs) {
+				if (!msg.equals("")) {
+					player.sendMessage(MagicSpells.textColor + msg);
+				}
+			}
 		}
 	}
 	
@@ -255,10 +260,15 @@ public abstract class Spell implements Comparable<Spell> {
 	
 	protected void sendMessageNear(Player player, String message, int range) {
 		if (message != null && !message.equals("")) {
-			List<Entity> entities = player.getNearbyEntities(range/2, range/2, range/2);
+			String [] msgs = message.replaceAll("&([0-9a-f])", "\u00A7$1").split("\n");
+			List<Entity> entities = player.getNearbyEntities(range*2, range*2, range*2);
 			for (Entity entity : entities) {
 				if (entity instanceof Player && entity != player) {
-					((Player)entity).sendMessage(MagicSpells.textColor + message);
+					for (String msg : msgs) {
+						if (!msg.equals("")) {
+							((Player)entity).sendMessage(MagicSpells.textColor + msg);
+						}
+					}
 				}
 			}
 		}

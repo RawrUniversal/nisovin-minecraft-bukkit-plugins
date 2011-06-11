@@ -183,7 +183,11 @@ public class MagicSpells extends JavaPlugin {
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
 		if (command.getName().equalsIgnoreCase("cast")) {
 			if (args == null || args.length == 0) {
-				sender.sendMessage(textColor + strCastUsage);
+				if (sender instanceof Player) {
+					Spell.sendMessage((Player)sender, strCastUsage);
+				} else {
+					sender.sendMessage(textColor + strCastUsage);
+				}
 			} else if (sender.isOp() && args[0].equals("reload")) {
 				onDisable();
 				load();
@@ -205,7 +209,7 @@ public class MagicSpells extends JavaPlugin {
 					}
 					spell.cast(player, spellArgs);
 				} else {
-					player.sendMessage(textColor + strUnknownSpell);
+					Spell.sendMessage(player, strUnknownSpell);
 				}
 			} else { // not a player
 				Spell spell = spellNames.get(args[0]);
