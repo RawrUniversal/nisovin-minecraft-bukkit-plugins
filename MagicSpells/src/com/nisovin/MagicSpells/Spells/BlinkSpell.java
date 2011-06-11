@@ -66,7 +66,7 @@ public class BlinkSpell extends InstantSpell {
 				} else if (found.getRelative(0,1,0).getType() == Material.AIR && found.getRelative(0,2,0).getType() == Material.AIR) {
 					loc = found.getLocation();
 					loc.setY(loc.getY() + 1);
-				} else if (prev.getType() == Material.AIR && prev.getRelative(0,1,0).getType() == Material.AIR) {
+				} else if (prev != null && prev.getType() == Material.AIR && prev.getRelative(0,1,0).getType() == Material.AIR) {
 					loc = prev.getLocation();
 				}
 				if (loc != null) {
