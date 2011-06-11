@@ -388,7 +388,7 @@ spells:
             - 331 4
             - 1 2
             - 20 2
-        str-cost: 4 redstonedust, 2 stone and 2 glass
+        str-cost: 4 redstone dust, 2 stone and 2 glass
         str-cast-self: You can see through stone!
         str-fade: You can no longer see through stone.
     telekinesis:

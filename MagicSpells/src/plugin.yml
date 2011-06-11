@@ -1,6 +1,6 @@
 name: MagicSpells
 main: com.nisovin.MagicSpells.MagicSpells
-version: 0.6
+version: 0.6.1
 author: nisovin
 commands:
     cast:
