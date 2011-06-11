@@ -15,6 +15,8 @@ public class HelpSpell extends CommandSpell {
 	
 	private String strUsage;
 	private String strNoSpell;
+	private String strDescLine;
+	private String strCostLine;
 	
 	public static void load(Configuration config) {
 		load(config, SPELL_NAME);
@@ -31,6 +33,8 @@ public class HelpSpell extends CommandSpell {
 		
 		strUsage = config.getString("spells." + spellName + ".str-usage", "Usage: /cast " + name + " <spell>");
 		strNoSpell = config.getString("spells." + spellName + ".str-no-spell", "You do not know a spell by that name.");
+		strDescLine = config.getString("spells." + spellName + ".str-desc-line", "%s - %d");
+		strCostLine = config.getString("spells." + spellName + ".str-cost-line", "Cost: %c");
 	}
 
 	@Override
@@ -44,9 +48,9 @@ public class HelpSpell extends CommandSpell {
 				if (spell == null || spellbook == null || !spellbook.hasSpell(spell)) {
 					sendMessage(player, strNoSpell);
 				} else {
-					sendMessage(player, spell.getName() + " - " + spell.getDescription());
+					sendMessage(player, formatMessage(strDescLine, "%s", spell.getName(), "%d", spell.getDescription()));
 					if (spell.getCostStr() != null && !spell.getCostStr().equals("")) {
-						sendMessage(player, "Cost: " + spell.getCostStr());
+						sendMessage(player, formatMessage(strCostLine, "%c", spell.getCostStr()));
 					}
 				}
 			}

@@ -31,6 +31,8 @@ spells:
         description: Get information about a specified spell.
         str-usage: "Usage: /cast help <spell>"
         str-no-spell: You do not know a spell by that name.
+        str-desc-line: "%s - %d"
+        str-cost-line: "Cost: %c"
     teach:
         name: teach
         description: Teach a spell to another player.
