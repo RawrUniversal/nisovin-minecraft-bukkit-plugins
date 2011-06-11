@@ -82,6 +82,7 @@ spells:
         cast-item: 280
         cooldown: 8
         range: 25
+        smoke-trail: true
         cost:
             - 331 2
         str-cost: 2 redstone dust

@@ -1,5 +1,8 @@
 package com.nisovin.MagicSpells.Spells;
 
+import java.util.HashSet;
+
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,6 +16,7 @@ public class BlinkSpell extends InstantSpell {
 	
 	private static final String SPELL_NAME = "blink";
 	
+	private boolean smokeTrail;
 	private String strCantBlink = null;
 	
 	public static void load(Configuration config) {
@@ -29,12 +33,17 @@ public class BlinkSpell extends InstantSpell {
 	public BlinkSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
+		smokeTrail = config.getBoolean("spells." + spellName + ".smoke-trail", true);
 		strCantBlink = config.getString("spells." + spellName + ".str-cant-blink", "You can't blink there.");
 	}
 	
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			BlockIterator iter = new BlockIterator(player, range>0&&range<150?range:150);
+			HashSet<Location> smokes = null;
+			if (smokeTrail) {
+				smokes = new HashSet<Location>();
+			}
 			Block prev = null;
 			Block found = null;
 			Block b;
@@ -42,6 +51,9 @@ public class BlinkSpell extends InstantSpell {
 				b = iter.next();
 				if (b.getType() == Material.AIR) {
 					prev = b;
+					if (smokeTrail) {
+						smokes.add(b.getLocation());
+					}
 				} else {
 					found = b;
 					break;
@@ -63,6 +75,11 @@ public class BlinkSpell extends InstantSpell {
 					loc.setPitch(player.getLocation().getPitch());
 					loc.setYaw(player.getLocation().getYaw());
 					player.teleport(loc);
+					if (smokeTrail) {
+						for (Location l : smokes) {
+							l.getWorld().playEffect(l, Effect.SMOKE, 100);
+						}
+					}
 				} else {
 					sendMessage(player, strCantBlink);
 					return true;
