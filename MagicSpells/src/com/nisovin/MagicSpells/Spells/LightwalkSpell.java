@@ -56,11 +56,17 @@ public class LightwalkSpell extends BuffSpell {
 			Block oldBlock = lightwalkers.get(p.getName());
 			Block newBlock = p.getLocation().getBlock().getFace(BlockFace.DOWN);
 			if ((oldBlock == null || !oldBlock.equals(newBlock)) && allowedType(newBlock.getType()) && newBlock.getType() != Material.AIR) {
-				if (oldBlock != null) {
-					p.sendBlockChange(oldBlock.getLocation(), oldBlock.getType(), oldBlock.getData());
+				if (isExpired(p)) {
+					turnOff(p);
+				} else {
+					if (oldBlock != null) {
+						p.sendBlockChange(oldBlock.getLocation(), oldBlock.getType(), oldBlock.getData());
+					}
+					p.sendBlockChange(newBlock.getLocation(), Material.GLOWSTONE, (byte)0);
+					lightwalkers.put(p.getName(), newBlock);
+					addUse(p);
+					chargeUseCost(p);
 				}
-				p.sendBlockChange(newBlock.getLocation(), Material.GLOWSTONE, (byte)0);
-				lightwalkers.put(p.getName(), newBlock);
 			}
 		}
 	}

@@ -100,6 +100,10 @@ public class LifewalkSpell extends BuffSpell {
 			for (String s : lifewalkers) {
 				Player player = Bukkit.getServer().getPlayer(s);
 				if (player != null) {
+					if (isExpired(player)) {
+						turnOff(player);
+						continue;
+					}
 					Block feet = player.getLocation().getBlock();
 					Block ground = feet.getRelative(BlockFace.DOWN);
 					if (feet.getType() == Material.AIR && (ground.getType() == Material.DIRT || ground.getType() == Material.GRASS)) {

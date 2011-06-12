@@ -58,8 +58,16 @@ public class StonevisionSpell extends BuffSpell {
 	
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
-		if (seers.containsKey(event.getPlayer().getName())) {
-			seers.get(event.getPlayer().getName()).moveTransparency();
+		Player p = event.getPlayer();
+		if (seers.containsKey(p.getName())) {
+			if (isExpired(p)) {
+				turnOff(p);
+			}
+			boolean moved = seers.get(p.getName()).moveTransparency();
+			if (moved) {
+				addUse(p);
+				chargeUseCost(p);
+			}
 		}
 	}
 	
@@ -128,7 +136,7 @@ public class StonevisionSpell extends BuffSpell {
 			
 		}
 		
-		public void moveTransparency() {
+		public boolean moveTransparency() {
 			if (player.isDead()) {
 				player = Bukkit.getServer().getPlayer(player.getName());
 			}
@@ -137,7 +145,9 @@ public class StonevisionSpell extends BuffSpell {
 				// moved
 				this.center = loc.getBlock();
 				setTransparency();
+				return true;
 			}
+			return false;
 		}
 		
 		public void removeTransparency() {
