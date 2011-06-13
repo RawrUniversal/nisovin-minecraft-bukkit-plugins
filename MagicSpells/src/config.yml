@@ -141,6 +141,7 @@ spells:
         cast-item: 283
         cooldown: 15
         range: 30
+        additional-damage: 0
         no-fire: false
         cost: 
             - 331 3

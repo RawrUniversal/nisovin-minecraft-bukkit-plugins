@@ -24,6 +24,7 @@ public class FireballSpell extends InstantSpell {
 
 	private static final String SPELL_NAME = "fireball";
 	
+	private int additionalDamage;
 	private boolean noExplosion;
 	private boolean noFire;
 	private String strNoTarget;
@@ -43,12 +44,16 @@ public class FireballSpell extends InstantSpell {
 	public FireballSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
+		additionalDamage = config.getInt("spells." + spellName + ".additional-damage", 0);
 		noExplosion = config.getBoolean("spells." + spellName + ".no-explosion", false);
 		noFire = config.getBoolean("spells." + spellName + ".no-fire", false);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You cannot throw a fireball there.");
 		
 		fireballs = new HashSet<EntityFireball>();
 		addListener(Event.Type.EXPLOSION_PRIME);
+		if (additionalDamage > 0) {
+			addListener(Event.Type.ENTITY_DAMAGE);
+		}
 	}
 
 	@Override
@@ -123,5 +128,17 @@ public class FireballSpell extends InstantSpell {
 		}
 	}
 	
+	@Override
+	public void onEntityDamage(EntityDamageEvent event) {
+		if (!event.isCancelled() && event instanceof EntityDamageByProjectileEvent) {
+			EntityDamageByProjectileEvent evt = (EntityDamageByProjectileEvent)event;
+			if (((CraftEntity)evt.getProjectile()).getHandle() instanceof EntityFireball && evt.getDamager() instanceof Player) {
+				EntityFireball fireball = (EntityFireball)(((CraftEntity)evt.getProjectile()).getHandle());
+				if (fireballs.contains(fireball)) {
+					event.setDamage(event.getDamage() + additionalDamage);
+				}
+			}
+		}
+	}
 	
 }
