@@ -3,6 +3,7 @@ package com.nisovin.MagicSpells.Spells;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -65,9 +66,9 @@ public class FirenovaSpell extends InstantSpell {
 				player.setFireTicks(0);
 			} else if (checkPlugins) {
 				// check if nearby players are taking damage
-				Vector v = player.getLocation().toVector();
+				Location loc = player.getLocation();
 				for (Player p : fireImmunity) {
-					if (p.getLocation().toVector().distanceSquared(v) < range*range) {
+					if (Math.abs(p.getLocation().getX() - loc.getX()) < range+2 && Math.abs(p.getLocation().getZ() - loc.getZ()) < range+2 && Math.abs(p.getLocation().getY() - loc.getY()) < range) {
 						// nearby, check plugins for pvp
 						EntityDamageByEntityEvent evt = new EntityDamageByEntityEvent(p, player, DamageCause.ENTITY_ATTACK, event.getDamage());
 						Bukkit.getServer().getPluginManager().callEvent(evt);
@@ -133,10 +134,11 @@ public class FirenovaSpell extends InstantSpell {
 						}
 					}
 				}
-			} else {				
+			} else if (i > range+1) {
 				// stop if done
 				Bukkit.getServer().getScheduler().cancelTask(taskId);
 				fireImmunity.remove(player);
+				System.out.println("yes");
 			}
 		}
 	}
