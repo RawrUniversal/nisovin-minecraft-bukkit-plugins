@@ -137,7 +137,6 @@ public class FirenovaSpell extends InstantSpell {
 				// stop if done
 				Bukkit.getServer().getScheduler().cancelTask(taskId);
 				fireImmunity.remove(player);
-				System.out.println("yes");
 			}
 		}
 	}
