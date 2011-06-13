@@ -70,6 +70,7 @@ public class LifewalkSpell extends BuffSpell {
 	protected void turnOff(Player player) {
 		super.turnOff(player);
 		lifewalkers.remove(player.getName());
+		sendMessage(player, strFade);
 		if (lifewalkers.size() == 0 && grower != null) {
 			grower.stop();
 			grower = null;

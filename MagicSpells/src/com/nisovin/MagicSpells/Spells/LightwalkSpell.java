@@ -43,6 +43,7 @@ public class LightwalkSpell extends BuffSpell {
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (lightwalkers.containsKey(player.getName())) {
 			turnOff(player);
+			return true;
 		} else {
 			lightwalkers.put(player.getName(), null);
 		}
@@ -98,6 +99,7 @@ public class LightwalkSpell extends BuffSpell {
 			player.sendBlockChange(b.getLocation(), b.getType(), b.getData());
 			lightwalkers.remove(player.getName());
 		}
+		sendMessage(player, strFade);
 	}
 
 	@Override

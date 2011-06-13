@@ -12,7 +12,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.InstantSpell;
