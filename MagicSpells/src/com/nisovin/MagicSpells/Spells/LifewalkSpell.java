@@ -62,6 +62,7 @@ public class LifewalkSpell extends BuffSpell {
 			if (grower == null) {
 				grower = new Grower();
 			}
+			startSpellDuration(player);
 		}
 		return false;
 	}	

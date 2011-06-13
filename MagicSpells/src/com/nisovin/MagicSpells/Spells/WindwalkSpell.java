@@ -52,6 +52,7 @@ public class WindwalkSpell extends BuffSpell {
 			return true;
 		} else if (state == SpellCastState.NORMAL) {
 			windwalkers.put(player.getName(), new BlockPlatform(platformBlock, Material.AIR, player.getLocation().getBlock().getRelative(0,-1,0), size, true, "square"));
+			startSpellDuration(player);
 		}
 		return false;
 	}

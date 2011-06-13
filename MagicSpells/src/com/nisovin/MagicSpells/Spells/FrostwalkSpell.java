@@ -53,6 +53,7 @@ public class FrostwalkSpell extends BuffSpell {
 			return true;
 		} else if (state == SpellCastState.NORMAL) {
 			frostwalkers.put(player.getName(), new BlockPlatform(Material.ICE, Material.STATIONARY_WATER, player.getLocation().getBlock().getRelative(0,-1,0), size, !leaveFrozen, "square"));
+			startSpellDuration(player);
 		}
 		return false;
 	}

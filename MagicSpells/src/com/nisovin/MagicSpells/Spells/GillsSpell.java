@@ -41,6 +41,7 @@ public class GillsSpell extends BuffSpell {
 			return true;
 		} else if (state == SpellCastState.NORMAL) {
 			fishes.add(player.getName());
+			startSpellDuration(player);
 		}
 		return false;
 	}

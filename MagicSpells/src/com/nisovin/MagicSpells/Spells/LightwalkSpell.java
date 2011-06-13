@@ -46,6 +46,7 @@ public class LightwalkSpell extends BuffSpell {
 			return true;
 		} else {
 			lightwalkers.put(player.getName(), null);
+			startSpellDuration(player);
 		}
 		return false;
 	}

@@ -40,6 +40,7 @@ public class SafefallSpell extends BuffSpell {
 			return true;
 		} else if (state == SpellCastState.NORMAL) {
 			safefallers.add(player.getName());
+			startSpellDuration(player);
 		}
 		return false;
 	}

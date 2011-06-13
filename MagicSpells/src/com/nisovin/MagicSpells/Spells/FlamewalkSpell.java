@@ -59,6 +59,7 @@ public class FlamewalkSpell extends BuffSpell {
 			if (burner == null) {
 				burner = new Burner();
 			}
+			startSpellDuration(player);
 		}
 		return false;
 	}	
