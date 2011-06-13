@@ -5,6 +5,7 @@ import java.util.HashSet;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
@@ -47,7 +48,7 @@ public class SafefallSpell extends BuffSpell {
 
 	@Override
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (!event.isCancelled() && event.getEntity() instanceof Player) {
+		if (event.getCause() == DamageCause.FALL && !event.isCancelled() && event.getEntity() instanceof Player) {
 			Player player = (Player)event.getEntity();
 			if (safefallers.contains(player.getName())) {
 				if (isExpired(player)) {
