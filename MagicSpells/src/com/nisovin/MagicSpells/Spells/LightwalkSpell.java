@@ -44,7 +44,7 @@ public class LightwalkSpell extends BuffSpell {
 		if (lightwalkers.containsKey(player.getName())) {
 			turnOff(player);
 			return true;
-		} else {
+		} else if (state == SpellCastState.NORMAL) {
 			lightwalkers.put(player.getName(), null);
 			startSpellDuration(player);
 		}
