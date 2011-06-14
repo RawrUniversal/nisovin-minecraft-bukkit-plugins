@@ -50,6 +50,15 @@ public class NewBook {
 		tempBook.read(player, page);
 	}
 	
+	public void replace(String s) {
+		String[] fromTo = s.split("->", 2);
+		contents = contents.replace(fromTo[0].trim(), fromTo[1].trim());
+	}
+	
+	public void delete(String s) {
+		contents = contents.replace(s, "");
+	}
+	
 	public void erase() {
 		contents = "";
 	}

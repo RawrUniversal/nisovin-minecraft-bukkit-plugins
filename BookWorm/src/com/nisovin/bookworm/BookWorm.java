@@ -69,9 +69,8 @@ public class BookWorm extends JavaPlugin {
 				} else {
 					player.sendMessage(TEXT_COLOR + "Use /" + label + " <text> to add text to your book.");
 					player.sendMessage(TEXT_COLOR + "You can use a double-colon :: to create a new paragraph.");
-					player.sendMessage(TEXT_COLOR + "Or use a command: -read <page>, -title <title>, -erase, -cancel.");
-					player.sendMessage(TEXT_COLOR + "Example: /" + label + " -read 1 -- to read page 1.");
 					player.sendMessage(TEXT_COLOR + "Right click on a bookcase to save your book.");
+					player.sendMessage(TEXT_COLOR + "Type /" + label + " -help to see special commands.");
 				}
 			} else if (!newBooks.containsKey(player.getName())) {
 				if (args[0].startsWith("-")) {
@@ -85,7 +84,15 @@ public class BookWorm extends JavaPlugin {
 				NewBook newBook = newBooks.get(player.getName());
 				if (args[0].startsWith("-")) {
 					// special command
-					if (args[0].equalsIgnoreCase("-read")) { 
+					if (args[0].equalsIgnoreCase("-help")) {
+						player.sendMessage(TEXT_COLOR + "Special commands:");
+						player.sendMessage(TEXT_COLOR + "   /" + label + " -read <page>" + ChatColor.WHITE + " -- read the specified page");
+						player.sendMessage(TEXT_COLOR + "   /" + label + " -title <title>" + ChatColor.WHITE + " -- change the title");
+						player.sendMessage(TEXT_COLOR + "   /" + label + " -erase <text>" + ChatColor.WHITE + " -- erase the given text");
+						player.sendMessage(TEXT_COLOR + "   /" + label + " -replace <old text> -> <new text>" + ChatColor.WHITE + " -- replace text");
+						player.sendMessage(TEXT_COLOR + "   /" + label + " -startover" + ChatColor.WHITE + " -- erase the entire book");
+						player.sendMessage(TEXT_COLOR + "   /" + label + " -cancel" + ChatColor.WHITE + " -- cancel book creation");
+					} else if (args[0].equalsIgnoreCase("-read")) { 
 						if (args.length == 2 && args[1].matches("[0-9]+")) {
 							newBook.read(player, Integer.parseInt(args[1])-1);
 						} else {
@@ -98,7 +105,22 @@ public class BookWorm extends JavaPlugin {
 						}
 						newBook.setTitle(title.trim());
 						player.sendMessage(TEXT_COLOR + "Title changed: " + ChatColor.WHITE + title);
-					} else if (args[0].equalsIgnoreCase("-erase")) {
+					} else if (args[0].equalsIgnoreCase("-erase") && args.length > 1) {
+						String s = "";
+						for (int i = 1; i < args.length; i++) {
+							s += args[i] + " ";
+						}
+						newBook.delete(s.trim());
+						player.sendMessage(TEXT_COLOR + "String " + ChatColor.WHITE + s + TEXT_COLOR + " erased from book.");
+					} else if (args[0].equalsIgnoreCase("-replace") && args.length > 1) {
+						String s = "";
+						for (int i = 1; i < args.length; i++) {
+							s += args[i] + " ";
+						}
+						s = s.trim();
+						newBook.replace(s.trim());
+						player.sendMessage(TEXT_COLOR + "String replaced.");
+					} else if (args[0].equalsIgnoreCase("-startover")) {
 						newBook.erase();
 						player.sendMessage(TEXT_COLOR + "Book contents erased.");
 					} else if (args[0].equalsIgnoreCase("-cancel")) {
