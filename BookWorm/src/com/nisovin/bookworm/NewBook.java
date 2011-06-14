@@ -50,17 +50,27 @@ public class NewBook {
 		tempBook.read(player, page);
 	}
 	
-	public void replace(String s) {
+	public boolean replace(String s) {
+		if (!s.contains("->")) {
+			return false;
+		}
 		String[] fromTo = s.split("->", 2);
+		if (!s.contains(fromTo[0].trim())) {
+			return false;
+		}
 		contents = contents.replace(fromTo[0].trim(), fromTo[1].trim());
+		tempBook = null;
+		return true;
 	}
 	
 	public void delete(String s) {
 		contents = contents.replace(s, "");
+		tempBook = null;
 	}
 	
 	public void erase() {
 		contents = "";
+		tempBook = null;
 	}
 	
 	public String getTitle() {

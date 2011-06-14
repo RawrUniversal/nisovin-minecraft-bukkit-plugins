@@ -1,32 +1,39 @@
 package com.nisovin.bookworm;
 
-public class BookUnloader implements Runnable {
+import java.util.Iterator;
 
-	private static final int CLEAN_INTERVAL = 600;
-	private static final int REMOVE_DELAY = 300;
+import org.bukkit.entity.Player;
+
+public class BookUnloader implements Runnable {
 
 	private BookWorm plugin;
 	
 	public BookUnloader(BookWorm plugin) {
 		this.plugin = plugin;
 		
-		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, CLEAN_INTERVAL, CLEAN_INTERVAL);
+		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, BookWorm.CLEAN_INTERVAL*20, BookWorm.CLEAN_INTERVAL*20);
 	}
 	
 	public void run() {
 		// clean new books
-		for (String name : plugin.newBooks.keySet().clone()) {
+		Iterator<String> i = plugin.newBooks.keySet().iterator();
+		while (i.hasNext()) {
+			String name = i.next();
 			Player p = plugin.getServer().getPlayer(name);
 			if (p == null || !p.isOnline()) {
-				plugin.newBooks.remove(name);
+				i.remove();
 			}
 		}
 		
 		// clean bookmarks
-		for (String name : plugins.bookmarks.keySet().clone()) {
-			Player p = plugin.getServer().getPlayer(name);
-			if (p == null || !p.isOnline() || plugins.bookmarks.get(name).lastRead + REMOVE_DELAY*1000 < System.currentTimeMillis()) {
-				plugins.bookmarks.remove(name);
+		if (BookWorm.REMOVE_DELAY > 0) {
+			i = plugin.bookmarks.keySet().iterator();
+			while (i.hasNext()) {
+				String name = i.next();
+				Player p = plugin.getServer().getPlayer(name);
+				if (p == null || !p.isOnline() || plugin.bookmarks.get(name).lastRead + BookWorm.REMOVE_DELAY*1000 < System.currentTimeMillis()) {
+					i.remove();
+				}
 			}
 		}
 		

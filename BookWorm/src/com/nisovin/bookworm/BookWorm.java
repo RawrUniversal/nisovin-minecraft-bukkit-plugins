@@ -15,12 +15,22 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.config.Configuration;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class BookWorm extends JavaPlugin {
 
 	protected static ChatColor TEXT_COLOR = ChatColor.GREEN;
+	protected static int CLEAN_INTERVAL = 600;
+	protected static int REMOVE_DELAY = 300;
+	protected static boolean CONSUME_BOOK = true;
+	protected static boolean CHECK_WORLDGUARD = true;
+	
+	protected static int LINE_LENGTH = 55;
+	protected static int PAGE_LENGTH = 6;
+	protected static String INDENT = "    ";
+	protected static String NEW_PARA = "::";
 	
 	protected static BookWorm plugin;
 	protected HashMap<String,Book> books;
@@ -42,11 +52,14 @@ public class BookWorm extends JavaPlugin {
 		newBooks = new HashMap<String,NewBook>();
 		
 		loadBooks();
+		loadConfig();
 		
 		new BookWormPlayerListener(this);
 		new BookWormBlockListener(this);
 		
-		unloader = new BookUnloader(this);
+		if (CLEAN_INTERVAL > 0) {
+			unloader = new BookUnloader(this);
+		}
 		
 		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
 		if (plugin != null) {
@@ -155,6 +168,22 @@ public class BookWorm extends JavaPlugin {
 			scanner.close();
 		} catch (FileNotFoundException e) {			
 		}
+	}
+	
+	private void loadConfig() {
+		Configuration config = getConfiguration();
+		config.load();
+		TEXT_COLOR = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.GREEN.getCode()));
+		LINE_LENGTH = config.getInt("formatting.line-length", LINE_LENGTH);
+		PAGE_LENGTH = config.getInt("formatting.page-length", PAGE_LENGTH);
+		int indent = config.getInt("formatting.indent-size", INDENT.length());
+		INDENT = "";
+		for (int i = 0; i < indent; i++) {
+			INDENT += " ";
+		}
+		CLEAN_INTERVAL = config.getInt("general.clean-interval", CLEAN_INTERVAL);
+		REMOVE_DELAY = config.getInt("general.remove-delay", REMOVE_DELAY);
+		config.save();
 	}
 	
 	protected void saveAll() {

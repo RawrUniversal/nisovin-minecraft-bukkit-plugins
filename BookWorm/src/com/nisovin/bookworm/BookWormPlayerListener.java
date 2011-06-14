@@ -48,7 +48,7 @@ public class BookWormPlayerListener extends PlayerListener {
 				bookmark.readBook(player, book);
 			} else if (player.getItemInHand().getType() == Material.BOOK && plugin.newBooks.containsKey(player.getName())) {
 				// check worldguard
-				if (plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, l)) {
+				if (BookWorm.CHECK_WORLDGUARD && plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, l)) {
 					player.sendMessage(BookWorm.TEXT_COLOR + "You cannot put a book here.");
 					return;
 				}
@@ -60,12 +60,14 @@ public class BookWormPlayerListener extends PlayerListener {
 				player.sendMessage(BookWorm.TEXT_COLOR + "Book saved: " + ChatColor.WHITE + newBook.getTitle());
 				
 				// remove book in hand
-				ItemStack inHand = player.getItemInHand();
-				if (inHand.getAmount() == 1) {
-					player.setItemInHand(null);
-				} else {
-					inHand.setAmount(inHand.getAmount()-1);
-					player.setItemInHand(inHand);
+				if (BookWorm.CONSUME_BOOK) {
+					ItemStack inHand = player.getItemInHand();
+					if (inHand.getAmount() == 1) {
+						player.setItemInHand(null);
+					} else {
+						inHand.setAmount(inHand.getAmount()-1);
+						player.setItemInHand(inHand);
+					}
 				}
 			}
 		}

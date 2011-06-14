@@ -1,18 +1,16 @@
 package com.nisovin.bookworm;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Book {
-	private static final int LINE_LENGTH = 55;
-	private static final int PAGE_LENGTH = 6;
-	private static final String INDENT = "    ";
-	private static final String NEW_PARA = "::";
 	
 	private String id;
 	private boolean loaded;
@@ -35,14 +33,14 @@ public class Book {
 		this.title = title;
 		this.author = author;
 		this.rawText = text;
-		
+				
 		ArrayList<String> contents = new ArrayList<String>();
-		String[] paras = text.split(NEW_PARA);
+		String[] paras = text.split(BookWorm.NEW_PARA);
 		for (int i = 0; i < paras.length; i++) {
 			if (!paras[i].equals("")) {
-				String para = INDENT + paras[i].trim();
-				while (para.length() > LINE_LENGTH) {
-					int end = para.substring(0, LINE_LENGTH).lastIndexOf(' ');
+				String para = BookWorm.INDENT + paras[i].trim();
+				while (para.length() > BookWorm.LINE_LENGTH) {
+					int end = para.substring(0, BookWorm.LINE_LENGTH).lastIndexOf(' ');
 					contents.add(para.substring(0, end));
 					para = para.substring(end+1);
 				}
@@ -53,7 +51,7 @@ public class Book {
 		}
 		this.contents = contents.toArray(new String[]{});
 		
-		this.pages = (this.contents.length-1)/PAGE_LENGTH + 1;
+		this.pages = (this.contents.length-1)/BookWorm.PAGE_LENGTH + 1;
 		this.loaded = true;
 	}
 	
@@ -90,15 +88,15 @@ public class Book {
 			page = page % pages;
 			
 			player.sendMessage(BookWorm.TEXT_COLOR + "--------------------------------------------------");
-			if (title.length() + author.length() + 25 > LINE_LENGTH) {
+			if (title.length() + author.length() + 25 > BookWorm.LINE_LENGTH) {
 				player.sendMessage(BookWorm.TEXT_COLOR + "Book: " + ChatColor.WHITE + title);
-				player.sendMessage(INDENT + BookWorm.TEXT_COLOR + "by: " + ChatColor.WHITE + author + BookWorm.TEXT_COLOR + " (page " + (page+1) + "/" + pages + ")");
+				player.sendMessage(BookWorm.INDENT + BookWorm.TEXT_COLOR + "by: " + ChatColor.WHITE + author + BookWorm.TEXT_COLOR + " (page " + (page+1) + "/" + pages + ")");
 			} else {
 				player.sendMessage(BookWorm.TEXT_COLOR + "Book: " + ChatColor.WHITE + title + BookWorm.TEXT_COLOR + " by: " + ChatColor.WHITE + author + BookWorm.TEXT_COLOR + " (page " + (page+1) + "/" + pages + ")");
 			}
 			player.sendMessage("   ");
-			for (int i = 0; i < PAGE_LENGTH && page*PAGE_LENGTH + i < contents.length; i++) {
-				player.sendMessage(contents[page*PAGE_LENGTH + i]);
+			for (int i = 0; i < BookWorm.PAGE_LENGTH && page*BookWorm.PAGE_LENGTH + i < contents.length; i++) {
+				player.sendMessage(contents[page*BookWorm.PAGE_LENGTH + i]);
 			}
 			player.sendMessage(BookWorm.TEXT_COLOR + "--------------------------------------------------");
 		}
@@ -106,18 +104,21 @@ public class Book {
 		
 	public void load() {
 		try {
-			Scanner scanner = new Scanner(new File(BookWorm.plugin.getDataFolder(), id + ".txt"));
-			String title = scanner.nextLine();
-			String author = scanner.nextLine();
+			BufferedReader reader = new BufferedReader(new FileReader(new File(BookWorm.plugin.getDataFolder(), id + ".txt")));
+			String title = reader.readLine();
+			String author = reader.readLine();
 			String text = "";
-			while (scanner.hasNext()) {
-				text += scanner.nextLine();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				text += line;
 			}
-			scanner.close();
+			reader.close();
 			
 			setup(title, author, text);
 			
 		} catch (FileNotFoundException e) {
+			System.out.println("Failed to load book (file not found): " + id);
+		} catch (IOException e) {
 			System.out.println("Failed to load book: " + id);
 		}
 	}
