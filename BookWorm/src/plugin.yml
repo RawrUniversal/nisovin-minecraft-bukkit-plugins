@@ -1,0 +1,8 @@
+name: BookWorm
+main: com.nisovin.bookworm.BookWorm
+version: 1.0
+commands:
+    bookworm:
+        description: Basic bookworm command
+        usage: /<command>
+        aliases: [bw, write, w]
