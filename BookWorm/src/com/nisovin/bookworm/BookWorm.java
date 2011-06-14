@@ -37,6 +37,10 @@ public class BookWorm extends JavaPlugin {
 			getDataFolder().mkdir();
 		}
 		
+		books = new HashMap<String,Book>();
+		bookmarks = new HashMap<String,Bookmark>();
+		newBooks = new HashMap<String,NewBook>();
+		
 		loadBooks();
 		
 		new BookWormPlayerListener(this);
@@ -55,6 +59,8 @@ public class BookWorm extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
 		if (sender.isOp() && args.length == 1 && args[0].equals("-reload")) {
+			books.clear();
+			bookmarks.clear();
 			loadBooks();
 			sender.sendMessage("BookWorm data reloaded.");
 		} else if (sender instanceof Player) {
@@ -140,10 +146,6 @@ public class BookWorm extends JavaPlugin {
 	}
 	
 	private void loadBooks() {		
-		books = new HashMap<String,Book>();
-		bookmarks = new HashMap<String,Bookmark>();
-		newBooks = new HashMap<String,NewBook>();
-		
 		try {
 			Scanner scanner = new Scanner(new File(getDataFolder(), "books.txt"));
 			while (scanner.hasNext()) {
