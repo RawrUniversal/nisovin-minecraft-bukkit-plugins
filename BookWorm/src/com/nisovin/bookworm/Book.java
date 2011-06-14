@@ -76,6 +76,10 @@ public class Book {
 		return rawText;
 	}
 	
+	public boolean isLoaded() {
+		return loaded;
+	}
+	
 	public void read(Player player, int page) {
 		// page is 0-based
 		
@@ -116,6 +120,14 @@ public class Book {
 		} catch (FileNotFoundException e) {
 			System.out.println("Failed to load book: " + id);
 		}
+	}
+	
+	public void unload() {
+		title = null;
+		author = null;
+		rawText = null;
+		contents = null;
+		loaded = false;
 	}
 	
 }

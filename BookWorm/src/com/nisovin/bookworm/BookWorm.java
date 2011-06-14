@@ -26,6 +26,7 @@ public class BookWorm extends JavaPlugin {
 	protected HashMap<String,Book> books;
 	protected HashMap<String,Bookmark> bookmarks;
 	protected HashMap<String,NewBook> newBooks;
+	protected BookUnloader unloader;
 	protected WorldGuardPlugin worldGuard;
 	
 	@Override
@@ -36,15 +37,19 @@ public class BookWorm extends JavaPlugin {
 			getDataFolder().mkdir();
 		}
 		
+		loadBooks();
+		
 		new BookWormPlayerListener(this);
 		new BookWormBlockListener(this);
 		
-		loadBooks();
+		unloader = new BookUnloader(this);
 		
 		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
 		if (plugin != null) {
 			worldGuard = (WorldGuardPlugin)plugin;
 		}
+		
+		
 	}
 
 	@Override
@@ -146,7 +151,12 @@ public class BookWorm extends JavaPlugin {
 	}
 	
 	@Override
-	public void onDisable() {		
+	public void onDisable() {
+		unloader.stop();
+		books = null;
+		bookmarks = null;
+		newBooks = null;
+		unloader = null;
 	}
 
 }

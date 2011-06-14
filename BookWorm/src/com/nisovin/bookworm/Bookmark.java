@@ -6,6 +6,7 @@ public class Bookmark {
 	
 	protected Book book;
 	protected int page;
+	protected long lastRead;
 	
 	public Bookmark() {
 	}
@@ -17,6 +18,7 @@ public class Bookmark {
 		} else {
 			this.page++;
 		}
+		lastRead = System.currentTimeMillis();
 		book.read(player, page);
 	}
 	
