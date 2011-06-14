@@ -80,7 +80,7 @@ public abstract class BuffSpell extends Spell {
 			Long startTime = durationStartTime.get(player.getName());
 			if (startTime == null) {
 				return false;
-			} else if (startTime + duration > System.currentTimeMillis()) {
+			} else if (startTime + duration*1000 > System.currentTimeMillis()) {
 				return false;
 			} else {
 				return true;
