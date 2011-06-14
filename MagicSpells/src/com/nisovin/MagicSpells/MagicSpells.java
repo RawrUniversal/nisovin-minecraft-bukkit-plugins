@@ -94,9 +94,7 @@ public class MagicSpells extends JavaPlugin {
 		freecastNoCooldown = config.getBoolean("general.freecast-no-cooldown", true);
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
 		losTransparentBlocks = config.getIntList("general.los-transparent-blocks", null);
-		System.out.println(losTransparentBlocks);
 		if (losTransparentBlocks == null || losTransparentBlocks.size() == 0) {
-			System.out.println("loading default");
 			losTransparentBlocks = new ArrayList<Integer>();
 			losTransparentBlocks.add(Material.AIR.getId());
 			losTransparentBlocks.add(Material.TORCH.getId());
