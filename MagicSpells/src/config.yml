@@ -465,3 +465,18 @@ spells:
         str-cost: 1 redstone dust
         str-cast-self: You zapped a block.
         str-cant-zap: You can't zap that.
+        
+    external:
+        name: gianttree
+        enabled: false
+        description: Create a giant tree!
+        can-cast-by-command: true
+        can-cast-with-item: false
+        command-to-execute: gt 25 4
+        command-to-block: gt
+        cost:
+            - 331 10
+            - 6 5
+        str-cost: 10 redstone dust and 5 saplings
+        str-cast-self: You grow a tree!
+        str-cant-use-command: &4You don't have permission to do that.

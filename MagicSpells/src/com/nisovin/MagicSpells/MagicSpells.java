@@ -122,6 +122,7 @@ public class MagicSpells extends JavaPlugin {
 		CombustSpell.load(config);
 		EntombSpell.load(config);
 		ExplodeSpell.load(config);
+		ExternalCommandSpell.load(config);
 		FireballSpell.load(config);
 		FirenovaSpell.load(config);
 		FlamewalkSpell.load(config);

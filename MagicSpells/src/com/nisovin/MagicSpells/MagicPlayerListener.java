@@ -6,6 +6,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -25,6 +26,7 @@ public class MagicPlayerListener extends PlayerListener {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this, Event.Priority.Monitor, plugin);
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Monitor, plugin);
 	}
 	
 	@Override
@@ -91,6 +93,16 @@ public class MagicPlayerListener extends PlayerListener {
 		if (spells != null) {
 			for (Spell spell : spells) {
 				spell.onPlayerMove(event);
+			}
+		}
+	}
+	
+	@Override
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_COMMAND_PREPROCESS);
+		if (spells != null) {
+			for (Spell spell : spells) {
+				spell.onPlayerCommandPreprocess(event);
 			}
 		}
 	}

@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -309,6 +310,7 @@ public abstract class Spell implements Comparable<Spell> {
 	public void onExplosionPrime(ExplosionPrimeEvent event) {}	
 	public void onBlockBreak(BlockBreakEvent event) {}
 	public void onBlockPlace(BlockPlaceEvent event) {}
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {}
 	
 	protected enum SpellCastState {
 		NORMAL,
