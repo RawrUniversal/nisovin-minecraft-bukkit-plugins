@@ -82,7 +82,11 @@ public class NewBook {
 	}
 	
 	public void save(Location location) {
-		String fileName = title.replace(" ", "-") + "_" + author + "_" + System.currentTimeMillis();
+		String t = title.replace(" ", "-").replaceAll("[^a-zA-Z0-9_\\-]", "");
+		if (t.length() > 15) {
+			t = t.substring(0, 15);
+		}
+		String fileName = author + "_" + t + "_" + System.currentTimeMillis();
 		String locStr = location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
 		try {
 			// write book file

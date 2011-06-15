@@ -93,7 +93,15 @@ public class BookWorm extends JavaPlugin {
 				}
 			} else if (!newBooks.containsKey(player.getName())) {
 				if (args[0].startsWith("-")) {
-					player.sendMessage(TEXT_COLOR + "Invalid command.");
+					if (args[0].equalsIgnoreCase("-page") && args.length == 2 && args[1].matches("[0-9]+") && bookmarks.containsKey(player.getName())) {
+						int page = Integer.parseInt(args[1]) - 1;
+						if (page >= 0) {
+							bookmarks.get(player.getName()).page = page;
+							player.sendMessage(TEXT_COLOR + "Turned to page " + page + ".");
+						}
+					} else {
+						player.sendMessage(TEXT_COLOR + "Invalid command.");
+					}
 				} else {
 					NewBook newBook = new NewBook(player, args);
 					newBooks.put(player.getName(), newBook);
