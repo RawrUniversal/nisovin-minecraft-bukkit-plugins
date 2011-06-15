@@ -64,11 +64,12 @@ public class StonevisionSpell extends BuffSpell {
 		if (seers.containsKey(p.getName())) {
 			if (isExpired(p)) {
 				turnOff(p);
-			}
-			boolean moved = seers.get(p.getName()).moveTransparency();
-			if (moved) {
-				addUse(p);
-				chargeUseCost(p);
+			} else {
+				boolean moved = seers.get(p.getName()).moveTransparency();
+				if (moved) {
+					addUse(p);
+					chargeUseCost(p);
+				}
 			}
 		}
 	}
