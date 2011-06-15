@@ -95,7 +95,7 @@ spells:
         cast-item: 283
         cooldown: 10
         range: 20
-        precision: 15
+        obey-los: true
         fire-ticks: 100
         target-players: false
         check-plugins: true
@@ -110,7 +110,7 @@ spells:
         cast-item: 280
         cooldown: 5
         range: 15
-        precision: 15
+        obey-los: true
         target-players: false
         tomb-block-type: 20
         tomb-duration: 20
@@ -234,7 +234,7 @@ spells:
         description: Heals a target player.
         cast-item: 280
         heal-amount: 10
-        precision: 10
+        obey-los: true
         cooldown: 0
         range: 12
         cost:
@@ -298,7 +298,7 @@ spells:
         range: 20
         no-damage: false
         require-entity-target: false
-        precision: 20
+        obey-los: true
         target-players: false
         check-plugins: true
         cost:
