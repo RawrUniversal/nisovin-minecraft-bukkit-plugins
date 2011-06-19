@@ -5,8 +5,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,59 +19,102 @@ public class BookWormPlayerListener extends PlayerListener {
 	public BookWormPlayerListener(BookWorm plugin) {
 		this.plugin = plugin;
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Monitor, plugin);
+		if (BookWorm.SHOW_TITLE_ON_HELD_CHANGE) {
+			plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this, Event.Priority.Monitor, plugin);
+		}
 	}
 	
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (!event.isCancelled() && event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.BOOKSHELF) {
-			Player player = event.getPlayer();
+		Player player = event.getPlayer();
+		ItemStack inHand = player.getItemInHand();
+		if (!event.isCancelled() && (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK) && event.getClickedBlock().getType() == Material.BOOKSHELF) {
 			Location l = event.getClickedBlock().getLocation();
 			String locStr = l.getWorld().getName() + "," + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ();
-			if (plugin.books.containsKey(locStr)) {
+			if (plugin.bookshelves.containsKey(locStr)) {
 				// get book
-				Book book = plugin.books.get(locStr);
+				short bookId = plugin.bookshelves.get(locStr);
+				Book book = plugin.getBook(bookId);
 				
-				// load into book if owner
-				if (book.getAuthor().equalsIgnoreCase(player.getName()) && player.getItemInHand().getType() == Material.BOOK && !plugin.newBooks.containsKey(player.getName())) {
-					NewBook newBook = new NewBook(book.getAuthor(), book.getTitle(), book.getContents());
-					plugin.newBooks.put(player.getName(), newBook);
-					player.sendMessage(BookWorm.TEXT_COLOR + "Copied book: " + ChatColor.WHITE + newBook.getTitle());
-					return;
+				if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+					// right click - just set bookmark and read
+					
+					// get player bookmark
+					Bookmark bookmark = plugin.bookmarks.get(player.getName());
+					if (bookmark == null) {
+						bookmark = new Bookmark();
+						plugin.bookmarks.put(player.getName(), bookmark);
+					}
+					
+					// set bookmark and read
+					bookmark.readBook(player, book);					
+				} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {	
+					if (!player.isSneaking() && plugin.perms.canCopyBook(player, book) && ((!BookWorm.REQUIRE_BOOK_TO_COPY && inHand.getType() == Material.AIR) || (inHand != null && inHand.getType() == Material.BOOK && inHand.getDurability() == 0))) {				
+						// copy book if allowed
+						if (BookWorm.REQUIRE_BOOK_TO_COPY) {
+							player.getItemInHand().setDurability(bookId);
+						} else {
+							player.setItemInHand(new ItemStack(Material.BOOK, 1, bookId));
+						}
+						player.sendMessage(BookWorm.TEXT_COLOR + "Copied book: " + ChatColor.WHITE + book.getTitle());
+					} else if (player.isSneaking() && plugin.perms.canRemoveBook(player, book) && inHand.getType() == Material.AIR) {
+						// remove book if allowed
+						player.setItemInHand(new ItemStack(Material.BOOK, 1, bookId));
+						plugin.bookshelves.remove(locStr);
+						plugin.saveAll();
+						player.sendMessage(BookWorm.TEXT_COLOR + "Removed book: " + ChatColor.WHITE + book.getTitle());
+					}					
 				}
 				
-				// get player bookmark
-				Bookmark bookmark = plugin.bookmarks.get(player.getName());
-				if (bookmark == null) {
-					bookmark = new Bookmark();
-					plugin.bookmarks.put(player.getName(), bookmark);
-				}
+			} else if (event.getAction() == Action.LEFT_CLICK_BLOCK && inHand != null && inHand.getType() == Material.BOOK && inHand.getDurability() != 0) {
+				// placing book
 				
-				// set bookmark and read
-				bookmark.readBook(player, book);
-			} else if (player.getItemInHand().getType() == Material.BOOK && plugin.newBooks.containsKey(player.getName())) {
 				// check worldguard
 				if (BookWorm.CHECK_WORLDGUARD && plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, l)) {
 					player.sendMessage(BookWorm.TEXT_COLOR + "You cannot put a book here.");
 					return;
 				}
 				
-				// get new book
-				NewBook newBook = plugin.newBooks.get(player.getName());
-				newBook.save(l);
-				plugin.newBooks.remove(player.getName());
-				player.sendMessage(BookWorm.TEXT_COLOR + "Book saved: " + ChatColor.WHITE + newBook.getTitle());
+				// put book into bookshelf
+				short bookId = inHand.getDurability();
+				Book book = plugin.getBook(bookId);
+				if (!book.isSaved()) book.save();
+				plugin.bookshelves.put(locStr, bookId);
+				plugin.saveAll(); // TODO: append instead of save all
+				player.sendMessage(BookWorm.TEXT_COLOR + "Book placed in bookshelf: " + ChatColor.WHITE + book.getTitle());
 				
 				// remove book in hand
-				if (BookWorm.CONSUME_BOOK) {
-					ItemStack inHand = player.getItemInHand();
-					if (inHand.getAmount() == 1) {
-						player.setItemInHand(null);
-					} else {
-						inHand.setAmount(inHand.getAmount()-1);
-						player.setItemInHand(inHand);
-					}
-				}
+				player.setItemInHand(null);
 			}
+		} else if (event.useItemInHand() != Result.DENY && event.getAction() == Action.RIGHT_CLICK_AIR && inHand.getType() == Material.BOOK && inHand.getDurability() != 0) {
+			// reading the book in hand
+			
+			// get book
+			Book book = plugin.getBook(inHand.getDurability());
+			
+			// get player bookmark
+			Bookmark bookmark = plugin.bookmarks.get(player.getName());
+			if (bookmark == null) {
+				bookmark = new Bookmark();
+				plugin.bookmarks.put(player.getName(), bookmark);
+			}
+			
+			// set bookmark and read
+			bookmark.readBook(player, book);			
+			
+		}
+	}
+	
+	@Override
+	public void onItemHeldChange(PlayerItemHeldEvent event) {
+		ItemStack item = event.getPlayer().getInventory().getItem(event.getNewSlot());
+		if (item != null && item.getType() == Material.BOOK && item.getDurability() != 0) {
+			Book book = plugin.books.get(item.getDurability());
+			if (book == null) {
+				book = new Book(item.getDurability());
+				book.load();
+			}
+			event.getPlayer().sendMessage(BookWorm.TEXT_COLOR + "Book: " + ChatColor.WHITE + book.getTitle());
 		}
 	}
 

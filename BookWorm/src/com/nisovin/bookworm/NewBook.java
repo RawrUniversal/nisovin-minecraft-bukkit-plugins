@@ -45,7 +45,7 @@ public class NewBook {
 	
 	public void read(Player player, int page) {
 		if (tempBook == null) {
-			tempBook = new Book(title, author, contents);
+			//tempBook = new Book(title, author, contents);
 		}
 		tempBook.read(player, page);
 	}
@@ -102,8 +102,8 @@ public class NewBook {
 			writer.close();
 			
 			// add book to plugin
-			Book book = new Book(fileName);
-			BookWorm.plugin.books.put(locStr, book);
+			//Book book = new Book(fileName);
+			//BookWorm.plugin.books.put(locStr, book);
 		} catch (IOException e) {
 			Bukkit.getServer().getLogger().severe("BookWorm: Failed to save book: " + title + " " + author);
 		}

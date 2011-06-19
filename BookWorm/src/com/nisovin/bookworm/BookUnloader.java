@@ -14,20 +14,10 @@ public class BookUnloader implements Runnable {
 		plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, BookWorm.CLEAN_INTERVAL*20, BookWorm.CLEAN_INTERVAL*20);
 	}
 	
-	public void run() {
-		// clean new books
-		Iterator<String> i = plugin.newBooks.keySet().iterator();
-		while (i.hasNext()) {
-			String name = i.next();
-			Player p = plugin.getServer().getPlayer(name);
-			if (p == null || !p.isOnline()) {
-				i.remove();
-			}
-		}
-		
+	public void run() {		
 		// clean bookmarks
 		if (BookWorm.REMOVE_DELAY > 0) {
-			i = plugin.bookmarks.keySet().iterator();
+			Iterator<String> i = plugin.bookmarks.keySet().iterator();
 			while (i.hasNext()) {
 				String name = i.next();
 				Player p = plugin.getServer().getPlayer(name);
@@ -39,6 +29,9 @@ public class BookUnloader implements Runnable {
 		
 		// unload unused books
 		for (Book book : plugin.books.values()) {
+			if (!book.isSaved()) {
+				book.save();
+			}
 			if (book.isLoaded()) {
 				boolean found = false;
 				for (Bookmark bookmark : plugin.bookmarks.values()) {
