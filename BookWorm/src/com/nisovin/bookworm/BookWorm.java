@@ -26,17 +26,63 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 public class BookWorm extends JavaPlugin {
 
 	protected static ChatColor TEXT_COLOR = ChatColor.GREEN;
-	protected static int CLEAN_INTERVAL = 600;
-	protected static int REMOVE_DELAY = 300;
-	protected static boolean SHOW_TITLE_ON_HELD_CHANGE = true;
-	protected static boolean REQUIRE_BOOK_TO_COPY = false;
-	protected static boolean CHECK_WORLDGUARD = true;
+	protected static ChatColor TEXT_COLOR_2 = ChatColor.WHITE;
 	
 	protected static int LINE_LENGTH = 55;
 	protected static int PAGE_LENGTH = 6;
 	protected static String INDENT = "    ";
 	protected static String NEW_PARA = "::";
 	
+	protected static boolean SHOW_TITLE_ON_HELD_CHANGE = true;
+	protected static boolean REQUIRE_BOOK_TO_COPY = false;
+	protected static boolean CHECK_WORLDGUARD = true;
+	protected static boolean USE_FULL_FILENAMES = false;
+	
+	protected static int CLEAN_INTERVAL = 600;
+	protected static int REMOVE_DELAY = 300;
+	
+	protected static String S_MUST_HOLD_BOOK = "You must be holding a book to write.";
+	protected static String S_USAGE_START = "Use /%c <title> to start your book.";
+	protected static String S_USAGE_WRITE = 
+			"Use /%c <text> to add text to your book.\n" +
+			"You can use a double-colon :: to create a new paragraph.\n" +
+			"Left click on a bookcase to place your book.\n" +
+			"Type /%c -help to see special commands.";
+	protected static String S_USAGE_READ = "Right click to read.";
+	protected static String S_NEW_BOOK_CREATED = "New book created: %t";
+	protected static String S_CANNOT_DESTROY = "You can't destroy someone else's bookshelf!";
+	
+	protected static String S_COMM_HELP = "help";
+	protected static String S_COMM_READ = "read";
+	protected static String S_COMM_TITLE = "title";
+	protected static String S_COMM_ERASE = "erase";
+	protected static String S_COMM_REPLACE = "replace";
+	protected static String S_COMM_ERASEALL = "eraseall";	
+
+	protected static String S_COMM_HELP_TEXT = "Special commands:\n" +
+			"   /%c -read <page> -- read the specified page\n" +
+			"   /%c -erase <text> -- erase the given text\n" +
+			"   /%c -replace <old text> -> <new text> -- replace text\n" +
+			"   /%c -eraseall -- erase the entire book\n" +
+			"   /%c -cancel -- cancel book creation";	
+	protected static String S_COMM_ERASE_DONE = "Text erased.";
+	protected static String S_COMM_REPLACE_DONE = "Text replaced.";
+	protected static String S_COMM_REPLACE_FAIL = "Text not found.";
+	protected static String S_COMM_ERASEALL_DONE = "Book contents erased.";
+	protected static String S_COMM_INVALID = "Invalid command.";
+	
+	protected static String S_WRITE_DONE = "Wrote line: %t";
+	protected static String S_WRITE_FAIL = "You cannot write in a book that is not yours.";
+	
+	protected static String S_READ_DIVIDER = "--------------------------------------------------";
+	protected static String S_READ_BOOK = "Book";
+	protected static String S_READ_BY = "by";
+	protected static String S_READ_PAGE = "page";
+	protected static String S_COPIED_BOOK = "Copied book:";
+	protected static String S_REMOVED_BOOK = "Removed book:";
+	protected static String S_PLACED_BOOK = "Book placed in bookshelf:";
+	protected static String S_PLACED_BOOK_FAIL = "You cannot put a book here.";
+		
 	protected static BookWorm plugin;
 	protected PermissionManager perms;
 	
@@ -69,9 +115,11 @@ public class BookWorm extends JavaPlugin {
 			unloader = new BookUnloader(this);
 		}
 		
-		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
-		if (plugin != null) {
-			worldGuard = (WorldGuardPlugin)plugin;
+		if (CHECK_WORLDGUARD) {
+			Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+			if (plugin != null) {
+				worldGuard = (WorldGuardPlugin)plugin;
+			}
 		}
 		
 		// prevent book stacking
@@ -104,87 +152,77 @@ public class BookWorm extends JavaPlugin {
 			
 			ItemStack inHand = player.getItemInHand();
 			if (inHand == null || inHand.getType() != Material.BOOK) {
-				player.sendMessage(TEXT_COLOR + "You must be holding a book to write.");
+				player.sendMessage(TEXT_COLOR + S_MUST_HOLD_BOOK);
 			} else if (args.length == 0) {	// show help
 				if (inHand.getDurability() == 0) {
-					player.sendMessage(TEXT_COLOR + "Use /" + label + " <title> to start your book.");
+					player.sendMessage(TEXT_COLOR + S_USAGE_START.replace("%c", label));
 				} else {
-					Book book = books.get(inHand.getDurability());
+					Book book = getBook(inHand.getDurability());
 					if (book == null) {
 						// book doesn't exist?
 					} else if (book.getAuthor().equalsIgnoreCase(player.getName())) {
 						// it's the author holding the book
-						player.sendMessage(TEXT_COLOR + "Use /" + label + " <text> to add text to your book.");
-						player.sendMessage(TEXT_COLOR + "You can use a double-colon :: to create a new paragraph.");
-						player.sendMessage(TEXT_COLOR + "Right click on a bookcase to save your book.");
-						player.sendMessage(TEXT_COLOR + "Type /" + label + " -help to see special commands.");
+						String[] lines = S_USAGE_WRITE.split("\n");
+						for (String line : lines) {
+							if (!line.equals("")) {
+								player.sendMessage(TEXT_COLOR + line.replace("%c", label));
+							}
+						}
 					} else {
 						// it's someone else
-						player.sendMessage(TEXT_COLOR + "Right click to read.");
+						player.sendMessage(TEXT_COLOR + S_USAGE_READ.replace("%c", label));
 					}
 				}
 			} else if (inHand.getDurability() == 0) {
 				// starting new book
-				short bookId = getNextBookId();
-				if (bookId == -1) {
-					// error, quit
-					return true;
-				}
-				String title = "";
-				for (int i = 0; i < args.length; i++) {
-					title += args[i] + " ";
-				}
-				Book book = new Book(bookId, title.trim(), player.getName());
-				books.put(bookId, book);
-				inHand.setDurability(bookId);
-				player.sendMessage(TEXT_COLOR + "New book created: " + ChatColor.WHITE + book.getTitle());
-				// TODO: this block needs moved elsewhere
-				/*if (args[0].startsWith("-")) {
-					if (args[0].equalsIgnoreCase("-page") && args.length == 2 && args[1].matches("[0-9]+") && bookmarks.containsKey(player.getName())) {
-						int page = Integer.parseInt(args[1]) - 1;
-						if (page >= 0) {
-							bookmarks.get(player.getName()).page = page;
-							player.sendMessage(TEXT_COLOR + "Turned to page " + page + ".");
-						}
-					} else {
-						player.sendMessage(TEXT_COLOR + "Invalid command.");
+				if (inHand.getAmount() == 1 && perms.canCreateBook(player)) {
+					short bookId = getNextBookId();
+					if (bookId == -1) {
+						// error, quit
+						return true;
 					}
-				} else {*/
-				//}
+					String title = "";
+					for (int i = 0; i < args.length; i++) {
+						title += args[i] + " ";
+					}
+					Book book = new Book(bookId, title.trim(), player.getName());
+					books.put(bookId, book);
+					inHand.setDurability(bookId);
+					player.sendMessage(TEXT_COLOR + S_NEW_BOOK_CREATED.replace("%t", TEXT_COLOR_2 + book.getTitle()));
+				}
 			} else {
 				Book book = getBook(inHand.getDurability());
 				if (args[0].startsWith("-")) {
 					// special command
-					if (args[0].equalsIgnoreCase("-help")) {
-						player.sendMessage(TEXT_COLOR + "Special commands:");
-						player.sendMessage(TEXT_COLOR + "   /" + label + " -read <page>" + ChatColor.WHITE + " -- read the specified page");
-						//player.sendMessage(TEXT_COLOR + "   /" + label + " -title <title>" + ChatColor.WHITE + " -- change the title");
-						player.sendMessage(TEXT_COLOR + "   /" + label + " -erase <text>" + ChatColor.WHITE + " -- erase the given text");
-						player.sendMessage(TEXT_COLOR + "   /" + label + " -replace <old text> -> <new text>" + ChatColor.WHITE + " -- replace text");
-						player.sendMessage(TEXT_COLOR + "   /" + label + " -eraseall" + ChatColor.WHITE + " -- erase the entire book");
-						player.sendMessage(TEXT_COLOR + "   /" + label + " -cancel" + ChatColor.WHITE + " -- cancel book creation");
-					} else if (args[0].equalsIgnoreCase("-read")) { 
+					if (args[0].equalsIgnoreCase("-" + S_COMM_HELP)) {
+						String[] lines = S_COMM_HELP_TEXT.split("\n");
+						for (String line : lines) {
+							if (!line.equals("")) {
+								player.sendMessage(TEXT_COLOR + line.replace("%c", label).replace("--", TEXT_COLOR_2 + "--"));
+							}
+						}
+					} else if (args[0].equalsIgnoreCase("-" + S_COMM_READ)) { 
 						if (args.length == 2 && args[1].matches("[0-9]+")) {
 							book.read(player, Integer.parseInt(args[1])-1);
 						} else {
 							book.read(player, 0);
 						}
-					} else if (perms.canModifyBook(player, book) && args[0].equalsIgnoreCase("-title") && args.length > 1) {
+					} else if (perms.canModifyBook(player, book) && args[0].equalsIgnoreCase("-" + S_COMM_TITLE) && args.length > 1) {
 						//String title = "";
 						//for (int i = 1; i < args.length; i++) {
 						//	title += args[i] + " ";
 						//}
 						//book.setTitle(title.trim());
-						//player.sendMessage(TEXT_COLOR + "Title changed: " + ChatColor.WHITE + title);
+						//player.sendMessage(TEXT_COLOR + "Title changed: " + TEXT_COLOR_2 + title);
 						player.sendMessage(TEXT_COLOR + "Title change option temporarily disabled.");
-					} else if (perms.canModifyBook(player, book) && args[0].equalsIgnoreCase("-erase") && args.length > 1) {
+					} else if (perms.canModifyBook(player, book) && args[0].equalsIgnoreCase("-" + S_COMM_ERASE) && args.length > 1) {
 						String s = "";
 						for (int i = 1; i < args.length; i++) {
 							s += args[i] + " ";
 						}
 						book.delete(s.trim());
-						player.sendMessage(TEXT_COLOR + "String " + ChatColor.WHITE + s + TEXT_COLOR + " erased from book.");
-					} else if (perms.canModifyBook(player, book) && args[0].equalsIgnoreCase("-replace") && args.length > 1) {
+						player.sendMessage(TEXT_COLOR + S_COMM_ERASE_DONE);
+					} else if (perms.canModifyBook(player, book) && args[0].equalsIgnoreCase("-" + S_COMM_REPLACE) && args.length > 1) {
 						String s = "";
 						for (int i = 1; i < args.length; i++) {
 							s += args[i] + " ";
@@ -192,23 +230,23 @@ public class BookWorm extends JavaPlugin {
 						s = s.trim();
 						boolean replaced = book.replace(s.trim());
 						if (replaced) {
-							player.sendMessage(TEXT_COLOR + "String replaced.");
+							player.sendMessage(TEXT_COLOR + S_COMM_REPLACE_DONE);
 						} else {
-							player.sendMessage(TEXT_COLOR + "String not found.");
+							player.sendMessage(TEXT_COLOR + S_COMM_REPLACE_FAIL);
 						}
-					} else if (args[0].equalsIgnoreCase("-eraseall")) {
+					} else if (args[0].equalsIgnoreCase("-" + S_COMM_ERASEALL)) {
 						book.erase();
-						player.sendMessage(TEXT_COLOR + "Book contents erased.");
+						player.sendMessage(TEXT_COLOR + S_COMM_ERASEALL_DONE);
 					} else {
-						player.sendMessage(TEXT_COLOR + "Invalid command.");
+						player.sendMessage(TEXT_COLOR + S_COMM_INVALID);
 					}
 				} else {
 					// just writing
 					if (perms.canModifyBook(player, book)) {
 						String line = book.write(args);
-						player.sendMessage(TEXT_COLOR + "Wrote: " +ChatColor.WHITE + line);
+						player.sendMessage(TEXT_COLOR + S_WRITE_DONE.replace("%t", TEXT_COLOR_2 + line));
 					} else {
-						player.sendMessage(TEXT_COLOR + "You cannot write in a book that is not yours.");
+						player.sendMessage(TEXT_COLOR + S_WRITE_FAIL);
 					}
 				}
 			}
@@ -241,7 +279,18 @@ public class BookWorm extends JavaPlugin {
 	private void loadConfig() {
 		Configuration config = getConfiguration();
 		config.load();
-		TEXT_COLOR = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.GREEN.getCode()));
+		
+		TEXT_COLOR = ChatColor.getByCode(config.getInt("general.text-color", TEXT_COLOR.getCode()));
+		TEXT_COLOR_2 = ChatColor.getByCode(config.getInt("general.text-color-2", TEXT_COLOR_2.getCode()));
+		
+		SHOW_TITLE_ON_HELD_CHANGE = config.getBoolean("general.show-title-on-held-change", SHOW_TITLE_ON_HELD_CHANGE);
+		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
+
+		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
+		USE_FULL_FILENAMES = config.getBoolean("general.require-book-to-copy", USE_FULL_FILENAMES);
+		CLEAN_INTERVAL = config.getInt("general.clean-interval", CLEAN_INTERVAL);
+		REMOVE_DELAY = config.getInt("general.remove-delay", REMOVE_DELAY);
+		
 		LINE_LENGTH = config.getInt("formatting.line-length", LINE_LENGTH);
 		PAGE_LENGTH = config.getInt("formatting.page-length", PAGE_LENGTH);
 		int indent = config.getInt("formatting.indent-size", INDENT.length());
@@ -249,11 +298,41 @@ public class BookWorm extends JavaPlugin {
 		for (int i = 0; i < indent; i++) {
 			INDENT += " ";
 		}
-		CLEAN_INTERVAL = config.getInt("general.clean-interval", CLEAN_INTERVAL);
-		REMOVE_DELAY = config.getInt("general.remove-delay", REMOVE_DELAY);
-		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
-		SHOW_TITLE_ON_HELD_CHANGE = config.getBoolean("general.show-title-on-held-change", SHOW_TITLE_ON_HELD_CHANGE);
-		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
+		
+		S_MUST_HOLD_BOOK = config.getString("strings.must-hold-book", S_MUST_HOLD_BOOK);
+		S_USAGE_START = config.getString("strings.usage-start", S_USAGE_START);
+		S_USAGE_WRITE = config.getString("strings.usage-write", S_USAGE_WRITE);
+		S_USAGE_READ = config.getString("strings.usage-read", S_USAGE_READ);
+		S_NEW_BOOK_CREATED = config.getString("strings.new-book-created", S_NEW_BOOK_CREATED);
+		S_CANNOT_DESTROY = config.getString("strings.cannot-destroy", S_CANNOT_DESTROY);
+		
+		S_COMM_HELP = config.getString("strings.command-help", S_COMM_HELP);
+		S_COMM_READ = config.getString("strings.command-read", S_COMM_READ);
+		S_COMM_TITLE = config.getString("strings.command-title", S_COMM_TITLE);
+		S_COMM_ERASE = config.getString("strings.command-erase", S_COMM_ERASE);
+		S_COMM_REPLACE = config.getString("strings.command-replace", S_COMM_REPLACE);
+		S_COMM_ERASEALL = config.getString("strings.command-eraseall", S_COMM_ERASEALL);
+		
+		S_COMM_HELP_TEXT = config.getString("strings.command-help-text", S_COMM_HELP_TEXT);
+		S_COMM_ERASE_DONE = config.getString("strings.command-erase-done", S_COMM_ERASE_DONE);
+		S_COMM_REPLACE_DONE = config.getString("strings.command-replace-done", S_COMM_REPLACE_DONE);
+		S_COMM_REPLACE_FAIL = config.getString("strings.command-replace-fail", S_COMM_REPLACE_FAIL);
+		S_COMM_ERASEALL_DONE = config.getString("strings.command-eraseall-done", S_COMM_ERASEALL_DONE);
+		S_COMM_INVALID = config.getString("strings.command-invalid", S_COMM_INVALID);
+		
+		S_WRITE_DONE = config.getString("strings.write-done", S_WRITE_DONE);
+		S_WRITE_FAIL = config.getString("strings.write-fail", S_WRITE_FAIL);
+		
+		S_READ_DIVIDER = config.getString("strings.read-divider", S_READ_DIVIDER);
+		S_READ_BOOK = config.getString("strings.book", S_READ_BOOK);
+		S_READ_BY = config.getString("strings.by", S_READ_BY);
+		S_READ_PAGE = config.getString("strings.page", S_READ_PAGE);
+		
+		S_COPIED_BOOK = config.getString("strings.copied-book", S_COPIED_BOOK);
+		S_REMOVED_BOOK = config.getString("strings.removed-book", S_REMOVED_BOOK);
+		S_PLACED_BOOK = config.getString("strings.placed-book", S_PLACED_BOOK);
+		S_PLACED_BOOK_FAIL = config.getString("strings.placed-book-fail", S_PLACED_BOOK_FAIL);
+		
 		config.save();
 	}
 	

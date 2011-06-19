@@ -1,12 +1,12 @@
 package com.nisovin.bookworm;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
+import org.bukkit.inventory.ItemStack;
 
 public class BookWormBlockListener extends BlockListener {
 
@@ -14,7 +14,7 @@ public class BookWormBlockListener extends BlockListener {
 	
 	public BookWormBlockListener(BookWorm plugin) {
 		this.plugin = plugin;
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.High, plugin);		
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.Normal, plugin);		
 	}
 	
 	public void onBlockBreak(BlockBreakEvent event) {
@@ -22,21 +22,22 @@ public class BookWormBlockListener extends BlockListener {
 			Player player = event.getPlayer();
 			Location l = event.getBlock().getLocation();
 			String locStr = l.getWorld().getName() + "," + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ();
-			if (plugin.books.containsKey(locStr)) {
+			if (plugin.bookshelves.containsKey(locStr)) {
 				// get book
-				Book book = plugin.books.get(locStr);
-				if (player.isOp() || book.getAuthor().equalsIgnoreCase(player.getName())) {
-					// remove book
-					plugin.books.remove(locStr);
-					player.sendMessage(BookWorm.TEXT_COLOR + "Book destroyed: " + ChatColor.WHITE + book.getTitle());
+				short bookId = plugin.bookshelves.get(locStr);
+				Book book = plugin.getBook(bookId);
+				if (plugin.perms.canDestroyBook(player, book)) {
+					// remove book from bookshelf list
+					plugin.bookshelves.remove(locStr);
 					plugin.saveAll();
+					// drop book
+					l.getWorld().dropItemNaturally(l, new ItemStack(Material.BOOK, 1, book.getId()));
 				} else {
 					// someone else's book
-					player.sendMessage(BookWorm.TEXT_COLOR + "You cannot destroy someone else's book!");
+					player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_CANNOT_DESTROY);
 					event.setCancelled(true);
 				}
 			}
 		}
-	}
-	
+	}	
 }

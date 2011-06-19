@@ -1,6 +1,5 @@
 package com.nisovin.bookworm;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -56,13 +55,13 @@ public class BookWormPlayerListener extends PlayerListener {
 						} else {
 							player.setItemInHand(new ItemStack(Material.BOOK, 1, bookId));
 						}
-						player.sendMessage(BookWorm.TEXT_COLOR + "Copied book: " + ChatColor.WHITE + book.getTitle());
+						player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COPIED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 					} else if (player.isSneaking() && plugin.perms.canRemoveBook(player, book) && inHand.getType() == Material.AIR) {
 						// remove book if allowed
 						player.setItemInHand(new ItemStack(Material.BOOK, 1, bookId));
 						plugin.bookshelves.remove(locStr);
 						plugin.saveAll();
-						player.sendMessage(BookWorm.TEXT_COLOR + "Removed book: " + ChatColor.WHITE + book.getTitle());
+						player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_REMOVED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 					}					
 				}
 				
@@ -71,7 +70,7 @@ public class BookWormPlayerListener extends PlayerListener {
 				
 				// check worldguard
 				if (BookWorm.CHECK_WORLDGUARD && plugin.worldGuard != null && !plugin.worldGuard.canBuild(player, l)) {
-					player.sendMessage(BookWorm.TEXT_COLOR + "You cannot put a book here.");
+					player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_PLACED_BOOK_FAIL);
 					return;
 				}
 				
@@ -81,7 +80,7 @@ public class BookWormPlayerListener extends PlayerListener {
 				if (!book.isSaved()) book.save();
 				plugin.bookshelves.put(locStr, bookId);
 				plugin.saveAll(); // TODO: append instead of save all
-				player.sendMessage(BookWorm.TEXT_COLOR + "Book placed in bookshelf: " + ChatColor.WHITE + book.getTitle());
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_PLACED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 				
 				// remove book in hand
 				player.setItemInHand(null);
@@ -100,7 +99,7 @@ public class BookWormPlayerListener extends PlayerListener {
 			}
 			
 			// set bookmark and read
-			bookmark.readBook(player, book);			
+			bookmark.readBook(player, book);
 			
 		}
 	}
@@ -114,7 +113,7 @@ public class BookWormPlayerListener extends PlayerListener {
 				book = new Book(item.getDurability());
 				book.load();
 			}
-			event.getPlayer().sendMessage(BookWorm.TEXT_COLOR + "Book: " + ChatColor.WHITE + book.getTitle());
+			event.getPlayer().sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 		}
 	}
 

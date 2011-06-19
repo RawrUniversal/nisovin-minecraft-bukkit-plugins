@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Book {
@@ -138,28 +137,35 @@ public class Book {
 		if (loaded) {
 			page = page % pages;
 			
-			player.sendMessage(BookWorm.TEXT_COLOR + "--------------------------------------------------");
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_DIVIDER);
 			if (title.length() + author.length() + 25 > BookWorm.LINE_LENGTH) {
-				player.sendMessage(BookWorm.TEXT_COLOR + "Book: " + ChatColor.WHITE + title);
-				player.sendMessage(BookWorm.INDENT + BookWorm.TEXT_COLOR + "by: " + ChatColor.WHITE + author + BookWorm.TEXT_COLOR + " (page " + (page+1) + "/" + pages + ")");
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + title);
+				player.sendMessage(BookWorm.INDENT + BookWorm.TEXT_COLOR + BookWorm.S_READ_BY + ": " + BookWorm.TEXT_COLOR_2 + author + BookWorm.TEXT_COLOR + " (" + BookWorm.S_READ_PAGE + " " + (page+1) + "/" + pages + ")");
 			} else {
-				player.sendMessage(BookWorm.TEXT_COLOR + "Book: " + ChatColor.WHITE + title + BookWorm.TEXT_COLOR + " by: " + ChatColor.WHITE + author + BookWorm.TEXT_COLOR + " (page " + (page+1) + "/" + pages + ")");
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + title + BookWorm.TEXT_COLOR + " " + BookWorm.S_READ_BY + ": " + BookWorm.TEXT_COLOR_2 + author + BookWorm.TEXT_COLOR + " (" + BookWorm.S_READ_PAGE + " " + (page+1) + "/" + pages + ")");
 			}
 			player.sendMessage("   ");
 			for (int i = 0; i < BookWorm.PAGE_LENGTH && page*BookWorm.PAGE_LENGTH + i < contents.length; i++) {
 				player.sendMessage(contents[page*BookWorm.PAGE_LENGTH + i]);
 			}
-			player.sendMessage(BookWorm.TEXT_COLOR + "--------------------------------------------------");
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_DIVIDER);
 		}
 	}
 	
 	public void save() {
 		generateContents();
-		String t = title.replace(" ", "-").replaceAll("[^a-zA-Z0-9_\\-]", "");
-		if (t.length() > 15) {
-			t = t.substring(0, 15);
+		
+		String fileName;
+		if (BookWorm.USE_FULL_FILENAMES) {
+			String t = title.replace(" ", "-").replaceAll("[^a-zA-Z0-9_\\-]", "");
+			if (t.length() > 15) {
+				t = t.substring(0, 15);
+			}
+			fileName = id + "_" + author + "_" + t; // TODO: what if they change the book title?
+		} else {
+			fileName = id+"";
 		}
-		String fileName = id + "_" + author + "_" + t; // TODO: what if they change the book title?
+		
 		try {
 			// write book file
 			PrintWriter writer = new PrintWriter(new FileWriter(new File(BookWorm.plugin.getDataFolder(), fileName + ".txt"), false));
