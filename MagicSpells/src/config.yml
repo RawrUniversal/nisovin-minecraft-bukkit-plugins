@@ -218,6 +218,7 @@ spells:
         name: gills
         description: Allows you to breath underwater.
         cast-item: 294
+        glass-head-effect: true
         cooldown: 60
         duration: 300
         num-uses: 5
@@ -330,6 +331,24 @@ spells:
             - 265 5
         str-cost: 5 redstone dust and 5 iron bars
         str-cast-self: You have marked your location.
+    minion:
+        name: minion
+        description: Summons and undead minion to aid you.
+        cast-item: 280
+        cooldown: 60
+        duration: 60
+        mob-chances:
+            Zombie 75
+            Skeleton 25
+        prevent-sun-burn: true
+        target-players: false
+        cost:
+            - 331 2
+            - 352 1
+        str-cost: 2 redstone dust and 1 bone
+        str-cast-self: You summon an undead minion.
+        str-cast-others: "%a has summoned an undead minion."
+        str-fade: Your undead minion dies.
     prayer:
         name: prayer
         description: Heals yourself for five hearts.
@@ -382,6 +401,17 @@ spells:
         str-cost: 2 redstone dust, plus 1 feather each time you fall
         str-cast-self: You feel lighter.
         str-fade: Your normal weight returns.
+    stealth:
+        name: stealth
+        description: Become invisible to monsters.
+        cast-item: 280
+        cooldown: 60
+        duration: 20
+        cost:
+            - 331 3
+        str-cost: 3 redstone dust
+        str-cast-self: You become invisble to monsters.
+        str-fade: You are no longer invisible to monsters.
     stonevision:
         name: stonevision
         description: See through stone.
@@ -470,6 +500,7 @@ spells:
         name: gianttree
         enabled: false
         description: Create a giant tree!
+        cooldown: 300
         can-cast-by-command: true
         can-cast-with-item: false
         command-to-execute: gt 25 4
