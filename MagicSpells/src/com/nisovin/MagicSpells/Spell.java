@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
@@ -171,7 +172,7 @@ public abstract class Spell implements Comparable<Spell> {
 			return false;
 		}
 		for (ItemStack item : reagents) {
-			if (!inventoryContains(player.getInventory(), item)) {
+			if (item != null && !inventoryContains(player.getInventory(), item)) {
 				return false;
 			}
 		}
@@ -192,7 +193,9 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 		if (reagents != null) {
 			for (ItemStack item : reagents) {
-				removeFromInventory(player.getInventory(), item);
+				if (item != null) {
+					removeFromInventory(player.getInventory(), item);
+				}
 			}
 		}
 		if (healthCost > 0) {
@@ -305,12 +308,13 @@ public abstract class Spell implements Comparable<Spell> {
 	public void onPlayerQuit(PlayerQuitEvent event) {}
 	public void onPlayerInteract(PlayerInteractEvent event) {}
 	public void onPlayerMove(PlayerMoveEvent event) {}
-	public void onEntityDamage(EntityDamageEvent event) {}	
-	public void onEntityTarget(EntityTargetEvent event) {}	
-	public void onExplosionPrime(ExplosionPrimeEvent event) {}	
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {}
 	public void onBlockBreak(BlockBreakEvent event) {}
 	public void onBlockPlace(BlockPlaceEvent event) {}
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {}
+	public void onEntityDamage(EntityDamageEvent event) {}	
+	public void onEntityTarget(EntityTargetEvent event) {}	
+	public void onEntityCombust(EntityCombustEvent event) {}	
+	public void onExplosionPrime(ExplosionPrimeEvent event) {}	
 	
 	protected enum SpellCastState {
 		NORMAL,

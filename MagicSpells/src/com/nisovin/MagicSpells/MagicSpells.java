@@ -138,11 +138,13 @@ public class MagicSpells extends JavaPlugin {
 		LightwalkSpell.load(config);
 		ListSpell.load(config);
 		MarkSpell.load(config);
+		MinionSpell.load(config);
 		PrayerSpell.load(config);
 		PurgeSpell.load(config);
 		RecallSpell.load(config);
 		SafefallSpell.load(config);
 		SpellbookSpell.load(config);
+		StealthSpell.load(config);
 		StonevisionSpell.load(config);
 		TeachSpell.load(config);
 		TelekinesisSpell.load(config);
@@ -211,9 +213,20 @@ public class MagicSpells extends JavaPlugin {
 					sender.sendMessage(textColor + strCastUsage);
 				}
 			} else if (sender.isOp() && args[0].equals("reload")) {
-				onDisable();
-				load();
-				sender.sendMessage(textColor + "MagicSpells config reloaded.");
+				if (args.length == 1) {
+					onDisable();
+					load();
+					sender.sendMessage(textColor + "MagicSpells config reloaded.");
+				} else {
+					List<Player> players = getServer().matchPlayer(args[1]);
+					if (players.size() != 1) {
+						sender.sendMessage(textColor + "Player not found.");
+					} else {
+						Player player = players.get(0);
+						spellbooks.put(player.getName(), new Spellbook(player, this));
+						sender.sendMessage(textColor + player.getName() + "'s spellbook reloaded.");
+					}
+				}
 			} else if (sender instanceof Player) {
 				Player player = (Player)sender;
 				Spellbook spellbook = spellbooks.get(player.getName());

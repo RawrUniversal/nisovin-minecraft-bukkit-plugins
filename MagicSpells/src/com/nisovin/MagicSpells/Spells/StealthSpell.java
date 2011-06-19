@@ -1,5 +1,15 @@
 package com.nisovin.MagicSpells.Spells;
 
+import java.util.HashSet;
+
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.util.config.Configuration;
+
+import com.nisovin.MagicSpells.BuffSpell;
+import com.nisovin.MagicSpells.MagicSpells;
+
 public class StealthSpell extends BuffSpell {
 	
 	private static final String SPELL_NAME = "stealth";
@@ -30,17 +40,17 @@ public class StealthSpell extends BuffSpell {
 			turnOff(player);
 			return true;
 		} else if (state == SpellCastState.NORMAL) {
-			stealty.add(player.getName());
-			startSpellDuration();
+			stealthy.add(player.getName());
+			startSpellDuration(player);
 		}
 		return false;
 	}
 	
 	@Override
 	public void onEntityTarget(EntityTargetEvent event) {
-		if (!event.isCancelled() && stealty.size() > 0 && event.getTarget() instanceof Player) {
-			Player player = (Player)entity.getTarget();
-			if (stealty.contains(player.getName())) {
+		if (!event.isCancelled() && stealthy.size() > 0 && event.getTarget() instanceof Player) {
+			Player player = (Player)event.getTarget();
+			if (stealthy.contains(player.getName())) {
 				if (isExpired(player)) {
 					turnOff(player);
 				} else {
@@ -57,7 +67,7 @@ public class StealthSpell extends BuffSpell {
 	@Override
 	protected void turnOff(Player player) {
 		super.turnOff(player);
-		stealty.remove(player.getName());
+		stealthy.remove(player.getName());
 		sendMessage(player, strFade);
 	}
 	
