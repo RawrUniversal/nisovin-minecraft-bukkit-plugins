@@ -77,7 +77,7 @@ public class BlinkSpell extends InstantSpell {
 					player.teleport(loc);
 					if (smokeTrail) {
 						for (Location l : smokes) {
-							l.getWorld().playEffect(l, Effect.SMOKE, 100);
+							l.getWorld().playEffect(l, Effect.SMOKE, 4);
 						}
 					}
 				} else {

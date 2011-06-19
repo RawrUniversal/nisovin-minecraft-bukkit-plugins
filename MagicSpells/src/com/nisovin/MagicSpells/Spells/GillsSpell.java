@@ -1,11 +1,14 @@
 package com.nisovin.MagicSpells.Spells;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
@@ -15,7 +18,10 @@ public class GillsSpell extends BuffSpell {
 
 	private static final String SPELL_NAME = "gills";
 
+	private boolean glassHeadEffect;
+	
 	private HashSet<String> fishes;
+	private HashMap<Player,ItemStack> helmets;
 	
 	public static void load(Configuration config) {
 		load(config, SPELL_NAME);
@@ -31,7 +37,12 @@ public class GillsSpell extends BuffSpell {
 		super(config, spellName);
 		addListener(Event.Type.ENTITY_DAMAGE);
 		
+		glassHeadEffect = config.getBoolean("spells." + spellName + ".glass-head-effect", true);
+		
 		fishes = new HashSet<String>();
+		if (glassHeadEffect) {
+			helmets = new HashMap<Player,ItemStack>();
+		}
 	}
 
 	@Override
@@ -41,6 +52,13 @@ public class GillsSpell extends BuffSpell {
 			return true;
 		} else if (state == SpellCastState.NORMAL) {
 			fishes.add(player.getName());
+			if (glassHeadEffect) {
+				ItemStack helmet = player.getInventory().getHelmet();
+				if (helmet != null && helmet.getType() != Material.AIR) {
+					helmets.put(player, helmet);
+				}
+				player.getInventory().setHelmet(new ItemStack(Material.GLASS, 1));
+			}
 			startSpellDuration(player);
 		}
 		return false;
@@ -69,6 +87,14 @@ public class GillsSpell extends BuffSpell {
 	protected void turnOff(Player player) {
 		super.turnOff(player);
 		fishes.remove(player.getName());
+		if (glassHeadEffect) {
+			if (helmets.containsKey(player)) {
+				player.getInventory().setHelmet(helmets.get(player));
+				helmets.remove(player);
+			} else {
+				player.getInventory().setHelmet(null);				
+			}
+		}
 		sendMessage(player, strFade);
 	}
 	
