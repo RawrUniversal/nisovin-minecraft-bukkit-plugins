@@ -124,13 +124,26 @@ public class BookWorm extends JavaPlugin {
 		
 		// prevent book stacking
 		try {
-			Field field = net.minecraft.server.Item.class.getDeclaredField("maxStackSize");
-			field.setAccessible(true);
-			field.set(net.minecraft.server.Item.BOOK, 1);
+			boolean ok = false;
+			try {
+				// attempt to make books with different datas stack separately
+				Field field1 = net.minecraft.server.Item.class.getDeclaredField("bi");
+				if (field1.getType() == Boolean.class) {
+					field1.setAccessible(true);
+					field1.setBoolean(net.minecraft.server.Item.BOOK, true);
+					ok = true;
+				} 
+			} catch (Exception e) {
+			}
+			if (!ok) {
+				// otherwise limit stack size to 1
+				Field field2 = net.minecraft.server.Item.class.getDeclaredField("maxStackSize");
+				field2.setAccessible(true);
+				field2.setInt(net.minecraft.server.Item.BOOK, 1);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		
 	}
 
