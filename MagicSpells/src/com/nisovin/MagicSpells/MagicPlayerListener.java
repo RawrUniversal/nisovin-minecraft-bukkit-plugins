@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -93,6 +94,16 @@ public class MagicPlayerListener extends PlayerListener {
 		if (spells != null) {
 			for (Spell spell : spells) {
 				spell.onPlayerMove(event);
+			}
+		}
+	}
+	
+	@Override
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_TELEPORT);
+		if (spells != null) {
+			for (Spell spell : spells) {
+				spell.onPlayerTeleport(event);
 			}
 		}
 	}

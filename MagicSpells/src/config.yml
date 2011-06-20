@@ -473,6 +473,8 @@ spells:
         description: Lets you walk on a platform of air.
         cast-item: 317
         cooldown: 30
+        cancel-on-logout: true
+        cancel-on-teleport: true
         cost:
             - 331 5
             - 288 5

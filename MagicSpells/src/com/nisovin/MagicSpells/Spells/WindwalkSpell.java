@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
@@ -20,6 +21,8 @@ public class WindwalkSpell extends BuffSpell {
 	
 	private Material platformBlock;
 	private int size;
+	private boolean cancelOnLogout;
+	private boolean cancelOnTeleport;
 	
 	private HashMap<String,BlockPlatform> windwalkers;
 	
@@ -38,11 +41,18 @@ public class WindwalkSpell extends BuffSpell {
 		
 		platformBlock = Material.getMaterial(config.getInt("spells." + spellName + ".platform-block", Material.GLASS.getId()));
 		size = config.getInt("spells." + spellName + ".size", 2);
+		cancelOnLogout = config.getBoolean("spells." + spellName + ".cancel-on-logout", true);
+		cancelOnTeleport = config.getBoolean("spells." + spellName + ".cancel-on-teleport", true);
 		
 		windwalkers = new HashMap<String,BlockPlatform>();
 		
 		addListener(Event.Type.PLAYER_MOVE);
-		addListener(Event.Type.PLAYER_QUIT);
+		if (cancelOnLogout) {
+			addListener(Event.Type.PLAYER_QUIT);
+		}
+		if (cancelOnTeleport) {
+			addListener(Event.Type.PLAYER_TELEPORT);
+		}
 	}
 
 	@Override
@@ -81,6 +91,11 @@ public class WindwalkSpell extends BuffSpell {
 	
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		turnOff(event.getPlayer());
+	}
+	
+	@Override
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		turnOff(event.getPlayer());
 	}
 	
