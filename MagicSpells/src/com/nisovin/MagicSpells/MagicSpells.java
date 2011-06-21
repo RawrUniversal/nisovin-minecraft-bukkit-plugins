@@ -271,6 +271,26 @@ public class MagicSpells extends JavaPlugin {
 		return false;
 	}
 	
+	public static boolean teachSpell(Player player, String spellName) {
+		Spell spell = spellNames.get(spellName);
+		if (spell == null) {
+			return false;
+		}
+		
+		Spellbook spellbook = spellbooks.get(player.getName());
+		if (spellbook == null) {
+			spellbook = new Spellbook(player, plugin);
+			spellbooks.put(player.getName(), spellbook);
+		}
+		
+		if (spellbook.hasSpell(spell) || !spellbook.canLearn(spell)) {
+			return false;
+		} else {
+			spellbook.addSpell(spell);
+			spellbook.save();
+		}
+	}
+	
 	public void loadConfigFromJar() {
 		File configFile = new File(this.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
