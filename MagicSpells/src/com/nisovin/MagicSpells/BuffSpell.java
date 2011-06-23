@@ -10,9 +10,11 @@ import org.bukkit.util.config.Configuration;
 public abstract class BuffSpell extends Spell {
 	
 	protected ItemStack[] useCost;
+	protected int healthCost = 0;
+	protected int manaCost = 0;
 	protected int useCostInterval;
 	protected int numUses;
-	protected int duration; // TODO
+	protected int duration;
 	protected String strFade;
 	private boolean castWithItem;
 	private boolean castByCommand;
@@ -29,7 +31,11 @@ public abstract class BuffSpell extends Spell {
 			for (int i = 0; i < costList.size(); i++) {
 				if (costList.get(i).contains(" ")) {
 					String [] data = costList.get(i).split(" ");
-					if (data[0].contains(":")) {
+					if (data[0].equalsIgnoreCase("health")) {
+						healthCost = Integer.parseInt(data[1]);
+					} else if (data[0].equalsIgnoreCase("mana")) {
+						manaCost = Integer.parseInt(data[1]);
+					} else if (data[0].contains(":")) {
 						String [] subdata = data[0].split(":");
 						useCost[i] = new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1]));
 					} else {
@@ -112,8 +118,8 @@ public abstract class BuffSpell extends Spell {
 		if (useCost != null && useCostInterval > 0 && useCounter != null && useCounter.containsKey(player.getName())) {
 			int uses = useCounter.get(player.getName());
 			if (uses % useCostInterval == 0) {
-				if (hasReagents(player, useCost)) {
-					removeReagents(player, useCost);
+				if (hasReagents(player, useCost, healthCost, manaCost)) {
+					removeReagents(player, useCost, healthCost, manaCost);
 					return true;
 				} else {
 					turnOff(player);

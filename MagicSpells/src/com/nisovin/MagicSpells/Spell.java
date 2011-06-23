@@ -29,6 +29,7 @@ public abstract class Spell implements Comparable<Spell> {
 	protected int castItem;
 	protected ItemStack[] cost;
 	protected int healthCost = 0;
+	protected int manaCost = 0;
 	protected int cooldown;
 	protected int broadcastRange;
 	protected String strCost;
@@ -51,6 +52,8 @@ public abstract class Spell implements Comparable<Spell> {
 					data = costList.get(i).split(" ");
 					if (data[0].equalsIgnoreCase("health")) {
 						healthCost = Integer.parseInt(data[1]);
+					} else if (data[0].equalsIgnoreCase("mana")) {
+						manaCost = Integer.parseInt(data[1]);
 					} else if (data[0].contains(":")) {
 						subdata = data[0].split(":");
 						cost[i] = new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1]));
@@ -154,14 +157,14 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	protected boolean hasReagents(Player player) {
-		return hasReagents(player, cost, healthCost);
+		return hasReagents(player, cost, healthCost, manaCost);
 	}
 	
 	protected boolean hasReagents(Player player, ItemStack[] cost) {
-		return hasReagents(player, cost, 0);
+		return hasReagents(player, cost, 0, 0);
 	}
 	
-	protected boolean hasReagents(Player player, ItemStack[] reagents, int healthCost) {
+	protected boolean hasReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost) {
 		if (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase())) {
 			return true;
 		}
@@ -169,6 +172,9 @@ public abstract class Spell implements Comparable<Spell> {
 			return true;
 		}
 		if (player.getHealth() <= healthCost) { // TODO: add option to allow death from health cost
+			return false;
+		}
+		if (manaCost > 0 && !MagicSpells.mana.hasMana(player, manaCost)) {
 			return false;
 		}
 		for (ItemStack item : reagents) {
@@ -180,14 +186,14 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	protected void removeReagents(Player player) {
-		removeReagents(player, cost, healthCost);
+		removeReagents(player, cost, healthCost, manaCost);
 	}
 	
 	protected void removeReagents(Player player, ItemStack[] reagents) {
-		removeReagents(player, reagents, 0);
+		removeReagents(player, reagents, 0, 0);
 	}
 	
-	protected void removeReagents(Player player, ItemStack[] reagents, int healthCost) {
+	protected void removeReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost) {
 		if (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase())) {
 			return;
 		}
@@ -200,6 +206,9 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 		if (healthCost > 0) {
 			player.setHealth(player.getHealth() - healthCost);
+		}
+		if (manaCost > 0) {
+			MagicSpells.mana.removeMana(player, manaCost);
 		}
 	}
 	

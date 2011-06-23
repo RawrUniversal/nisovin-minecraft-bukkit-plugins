@@ -28,11 +28,21 @@ public class MagicSpells extends JavaPlugin {
 	public static ChatColor textColor;
 	public static int broadcastRange;
 	public static boolean useHealthBars;
+	
 	public static boolean opsHaveAllSpells;
 	public static List<String> castForFree;
 	public static boolean freecastNoCooldown;
+	
 	public static boolean ignoreDefaultBindings;
 	public static List<Integer> losTransparentBlocks;
+	
+	public static boolean enableManaBars;
+	public static int maxMana;
+	public static String manaBarPrefix;
+	public static int manaBarSize;
+	public static int manaRegenTickRate;
+	public static int manaRegenPercent;
+	
 	public static String strCastUsage;
 	public static String strUnknownSpell;
 	public static String strSpellChange;
@@ -46,6 +56,8 @@ public class MagicSpells extends JavaPlugin {
 	public static HashMap<String,Spellbook> spellbooks; // player spellbooks
 	
 	public static HashMap<Event.Type,HashSet<Spell>> listeners;
+	
+	public static ManaBarManager mana;
 	
 	@Override
 	public void onEnable() {
@@ -109,6 +121,17 @@ public class MagicSpells extends JavaPlugin {
 			losTransparentBlocks.add(Material.DEAD_BUSH.getId());
 			losTransparentBlocks.add(Material.DIODE_BLOCK_ON.getId());
 			losTransparentBlocks.add(Material.DIODE_BLOCK_OFF.getId());
+		}		
+		
+		// setup mana bar manager		
+		enableManaBars = config.getBoolean("general.enable-mana-bars", false);
+		maxMana = config.getInt("general.max-mana", 100);
+		manaBarPrefix = config.getString("general.mana-bar-prefix", "Mana:");
+		manaBarSize = config.getInt("general.mana-bar-size", 40);
+		manaRegenTickRate = config.getInt("general.mana-regen-tick-rate", 40);
+		manaRegenPercent = config.getInt("general.mana-regen-percent", 2);
+		if (enableManaBars) {
+			mana = new ManaBarManager();
 		}
 		
 		// load permissions
@@ -267,6 +290,12 @@ public class MagicSpells extends JavaPlugin {
 				}
 			}
 			return true;
+		} else if (command.getName().equalsIgnoreCase("mana")) {
+			if (enableManaBars && sender instanceof Player) {
+				Player player = (Player)sender;
+				mana.showMana(player);
+			}
+			return true;
 		}
 		return false;
 	}
@@ -330,6 +359,9 @@ public class MagicSpells extends JavaPlugin {
 		spellNames = null;
 		spellbooks = null;
 		listeners = null;
+		if (mana != null) {
+			mana.stopRegeneration();
+		}
 	}
 	
 }

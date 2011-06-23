@@ -32,8 +32,14 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		// set up spell book
 		Spellbook spellbook = new Spellbook(event.getPlayer(), plugin);
 		MagicSpells.spellbooks.put(event.getPlayer().getName(), spellbook);
+		
+		// set up mana bar
+		if (MagicSpells.mana != null) {
+			MagicSpells.mana.createManaBar(event.getPlayer());
+		}
 		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_JOIN);
 		if (spells != null) {
