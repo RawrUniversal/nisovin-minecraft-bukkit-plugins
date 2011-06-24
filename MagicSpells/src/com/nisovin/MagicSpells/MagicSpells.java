@@ -40,8 +40,14 @@ public class MagicSpells extends JavaPlugin {
 	public static int maxMana;
 	public static String manaBarPrefix;
 	public static int manaBarSize;
+	public static ChatColor manaBarColorFull;
+	public static ChatColor manaBarColorEmpty;
 	public static int manaRegenTickRate;
 	public static int manaRegenPercent;
+	public static boolean showManaOnUse;
+	public static boolean showManaOnRegen;
+	public static boolean showManaOnWoodTool;
+	public static int manaBarToolSlot;
 	
 	public static String strCastUsage;
 	public static String strUnknownSpell;
@@ -124,14 +130,23 @@ public class MagicSpells extends JavaPlugin {
 		}		
 		
 		// setup mana bar manager		
-		enableManaBars = config.getBoolean("general.enable-mana-bars", false);
-		maxMana = config.getInt("general.max-mana", 100);
-		manaBarPrefix = config.getString("general.mana-bar-prefix", "Mana:");
-		manaBarSize = config.getInt("general.mana-bar-size", 40);
-		manaRegenTickRate = config.getInt("general.mana-regen-tick-rate", 40);
-		manaRegenPercent = config.getInt("general.mana-regen-percent", 2);
+		enableManaBars = config.getBoolean("general.mana.enable-mana-bars", true);
+		maxMana = config.getInt("general.mana.max-mana", 100);
+		manaBarPrefix = config.getString("general.mana.mana-bar-prefix", "Mana:");
+		manaBarSize = config.getInt("general.mana.mana-bar-size", 35);
+		manaBarColorFull = ChatColor.getByCode(config.getInt("general.mana.color-full", ChatColor.GREEN.getCode()));
+		manaBarColorEmpty = ChatColor.getByCode(config.getInt("general.mana.color-empty", ChatColor.BLACK.getCode()));
+		manaRegenTickRate = config.getInt("general.mana.regen-tick-seconds", 5) * 20;
+		manaRegenPercent = config.getInt("general.mana.regen-percent", 5);
+		showManaOnUse = config.getBoolean("general.mana.show-mana-on-use", false);
+		showManaOnRegen = config.getBoolean("general.mana.show-mana-on-regen", false);
+		showManaOnWoodTool = config.getBoolean("general.mana.show-mana-on-wood-tool", true);
+		manaBarToolSlot = config.getInt("general.mana.tool-slot", 8);
 		if (enableManaBars) {
 			mana = new ManaBarManager();
+			for (Player p : getServer().getOnlinePlayers()) {
+				mana.createManaBar(p);
+			}
 		}
 		
 		// load permissions
@@ -142,6 +157,7 @@ public class MagicSpells extends JavaPlugin {
 		// load spells
 		BindSpell.load(config);
 		BlinkSpell.load(config);
+		BuildSpell.load(config);
 		CombustSpell.load(config);
 		EntombSpell.load(config);
 		ExplodeSpell.load(config);
@@ -152,6 +168,7 @@ public class MagicSpells extends JavaPlugin {
 		ForcepushSpell.load(config);
 		ForgetSpell.load(config);
 		FrostwalkSpell.load(config);
+		GateSpell.load(config);
 		GillsSpell.load(config);
 		HealSpell.load(config);
 		HelpSpell.load(config);
@@ -317,6 +334,7 @@ public class MagicSpells extends JavaPlugin {
 		} else {
 			spellbook.addSpell(spell);
 			spellbook.save();
+			return true;
 		}
 	}
 	
@@ -360,7 +378,7 @@ public class MagicSpells extends JavaPlugin {
 		spellbooks = null;
 		listeners = null;
 		if (mana != null) {
-			mana.stopRegeneration();
+			mana.stopRegenerator();
 		}
 	}
 	
