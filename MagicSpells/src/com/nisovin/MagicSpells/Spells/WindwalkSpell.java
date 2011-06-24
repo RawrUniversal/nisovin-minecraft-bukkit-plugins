@@ -96,7 +96,11 @@ public class WindwalkSpell extends BuffSpell {
 	
 	@Override
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		turnOff(event.getPlayer());
+		if (windwalkers.containsKey(event.getPlayer().getName())) {
+			if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName()) || event.getFrom().toVector().distanceSquared(event.getTo().toVector()) > 50*50) {
+				turnOff(event.getPlayer());
+			}
+		}
 	}
 	
 	@Override
