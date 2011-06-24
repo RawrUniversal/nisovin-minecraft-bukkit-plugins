@@ -19,6 +19,20 @@ general:
         - joemagicuser
     freecast-no-cooldown: true
     ignore-default-bindings: false
+    mana:
+        enable-mana-bars: true
+        max-mana: 100
+        mana-bar-prefix: "Mana:"
+        mana-bar-size: 35
+        color-full: 10
+        color-empty: 0
+        regen-tick-seconds: 5
+        regen-percent: 5
+        show-mana-on-use: false
+        show-mana-on-regen: false
+        show-mana-on-wood-tool: true
+        tool-slot: 8
+        
 spells:
 
     list:
@@ -89,6 +103,19 @@ spells:
         str-cast-self: You blink away!
         str-cast-others: "%a blinks away!"
         str-cant-blink: You cannot blink there.
+    build:
+        name: build
+        description: Build blocks from far away.
+        cast-item: 294
+        cooldown: 2
+        range: 25
+        slot: 0
+        consume-block: true
+        show-effect: true
+        check-plugins: true
+        allowed-types: 1,2,3,4,5,12,13,17,20,22,24,35,41,42,43,44,45,47,48,49,50,53,57,65,67,80,85,87,88,89,91,92
+        str-invalid-block: You can't build that block.
+        str-cant-build: You can't build there.
     combust:
         name: combust
         description: Set a target on fire.
@@ -214,6 +241,19 @@ spells:
         str-cast-self: You can now walk on water!
         str-cast-others: "%a can now walk on water!"
         str-fade: You can no longer walk on water.
+    gate:
+        name: gate
+        description: Teleport to spawn.
+        can-cast-with-item: false
+        world: CURRENT
+        coordinates: SPAWN
+        use-spell-effect: true
+        cost:
+            - 331 1
+            - 265 1
+        str-cast-self: You have teleported to spawn.
+        str-cast-others: "%a teleports!"
+        str-gate-failed: Unable to teleport.
     gills:
         name: gills
         description: Allows you to breath underwater.
@@ -333,7 +373,7 @@ spells:
         str-cast-self: You have marked your location.
     minion:
         name: minion
-        description: Summons and undead minion to aid you.
+        description: Summons an undead minion to aid you.
         cast-item: 280
         cooldown: 60
         duration: 60
