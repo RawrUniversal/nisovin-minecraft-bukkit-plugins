@@ -21,15 +21,12 @@ public class ManaBar {
 		if (amount > mana) {
 			return false;
 		} else {
-			System.out.println(amount + " mana removed");
 			mana -= amount;
-			System.out.println(mana + " mana remaining");
 			return true;
 		}
 	}
 	
 	public void show(Player player) {
-		System.out.println("mana: " + mana);
 		int segments = (int)(((double)mana/(double)maxMana) * MagicSpells.manaBarSize);
 		String text = MagicSpells.textColor + MagicSpells.manaBarPrefix + " {" + MagicSpells.manaBarColorFull;
 		int i = 0;
@@ -54,7 +51,6 @@ public class ManaBar {
 			} else if (dur == 0) {
 				dur = 1;
 			}
-			System.out.println("dur: " + dur);
 			item.setDurability((short)dur);
 			player.getInventory().setItem(MagicSpells.manaBarToolSlot, item);
 		}

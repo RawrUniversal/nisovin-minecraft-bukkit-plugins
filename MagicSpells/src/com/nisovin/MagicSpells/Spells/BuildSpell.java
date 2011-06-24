@@ -71,7 +71,7 @@ public class BuildSpell extends InstantSpell {
 			} else {
 				// check plugins
 				Block b = lastBlocks.get(0);
-				b.setTypeIdAndData(item.getTypeId(), item.getData().getData(), true);
+				b.setTypeIdAndData(item.getTypeId(), (byte)item.getDurability(), true);
 				if (checkPlugins) {
 					BlockPlaceEvent event = new BlockPlaceEvent(b, b.getState(), lastBlocks.get(1), player.getItemInHand(), player, true);
 					Bukkit.getServer().getPluginManager().callEvent(event);
