@@ -2,10 +2,12 @@ package com.nisovin.MagicSpells.Spells;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
 
@@ -20,6 +22,7 @@ public class BuildSpell extends InstantSpell {
 	private boolean consumeBlock;
 	private boolean showEffect;
 	private int[] allowedTypes;
+	private boolean checkPlugins;
 	private String strInvalidBlock;
 	private String strCantBuild;
 	
@@ -44,6 +47,7 @@ public class BuildSpell extends InstantSpell {
 		for (int i = 0; i < allowed.length; i++) {
 			allowedTypes[i] = Integer.parseInt(allowed[i]);
 		}
+		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		strInvalidBlock = config.getString("spells." + spellName + "str-invalid-block", "You can't build that block.");
 		strCantBuild = config.getString("spells." + spellName + "str-cant-build", "You can't build there.");
 	}
@@ -51,14 +55,11 @@ public class BuildSpell extends InstantSpell {
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get mat
-			Material mat = null;
 			ItemStack item = player.getInventory().getItem(slot);
 			if (item == null || !isAllowed(item.getType())) {
 				// fail
 				sendMessage(player, strInvalidBlock);
 				return true;
-			} else {
-				mat = item.getType();
 			}
 			
 			// get target
@@ -68,10 +69,20 @@ public class BuildSpell extends InstantSpell {
 				sendMessage(player, strCantBuild);
 				return true;
 			} else {
+				// check plugins
 				Block b = lastBlocks.get(0);
-				b.setType(mat);
+				b.setTypeIdAndData(item.getTypeId(), item.getData().getData(), true);
+				if (checkPlugins) {
+					BlockPlaceEvent event = new BlockPlaceEvent(b, b.getState(), lastBlocks.get(1), player.getItemInHand(), player, true);
+					Bukkit.getServer().getPluginManager().callEvent(event);
+					if (event.isCancelled() && b.getType() == item.getType()) {
+						b.setType(Material.AIR);
+						sendMessage(player, strCantBuild);
+						return true;
+					}
+				}
 				if (showEffect) {
-					b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, mat.getId());
+					b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, item.getTypeId());
 				}
 				if (consumeBlock) {
 					int amt = item.getAmount()-1;
