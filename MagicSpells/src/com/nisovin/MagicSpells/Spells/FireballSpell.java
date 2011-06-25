@@ -64,6 +64,7 @@ public class FireballSpell extends InstantSpell {
 			} else {
 				Location loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw(), player.getLocation().getPitch());
 				Fireball fireball = player.getWorld().spawn(loc, Fireball.class);
+				fireball.setShooter(player);
 				fireballs.add(fireball);
 			}
 		}
