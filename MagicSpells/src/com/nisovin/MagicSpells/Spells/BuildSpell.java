@@ -64,7 +64,7 @@ public class BuildSpell extends InstantSpell {
 			
 			// get target
 			List<Block> lastBlocks = player.getLastTwoTargetBlocks(null, range);
-			if (lastBlocks.get(1).getType() == Material.AIR) {
+			if (lastBlocks.size() < 2 || lastBlocks.get(1).getType() == Material.AIR) {
 				// fail
 				sendMessage(player, strCantBuild);
 				return true;

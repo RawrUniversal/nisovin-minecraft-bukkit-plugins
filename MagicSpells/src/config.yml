@@ -114,6 +114,8 @@ spells:
         show-effect: true
         check-plugins: true
         allowed-types: 1,2,3,4,5,12,13,17,20,22,24,35,41,42,43,44,45,47,48,49,50,53,57,65,67,80,85,87,88,89,91,92
+        cost:
+            - mana 5
         str-invalid-block: You can't build that block.
         str-cant-build: You can't build there.
     combust:
@@ -515,6 +517,7 @@ spells:
         cooldown: 30
         cancel-on-logout: true
         cancel-on-teleport: true
+        size: 2
         cost:
             - 331 5
             - 288 5

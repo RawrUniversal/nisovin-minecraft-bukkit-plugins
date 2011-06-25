@@ -94,6 +94,10 @@ public class BlockPlatform {
 		}
 	}
 	
+	public boolean blockInPlatform(Block block) {
+		return blocks.contains(block);
+	}
+	
 	public void destroyPlatform() {		
 		// remove platform blocks
 		if (moving) {

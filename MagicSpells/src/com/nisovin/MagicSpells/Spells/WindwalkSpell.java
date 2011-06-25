@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -47,6 +48,7 @@ public class WindwalkSpell extends BuffSpell {
 		windwalkers = new HashMap<String,BlockPlatform>();
 		
 		addListener(Event.Type.PLAYER_MOVE);
+		addListener(Event.Type.BLOCK_BREAK);
 		if (cancelOnLogout) {
 			addListener(Event.Type.PLAYER_QUIT);
 		}
@@ -84,6 +86,18 @@ public class WindwalkSpell extends BuffSpell {
 				if (moved) {
 					addUse(player);
 					chargeUseCost(player);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void onBlockBreak(BlockBreakEvent event) {
+		if (windwalkers.size() > 0 && event.getBlock().getType() == platformBlock) {
+			for (BlockPlatform platform : windwalkers.values()) {
+				if (platform.blockInPlatform(event.getBlock())) {
+					event.setCancelled(true);
+					break;
 				}
 			}
 		}
