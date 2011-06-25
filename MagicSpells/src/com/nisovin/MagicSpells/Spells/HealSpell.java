@@ -5,7 +5,6 @@ import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.InstantSpell;
 import com.nisovin.MagicSpells.MagicSpells;
-import com.nisovin.healthbars.HealthBars;
 
 public class HealSpell extends InstantSpell {
 	
@@ -59,10 +58,6 @@ public class HealSpell extends InstantSpell {
 				sendMessage(player, formatMessage(strCastSelf, "%t", target.getName()));
 				sendMessage(target, formatMessage(strCastTarget, "%a", player.getName()));
 				sendMessageNear(player, formatMessage(strCastOthers, "%t", target.getName(), "%a", player.getName()));
-				
-				if (MagicSpells.useHealthBars) {
-					HealthBars.queueHealthUpdate(target);
-				}
 			}
 			
 			return true;

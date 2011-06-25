@@ -41,12 +41,12 @@ public abstract class InstantSpell extends Spell {
 		return n*n;
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, int range, int variance, boolean targetPlayers, boolean checkLos) {
-		return getTargetedEntity(player, range, variance, targetPlayers, true, checkLos);
+	protected LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean checkLos) {
+		return getTargetedEntity(player, range, targetPlayers, true, checkLos);
 	}
 	
 	protected Player getTargetedPlayer(Player player, int range, int variance, boolean checkLos) {
-		LivingEntity entity = getTargetedEntity(player, range, variance, true, false, checkLos);
+		LivingEntity entity = getTargetedEntity(player, range, true, false, checkLos);
 		if (entity instanceof Player) {
 			return (Player)entity;
 		} else {
@@ -54,7 +54,7 @@ public abstract class InstantSpell extends Spell {
 		}
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, int range, int variance, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos) {
+	protected LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos) {
 		// get nearby living entities, filtered by player targeting options
 		List<Entity> ne = player.getNearbyEntities(range, range, range);
 		ArrayList<LivingEntity> entities = new ArrayList<LivingEntity>(); 

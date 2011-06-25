@@ -16,7 +16,6 @@ public class CombustSpell extends InstantSpell {
 	
 	private boolean targetPlayers;
 	private int fireTicks;
-	private int precision;
 	private boolean obeyLos;
 	private boolean checkPlugins;
 	private String strNoTarget;
@@ -36,7 +35,6 @@ public class CombustSpell extends InstantSpell {
 		
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		fireTicks = config.getInt("spells." + spellName + ".fire-ticks", 100);
-		precision = config.getInt("spells." + spellName + ".precision", 20);
 		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
 		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "");
@@ -45,7 +43,7 @@ public class CombustSpell extends InstantSpell {
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, range>0?range:100, precision, targetPlayers, obeyLos);
+			LivingEntity target = getTargetedEntity(player, range>0?range:100, targetPlayers, obeyLos);
 			if (target == null) {
 				sendMessage(player, strNoTarget);
 				return true;
