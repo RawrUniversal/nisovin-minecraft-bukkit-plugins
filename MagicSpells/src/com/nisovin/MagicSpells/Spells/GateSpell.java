@@ -55,13 +55,14 @@ public class GateSpell extends InstantSpell {
 			}
 			if (world == null) {
 				// fail -- no world
+				Bukkit.getServer().getLogger().warning("MagicSpells: " + name + ": world " + this.world + " does not exist");
 				sendMessage(player, strGateFailed);
 				return true;
 			}
 			
 			// get location
 			Location location;
-			if (coords.matches("^[0-9],[0-9],[0-9]$")) {
+			if (coords.matches("^-?[0-9]+,[0-9]+,-?[0-9]+$")) {
 				String[] c = coords.split(",");
 				int x = Integer.parseInt(c[0]);
 				int y = Integer.parseInt(c[1]);
@@ -71,6 +72,7 @@ public class GateSpell extends InstantSpell {
 				location = world.getSpawnLocation();
 			} else {
 				// fail -- no location
+				Bukkit.getServer().getLogger().warning("MagicSpells: " + name + ": " + this.coords + " is not a valid location");
 				sendMessage(player, strGateFailed);
 				return true;
 			}
@@ -81,6 +83,7 @@ public class GateSpell extends InstantSpell {
 			Block b = location.getBlock();
 			if (b.getType() != Material.AIR || b.getRelative(0,1,0).getType() != Material.AIR) {
 				// fail -- blocked
+				Bukkit.getServer().getLogger().warning("MagicSpells: " + name + ": landing spot blocked");
 				sendMessage(player, strGateFailed);
 				return true;
 			}
