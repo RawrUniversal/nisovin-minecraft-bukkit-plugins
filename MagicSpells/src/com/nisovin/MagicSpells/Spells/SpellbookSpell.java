@@ -137,7 +137,7 @@ public class SpellbookSpell extends CommandSpell {
 			if (bookLocations.contains(loc)) {
 				Player player = event.getPlayer();
 				int i = bookLocations.indexOf(loc);
-				Spellbook spellbook = MagicSpells.spellbooks.get(player.getName());
+				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				Spell spell = MagicSpells.spells.get(bookSpells.get(i));
 				if (spellbook == null || spell == null) {
 					// fail: something's wrong

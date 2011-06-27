@@ -14,6 +14,7 @@ public class ListSpell extends CommandSpell {
 	private static final String SPELL_NAME = "list";
 	
 	private int lineLength = 60;
+	private boolean reloadGrantedSpells;
 	private String strNoSpells;
 	private String strPrefix;
 	
@@ -30,6 +31,7 @@ public class ListSpell extends CommandSpell {
 	public ListSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
+		reloadGrantedSpells = config.getBoolean("spells." + spellName + ".reload-granted-spells", false);
 		strNoSpells = config.getString("spells." + spellName + ".str-no-spells", "You do not know any spells.");
 		strPrefix = config.getString("spells." + spellName + ".str-prefix", "Known spells:");
 	}
@@ -37,7 +39,10 @@ public class ListSpell extends CommandSpell {
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Spellbook spellbook = MagicSpells.spellbooks.get(player.getName());
+			Spellbook spellbook = MagicSpells.getSpellbook(player);
+			if (spellbook != null && reloadGrantedSpells) {
+				spellbook.addGrantedSpells();
+			}
 			if (spellbook == null || spellbook.getSpells().size() == 0) {
 				// no spells
 				sendMessage(player, strNoSpells);

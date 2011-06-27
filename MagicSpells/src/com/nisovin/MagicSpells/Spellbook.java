@@ -22,6 +22,7 @@ public class Spellbook {
 	
 	private static PermissionHandler permissionHandler = null;
 	
+	private Player player;
 	private String playerName;
 	
 	private TreeSet<Spell> allSpells = new TreeSet<Spell>();
@@ -31,6 +32,7 @@ public class Spellbook {
 	
 	public Spellbook(Player player, MagicSpells plugin) {
 		this.plugin = plugin;
+		this.player = player;
 		this.playerName = player.getName();
 		
 		// load spells from file
@@ -45,13 +47,7 @@ public class Spellbook {
 		}
 		
 		// add spells granted by permissions
-		if (permissionHandler != null) {
-			for (Spell spell : MagicSpells.spells.values()) {
-				if (!hasSpell(spell) && permissionHandler.has(player, "magicspells.grant." + spell.getInternalName())) {
-					addSpell(spell);
-				}
-			}
-		}
+		addGrantedSpells();
 		
 		// sort spells or pre-select if just one
 		for (Integer i : itemSpells.keySet()) {
@@ -59,10 +55,20 @@ public class Spellbook {
 			if (spells.size() == 1) {
 				activeSpells.put(i, 0);
 			} else {
-				Collections.sort(spells);				
+				Collections.sort(spells);
 			}
 		}
 	}
+	
+	public void addGrantedSpells() {
+		if (permissionHandler != null) {
+			for (Spell spell : MagicSpells.spells.values()) {
+				if (!hasSpell(spell) && permissionHandler.has(player, "magicspells.grant." + spell.getInternalName())) {
+					addSpell(spell);
+				}
+			}
+		}
+	}	
 	
 	public boolean canLearn(Spell spell) {
 		if (permissionHandler == null) {

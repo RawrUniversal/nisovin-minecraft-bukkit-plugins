@@ -44,7 +44,7 @@ public class HelpSpell extends CommandSpell {
 				sendMessage(player, strUsage);
 			} else {
 				Spell spell = MagicSpells.spellNames.get(args[0]);
-				Spellbook spellbook = MagicSpells.spellbooks.get(player.getName());
+				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spell == null || spellbook == null || !spellbook.hasSpell(spell)) {
 					sendMessage(player, strNoSpell);
 				} else {

@@ -39,10 +39,10 @@ public class BuildSpell extends InstantSpell {
 	public BuildSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		slot = config.getInt("spells." + spellName + ".slot", 9);
+		slot = config.getInt("spells." + spellName + ".slot", 0);
 		consumeBlock = config.getBoolean("spells." + spellName + ".consume-block", true);
 		showEffect = config.getBoolean("spells." + spellName + ".show-effect", true);
-		String[] allowed = config.getString("spells." + spellName + ".allowed-types", "1,2,3,4,5,6").split(",");
+		String[] allowed = config.getString("spells." + spellName + ".allowed-types", "1,2,3,4,5,12,13,17,20,22,24,35,41,42,43,44,45,47,48,49,50,53,57,65,67,80,85,87,88,89,91,92").split(",");
 		allowedTypes = new int[allowed.length];
 		for (int i = 0; i < allowed.length; i++) {
 			allowedTypes[i] = Integer.parseInt(allowed[i]);

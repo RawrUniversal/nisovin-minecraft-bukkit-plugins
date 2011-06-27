@@ -222,7 +222,11 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	public static Spellbook getSpellbook(Player player) {
-		return spellbooks.get(player.getName());
+		Spellbook spellbook = spellbooks.get(player.getName());
+		if (spellbook == null) {
+			spellbooks.put(player.getName(), new Spellbook(player, plugin));
+		}
+		return spellbook;
 	}
 	
 	public static void addSpellListener(Event.Type eventType, Spell spell) {
@@ -267,11 +271,8 @@ public class MagicSpells extends JavaPlugin {
 				}
 			} else if (sender instanceof Player) {
 				Player player = (Player)sender;
-				Spellbook spellbook = spellbooks.get(player.getName());
-				Spell spell = null;
-				if (spellbook != null) {
-					spell = spellbook.getSpellByName(args[0]);
-				}
+				Spellbook spellbook = getSpellbook(player);
+				Spell spell = spellbook.getSpellByName(args[0]);
 				if (spell != null && spell.canCastByCommand()) {
 					String[] spellArgs = null;
 					if (args.length > 1) {
