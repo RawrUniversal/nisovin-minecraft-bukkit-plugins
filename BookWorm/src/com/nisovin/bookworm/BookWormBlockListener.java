@@ -26,6 +26,9 @@ public class BookWormBlockListener extends BlockListener {
 				// get book
 				short bookId = plugin.bookshelves.get(locStr);
 				Book book = plugin.getBook(bookId);
+				if (book == null) {
+					return;
+				}
 				if (plugin.perms.canDestroyBook(player, book)) {
 					// remove book from bookshelf list
 					plugin.bookshelves.remove(locStr);

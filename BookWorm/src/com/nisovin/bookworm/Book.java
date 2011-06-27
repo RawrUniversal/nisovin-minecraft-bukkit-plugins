@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,21 +22,24 @@ public class Book {
 	private String author;
 	private String text;
 	private String[] contents;
+	private HashMap<String,String> hiddenData;
 	private int pages;
 	
-	public Book(short id) {
+	protected Book(short id) {
 		this.id = id;
 		this.loaded = false;
 		this.unsaved = false;
+		hiddenData = new HashMap<String,String>();
 	}
 	
-	public Book(short id, String title, String author) {
+	protected Book(short id, String title, String author) {
 		this.id = id;
 		this.title = title;
 		this.author = author;
 		this.text = "";
 		this.loaded = true;
 		this.unsaved = true;
+		hiddenData = new HashMap<String,String>();
 	}
 	
 	private void generateContents() {
@@ -74,6 +78,11 @@ public class Book {
 	}
 	
 	public void setTitle(String title) {
+		// delete old file
+		File f = getFile();
+		if (f != null && f.exists()) {
+			f.delete();
+		}
 		this.title = title;
 		unsaved = true;
 	}
@@ -81,6 +90,28 @@ public class Book {
 	public String getContents() {
 		if (!loaded) load();
 		return text;
+	}
+	
+	public boolean hasHiddenData(String key) {
+		return hiddenData.containsKey(key);
+	}
+	
+	public void addHiddenData(String key, String value) {
+		hiddenData.put(key, value);
+		unsaved = true;
+	}
+	
+	public String getHiddenData(String key) {
+		return hiddenData.get(key);
+	}
+	
+	public String removeHiddenData(String key) {
+		if (hiddenData.containsKey(key)) {
+			unsaved = true;
+			return hiddenData.remove(key);
+		} else {
+			return null;
+		}
 	}
 	
 	public String write(String[] text) {
@@ -107,12 +138,12 @@ public class Book {
 		return true;
 	}
 	
-	public void delete(String s) {
+	public void erase(String s) {
 		text = text.replace(s, "");
 		unsaved = true;
 	}
 	
-	public void erase() {
+	public void eraseAll() {
 		text = "";
 		unsaved = true;
 	}
@@ -172,6 +203,9 @@ public class Book {
 			writer.println(id);
 			writer.println(title);
 			writer.println(author);
+			for (String s : hiddenData.keySet()) {
+				writer.println("|!|" + s + "|" + hiddenData.get(s));
+			}
 			writer.println(text);
 			writer.close();
 		} catch (IOException e) {
@@ -180,19 +214,10 @@ public class Book {
 		unsaved = false;
 	}
 		
-	public void load() {
+	public boolean load() {
 		try {
 			// get correct file
-			File bookDir = BookWorm.plugin.getDataFolder();
-			File bookFile = new File(bookDir, id + ".txt");
-			if (!bookFile.exists()) {
-				for (File file : bookDir.listFiles()) {
-					if (file.getName().startsWith(id+"_")) {
-						bookFile = file;
-						break;
-					}
-				}
-			}
+			File bookFile = getFile();
 			
 			BufferedReader reader = new BufferedReader(new FileReader(bookFile));
 			reader.readLine();
@@ -201,7 +226,12 @@ public class Book {
 			String text = "";
 			String line;
 			while ((line = reader.readLine()) != null) {
-				text += line;
+				if (line.startsWith("|!|")) {
+					String[] data = line.substring(3).split("\\|", 2);
+					hiddenData.put(data[0], data[1]);
+				} else {
+					text += line;
+				}
 			}
 			reader.close();
 			
@@ -210,12 +240,29 @@ public class Book {
 			this.text = text;
 			this.loaded = true;
 			this.unsaved = false;
-			generateContents();			
+			generateContents();
+			return true;
 		} catch (FileNotFoundException e) {
 			System.out.println("Failed to load book (file not found): " + id);
+			return false;
 		} catch (IOException e) {
 			System.out.println("Failed to load book: " + id);
+			return false;
 		}
+	}
+	
+	private File getFile() {
+		File bookDir = BookWorm.plugin.getDataFolder();
+		File bookFile = new File(bookDir, id + ".txt");
+		if (!bookFile.exists()) {
+			for (File file : bookDir.listFiles()) {
+				if (file.getName().startsWith(id+"_")) {
+					bookFile = file;
+					break;
+				}
+			}
+		}
+		return bookFile;
 	}
 	
 	public void unload() {

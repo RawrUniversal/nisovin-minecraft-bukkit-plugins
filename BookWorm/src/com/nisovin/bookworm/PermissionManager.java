@@ -11,7 +11,7 @@ public class PermissionManager {
 	
 	private PermissionHandler perm;
 	
-	public PermissionManager() {
+	protected PermissionManager() {
 		Plugin permissionsPlugin = Bukkit.getServer().getPluginManager().getPlugin("Permissions");
 
 		if (perm == null) {

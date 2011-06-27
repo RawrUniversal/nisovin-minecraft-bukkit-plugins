@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import org.bukkit.ChatColor;
@@ -21,6 +22,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
+import com.nisovin.bookworm.event.*;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class BookWorm extends JavaPlugin {
@@ -36,12 +38,12 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean SHOW_TITLE_ON_HELD_CHANGE = true;
 	protected static boolean REQUIRE_BOOK_TO_COPY = false;
 	protected static boolean CHECK_WORLDGUARD = true;
-	protected static boolean USE_FULL_FILENAMES = false;
+	protected static boolean USE_FULL_FILENAMES = true;
 	
 	protected static int CLEAN_INTERVAL = 600;
 	protected static int REMOVE_DELAY = 300;
 	
-	protected static String S_MUST_HOLD_BOOK = "You must be holding a book to write.";
+	protected static String S_MUST_HOLD_BOOK = "You must be holding a single book to write.";
 	protected static String S_USAGE_START = "Use /%c <title> to start your book.";
 	protected static String S_USAGE_WRITE = 
 			"Use /%c <text> to add text to your book.\n" +
@@ -63,6 +65,7 @@ public class BookWorm extends JavaPlugin {
 			"   /%c -read <page> -- read the specified page\n" +
 			"   /%c -erase <text> -- erase the given text\n" +
 			"   /%c -replace <old text> -> <new text> -- replace text\n" +
+			"   /%c -title <new title> -- change the book's title\n" +
 			"   /%c -eraseall -- erase the entire book\n" +
 			"   /%c -cancel -- cancel book creation";	
 	protected static String S_COMM_ERASE_DONE = "Text erased.";
@@ -82,6 +85,7 @@ public class BookWorm extends JavaPlugin {
 	protected static String S_REMOVED_BOOK = "Removed book:";
 	protected static String S_PLACED_BOOK = "Book placed in bookshelf:";
 	protected static String S_PLACED_BOOK_FAIL = "You cannot put a book here.";
+	protected static String S_NO_PERMISSION = "You do not have permission to do that.";
 		
 	protected static BookWorm plugin;
 	protected PermissionManager perms;
@@ -91,30 +95,39 @@ public class BookWorm extends JavaPlugin {
 	protected HashMap<String,Bookmark> bookmarks;
 	protected BookUnloader unloader;
 	protected WorldGuardPlugin worldGuard;
+	protected HashSet<BookWormListener> listeners;
 	
 	@Override
 	public void onEnable() {
 		plugin = this;
 		
+		// make sure save folder exists
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdir();
 		}
 		
+		// setup storage
 		perms = new PermissionManager();
+		listeners = new HashSet<BookWormListener>();
 		books = new HashMap<Short,Book>();
 		bookshelves = new HashMap<String,Short>();
 		bookmarks = new HashMap<String,Bookmark>();
 		
+		// load up stuff
 		loadBooks();
 		loadConfig();
 		
+		// register listeners
 		new BookWormPlayerListener(this);
 		new BookWormBlockListener(this);
+		new BookWormWorldListener(this);
 		
+		// start memory cleaner
 		if (CLEAN_INTERVAL > 0) {
 			unloader = new BookUnloader(this);
 		}
 		
+		// initialize world guard
 		if (CHECK_WORLDGUARD) {
 			Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
 			if (plugin != null) {
@@ -126,9 +139,9 @@ public class BookWorm extends JavaPlugin {
 		try {
 			boolean ok = false;
 			try {
-				// attempt to make books with different datas stack separately
+				// attempt to make books with different data values stack separately
 				Field field1 = net.minecraft.server.Item.class.getDeclaredField("bi");
-				if (field1.getType() == Boolean.class) {
+				if (field1.getType() == boolean.class) {
 					field1.setAccessible(true);
 					field1.setBoolean(net.minecraft.server.Item.BOOK, true);
 					ok = true;
@@ -164,7 +177,7 @@ public class BookWorm extends JavaPlugin {
 			Player player = (Player)sender;
 			
 			ItemStack inHand = player.getItemInHand();
-			if (inHand == null || inHand.getType() != Material.BOOK) {
+			if (inHand == null || inHand.getType() != Material.BOOK || inHand.getAmount() != 1) {
 				player.sendMessage(TEXT_COLOR + S_MUST_HOLD_BOOK);
 			} else if (args.length == 0) {	// show help
 				if (inHand.getDurability() == 0) {
@@ -173,6 +186,7 @@ public class BookWorm extends JavaPlugin {
 					Book book = getBook(inHand.getDurability());
 					if (book == null) {
 						// book doesn't exist?
+						return true;
 					} else if (book.getAuthor().equalsIgnoreCase(player.getName())) {
 						// it's the author holding the book
 						String[] lines = S_USAGE_WRITE.split("\n");
@@ -202,9 +216,14 @@ public class BookWorm extends JavaPlugin {
 					books.put(bookId, book);
 					inHand.setDurability(bookId);
 					player.sendMessage(TEXT_COLOR + S_NEW_BOOK_CREATED.replace("%t", TEXT_COLOR_2 + book.getTitle()));
+				} else {
+					player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);
 				}
 			} else {
 				Book book = getBook(inHand.getDurability());
+				if (book == null) {
+					return true;
+				}
 				if (args[0].startsWith("-")) {
 					// special command
 					if (args[0].equalsIgnoreCase("-" + S_COMM_HELP)) {
@@ -220,36 +239,51 @@ public class BookWorm extends JavaPlugin {
 						} else {
 							book.read(player, 0);
 						}
-					} else if (perms.canModifyBook(player, book) && args[0].equalsIgnoreCase("-" + S_COMM_TITLE) && args.length > 1) {
-						//String title = "";
-						//for (int i = 1; i < args.length; i++) {
-						//	title += args[i] + " ";
-						//}
-						//book.setTitle(title.trim());
-						//player.sendMessage(TEXT_COLOR + "Title changed: " + TEXT_COLOR_2 + title);
-						player.sendMessage(TEXT_COLOR + "Title change option temporarily disabled.");
-					} else if (perms.canModifyBook(player, book) && args[0].equalsIgnoreCase("-" + S_COMM_ERASE) && args.length > 1) {
-						String s = "";
-						for (int i = 1; i < args.length; i++) {
-							s += args[i] + " ";
-						}
-						book.delete(s.trim());
-						player.sendMessage(TEXT_COLOR + S_COMM_ERASE_DONE);
-					} else if (perms.canModifyBook(player, book) && args[0].equalsIgnoreCase("-" + S_COMM_REPLACE) && args.length > 1) {
-						String s = "";
-						for (int i = 1; i < args.length; i++) {
-							s += args[i] + " ";
-						}
-						s = s.trim();
-						boolean replaced = book.replace(s.trim());
-						if (replaced) {
-							player.sendMessage(TEXT_COLOR + S_COMM_REPLACE_DONE);
+					} else if (args[0].equalsIgnoreCase("-" + S_COMM_TITLE) && args.length > 1) {
+						if (perms.canModifyBook(player, book)) {
+							String title = "";
+							for (int i = 1; i < args.length; i++) {
+								title += args[i] + " ";
+							}
+							book.setTitle(title.trim());
+							player.sendMessage(TEXT_COLOR + "Title changed: " + TEXT_COLOR_2 + title);							
 						} else {
-							player.sendMessage(TEXT_COLOR + S_COMM_REPLACE_FAIL);
+							player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);							
+						}
+					} else if (args[0].equalsIgnoreCase("-" + S_COMM_ERASE) && args.length > 1) {
+						if (perms.canModifyBook(player, book)) {
+							String s = "";
+							for (int i = 1; i < args.length; i++) {
+								s += args[i] + " ";
+							}
+							book.erase(s.trim());
+							player.sendMessage(TEXT_COLOR + S_COMM_ERASE_DONE);
+						} else {
+							player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);								
+						}
+					} else if (args[0].equalsIgnoreCase("-" + S_COMM_REPLACE) && args.length > 1) {
+						if (perms.canModifyBook(player, book)) {
+							String s = "";
+							for (int i = 1; i < args.length; i++) {
+								s += args[i] + " ";
+							}
+							s = s.trim();
+							boolean replaced = book.replace(s.trim());
+							if (replaced) {
+								player.sendMessage(TEXT_COLOR + S_COMM_REPLACE_DONE);
+							} else {
+								player.sendMessage(TEXT_COLOR + S_COMM_REPLACE_FAIL);
+							}
+						} else {
+							player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);							
 						}
 					} else if (args[0].equalsIgnoreCase("-" + S_COMM_ERASEALL)) {
-						book.erase();
-						player.sendMessage(TEXT_COLOR + S_COMM_ERASEALL_DONE);
+						if (perms.canModifyBook(player, book)) {
+							book.eraseAll();
+							player.sendMessage(TEXT_COLOR + S_COMM_ERASEALL_DONE);
+						} else {
+							player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);			
+						}
 					} else {
 						player.sendMessage(TEXT_COLOR + S_COMM_INVALID);
 					}
@@ -267,14 +301,53 @@ public class BookWorm extends JavaPlugin {
 		return true;
 	}
 	
+	public static Book getBook(ItemStack item) {
+		if (item == null || item.getType() != Material.BOOK || item.getAmount() != 1 || item.getDurability() == 0) {
+			return null;
+		} else {
+			return plugin.getBook(item.getDurability());
+		}
+	}
+	
+	public static Book getBookById(short id) {
+		return plugin.getBook(id);
+	}
+	
 	protected Book getBook(short id) {
 		Book book = books.get(id);
 		if (book == null) {
 			book = new Book(id);
-			book.load();
-			books.put(id, book);
+			if (book.load()) {
+				books.put(id, book);
+			} else {
+				book = null;
+			}
 		}
 		return book;
+	}
+	
+	public static void registerListener(BookWormListener listener) {
+		plugin.listeners.add(listener);
+	}
+	
+	public static void unregisterListener(BookWormListener listener) {
+		plugin.listeners.remove(listener);
+	}
+	
+	protected void callEvent(BookEvent event) {
+		if (event instanceof BookReadEvent) {
+			for (BookWormListener listener : listeners) {
+				listener.onBookRead((BookReadEvent)event);
+			}
+		} else if (event instanceof BookPlaceEvent) {
+			for (BookWormListener listener : listeners) {
+				listener.onBookPlace((BookPlaceEvent)event);
+			}			
+		}
+	}
+	
+	public static PermissionManager getPermissions() {
+		return plugin.perms;
 	}
 	
 	private void loadBooks() {
@@ -300,7 +373,7 @@ public class BookWorm extends JavaPlugin {
 		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
 
 		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
-		USE_FULL_FILENAMES = config.getBoolean("general.require-book-to-copy", USE_FULL_FILENAMES);
+		USE_FULL_FILENAMES = config.getBoolean("general.use-full-filenames", USE_FULL_FILENAMES);
 		CLEAN_INTERVAL = config.getInt("general.clean-interval", CLEAN_INTERVAL);
 		REMOVE_DELAY = config.getInt("general.remove-delay", REMOVE_DELAY);
 		
@@ -345,6 +418,7 @@ public class BookWorm extends JavaPlugin {
 		S_REMOVED_BOOK = config.getString("strings.removed-book", S_REMOVED_BOOK);
 		S_PLACED_BOOK = config.getString("strings.placed-book", S_PLACED_BOOK);
 		S_PLACED_BOOK_FAIL = config.getString("strings.placed-book-fail", S_PLACED_BOOK_FAIL);
+		S_NO_PERMISSION = config.getString("strings.no-permission", S_NO_PERMISSION);
 		
 		config.save();
 	}
