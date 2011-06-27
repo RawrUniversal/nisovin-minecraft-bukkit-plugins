@@ -1,0 +1,5 @@
+name: NetherTrees
+main: com.nisovin.nethertrees.NetherTrees
+version: 1.0
+author: nisovin
+load: startup
