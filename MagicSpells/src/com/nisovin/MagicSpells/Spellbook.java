@@ -62,10 +62,15 @@ public class Spellbook {
 	
 	public void addGrantedSpells() {
 		if (permissionHandler != null) {
+			boolean added = false;
 			for (Spell spell : MagicSpells.spells.values()) {
 				if (!hasSpell(spell) && permissionHandler.has(player, "magicspells.grant." + spell.getInternalName())) {
 					addSpell(spell);
+					added = true;
 				}
+			}
+			if (added) {
+				save();
 			}
 		}
 	}	

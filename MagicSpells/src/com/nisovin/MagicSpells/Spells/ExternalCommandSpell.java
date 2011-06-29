@@ -48,7 +48,13 @@ public class ExternalCommandSpell extends Spell {
 			Bukkit.getServer().getLogger().severe("MagicSpells: External command spell '" + name + "' has no command to execute.");
 			return true;
 		} else if (state == SpellCastState.NORMAL) {
-			player.performCommand(commandToExecute);
+			String comm = commandToExecute;
+			if (args != null && args.length > 0) {
+				for (int i = 0; i < args.length; i++) {
+					comm = comm.replace("%"+(i+1), args[i]);
+				}
+			}
+			player.performCommand(comm);
 		}
 		return false;
 	}

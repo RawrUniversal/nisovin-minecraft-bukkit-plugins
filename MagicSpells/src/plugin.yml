@@ -1,7 +1,8 @@
 name: MagicSpells
 main: com.nisovin.MagicSpells.MagicSpells
-version: 0.7.3
+version: 0.7.4
 author: nisovin
+softdepend: [BookWorm]
 commands:
     cast:
         description: Cast a spell

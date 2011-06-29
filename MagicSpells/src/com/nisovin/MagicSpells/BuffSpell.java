@@ -135,6 +135,7 @@ public abstract class BuffSpell extends Spell {
 		if (durationStartTime != null) durationStartTime.remove(player.getName());
 	}
 	
+	@Override
 	protected abstract void turnOff();
 	
 }

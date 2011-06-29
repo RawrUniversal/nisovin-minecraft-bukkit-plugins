@@ -37,6 +37,7 @@ spells:
     list:
         name: list
         description: List all the spells you know.
+        reload-granted-spells: false
         str-prefix: "Known spells:"
         str-no-spells: You do not know any spells.
     help:
@@ -379,8 +380,8 @@ spells:
         cooldown: 60
         duration: 60
         mob-chances:
-            Zombie 75
-            Skeleton 25
+            - Zombie 75
+            - Skeleton 25
         prevent-sun-burn: true
         target-players: false
         cost:

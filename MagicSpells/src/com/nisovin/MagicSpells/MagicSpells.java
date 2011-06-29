@@ -186,6 +186,7 @@ public class MagicSpells extends JavaPlugin {
 		StonevisionSpell.load(config);
 		TeachSpell.load(config);
 		TelekinesisSpell.load(config);
+		//if (getServer().getPluginManager().isPluginEnabled("BookWorm")) TomeSpell.load(config);
 		VolleySpell.load(config);
 		WallSpell.load(config);
 		WindwalkSpell.load(config);
@@ -319,16 +320,15 @@ public class MagicSpells extends JavaPlugin {
 	public static boolean teachSpell(Player player, String spellName) {
 		Spell spell = spellNames.get(spellName);
 		if (spell == null) {
-			return false;
+			spell = spells.get(spellName);
+			if (spell == null) {
+				return false;
+			}
 		}
 		
-		Spellbook spellbook = spellbooks.get(player.getName());
-		if (spellbook == null) {
-			spellbook = new Spellbook(player, plugin);
-			spellbooks.put(player.getName(), spellbook);
-		}
+		Spellbook spellbook = getSpellbook(player);
 		
-		if (spellbook.hasSpell(spell) || !spellbook.canLearn(spell)) {
+		if (spellbook == null || spellbook.hasSpell(spell) || !spellbook.canLearn(spell)) {
 			return false;
 		} else {
 			spellbook.addSpell(spell);
@@ -368,9 +368,7 @@ public class MagicSpells extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		for (Spell spell : spells.values()) {
-			if (spell instanceof BuffSpell) {
-				((BuffSpell)spell).turnOff();
-			}
+			spell.turnOff();
 		}
 		spells = null;
 		spellNames = null;
