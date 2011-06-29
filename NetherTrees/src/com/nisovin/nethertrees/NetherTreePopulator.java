@@ -40,38 +40,35 @@ public class NetherTreePopulator extends BlockPopulator {
 		}
 	}
 	
-	static int MIN_TREE_HEIGHT = 6;
-	
 	protected static void generateTree(Block treeBase, Random random) {
-		int height = random.nextInt(4)+MIN_TREE_HEIGHT;
+		int height = random.nextInt(NetherTrees.TREE_HEIGHT_VARIANCE)+NetherTrees.MIN_TREE_HEIGHT;
 		for (int y = 0; y < height; y++) {
-			treeBase.getRelative(0, y, 0).setType(Material.LOG);
+			treeBase.getRelative(0, y, 0).setTypeId(NetherTrees.TRUNK_TYPE);
 		}
 		Block treeTop = treeBase.getRelative(0,height,0);
-		if (random.nextInt(100) < 35) generateBranch(treeTop, 1, 1, height, random);
-		if (random.nextInt(100) < 35) generateBranch(treeTop, 1, -1, height, random);
-		if (random.nextInt(100) < 35) generateBranch(treeTop, -1, 1, height, random);
-		if (random.nextInt(100) < 35) generateBranch(treeTop, -1, -1, height, random);
-		if (random.nextInt(100) < 85) generateBranch(treeTop, 0, 1, height, random);
-		if (random.nextInt(100) < 85) generateBranch(treeTop, 1, 0, height, random);
-		if (random.nextInt(100) < 85) generateBranch(treeTop, 0, -1, height, random);
-		if (random.nextInt(100) < 85) generateBranch(treeTop, -1, 0, height, random);
-		
+		if (random.nextInt(100) < NetherTrees.CARDINAL_BRANCH_CHANCE) generateBranch(treeTop, 0, 1, height, random);
+		if (random.nextInt(100) < NetherTrees.CARDINAL_BRANCH_CHANCE) generateBranch(treeTop, 1, 0, height, random);
+		if (random.nextInt(100) < NetherTrees.CARDINAL_BRANCH_CHANCE) generateBranch(treeTop, 0, -1, height, random);
+		if (random.nextInt(100) < NetherTrees.CARDINAL_BRANCH_CHANCE) generateBranch(treeTop, -1, 0, height, random);
+		if (random.nextInt(100) < NetherTrees.DIAGONAL_BRANCH_CHANCE) generateBranch(treeTop, 1, 1, height, random);
+		if (random.nextInt(100) < NetherTrees.DIAGONAL_BRANCH_CHANCE) generateBranch(treeTop, 1, -1, height, random);
+		if (random.nextInt(100) < NetherTrees.DIAGONAL_BRANCH_CHANCE) generateBranch(treeTop, -1, 1, height, random);
+		if (random.nextInt(100) < NetherTrees.DIAGONAL_BRANCH_CHANCE) generateBranch(treeTop, -1, -1, height, random);		
 	}
 	
 	private static void generateBranch(Block treeTop, int xDir, int zDir, int treeHeight, Random random) {
-		int branchLength = random.nextInt(2)+3+((treeHeight-MIN_TREE_HEIGHT)/2);
+		int branchLength = random.nextInt(NetherTrees.BRANCH_LENGTH_VARIANCE)+NetherTrees.MIN_BRANCH_LENGTH+((treeHeight-NetherTrees.MIN_TREE_HEIGHT)/2);
 		for (int i = 1; i <= branchLength; i++) {
-			setBlock(treeTop.getRelative(xDir*i, i==1||i==branchLength?0:1, zDir*i), Material.LOG);
+			setBlock(treeTop.getRelative(xDir*i, i==1||i==branchLength?0:1, zDir*i), NetherTrees.TRUNK_TYPE);
 		}
-		for (int i = 1; i < random.nextInt(4)+3+(treeHeight-MIN_TREE_HEIGHT); i++) {
-			setBlock(treeTop.getRelative(xDir*branchLength, -i, zDir*branchLength), Material.GLOWSTONE);
+		for (int i = 1; i < random.nextInt(NetherTrees.LEAF_LENGTH_VARIANCE+treeHeight-NetherTrees.MIN_TREE_HEIGHT)+NetherTrees.MIN_LEAF_LENGTH; i++) {
+			setBlock(treeTop.getRelative(xDir*branchLength, -i, zDir*branchLength), NetherTrees.LEAF_TYPE);
 		}
 	}
 	
-	private static void setBlock(Block block, Material type) {
+	private static void setBlock(Block block, int typeId) {
 		if (block.getType() == Material.AIR) { 
-			block.setType(type);
+			block.setTypeId(typeId);
 		}
 	}
 

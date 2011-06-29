@@ -20,7 +20,7 @@ public class NetherTreeBlockListener extends BlockListener {
 	
 	@Override
 	public void onBlockCanBuild(BlockCanBuildEvent event) {
-		if (event.getMaterial() == Material.DEAD_BUSH && event.getBlock().getRelative(0,-1,0).getType() == Material.NETHERRACK) {
+		if (event.getMaterialId() == NetherTrees.SAPLING_TYPE && event.getBlock().getRelative(0,-1,0).getType() == Material.NETHERRACK) {
 			NetherTreePopulator.generateTree(event.getBlock(), new Random());
 			//event.setBuildable(true);
 		}
@@ -31,8 +31,8 @@ public class NetherTreeBlockListener extends BlockListener {
 		if (!event.isCancelled()) {
 			Block b = event.getBlock();
 			if (b.getWorld().getEnvironment() == Environment.NETHER) {
-				if (b.getType() == Material.GLOWSTONE && Math.random()*100 < 30) {
-					b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.DEAD_BUSH, 1));
+				if (b.getTypeId() == NetherTrees.LEAF_TYPE && Math.random()*100 < NetherTrees.SAPLING_DROP_CHANCE) {
+					b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(NetherTrees.SAPLING_TYPE, 1));
 				}
 			}
 		}
