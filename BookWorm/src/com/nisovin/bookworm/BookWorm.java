@@ -183,7 +183,7 @@ public class BookWorm extends JavaPlugin {
 				if (inHand.getDurability() == 0) {
 					player.sendMessage(TEXT_COLOR + S_USAGE_START.replace("%c", label));
 				} else {
-					Book book = getBook(inHand.getDurability());
+					Book book = getBookById(inHand.getDurability());
 					if (book == null) {
 						// book doesn't exist?
 						return true;
@@ -220,7 +220,7 @@ public class BookWorm extends JavaPlugin {
 					player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);
 				}
 			} else {
-				Book book = getBook(inHand.getDurability());
+				Book book = getBookById(inHand.getDurability());
 				if (book == null) {
 					return true;
 				}
@@ -301,19 +301,23 @@ public class BookWorm extends JavaPlugin {
 		return true;
 	}
 	
+	public static Book getBook(Player player) {
+		return getBook(player.getItemInHand());
+	}
+	
 	public static Book getBook(ItemStack item) {
 		if (item == null || item.getType() != Material.BOOK || item.getAmount() != 1 || item.getDurability() == 0) {
 			return null;
 		} else {
-			return plugin.getBook(item.getDurability());
+			return plugin.getBookById(item.getDurability());
 		}
 	}
 	
-	public static Book getBookById(short id) {
-		return plugin.getBook(id);
+	public static Book getBook(short id) {
+		return plugin.getBookById(id);
 	}
 	
-	protected Book getBook(short id) {
+	protected Book getBookById(short id) {
 		Book book = books.get(id);
 		if (book == null) {
 			book = new Book(id);

@@ -25,7 +25,7 @@ public class BookWormBlockListener extends BlockListener {
 			if (plugin.bookshelves.containsKey(locStr)) {
 				// get book
 				short bookId = plugin.bookshelves.get(locStr);
-				Book book = plugin.getBook(bookId);
+				Book book = plugin.getBookById(bookId);
 				if (book == null) {
 					return;
 				}
