@@ -15,6 +15,7 @@ public abstract class BuffSpell extends Spell {
 	protected int useCostInterval;
 	protected int numUses;
 	protected int duration;
+	protected boolean cancelOnRecast;
 	protected String strFade;
 	private boolean castWithItem;
 	private boolean castByCommand;
@@ -51,6 +52,7 @@ public abstract class BuffSpell extends Spell {
 		useCostInterval = config.getInt("spells." + spellName + ".use-cost-interval", 0);
 		numUses = config.getInt("spells." + spellName + ".num-uses", 0);
 		duration = config.getInt("spells." + spellName + ".duration", 0);
+		cancelOnRecast = config.getBoolean("spells." + spellName + ".cancel-on-recast", true);
 		
 		strFade = config.getString("spells." + spellName + ".str-fade", "");
 		

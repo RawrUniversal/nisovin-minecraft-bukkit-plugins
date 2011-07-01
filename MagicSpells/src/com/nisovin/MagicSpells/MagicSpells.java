@@ -25,6 +25,7 @@ public class MagicSpells extends JavaPlugin {
 
 	public static MagicSpells plugin;
 
+	public static boolean debug;
 	public static ChatColor textColor;
 	public static int broadcastRange;
 	
@@ -91,6 +92,7 @@ public class MagicSpells extends JavaPlugin {
 		loadConfigFromJar();
 		Configuration config = this.getConfiguration();
 		config.load();
+		debug = config.getBoolean("general.debug", false);
 		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		opsHaveAllSpells = config.getBoolean("general.ops-have-all-spells", true);
@@ -315,6 +317,12 @@ public class MagicSpells extends JavaPlugin {
 			return true;
 		}
 		return false;
+	}
+	
+	public static void debug(String message) {
+		if (MagicSpells.debug) {
+			plugin.getServer().getLogger().info("MagicSpells: " + message);
+		}
 	}
 	
 	public static boolean teachSpell(Player player, String spellName) {

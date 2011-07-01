@@ -1,4 +1,5 @@
 general:
+    debug: true
     str-cast-usage: |
         Usage: /cast <spell>. 
         Use /cast list to see a list of spells.

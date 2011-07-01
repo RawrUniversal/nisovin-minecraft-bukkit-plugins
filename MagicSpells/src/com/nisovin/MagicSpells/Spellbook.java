@@ -31,14 +31,17 @@ public class Spellbook {
 	private HashMap<Spell,Integer> customBindings = new HashMap<Spell,Integer>();
 	
 	public Spellbook(Player player, MagicSpells plugin) {
+		MagicSpells.debug("Loading player spell list: " + player.getName());
 		this.plugin = plugin;
 		this.player = player;
 		this.playerName = player.getName();
 		
 		// load spells from file
 		loadFromFile();
+		
+		// give all spells to ops
 		if (player.isOp() && MagicSpells.opsHaveAllSpells) {
-			// give all spells to ops
+			MagicSpells.debug("  Op, granting all spells...");
 			for (Spell spell : MagicSpells.spells.values()) {
 				if (!allSpells.contains(spell)) {
 					addSpell(spell);
@@ -62,8 +65,10 @@ public class Spellbook {
 	
 	public void addGrantedSpells() {
 		if (permissionHandler != null) {
+			MagicSpells.debug("  Adding granted spells...");
 			boolean added = false;
 			for (Spell spell : MagicSpells.spells.values()) {
+				MagicSpells.debug("    Checking spell " + spell.getInternalName() + "...");
 				if (!hasSpell(spell) && permissionHandler.has(player, "magicspells.grant." + spell.getInternalName())) {
 					addSpell(spell);
 					added = true;
@@ -101,6 +106,7 @@ public class Spellbook {
 	
 	private void loadFromFile() {
 		try {
+			MagicSpells.debug("  Loading spells from player file...");
 			Scanner scanner = new Scanner(new File(plugin.getDataFolder(), "spellbooks/" + playerName.toLowerCase() + ".txt"));
 			while (scanner.hasNext()) {
 				String line = scanner.nextLine();
@@ -174,6 +180,7 @@ public class Spellbook {
 	}
 	
 	public void addSpell(Spell spell, int castItem) {
+		MagicSpells.debug("    Added spell: " + spell.getInternalName());
 		allSpells.add(spell);
 		if (spell.canCastWithItem()) {
 			int item = spell.getCastItem();
