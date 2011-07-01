@@ -78,6 +78,18 @@ public abstract class Spell implements Comparable<Spell> {
 			lastCast = new HashMap<String, Long>();
 		}
 	}
+	
+	protected int getConfigInt(Configuration config, String key, int defaultValue) {
+		return config.getInt("spells." + internalName + "." + key, defaultValue);
+	}
+	
+	protected boolean getConfigBoolean(Configuration config, String key, boolean defaultValue) {
+		return config.getBoolean("spells." + internalName + "." + key, defaultValue);
+	}
+	
+	protected String getConfigString(Configuration config, String key, String defaultValue) {
+		return config.getString("spells." + internalName + "." + key, defaultValue);
+	}
 
 	public final void cast(Player player) {
 		cast(player, null);

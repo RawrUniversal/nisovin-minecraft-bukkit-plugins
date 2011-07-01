@@ -43,6 +43,16 @@ public class TomeSpell extends CommandSpell {
 		super(config, spellName);
 		listener = new BookListener();
 		BookWorm.registerListener(listener);
+		
+		cancelReadOnLearn = getConfigBoolean(config, "cancel-read-on-learn", true);
+		allowOverwrite = getConfigBoolean(config, "allow-overwrite", false);
+		strUsage = getConfigString(config, "str-usage", "Usage: While holding a book, /cast " + name + " <spell>");
+		strNoSpell = getConfigString(config, "str-no-spell", "You do not know a spell with that name.");
+		strNoBook = getConfigString(config, "str-no-book", "You must be holding a book.");
+		strAlreadyHasSpell = getConfigString(config, "str-already-has-spell", "That book already contains a spell.");
+		strAlreadyKnown = getConfigString(config, "str-already-known", "You already know the %s spell.");
+		strCantLearn = getConfigString(config, "str-cant-learn", "You cannot learn the spell in this tome.");
+		strLearned = getConfigString(config, "str-learned", "You have learned the %s spell.");
 	}
 
 	@Override
