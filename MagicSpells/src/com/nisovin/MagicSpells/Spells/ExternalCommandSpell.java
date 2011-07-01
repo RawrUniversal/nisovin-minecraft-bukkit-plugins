@@ -15,8 +15,8 @@ public class ExternalCommandSpell extends Spell {
 
 	private boolean castWithItem;
 	private boolean castByCommand;
-	private String commandToExecute;
-	private String commandToBlock;
+	private String[] commandToExecute;
+	private String[] commandToBlock;
 	private String strCantUseCommand;
 	
 	public static void load(Configuration config) {
@@ -37,8 +37,8 @@ public class ExternalCommandSpell extends Spell {
 		
 		castWithItem = config.getBoolean("spells." + spellName + ".can-cast-with-item", true);
 		castByCommand = config.getBoolean("spells." + spellName + ".can-cast-by-command", true);
-		commandToExecute = config.getString("spells." + spellName + ".command-to-execute", "");
-		commandToBlock = config.getString("spells." + spellName + ".command-to-block", "");
+		commandToExecute = config.getString("spells." + spellName + ".command-to-execute", "").split("\\|\\|");
+		commandToBlock = config.getString("spells." + spellName + ".command-to-block", "").split("\\|\\|");
 		strCantUseCommand = config.getString("spells." + spellName + ".str-cant-use-command", "&4You don't have permission to do that.");
 	}
 
@@ -48,22 +48,30 @@ public class ExternalCommandSpell extends Spell {
 			Bukkit.getServer().getLogger().severe("MagicSpells: External command spell '" + name + "' has no command to execute.");
 			return true;
 		} else if (state == SpellCastState.NORMAL) {
-			String comm = commandToExecute;
-			if (args != null && args.length > 0) {
-				for (int i = 0; i < args.length; i++) {
-					comm = comm.replace("%"+(i+1), args[i]);
+			for (String comm : commandToExecute) {
+				if (args != null && args.length > 0) {
+					for (int i = 0; i < args.length; i++) {
+						comm = comm.replace("%"+(i+1), args[i]);
+					}
 				}
+				player.performCommand(comm);
 			}
-			player.performCommand(comm);
 		}
 		return false;
 	}
 	
 	@Override
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (!event.getPlayer().isOp() && !commandToBlock.equals("") && event.getMessage().startsWith("/"+commandToBlock)) {
-			event.setCancelled(true);
-			sendMessage(event.getPlayer(), strCantUseCommand);
+		if (!event.getPlayer().isOp() && commandToBlock.length > 0) {
+			String msg = event.getMessage();
+			for (String comm : commandToBlock) {
+				comm = comm.trim();
+				if (!comm.equals("") && msg.startsWith("/" + commandToBlock)) {
+					event.setCancelled(true);
+					sendMessage(event.getPlayer(), strCantUseCommand);
+					return;
+				}
+			}
 		}
 	}
 
