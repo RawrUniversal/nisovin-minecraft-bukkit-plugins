@@ -1,6 +1,6 @@
 name: BookWorm
 main: com.nisovin.bookworm.BookWorm
-version: 1.3
+version: 1.4
 commands:
     bookworm:
         description: Basic bookworm command

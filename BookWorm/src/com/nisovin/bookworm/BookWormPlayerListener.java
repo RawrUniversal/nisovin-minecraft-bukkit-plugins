@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -21,11 +22,25 @@ public class BookWormPlayerListener extends PlayerListener {
 	
 	public BookWormPlayerListener(BookWorm plugin) {
 		this.plugin = plugin;
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, this, Event.Priority.Low, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Monitor, plugin);
 		if (BookWorm.SHOW_TITLE_ON_HELD_CHANGE) {
 			plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this, Event.Priority.Monitor, plugin);
 		}
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_DROP_ITEM, this, Event.Priority.Monitor, plugin);
+	}
+	
+	@Override
+	public void onPlayerChat(PlayerChatEvent event) {
+		Player player = event.getPlayer();
+		if (plugin.chatModed.contains(player.getName()) && player.getItemInHand().getType() == Material.BOOK) {
+			Book book = BookWorm.getBook(player);
+			if (book != null && plugin.perms.canModifyBook(player, book)) {
+				String line = book.write(event.getMessage());
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_WRITE_DONE.replace("%t", BookWorm.TEXT_COLOR_2 + line));
+				event.setCancelled(true);
+			}
+		}
 	}
 	
 	@Override
@@ -114,6 +129,14 @@ public class BookWormPlayerListener extends PlayerListener {
 			}
 		} else if (event.useItemInHand() != Result.DENY && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && inHand.getType() == Material.BOOK && inHand.getDurability() != 0) {
 			// reading the book in hand
+			
+			// check disallowed clicks
+			if (event.hasBlock()) {
+				Material m = event.getClickedBlock().getType();
+				if (m == Material.CHEST || m == Material.WORKBENCH || m == Material.FURNACE || m == Material.DISPENSER) {
+					return;
+				}
+			}
 			
 			// get book
 			Book book = plugin.getBookById(inHand.getDurability());

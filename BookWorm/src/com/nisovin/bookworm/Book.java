@@ -114,6 +114,13 @@ public class Book {
 		}
 	}
 	
+	public String write(String text) {
+		this.text += " " + text.trim();
+		this.text = this.text.trim();
+		unsaved = true;
+		return text.trim();
+	}
+	
 	public String write(String[] text) {
 		String line = "";
 		for (int i = 0; i < text.length; i++) {

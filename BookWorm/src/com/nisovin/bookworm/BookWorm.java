@@ -39,6 +39,7 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean REQUIRE_BOOK_TO_COPY = false;
 	protected static boolean CHECK_WORLDGUARD = true;
 	protected static boolean USE_FULL_FILENAMES = true;
+	protected static boolean AUTO_CHAT_MODE = true;
 	
 	protected static int CLEAN_INTERVAL = 600;
 	protected static int REMOVE_DELAY = 300;
@@ -60,8 +61,10 @@ public class BookWorm extends JavaPlugin {
 	protected static String S_COMM_ERASE = "erase";
 	protected static String S_COMM_REPLACE = "replace";
 	protected static String S_COMM_ERASEALL = "eraseall";	
+	protected static String S_COMM_CHATMODE = "chat";
 
 	protected static String S_COMM_HELP_TEXT = "Special commands:\n" +
+			"   /%c -chat -- toggle chat write mode\n" +
 			"   /%c -read <page> -- read the specified page\n" +
 			"   /%c -erase <text> -- erase the given text\n" +
 			"   /%c -replace <old text> -> <new text> -- replace text\n" +
@@ -72,6 +75,8 @@ public class BookWorm extends JavaPlugin {
 	protected static String S_COMM_REPLACE_DONE = "Text replaced.";
 	protected static String S_COMM_REPLACE_FAIL = "Text not found.";
 	protected static String S_COMM_ERASEALL_DONE = "Book contents erased.";
+	protected static String S_COMM_CHATMODE_ON = "Chat write mode enabled.";
+	protected static String S_COMM_CHATMODE_OFF = "Chat write mode disabled.";
 	protected static String S_COMM_INVALID = "Invalid command.";
 	
 	protected static String S_WRITE_DONE = "Wrote line: %t";
@@ -93,6 +98,7 @@ public class BookWorm extends JavaPlugin {
 	protected HashMap<Short,Book> books;
 	protected HashMap<String,Short> bookshelves;
 	protected HashMap<String,Bookmark> bookmarks;
+	protected HashSet<String> chatModed;
 	protected BookUnloader unloader;
 	protected WorldGuardPlugin worldGuard;
 	protected HashSet<BookWormListener> listeners;
@@ -112,6 +118,7 @@ public class BookWorm extends JavaPlugin {
 		books = new HashMap<Short,Book>();
 		bookshelves = new HashMap<String,Short>();
 		bookmarks = new HashMap<String,Bookmark>();
+		chatModed = new HashSet<String>();
 		
 		// load up stuff
 		loadBooks();
@@ -208,14 +215,37 @@ public class BookWorm extends JavaPlugin {
 						// error, quit
 						return true;
 					}
+
+					int titleStart = 0;
+					
+					// check for chat mode
+					boolean chatMode = false;
+					if (args[0].equalsIgnoreCase("-" + S_COMM_CHATMODE)) {
+						titleStart = 1;
+						chatMode = true;
+					} else if (AUTO_CHAT_MODE) {
+						chatMode = true;
+					}
+					if (chatMode) {
+						chatModed.add(player.getName());					
+					}
+					
+					// get title
 					String title = "";
-					for (int i = 0; i < args.length; i++) {
+					for (int i = titleStart; i < args.length; i++) {
 						title += args[i] + " ";
 					}
+					
+					// setup book
 					Book book = new Book(bookId, title.trim(), player.getName());
 					books.put(bookId, book);
 					inHand.setDurability(bookId);
+					
+					// send messages
 					player.sendMessage(TEXT_COLOR + S_NEW_BOOK_CREATED.replace("%t", TEXT_COLOR_2 + book.getTitle()));
+					if (chatMode) {
+						player.sendMessage(TEXT_COLOR + S_COMM_CHATMODE_ON);	
+					}
 				} else {
 					player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);
 				}
@@ -283,6 +313,28 @@ public class BookWorm extends JavaPlugin {
 							player.sendMessage(TEXT_COLOR + S_COMM_ERASEALL_DONE);
 						} else {
 							player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);			
+						}
+					} else if (args[0].equalsIgnoreCase("-" + S_COMM_CHATMODE)) {
+						int mode = -1;
+						if (args.length > 1) {
+							if (args[1].equalsIgnoreCase("on")) {
+								mode = 1;
+							} else if (args[1].equalsIgnoreCase("off")) {
+								mode = 0;
+							}
+						} else if (chatModed.contains(player.getName())) {
+							mode = 0;
+						} else {	
+							mode = 1;
+						}
+						if (mode == 1) {
+							chatModed.add(player.getName());
+							player.sendMessage(TEXT_COLOR + S_COMM_CHATMODE_ON);							
+						} else if (mode == 0) {
+							chatModed.remove(player.getName());
+							player.sendMessage(TEXT_COLOR + S_COMM_CHATMODE_OFF);							
+						} else {
+							player.sendMessage(TEXT_COLOR + S_COMM_INVALID);							
 						}
 					} else {
 						player.sendMessage(TEXT_COLOR + S_COMM_INVALID);
@@ -402,12 +454,15 @@ public class BookWorm extends JavaPlugin {
 		S_COMM_ERASE = config.getString("strings.command-erase", S_COMM_ERASE);
 		S_COMM_REPLACE = config.getString("strings.command-replace", S_COMM_REPLACE);
 		S_COMM_ERASEALL = config.getString("strings.command-eraseall", S_COMM_ERASEALL);
+		S_COMM_CHATMODE = config.getString("strings.command-chatmode", S_COMM_CHATMODE);
 		
 		S_COMM_HELP_TEXT = config.getString("strings.command-help-text", S_COMM_HELP_TEXT);
 		S_COMM_ERASE_DONE = config.getString("strings.command-erase-done", S_COMM_ERASE_DONE);
 		S_COMM_REPLACE_DONE = config.getString("strings.command-replace-done", S_COMM_REPLACE_DONE);
 		S_COMM_REPLACE_FAIL = config.getString("strings.command-replace-fail", S_COMM_REPLACE_FAIL);
 		S_COMM_ERASEALL_DONE = config.getString("strings.command-eraseall-done", S_COMM_ERASEALL_DONE);
+		S_COMM_CHATMODE_ON = config.getString("strings.command-chatmode-on", S_COMM_CHATMODE_ON);
+		S_COMM_CHATMODE_OFF = config.getString("strings.command-chatmode-off", S_COMM_CHATMODE_OFF);
 		S_COMM_INVALID = config.getString("strings.command-invalid", S_COMM_INVALID);
 		
 		S_WRITE_DONE = config.getString("strings.write-done", S_WRITE_DONE);
