@@ -480,6 +480,19 @@ spells:
             - 331 1
         str-cost: 1 redstone dust
         str-no-target: You must target a switch or button.
+    tome:
+        name: tome
+        description: Create a tome that teaches a spell.
+        cancel-read-on-learn: true
+        allow-overwrite: false
+        str-usage: Usage: While holding a book, /cast " + name + " <spell>
+        str-no-spell: You do not know a spell with that name.
+        str-no-book: You must be holding a book.
+        str-already-has-spell: That book already contains a spell.
+        str-already-known: You already know the %s spell.
+        str-cant-learn: You cannot learn the spell in this tome.
+        str-learned: You have learned the %s spell.
+        str-cast-self: You have created a spell tome.
     volley:
         name: volley
         description: Send a volley of arrows at your targeted location.
