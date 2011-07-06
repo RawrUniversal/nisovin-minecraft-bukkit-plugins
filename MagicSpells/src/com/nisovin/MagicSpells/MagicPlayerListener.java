@@ -2,6 +2,7 @@ package com.nisovin.MagicSpells;
 
 import java.util.HashSet;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
@@ -65,10 +66,27 @@ public class MagicPlayerListener extends PlayerListener {
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			ItemStack inHand = event.getPlayer().getItemInHand();
-			Spell spell = MagicSpells.spellbooks.get(event.getPlayer().getName()).nextSpell(inHand.getTypeId());
+			Player player = event.getPlayer();
+			ItemStack inHand = player.getItemInHand();
+			
+			// cycle spell
+			Spell spell = MagicSpells.spellbooks.get(player.getName()).nextSpell(inHand.getTypeId());
 			if (spell != null) {
-				Spell.sendMessage(event.getPlayer(), spell.formatMessage(MagicSpells.strSpellChange, "%s", spell.getName()));
+				Spell.sendMessage(player, spell.formatMessage(MagicSpells.strSpellChange, "%s", spell.getName()));
+			}
+			
+			// check for mana pots
+			if (MagicSpells.enableManaBars && MagicSpells.manaPotions != null && MagicSpells.manaPotions.containsKey(inHand.getTypeId())) {
+				int amt = MagicSpells.manaPotions.get(inHand.getTypeId());
+				boolean added = MagicSpells.mana.addMana(player, amt);
+				if (added) {
+					if (inHand.getAmount() == 1) {
+						inHand = null;
+					} else {
+						inHand.setAmount(inHand.getAmount()-1);
+					}
+					player.setItemInHand(inHand);
+				}
 			}
 		}
 		

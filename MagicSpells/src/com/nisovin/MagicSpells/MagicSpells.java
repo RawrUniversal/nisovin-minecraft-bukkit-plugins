@@ -48,6 +48,7 @@ public class MagicSpells extends JavaPlugin {
 	public static boolean showManaOnRegen;
 	public static boolean showManaOnWoodTool;
 	public static int manaBarToolSlot;
+	public static HashMap<Integer,Integer> manaPotions;
 	
 	public static String strCastUsage;
 	public static String strUnknownSpell;
@@ -146,6 +147,14 @@ public class MagicSpells extends JavaPlugin {
 			mana = new ManaBarManager();
 			for (Player p : getServer().getOnlinePlayers()) {
 				mana.createManaBar(p);
+			}
+		}
+		List<String> manaPots = config.getStringList("general.mana.mana-potions", null);
+		if (manaPots != null && manaPots.size() > 0) {
+			manaPotions = new HashMap<Integer,Integer>();
+			for (int i = 0; i < manaPots.size(); i++) {
+				String[] data = manaPots.get(i).split(" ");
+				manaPotions.put(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
 			}
 		}
 		

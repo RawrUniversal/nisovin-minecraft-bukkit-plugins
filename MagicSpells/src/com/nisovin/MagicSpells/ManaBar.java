@@ -26,6 +26,17 @@ public class ManaBar {
 		}
 	}
 	
+	public boolean add(int amount) {
+		if (mana == maxMana) {
+			return false;
+		}
+		mana += amount;
+		if (mana > maxMana) {
+			mana = maxMana;
+		}
+		return true;
+	}
+	
 	public void show(Player player) {
 		int segments = (int)(((double)mana/(double)maxMana) * MagicSpells.manaBarSize);
 		String text = MagicSpells.textColor + MagicSpells.manaBarPrefix + " {" + MagicSpells.manaBarColorFull;

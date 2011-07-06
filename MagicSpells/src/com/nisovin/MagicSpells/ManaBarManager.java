@@ -34,14 +34,33 @@ public class ManaBarManager {
 			return false;
 		} else {
 			boolean r = manaBars.get(player.getName()).remove(amount);
-			if (MagicSpells.showManaOnUse) {
-				showMana(player);
-			}
-			if (MagicSpells.showManaOnWoodTool) {
-				showManaOnTool(player);
+			if (r) {
+				if (MagicSpells.showManaOnUse) {
+					showMana(player);
+				}
+				if (MagicSpells.showManaOnWoodTool) {
+					showManaOnTool(player);
+				}
 			}
 			return r;
 		}
+	}
+	
+	public boolean addMana(Player player, int amount) {
+		if (!manaBars.containsKey(player.getName())) {
+			return false;
+		} else {
+			boolean r = manaBars.get(player.getName()).add(amount);
+			if (r) {
+				if (MagicSpells.showManaOnUse) {
+					showMana(player);
+				}
+				if (MagicSpells.showManaOnWoodTool) {
+					showManaOnTool(player);
+				}
+			}
+			return r;
+		}		
 	}
 	
 	public void showMana(Player player) {
