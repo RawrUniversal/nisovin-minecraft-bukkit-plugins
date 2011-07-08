@@ -18,7 +18,7 @@ public class BookWormContribInventoryListener extends InventoryListener {
 		ItemStack itemClicked = event.getItem();
 		ItemStack itemHolding = event.getCursor();
 		if (itemClicked != null && itemClicked.getType() == Material.BOOK) {
-			if (itemHolding == null && !event.isLeftClick() && itemClicked.getDurability() != 0) {
+			if (BookWorm.BOOK_INFO_ACHIEVEMENT && itemHolding == null && !event.isLeftClick() && itemClicked.getDurability() != 0) {
 				Book book = BookWorm.getBook(itemClicked);
 				if (book != null) {
 					ContribPlayer player = (ContribPlayer)event.getPlayer();
