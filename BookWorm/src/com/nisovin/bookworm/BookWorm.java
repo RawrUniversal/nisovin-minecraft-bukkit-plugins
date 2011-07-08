@@ -40,6 +40,7 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean CHECK_WORLDGUARD = true;
 	protected static boolean USE_FULL_FILENAMES = true;
 	protected static boolean AUTO_CHAT_MODE = true;
+	protected static boolean BOOK_INFO_ACHIEVEMENT = true;
 	
 	protected static int CLEAN_INTERVAL = 600;
 	protected static int REMOVE_DELAY = 300;
@@ -151,7 +152,7 @@ public class BookWorm extends JavaPlugin {
 			boolean ok = false;
 			try {
 				// attempt to make books with different data values stack separately
-				Field field1 = net.minecraft.server.Item.class.getDeclaredField("bi");
+				Field field1 = net.minecraft.server.Item.class.getDeclaredField("bj");
 				if (field1.getType() == boolean.class) {
 					field1.setAccessible(true);
 					field1.setBoolean(net.minecraft.server.Item.BOOK, true);
@@ -433,6 +434,8 @@ public class BookWorm extends JavaPlugin {
 		
 		SHOW_TITLE_ON_HELD_CHANGE = config.getBoolean("general.show-title-on-held-change", SHOW_TITLE_ON_HELD_CHANGE);
 		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
+		AUTO_CHAT_MODE = config.getBoolean("general.auto-chat-mode", AUTO_CHAT_MODE);
+		BOOK_INFO_ACHIEVEMENT = config.getBoolean("general.book-info-achievement", BOOK_INFO_ACHIEVEMENT);
 
 		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
 		USE_FULL_FILENAMES = config.getBoolean("general.use-full-filenames", USE_FULL_FILENAMES);
