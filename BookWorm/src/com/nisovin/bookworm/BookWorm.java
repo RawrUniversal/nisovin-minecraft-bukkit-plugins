@@ -128,6 +128,10 @@ public class BookWorm extends JavaPlugin {
 		new BookWormPlayerListener(this);
 		new BookWormBlockListener(this);
 		new BookWormWorldListener(this);
+		if (getServer().getPluginManager().isPluginEnabled("BukkitContrib")) {
+			new BookWormContribInventoryListener(this);
+			getServer().getLogger().info("BookWorm: BukkitContrib support enabled.");
+		}
 		
 		// start memory cleaner
 		if (CLEAN_INTERVAL > 0) {
@@ -164,6 +168,8 @@ public class BookWorm extends JavaPlugin {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		getServer().getLogger().info("BookWorm v" + this.getDescription().getVersion() + " loaded!");
 		
 	}
 
