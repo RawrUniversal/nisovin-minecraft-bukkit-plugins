@@ -98,6 +98,11 @@ public abstract class InstantSpell extends Spell {
 			}
 		}
 		
+		// check for anti-magic-zone
+		if (target != null && MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.inNoMagicZone(target.getLocation())) {
+			target = null;
+		}
+		
 		return target;
 	}
 }

@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.Spells.*;
+import com.nisovin.MagicSpells.Util.NoMagicZoneManager;
 
 public class MagicSpells extends JavaPlugin {
 
@@ -56,6 +57,7 @@ public class MagicSpells extends JavaPlugin {
 	public static String strOnCooldown;
 	public static String strMissingReagents;
 	public static String strCantCast;
+	public static String strNoMagicZone;
 	public static String strConsoleName;
 	
 	public static HashMap<String,Spell> spells; // map internal names to spells
@@ -65,6 +67,7 @@ public class MagicSpells extends JavaPlugin {
 	public static HashMap<Event.Type,HashSet<Spell>> listeners;
 	
 	public static ManaBarManager mana;
+	public static NoMagicZoneManager noMagicZones;
 	
 	@Override
 	public void onEnable() {
@@ -103,6 +106,7 @@ public class MagicSpells extends JavaPlugin {
 		strOnCooldown = config.getString("general.str-on-cooldown", "That spell is on cooldown.");
 		strMissingReagents = config.getString("general.str-missing-reagents", "You do not have the reagents for that spell.");
 		strCantCast = config.getString("general.str-cant-cast", "You can't cast that spell right now.");
+		strNoMagicZone = config.getString("general.str-no-magic-zone", "An anti-magic aura makes your spell fizzle.");
 		strConsoleName = config.getString("general.console-name", "Admin");
 		castForFree = config.getStringList("general.cast-for-free", null);
 		if (castForFree != null) {
@@ -128,9 +132,7 @@ public class MagicSpells extends JavaPlugin {
 			losTransparentBlocks.add(Material.DEAD_BUSH.getId());
 			losTransparentBlocks.add(Material.DIODE_BLOCK_ON.getId());
 			losTransparentBlocks.add(Material.DIODE_BLOCK_OFF.getId());
-		}		
-		
-		// setup mana bar manager		
+		}			
 		enableManaBars = config.getBoolean("general.mana.enable-mana-bars", true);
 		maxMana = config.getInt("general.mana.max-mana", 100);
 		manaBarPrefix = config.getString("general.mana.mana-bar-prefix", "Mana:");
@@ -143,12 +145,16 @@ public class MagicSpells extends JavaPlugin {
 		showManaOnRegen = config.getBoolean("general.mana.show-mana-on-regen", false);
 		showManaOnWoodTool = config.getBoolean("general.mana.show-mana-on-wood-tool", true);
 		manaBarToolSlot = config.getInt("general.mana.tool-slot", 8);
+		
+		// setup mana bar manager	
 		if (enableManaBars) {
 			mana = new ManaBarManager();
 			for (Player p : getServer().getOnlinePlayers()) {
 				mana.createManaBar(p);
 			}
 		}
+		
+		// load mana potions
 		List<String> manaPots = config.getStringList("general.mana.mana-potions", null);
 		if (manaPots != null && manaPots.size() > 0) {
 			manaPotions = new HashMap<Integer,Integer>();
@@ -161,6 +167,12 @@ public class MagicSpells extends JavaPlugin {
 		// load permissions
 		if (config.getBoolean("general.use-permissions", false)) {
 			Spellbook.initPermissions();
+		}
+		
+		// load no-magic zones
+		noMagicZones = new NoMagicZoneManager(config);
+		if (noMagicZones.zoneCount() == 0) {
+			noMagicZones = null;
 		}
 		
 		// load spells
