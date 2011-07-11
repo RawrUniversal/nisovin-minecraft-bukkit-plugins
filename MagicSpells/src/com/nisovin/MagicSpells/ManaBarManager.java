@@ -1,6 +1,8 @@
 package com.nisovin.MagicSpells;
 
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -8,7 +10,8 @@ import org.bukkit.entity.Player;
 public class ManaBarManager {
 
 	private HashMap<String,ManaBar> manaBars;
-	private int taskId;
+	//private int taskId;
+	private Timer timer;
 	
 	public ManaBarManager() {
 		manaBars = new HashMap<String,ManaBar>();
@@ -78,14 +81,24 @@ public class ManaBarManager {
 	}
 	
 	public void startRegenerator() {
-		taskId = Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(MagicSpells.plugin, new ManaBarRegenerator(), MagicSpells.manaRegenTickRate, MagicSpells.manaRegenTickRate);
+		//taskId = Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(MagicSpells.plugin, new ManaBarRegenerator(), MagicSpells.manaRegenTickRate, MagicSpells.manaRegenTickRate);
+		if (timer != null) {
+			stopRegenerator();
+		}
+		timer = new Timer();
+		TimerTask task = new ManaBarRegenerator();
+		timer.schedule(task, 0, MagicSpells.manaRegenTickRate);
 	}
 	
 	public void stopRegenerator() {
-		Bukkit.getServer().getScheduler().cancelTask(taskId);
+		//Bukkit.getServer().getScheduler().cancelTask(taskId);
+		if (timer != null) {
+			timer.cancel();
+			timer = null;
+		}
 	}
 	
-	private class ManaBarRegenerator implements Runnable {
+	private class ManaBarRegenerator extends TimerTask {
 		public void run() {
 			for (String p: manaBars.keySet()) {
 				ManaBar bar = manaBars.get(p);

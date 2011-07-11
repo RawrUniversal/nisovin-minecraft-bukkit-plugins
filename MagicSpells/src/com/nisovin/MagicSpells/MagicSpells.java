@@ -139,7 +139,7 @@ public class MagicSpells extends JavaPlugin {
 		manaBarSize = config.getInt("general.mana.mana-bar-size", 35);
 		manaBarColorFull = ChatColor.getByCode(config.getInt("general.mana.color-full", ChatColor.GREEN.getCode()));
 		manaBarColorEmpty = ChatColor.getByCode(config.getInt("general.mana.color-empty", ChatColor.BLACK.getCode()));
-		manaRegenTickRate = config.getInt("general.mana.regen-tick-seconds", 5) * 20;
+		manaRegenTickRate = config.getInt("general.mana.regen-tick-seconds", 5) * 1000;
 		manaRegenPercent = config.getInt("general.mana.regen-percent", 5);
 		showManaOnUse = config.getBoolean("general.mana.show-mana-on-use", false);
 		showManaOnRegen = config.getBoolean("general.mana.show-mana-on-regen", false);
