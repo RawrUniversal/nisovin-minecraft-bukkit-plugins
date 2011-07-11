@@ -1,0 +1,9 @@
+name: Keybinder
+main: com.nisovin.keybinder.Keybinder
+version: 1.0
+author: nisovin
+depend: [BukkitContrib]
+commands:
+    keybind:
+        description: Bind a key to a command
+        usage: /<command>
