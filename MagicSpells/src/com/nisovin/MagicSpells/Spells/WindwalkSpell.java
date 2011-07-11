@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
@@ -48,6 +49,7 @@ public class WindwalkSpell extends BuffSpell {
 		windwalkers = new HashMap<String,BlockPlatform>();
 		
 		addListener(Event.Type.PLAYER_MOVE);
+		addListener(Event.Type.PLAYER_TOGGLE_SNEAK);
 		addListener(Event.Type.BLOCK_BREAK);
 		if (cancelOnLogout) {
 			addListener(Event.Type.PLAYER_QUIT);
@@ -76,18 +78,32 @@ public class WindwalkSpell extends BuffSpell {
 			if (isExpired(player)) {
 				turnOff(player);
 			} else {
-				Block block;
-				if (player.isSneaking()) {
-					block = event.getTo().getBlock().getRelative(0,-2,0);
-				} else {
-					block = event.getTo().getBlock().getRelative(0,-1,0);
+				if (!player.isSneaking()) {
+					Block block = event.getTo().subtract(0,1,0).getBlock();
+					boolean moved = windwalkers.get(player.getName()).movePlatform(block);
+					if (moved) {
+						addUse(player);
+						chargeUseCost(player);
+					}
 				}
+			}
+		}
+	}
+	
+	@Override
+	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+		if (windwalkers.containsKey(event.getPlayer().getName()) && event.isSneaking()) {
+			Player player = event.getPlayer();
+			if (isExpired(player)) {
+				turnOff(player);
+			} else {
+				Block block = player.getLocation().subtract(0,2,0).getBlock();
 				boolean moved = windwalkers.get(player.getName()).movePlatform(block);
 				if (moved) {
 					addUse(player);
 					chargeUseCost(player);
 				}
-			}
+			}			
 		}
 	}
 	

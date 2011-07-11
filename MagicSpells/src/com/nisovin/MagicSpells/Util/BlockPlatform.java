@@ -36,12 +36,13 @@ public class BlockPlatform {
 		
 		// get platform blocks
 		if (type.equals("square")) {
-			Block block;
+			Block block, above;
 			for (int x = center.getX()-size; x <= center.getX()+size; x++) {
 				for (int z = center.getZ()-size; z <= center.getZ()+size; z++) {
 					int y = center.getY();
 					block = center.getWorld().getBlockAt(x,y,z);
-					if ((block.getType() == replaceType && (block.getY() == 127 || block.getRelative(0,1,0).getType() == Material.AIR)) || (blocks != null && blocks.contains(block))) {
+					above = block.getRelative(0,1,0);
+					if ((block.getType() == replaceType && (block.getY() == 127 || blocks.contains(above) || above.getType() == Material.AIR)) || (blocks != null && blocks.contains(block))) {
 						// only add if it's a replaceable block and has air above, or if it is already part of the platform
 						platform.add(block);
 					}

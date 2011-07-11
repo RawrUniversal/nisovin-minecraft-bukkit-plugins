@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class MagicPlayerListener extends PlayerListener {
@@ -29,6 +30,7 @@ public class MagicPlayerListener extends PlayerListener {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TELEPORT, this, Event.Priority.Monitor, plugin);
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TOGGLE_SNEAK, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Monitor, plugin);
 	}
 	
@@ -129,6 +131,16 @@ public class MagicPlayerListener extends PlayerListener {
 		if (spells != null) {
 			for (Spell spell : spells) {
 				spell.onPlayerTeleport(event);
+			}
+		}
+	}
+	
+	@Override
+	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_TOGGLE_SNEAK);
+		if (spells != null) {
+			for (Spell spell : spells) {
+				spell.onPlayerToggleSneak(event);
 			}
 		}
 	}
