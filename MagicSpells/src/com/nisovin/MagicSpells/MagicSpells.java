@@ -173,7 +173,6 @@ public class MagicSpells extends JavaPlugin {
 				} else {
 					mat = new MaterialData(Integer.parseInt(data[0]));					
 				}
-				System.out.println(mat);
 				manaPotions.put(mat, Integer.parseInt(data[1]));
 			}
 			manaPotionCooldowns = new HashMap<Player,Long>();

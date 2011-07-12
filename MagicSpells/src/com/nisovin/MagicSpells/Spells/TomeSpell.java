@@ -59,7 +59,7 @@ public class TomeSpell extends CommandSpell {
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Spell spell;
-			if (args.length == 0) {
+			if (args == null || args.length == 0) {
 				// fail -- no args
 				sendMessage(player, strUsage);
 				return true;
