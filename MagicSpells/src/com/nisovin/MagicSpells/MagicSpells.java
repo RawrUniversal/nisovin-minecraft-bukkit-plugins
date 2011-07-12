@@ -194,6 +194,7 @@ public class MagicSpells extends JavaPlugin {
 		HealSpell.load(config);
 		HelpSpell.load(config);
 		InvulnerabilitySpell.load(config);
+		LeapSpell.load(config);
 		LifewalkSpell.load(config);
 		LightningSpell.load(config);
 		LightwalkSpell.load(config);
@@ -209,7 +210,7 @@ public class MagicSpells extends JavaPlugin {
 		StonevisionSpell.load(config);
 		TeachSpell.load(config);
 		TelekinesisSpell.load(config);
-		//if (getServer().getPluginManager().isPluginEnabled("BookWorm")) TomeSpell.load(config);
+		if (getServer().getPluginManager().isPluginEnabled("BookWorm")) TomeSpell.load(config);
 		VolleySpell.load(config);
 		WallSpell.load(config);
 		WindwalkSpell.load(config);

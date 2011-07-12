@@ -319,6 +319,18 @@ spells:
         str-cast-self: You feel your skin harden.
         str-cast-others: "%a's skin hardens."
         str-fade: You feel your skin return to normal.
+    leap:
+        name: leap
+        description: Leap forward.
+        cast-item: 280
+        forward-velocity: 40
+        upward-velocity: 15
+        cancel-damage: true
+        cooldown: 10
+        cost:
+            - 331 2
+        str-cast-self: You leap forward.
+        str-cast-others: "%a leaps forward."
     lifewalk:
         name: lifewalk
         description: Flowers grow in your footsteps!
@@ -336,7 +348,7 @@ spells:
             - 331 1
         use-cost-interval: 20
         str-cost: 2 redstone and 1 rose, plus 1 redstone every few seconds
-        str-cast: Flowers grow in your footsteps!
+        str-cast-self: Flowers grow in your footsteps!
         str-cast-others: Flowers grow in %a's footsteps!
         str-fade: Flowers no longer grow in your footsteps.
     lightning:
