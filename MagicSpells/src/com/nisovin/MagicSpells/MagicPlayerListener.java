@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 public class MagicPlayerListener extends PlayerListener {
 
@@ -78,16 +79,36 @@ public class MagicPlayerListener extends PlayerListener {
 			}
 			
 			// check for mana pots
-			if (MagicSpells.enableManaBars && MagicSpells.manaPotions != null && MagicSpells.manaPotions.containsKey(inHand.getTypeId())) {
-				int amt = MagicSpells.manaPotions.get(inHand.getTypeId());
-				boolean added = MagicSpells.mana.addMana(player, amt);
-				if (added) {
-					if (inHand.getAmount() == 1) {
-						inHand = null;
-					} else {
-						inHand.setAmount(inHand.getAmount()-1);
+			if (MagicSpells.enableManaBars && MagicSpells.manaPotions != null) {
+				MaterialData mat = inHand.getData();
+				if (mat == null) {
+					mat = new MaterialData(inHand.getType());
+				}
+				if (MagicSpells.manaPotions.containsKey(mat)) {
+					// check cooldown
+					if (MagicSpells.manaPotionCooldown > 0) {
+						Long c = MagicSpells.manaPotionCooldowns.get(player);
+						if (c != null && c > System.currentTimeMillis()) {
+							Spell.sendMessage(player, MagicSpells.strManaPotionOnCooldown.replace("%c", ""+(int)((c-System.currentTimeMillis())/1000)));
+							return;
+						}
 					}
-					player.setItemInHand(inHand);
+					// add mana
+					int amt = MagicSpells.manaPotions.get(mat);
+					boolean added = MagicSpells.mana.addMana(player, amt);
+					if (added) {
+						// set cooldown
+						if (MagicSpells.manaPotionCooldown > 0) {
+							MagicSpells.manaPotionCooldowns.put(player, System.currentTimeMillis() + MagicSpells.manaPotionCooldown*1000);
+						}
+						// remove item
+						if (inHand.getAmount() == 1) {
+							inHand = null;
+						} else {
+							inHand.setAmount(inHand.getAmount()-1);
+						}
+						player.setItemInHand(inHand);
+					}
 				}
 			}
 		}

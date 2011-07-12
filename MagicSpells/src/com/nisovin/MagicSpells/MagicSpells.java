@@ -16,6 +16,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
@@ -49,7 +50,9 @@ public class MagicSpells extends JavaPlugin {
 	public static boolean showManaOnRegen;
 	public static boolean showManaOnWoodTool;
 	public static int manaBarToolSlot;
-	public static HashMap<Integer,Integer> manaPotions;
+	public static int manaPotionCooldown;
+	public static String strManaPotionOnCooldown;
+	public static HashMap<MaterialData,Integer> manaPotions;
 	
 	public static String strCastUsage;
 	public static String strUnknownSpell;
@@ -67,6 +70,7 @@ public class MagicSpells extends JavaPlugin {
 	public static HashMap<Event.Type,HashSet<Spell>> listeners;
 	
 	public static ManaBarManager mana;
+	public static HashMap<Player,Long> manaPotionCooldowns;
 	public static NoMagicZoneManager noMagicZones;
 	
 	@Override
@@ -145,6 +149,8 @@ public class MagicSpells extends JavaPlugin {
 		showManaOnRegen = config.getBoolean("general.mana.show-mana-on-regen", false);
 		showManaOnWoodTool = config.getBoolean("general.mana.show-mana-on-wood-tool", true);
 		manaBarToolSlot = config.getInt("general.mana.tool-slot", 8);
+		manaPotionCooldown = config.getInt("general.mana.mana-potion-cooldown", 30);
+		strManaPotionOnCooldown = config.getString("general.mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
 		
 		// setup mana bar manager	
 		if (enableManaBars) {
@@ -157,11 +163,20 @@ public class MagicSpells extends JavaPlugin {
 		// load mana potions
 		List<String> manaPots = config.getStringList("general.mana.mana-potions", null);
 		if (manaPots != null && manaPots.size() > 0) {
-			manaPotions = new HashMap<Integer,Integer>();
+			manaPotions = new HashMap<MaterialData,Integer>();
 			for (int i = 0; i < manaPots.size(); i++) {
 				String[] data = manaPots.get(i).split(" ");
-				manaPotions.put(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+				MaterialData mat;
+				if (data[0].contains(":")) {
+					String[] data2 = data[0].split(":");
+					mat = new MaterialData(Integer.parseInt(data2[0]), Byte.parseByte(data2[1]));
+				} else {
+					mat = new MaterialData(Integer.parseInt(data[0]));					
+				}
+				System.out.println(mat);
+				manaPotions.put(mat, Integer.parseInt(data[1]));
 			}
+			manaPotionCooldowns = new HashMap<Player,Long>();
 		}
 		
 		// load permissions
