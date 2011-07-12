@@ -39,7 +39,7 @@ public class KeybinderPlayerListener extends PlayerListener {
 		if (keybind != null && keybind.getState() == KeybindState.WAITING_ON_COMMAND) {
 			Player player = event.getPlayer();
 			keybind.setCommand(event.getMessage().substring(1));
-			player.sendMessage("Keybinding saved.");
+			player.sendMessage("The command has been bound to the " + keybind.getKey().name().replace("KEY_", "") + " key.");
 			Keybinder.keybinds.get(player).addKeybind(keybind);
 			event.setCancelled(true);
 		}

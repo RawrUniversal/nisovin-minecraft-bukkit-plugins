@@ -1,9 +1,9 @@
 package com.nisovin.keybinder;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkitcontrib.event.input.InputListener;
 import org.bukkitcontrib.event.input.KeyPressedEvent;
+import org.bukkitcontrib.player.ContribPlayer;
 
 import com.nisovin.keybinder.Keybind.KeybindState;
 
@@ -15,11 +15,15 @@ public class KeybinderInputListener extends InputListener {
 	
 	@Override
 	public void onKeyPressedEvent(KeyPressedEvent event) {
-		Player player = event.getPlayer();
+		ContribPlayer player = event.getPlayer();
 		Keybind keybind = Keybinder.newKeybinds.get(event.getPlayer());
 		if (keybind != null && keybind.getState() == KeybindState.WAITING_ON_KEYBIND) {
-			keybind.setKey(event.getKey());
-			event.getPlayer().sendMessage("Key selected. Please type the command you wish to bind.");
+			if (Keybinder.keybinds.get(player).isKeyBound(event.getKey())) {
+				player.sendMessage("That key is already bound.");
+			} else {
+				keybind.setKey(event.getKey());
+				event.getPlayer().sendMessage("Key selected. Please type the command you wish to bind.");				
+			}
 		} else {
 			KeybindSet keybindset = Keybinder.keybinds.get(player);
 			if (keybindset != null) {

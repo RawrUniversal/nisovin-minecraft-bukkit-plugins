@@ -44,8 +44,23 @@ public class Keybinder extends JavaPlugin {
 		Player player = (Player)sender;
 		
 		if (((ContribPlayer)player).isEnabledBukkitContribSinglePlayerMod()) {
-			newKeybinds.put(player, new Keybind());
-			player.sendMessage("Please press the key you wish to bind.");
+			if (args.length == 0) {
+				newKeybinds.put(player, new Keybind());
+				player.sendMessage("Please press the key you wish to bind.");
+			} else if (args[0].equalsIgnoreCase("list")) {
+				int page = 1;
+				if (args.length == 2) {
+					page = Integer.parseInt(args[1]);
+				}
+				keybinds.get(player).showList(page);
+			} else if (args[0].equalsIgnoreCase("unbind")) {
+				keybinds.get(player).unbind(args[1]);
+			} else if (args[0].equalsIgnoreCase("cancel")) {
+				if (newKeybinds.containsKey(player)) {
+					newKeybinds.remove(player);
+					player.sendMessage("New keybind cancelled.");
+				}
+			}
 		} else {
 			player.sendMessage("You need the BukkitContrib mod to do this.");
 		}
