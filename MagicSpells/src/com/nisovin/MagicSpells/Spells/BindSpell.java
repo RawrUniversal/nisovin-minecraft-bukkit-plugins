@@ -38,7 +38,7 @@ public class BindSpell extends CommandSpell {
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			if (args == null || args.length != 1 || player.getItemInHand().getTypeId() <= 0) {
+			if (args == null || args.length != 1) {
 				sendMessage(player, strUsage);
 			} else {
 				Spell spell = MagicSpells.spellNames.get(args[0]);
@@ -53,8 +53,13 @@ public class BindSpell extends CommandSpell {
 					// fail - spell can't be bound
 					sendMessage(player, strCantBind);
 				} else {
+					int typeId = player.getItemInHand()==null?-1:player.getItemInHand().getTypeId();
 					spellbook.removeSpell(spell);
-					spellbook.addSpell(spell, player.getItemInHand().getTypeId());
+					if (typeId <= 0) {
+						spellbook.addSpell(spell, -1);
+					} else {
+						spellbook.addSpell(spell, player.getItemInHand().getTypeId());
+					}
 					spellbook.save();
 					removeReagents(player);
 					setCooldown(player);

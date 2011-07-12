@@ -119,7 +119,7 @@ public class Spellbook {
 					} else {
 						String[] data = line.split(":");
 						Spell spell = MagicSpells.spells.get(data[0]);
-						if (spell != null && data[1].matches("^[0-9]+$")) {
+						if (spell != null && data[1].matches("^-?[0-9]+$")) {
 							addSpell(spell, Integer.parseInt(data[1]));
 						}
 					}
@@ -176,7 +176,7 @@ public class Spellbook {
 	}
 	
 	public void addSpell(Spell spell) {
-		addSpell(spell, -1);
+		addSpell(spell, 0);
 	}
 	
 	public void addSpell(Spell spell, int castItem) {
@@ -184,7 +184,7 @@ public class Spellbook {
 		allSpells.add(spell);
 		if (spell.canCastWithItem()) {
 			int item = spell.getCastItem();
-			if (castItem > 0) {
+			if (castItem != 0) {
 				item = castItem;
 				customBindings.put(spell, castItem);
 			} else if (MagicSpells.ignoreDefaultBindings) {
