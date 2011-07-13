@@ -1,6 +1,6 @@
 name: MagicSpells
 main: com.nisovin.MagicSpells.MagicSpells
-version: 0.8
+version: 0.9
 author: nisovin
 softdepend: [BookWorm,WorldGuard]
 commands:

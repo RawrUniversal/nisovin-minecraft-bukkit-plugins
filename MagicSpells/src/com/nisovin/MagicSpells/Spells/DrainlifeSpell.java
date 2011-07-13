@@ -9,6 +9,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
@@ -20,9 +22,13 @@ public class DrainlifeSpell extends InstantSpell {
 	
 	private static final String SPELL_NAME = "drainlife";
 	
+	private int damage;
+	private int heal;
 	private int animationSpeed;
 	private boolean obeyLos;
 	private boolean targetPlayers;
+	private boolean checkPlugins;
+	private String strNoTarget;
 	
 	public static void load(Configuration config) {
 		load(config, SPELL_NAME);
@@ -37,9 +43,12 @@ public class DrainlifeSpell extends InstantSpell {
 	public DrainlifeSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		animationSpeed = config.getInt("spells." + spellName + ".animation-speed", 2);
-		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
-		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
+		damage = getConfigInt(config, "damage", 2);
+		heal = getConfigInt(config, "heal", 2);
+		animationSpeed = getConfigInt(config, "animation-speed", 2);
+		obeyLos = getConfigBoolean(config, "obey-los", true);
+		targetPlayers = getConfigBoolean(config, "target-players", false);
+		checkPlugins = getConfigBoolean(config, "check-plugins", true);
 	}
 	
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
@@ -47,7 +56,21 @@ public class DrainlifeSpell extends InstantSpell {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
 				// fail: no target
+				sendMessage(player, strNoTarget);
+				return true;
 			} else {
+				if (target instanceof Player && checkPlugins) {
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.CUSTOM, damage);
+					Bukkit.getServer().getPluginManager().callEvent(event);
+					if (event.isCancelled()) {
+						sendMessage(player, strNoTarget);
+						return true;
+					}
+				}
+				target.damage(damage, player);
+				int h = player.getHealth()+heal;
+				if (h>20) h=20;
+				player.setHealth(h);
 				new DrainlifeAnimation(player, target);
 			}
 		}
@@ -65,8 +88,9 @@ public class DrainlifeSpell extends InstantSpell {
 			// get blocks to animate
 			Vector start = target.getLocation().toVector();
 			Vector playerVector = player.getLocation().toVector();
+			double distanceSq = start.distanceSquared(playerVector);
 			Vector direction = playerVector.subtract(start);
-			BlockIterator iterator = new BlockIterator(player.getWorld(), start, direction, player.getEyeHeight(), (int)start.distance(playerVector));
+			BlockIterator iterator = new BlockIterator(player.getWorld(), start, direction, player.getEyeHeight(), range);
 			blocks = new ArrayList<Block>();
 			Block b;
 			while (iterator.hasNext()) {
@@ -74,6 +98,9 @@ public class DrainlifeSpell extends InstantSpell {
 				if (b != null && b.getType() == Material.AIR) {
 					blocks.add(b);
 				} else {
+					break;
+				}
+				if (b.getLocation().toVector().distanceSquared(start) > distanceSq) {
 					break;
 				}
 			}

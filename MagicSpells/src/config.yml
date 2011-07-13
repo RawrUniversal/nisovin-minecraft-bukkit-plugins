@@ -141,6 +141,23 @@ spells:
             - 263 1
         str-cost: 1 redstone dust and 1 coal
         str-no-target: No target found.
+    drainlife:
+        name: drainlife
+        description: Drain life from your enemy and give it to you.
+        cast-item: 283
+        cooldown: 5
+        range: 15
+        damage: 2
+        heal: 2
+        animation-speed: 2
+        obey-los: true
+        target-players: false
+        check-plugins: true
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cast-self: You drain life from your enemy.
+        str-no-target: No target found.
     entomb:
         name: entomb
         description: Encase an enemy in glass.
@@ -335,6 +352,7 @@ spells:
         cooldown: 10
         cost:
             - 331 2
+        str-cost: 2 redstone dust
         str-cast-self: You leap forward.
         str-cast-others: "%a leaps forward."
     lifewalk:
@@ -415,6 +433,21 @@ spells:
         str-cast-self: You summon an undead minion.
         str-cast-others: "%a has summoned an undead minion."
         str-fade: Your undead minion dies.
+    pain:
+        name: pain
+        description: Cause your enemy pain.
+        cast-item: 283
+        cooldown: 5
+        damage: 3
+        range: 15
+        obey-los: true
+        target-players: false
+        check-plugins: true
+        cost:
+            - 331 1
+            - health 1
+        str-cost: 1 redstone dust and a half heart
+        str-no-target: No target found.
     prayer:
         name: prayer
         description: Heals yourself for five hearts.

@@ -194,6 +194,8 @@ public class MagicSpells extends JavaPlugin {
 		BlinkSpell.load(config);
 		BuildSpell.load(config);
 		CombustSpell.load(config);
+		ConfusionSpell.load(config);
+		DrainlifeSpell.load(config);
 		EntombSpell.load(config);
 		ExplodeSpell.load(config);
 		ExternalCommandSpell.load(config);
@@ -215,6 +217,7 @@ public class MagicSpells extends JavaPlugin {
 		ListSpell.load(config);
 		MarkSpell.load(config);
 		MinionSpell.load(config);
+		PainSpell.load(config);
 		PrayerSpell.load(config);
 		PurgeSpell.load(config);
 		RecallSpell.load(config);
