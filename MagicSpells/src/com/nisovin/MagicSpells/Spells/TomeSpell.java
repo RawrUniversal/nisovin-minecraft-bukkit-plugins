@@ -46,7 +46,7 @@ public class TomeSpell extends CommandSpell {
 		
 		cancelReadOnLearn = getConfigBoolean(config, "cancel-read-on-learn", true);
 		allowOverwrite = getConfigBoolean(config, "allow-overwrite", false);
-		strUsage = getConfigString(config, "str-usage", "Usage: While holding a book, /cast " + name + " <spell>");
+		strUsage = getConfigString(config, "str-usage", "Usage: While holding a book, /cast " + name + " <spell> [uses]");
 		strNoSpell = getConfigString(config, "str-no-spell", "You do not know a spell with that name.");
 		strNoBook = getConfigString(config, "str-no-book", "You must be holding a book.");
 		strAlreadyHasSpell = getConfigString(config, "str-already-has-spell", "That book already contains a spell.");
@@ -82,7 +82,11 @@ public class TomeSpell extends CommandSpell {
 				sendMessage(player, strAlreadyHasSpell);
 				return true;
 			} else {
-				book.addHiddenData("MagicSpell", spell.getInternalName());
+				int uses = -1;
+				if (args.length > 1 && args[1].matches("^[0-9]+$")) {
+					uses = Integer.parseInt(args[1]);
+				}
+				book.addHiddenData("MagicSpell", spell.getInternalName() + (uses>0?","+uses:""));
 				book.save();
 			}
 		}
@@ -104,9 +108,14 @@ public class TomeSpell extends CommandSpell {
 	private class BookListener extends BookWormListener {
 		@Override
 		public void onBookRead(BookReadEvent event) {
-			String spellName = event.getBook().getHiddenData("MagicSpell");
-			if (spellName != null && !spellName.equals("")) {
-				Spell spell = MagicSpells.spells.get(spellName);
+			String spellData = event.getBook().getHiddenData("MagicSpell");
+			if (spellData != null && !spellData.equals("")) {
+				String[] data = spellData.split(",");
+				Spell spell = MagicSpells.spells.get(data[0]);
+				int uses = -1;
+				if (data.length > 1) {
+					uses = Integer.parseInt(data[1]);
+				}
 				Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
 				if (spell != null && spellbook != null) {
 					if (spellbook.hasSpell(spell)) {
@@ -116,10 +125,20 @@ public class TomeSpell extends CommandSpell {
 						// fail -- can't learn
 						sendMessage(event.getPlayer(), formatMessage(strCantLearn, "%s", spell.getName()));
 					} else {
+						// give spell
 						spellbook.addSpell(spell);
 						sendMessage(event.getPlayer(), formatMessage(strLearned, "%s", spell.getName()));
 						if (cancelReadOnLearn) {
 							event.setCancelled(true);
+						}
+						// remove use
+						if (uses > 0) {
+							uses--;
+							if (uses > 0) {
+								event.getBook().addHiddenData("MagicSpell", data[0] + "," + uses);
+							} else {
+								event.getBook().removeHiddenData("MagicSpell");
+							}							
 						}
 					}
 				}
