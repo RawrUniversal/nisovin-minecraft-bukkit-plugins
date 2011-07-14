@@ -4,11 +4,11 @@ version: 0.9
 author: nisovin
 softdepend: [BookWorm,WorldGuard]
 commands:
-    cast:
+    magicspellcast:
         description: Cast a spell
         usage: /<command>
-        aliases: [c]
-    mana:
+        aliases: [cast,c]
+    magicspellmana:
         description: Show mana bar
         usage: /<command>
-        aliases: [m]
+        aliases: [mana,m]

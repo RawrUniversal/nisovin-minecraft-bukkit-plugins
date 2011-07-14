@@ -289,7 +289,7 @@ public class MagicSpells extends JavaPlugin {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
-		if (command.getName().equalsIgnoreCase("cast")) {
+		if (command.getName().equalsIgnoreCase("magicspellcast")) {
 			if (args == null || args.length == 0) {
 				if (sender instanceof Player) {
 					Spell.sendMessage((Player)sender, strCastUsage);
@@ -348,7 +348,7 @@ public class MagicSpells extends JavaPlugin {
 				}
 			}
 			return true;
-		} else if (command.getName().equalsIgnoreCase("mana")) {
+		} else if (command.getName().equalsIgnoreCase("magicspellmana")) {
 			if (enableManaBars && sender instanceof Player) {
 				Player player = (Player)sender;
 				mana.showMana(player);
