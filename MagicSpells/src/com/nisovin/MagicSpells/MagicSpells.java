@@ -206,6 +206,7 @@ public class MagicSpells extends JavaPlugin {
 		ForgetSpell.load(config);
 		FrostwalkSpell.load(config);
 		GateSpell.load(config);
+		GeyserSpell.load(config);
 		GillsSpell.load(config);
 		HealSpell.load(config);
 		HelpSpell.load(config);

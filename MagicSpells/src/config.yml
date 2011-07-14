@@ -282,9 +282,27 @@ spells:
         cost:
             - 331 1
             - 265 1
+        str-cost: 1 redstone dust and 1 iron bar
         str-cast-self: You have teleported to spawn.
         str-cast-others: "%a teleports!"
         str-gate-failed: Unable to teleport.
+    geyser:
+        name: geyser
+        description: Create a geyser of water at your enemy's feet.
+        cast-item: 283
+        range: 20
+        damage: 0
+        velocity: 10
+        animation-speed: 2
+        geyser-height: 4
+        obey-los: true
+        target-players: false
+        check-plugins: true
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cast-self: You create a geyser at your enemy's feet.
+        str-no-target: No target found.
     gills:
         name: gills
         description: Allows you to breath underwater.

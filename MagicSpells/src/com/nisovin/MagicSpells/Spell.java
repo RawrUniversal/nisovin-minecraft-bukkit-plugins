@@ -97,6 +97,7 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	public final void cast(Player player, String[] args) {
+		MagicSpells.debug("Player " + player.getName() + " is trying to cast " + internalName);
 		SpellCastState state;
 		if (!MagicSpells.getSpellbook(player).canCast(this)) {
 			state = SpellCastState.CANT_CAST;
