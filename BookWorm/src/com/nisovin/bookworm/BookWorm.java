@@ -27,6 +27,8 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class BookWorm extends JavaPlugin {
 
+	protected static String STACK_BY_DATA_VAR = "bj";
+	
 	protected static ChatColor TEXT_COLOR = ChatColor.GREEN;
 	protected static ChatColor TEXT_COLOR_2 = ChatColor.WHITE;
 	
@@ -44,7 +46,7 @@ public class BookWorm extends JavaPlugin {
 	
 	protected static int CLEAN_INTERVAL = 600;
 	protected static int REMOVE_DELAY = 300;
-	
+		
 	protected static String S_MUST_HOLD_BOOK = "You must be holding a single book to write.";
 	protected static String S_USAGE_START = "Use /%c <title> to start your book.";
 	protected static String S_USAGE_WRITE = 
@@ -70,8 +72,7 @@ public class BookWorm extends JavaPlugin {
 			"   /%c -erase <text> -- erase the given text\n" +
 			"   /%c -replace <old text> -> <new text> -- replace text\n" +
 			"   /%c -title <new title> -- change the book's title\n" +
-			"   /%c -eraseall -- erase the entire book\n" +
-			"   /%c -cancel -- cancel book creation";	
+			"   /%c -eraseall -- erase the entire book";	
 	protected static String S_COMM_ERASE_DONE = "Text erased.";
 	protected static String S_COMM_REPLACE_DONE = "Text replaced.";
 	protected static String S_COMM_REPLACE_FAIL = "Text not found.";
@@ -152,7 +153,7 @@ public class BookWorm extends JavaPlugin {
 			boolean ok = false;
 			try {
 				// attempt to make books with different data values stack separately
-				Field field1 = net.minecraft.server.Item.class.getDeclaredField("bj");
+				Field field1 = net.minecraft.server.Item.class.getDeclaredField(STACK_BY_DATA_VAR);
 				if (field1.getType() == boolean.class) {
 					field1.setAccessible(true);
 					field1.setBoolean(net.minecraft.server.Item.BOOK, true);
@@ -189,7 +190,6 @@ public class BookWorm extends JavaPlugin {
 			sender.sendMessage("BookWorm data reloaded.");
 		} else if (sender instanceof Player) {
 			Player player = (Player)sender;
-			
 			ItemStack inHand = player.getItemInHand();
 			if (inHand == null || inHand.getType() != Material.BOOK || inHand.getAmount() != 1) {
 				player.sendMessage(TEXT_COLOR + S_MUST_HOLD_BOOK);
@@ -429,6 +429,8 @@ public class BookWorm extends JavaPlugin {
 		Configuration config = getConfiguration();
 		config.load();
 		
+		STACK_BY_DATA_VAR = config.getString("general.secret-amazing-code-do-not-change", STACK_BY_DATA_VAR);
+		
 		TEXT_COLOR = ChatColor.getByCode(config.getInt("general.text-color", TEXT_COLOR.getCode()));
 		TEXT_COLOR_2 = ChatColor.getByCode(config.getInt("general.text-color-2", TEXT_COLOR_2.getCode()));
 		
@@ -448,7 +450,7 @@ public class BookWorm extends JavaPlugin {
 		INDENT = "";
 		for (int i = 0; i < indent; i++) {
 			INDENT += " ";
-		}
+		}		
 		
 		S_MUST_HOLD_BOOK = config.getString("strings.must-hold-book", S_MUST_HOLD_BOOK);
 		S_USAGE_START = config.getString("strings.usage-start", S_USAGE_START);
