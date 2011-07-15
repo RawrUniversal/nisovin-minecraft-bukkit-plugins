@@ -8,12 +8,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.InstantSpell;
 
 public class LightningSpell extends InstantSpell {
-
-	private static final String SPELL_NAME = "lightning";
 	
 	private boolean requireEntityTarget;
 	private boolean obeyLos;
@@ -22,16 +19,6 @@ public class LightningSpell extends InstantSpell {
 	private boolean noDamage;
 	private String strCastFail;
 	private String strNoTarget;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new LightningSpell(config, spellName));
-		}
-	}
 	
 	public LightningSpell(Configuration config, String spellName) {
 		super(config, spellName);

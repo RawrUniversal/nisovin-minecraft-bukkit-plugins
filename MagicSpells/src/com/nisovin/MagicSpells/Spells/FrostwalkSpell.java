@@ -12,27 +12,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.Util.BlockPlatform;
 
 public class FrostwalkSpell extends BuffSpell {
-	
-	private static final String SPELL_NAME = "frostwalk";
 	
 	private int size;
 	private boolean leaveFrozen;
 	
 	private HashMap<String,BlockPlatform> frostwalkers;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new FrostwalkSpell(config, spellName));
-		}		
-	}
 
 	public FrostwalkSpell(Configuration config, String spellName) {
 		super(config, spellName);

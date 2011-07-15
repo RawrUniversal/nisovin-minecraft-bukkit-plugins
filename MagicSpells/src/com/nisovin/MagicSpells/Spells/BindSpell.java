@@ -10,22 +10,10 @@ import com.nisovin.MagicSpells.Spell;
 import com.nisovin.MagicSpells.Spellbook;
 
 public class BindSpell extends CommandSpell {
-
-	private static final String SPELL_NAME = "bind";
 	
 	private String strUsage;
 	private String strNoSpell;
 	private String strCantBind;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new BindSpell(config, spellName));
-		}
-	}
 
 	public BindSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -41,7 +29,7 @@ public class BindSpell extends CommandSpell {
 			if (args == null || args.length != 1) {
 				sendMessage(player, strUsage);
 			} else {
-				Spell spell = MagicSpells.spellNames.get(args[0]);
+				Spell spell = MagicSpells.getSpellByInGameName(args[0]);
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spell == null || spellbook == null) {
 					// fail - no such spell, or no spellbook

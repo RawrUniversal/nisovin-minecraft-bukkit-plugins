@@ -13,23 +13,11 @@ import com.nisovin.MagicSpells.Spellbook;
 
 public class ForgetSpell extends CommandSpell {
 
-	private static final String SPELL_NAME = "forget";
-
 	private String strUsage;
 	private String strNoTarget;
 	private String strNoSpell;
 	private String strDoesntKnow;
 	private String strCastTarget;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new ForgetSpell(config, spellName));
-		}
-	}
 	
 	public ForgetSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -53,7 +41,7 @@ public class ForgetSpell extends CommandSpell {
 					// fail: no player match
 					sendMessage(player, strNoTarget);
 				} else {
-					Spell spell = MagicSpells.spellNames.get(args[1]);
+					Spell spell = MagicSpells.getSpellByInGameName(args[1]);
 					if (spell == null) {
 						// fail: no spell match
 						sendMessage(player, strNoSpell);
@@ -96,7 +84,7 @@ public class ForgetSpell extends CommandSpell {
 				// fail: no player match
 				sender.sendMessage(strNoTarget);
 			} else {
-				Spell spell = MagicSpells.spellNames.get(args[1]);
+				Spell spell = MagicSpells.getSpellByInGameName(args[1]);
 				if (spell == null) {
 					// fail: no spell match
 					sender.sendMessage(strNoSpell);

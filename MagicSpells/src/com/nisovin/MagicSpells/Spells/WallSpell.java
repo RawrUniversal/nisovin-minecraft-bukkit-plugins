@@ -8,28 +8,15 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.InstantSpell;
-import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.Util.TemporaryBlockSet;
 
 public class WallSpell extends InstantSpell {
-
-	private static final String SPELL_NAME = "wall";
 
 	private int wallWidth;
 	private int wallHeight;
 	private Material wallType;
 	private int wallDuration;
 	private String strNoTarget;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new WallSpell(config, spellName));
-		}
-	}
 	
 	public WallSpell(Configuration config, String spellName) {
 		super(config, spellName);

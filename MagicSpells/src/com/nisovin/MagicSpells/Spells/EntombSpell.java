@@ -14,24 +14,12 @@ import com.nisovin.MagicSpells.InstantSpell;
 
 public class EntombSpell extends InstantSpell {
 
-	private static final String SPELL_NAME = "entomb";
-
 	private boolean targetPlayers;
 	private boolean obeyLos;
 	private int tombBlockType;
 	private int tombDuration;
 	private boolean closeTopAndBottom;
 	private String strNoTarget;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new EntombSpell(config, spellName));
-		}		
-	}
 	
 	public EntombSpell(Configuration config, String spellName) {
 		super(config, spellName);

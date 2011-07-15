@@ -14,21 +14,8 @@ import com.nisovin.MagicSpells.*;
 
 public class BlinkSpell extends InstantSpell {
 	
-	private static final String SPELL_NAME = "blink";
-	
 	private boolean smokeTrail;
 	private String strCantBlink = null;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new BlinkSpell(config, spellName));
-		}
-		
-	}
 	
 	public BlinkSpell(Configuration config, String spellName) {
 		super(config, spellName);

@@ -15,8 +15,6 @@ import com.nisovin.MagicSpells.BuffSpell;
 import com.nisovin.MagicSpells.MagicSpells;
 
 public class FlamewalkSpell extends BuffSpell {
-
-	private static final String SPELL_NAME = "flamewalk";
 	
 	private int range;
 	private int fireTicks;
@@ -26,16 +24,6 @@ public class FlamewalkSpell extends BuffSpell {
 	
 	private HashSet<String> flamewalkers;
 	private Burner burner;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new FlamewalkSpell(config, spellName));
-		}
-	}
 	
 	public FlamewalkSpell(Configuration config, String spellName) {
 		super(config, spellName);

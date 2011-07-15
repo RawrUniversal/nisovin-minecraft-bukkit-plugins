@@ -9,23 +9,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.MagicSpells;
 
 public class SafefallSpell extends BuffSpell {
 
-	private static final String SPELL_NAME = "safefall";
-
 	private HashSet<String> safefallers;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new SafefallSpell(config, spellName));
-		}
-	}
 	
 	public SafefallSpell(Configuration config, String spellName) {
 		super(config, spellName);

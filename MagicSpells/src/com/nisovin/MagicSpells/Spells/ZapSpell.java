@@ -14,23 +14,11 @@ import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.InstantSpell;
 
 public class ZapSpell extends InstantSpell {
-
-	private static final String SPELL_NAME = "zap";
 	
 	private String strCantZap;
 	private HashSet<Byte> transparentBlockTypes;
 	private int[] disallowedBlockTypes;
 	private boolean dropBlock;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new ZapSpell(config, spellName));
-		}
-	}
 	
 	public ZapSpell(Configuration config, String spellName) {
 		super(config, spellName);

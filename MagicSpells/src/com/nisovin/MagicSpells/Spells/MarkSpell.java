@@ -18,21 +18,9 @@ import com.nisovin.MagicSpells.Util.MagicLocation;
 
 public class MarkSpell extends CommandSpell {
 	
-	private static final String SPELL_NAME = "mark";
-	
 	private boolean permanentMarks;
 	
 	public static HashMap<String,MagicLocation> marks;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new MarkSpell(config, spellName));
-		}		
-	}
 
 	public MarkSpell(Configuration config, String spellName) {
 		super(config, spellName);

@@ -16,12 +16,9 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.InstantSpell;
-import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.Util.SpellAnimation;
 
 public class GeyserSpell extends InstantSpell {
-
-	private static final String SPELL_NAME = "geyser";
 	
 	private int damage;
 	private double velocity;
@@ -31,16 +28,6 @@ public class GeyserSpell extends InstantSpell {
 	private boolean targetPlayers;
 	private boolean checkPlugins;
 	private String strNoTarget;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new GeyserSpell(config, spellName));
-		}
-	}
 
 	public GeyserSpell(Configuration config, String spellName) {
 		super(config, spellName);

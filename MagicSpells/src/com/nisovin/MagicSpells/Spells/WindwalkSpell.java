@@ -14,12 +14,9 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.Util.BlockPlatform;
 
 public class WindwalkSpell extends BuffSpell {
-	
-	private static final String SPELL_NAME = "windwalk";
 	
 	private Material platformBlock;
 	private int size;
@@ -27,16 +24,6 @@ public class WindwalkSpell extends BuffSpell {
 	private boolean cancelOnTeleport;
 	
 	private HashMap<String,BlockPlatform> windwalkers;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new WindwalkSpell(config, spellName));
-		}		
-	}
 
 	public WindwalkSpell(Configuration config, String spellName) {
 		super(config, spellName);

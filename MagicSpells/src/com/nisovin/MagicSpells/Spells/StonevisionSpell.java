@@ -13,27 +13,13 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.MagicSpells;
 
 public class StonevisionSpell extends BuffSpell {
-	
-	private static final String SPELL_NAME = "stonevision";
 	
 	private int range;
 	private int transparentType;
 	
 	private HashMap<String,TransparentBlockSet> seers;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new StonevisionSpell(config, spellName));
-		}
-		
-	}
 
 	public StonevisionSpell(Configuration config, String spellName) {
 		super(config, spellName);

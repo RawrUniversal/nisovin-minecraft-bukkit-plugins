@@ -15,8 +15,6 @@ import com.nisovin.bookworm.event.BookWormListener;
 
 public class TomeSpell extends CommandSpell {
 
-	private static final String SPELL_NAME = "tome";
-
 	private boolean cancelReadOnLearn;
 	private boolean allowOverwrite;
 	private String strUsage;
@@ -28,16 +26,6 @@ public class TomeSpell extends CommandSpell {
 	private String strLearned;
 	
 	private BookWormListener listener;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new TomeSpell(config, spellName));
-		}
-	}
 	
 	public TomeSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -111,7 +99,7 @@ public class TomeSpell extends CommandSpell {
 			String spellData = event.getBook().getHiddenData("MagicSpell");
 			if (spellData != null && !spellData.equals("")) {
 				String[] data = spellData.split(",");
-				Spell spell = MagicSpells.spells.get(data[0]);
+				Spell spell = MagicSpells.getSpellByInternalName(data[0]);
 				int uses = -1;
 				if (data.length > 1) {
 					uses = Integer.parseInt(data[1]);

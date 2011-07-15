@@ -24,8 +24,6 @@ import com.nisovin.MagicSpells.Util.MagicLocation;
 
 public class SpellbookSpell extends CommandSpell {
 	
-	private static final String SPELL_NAME = "spellbook";
-	
 	private int defaultUses;
 	private boolean destroyBookcase;
 	private Material spellbookBlock;
@@ -43,16 +41,6 @@ public class SpellbookSpell extends CommandSpell {
 	private ArrayList<MagicLocation> bookLocations;
 	private ArrayList<String> bookSpells;
 	private ArrayList<Integer> bookUses;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new SpellbookSpell(config, spellName));
-		}
-	}
 	
 	public SpellbookSpell(Configuration config, String spellName) {
 		super(config,spellName);
@@ -138,7 +126,7 @@ public class SpellbookSpell extends CommandSpell {
 				Player player = event.getPlayer();
 				int i = bookLocations.indexOf(loc);
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
-				Spell spell = MagicSpells.spells.get(bookSpells.get(i));
+				Spell spell = MagicSpells.getSpellByInternalName(bookSpells.get(i));
 				if (spellbook == null || spell == null) {
 					// fail: something's wrong
 					sendMessage(player, strLearnError);

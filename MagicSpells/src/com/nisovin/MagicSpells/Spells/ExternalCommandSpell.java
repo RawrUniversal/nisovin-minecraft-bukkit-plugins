@@ -6,11 +6,11 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.Spell;
 
 public class ExternalCommandSpell extends Spell {
 	
+	@SuppressWarnings("unused")
 	private static final String SPELL_NAME = "external";
 
 	private boolean castWithItem;
@@ -18,17 +18,6 @@ public class ExternalCommandSpell extends Spell {
 	private String[] commandToExecute;
 	private String[] commandToBlock;
 	private String strCantUseCommand;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new ExternalCommandSpell(config, spellName));
-		}
-		
-	}
 
 	public ExternalCommandSpell(Configuration config, String spellName) {
 		super(config, spellName);

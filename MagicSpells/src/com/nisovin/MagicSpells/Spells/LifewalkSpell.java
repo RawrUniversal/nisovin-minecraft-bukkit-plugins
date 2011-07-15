@@ -14,8 +14,6 @@ import com.nisovin.MagicSpells.BuffSpell;
 import com.nisovin.MagicSpells.MagicSpells;
 
 public class LifewalkSpell extends BuffSpell {
-
-	private static final String SPELL_NAME = "lifewalk";
 	
 	private HashSet<String> lifewalkers;
 	private Grower grower;
@@ -27,16 +25,6 @@ public class LifewalkSpell extends BuffSpell {
 	private int saplingChance;
 	private int tallgrassChance;
 	private int fernChance;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new LifewalkSpell(config, spellName));
-		}
-	}
 	
 	public LifewalkSpell(Configuration config, String spellName) {
 		super(config, spellName);

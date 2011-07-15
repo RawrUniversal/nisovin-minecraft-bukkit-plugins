@@ -9,26 +9,13 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.InstantSpell;
-import com.nisovin.MagicSpells.MagicSpells;
 
 public class VolleySpell extends InstantSpell {
-
-	private static final String SPELL_NAME = "volley";
 
 	private int arrows;
 	private int speed;
 	private int spread;
 	private String strNoTarget;
-
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new VolleySpell(config, spellName));
-		}
-	}
 	
 	public VolleySpell(Configuration config, String spellName) {
 		super(config, spellName);

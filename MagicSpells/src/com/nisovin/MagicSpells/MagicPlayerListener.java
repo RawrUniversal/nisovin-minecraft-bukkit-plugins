@@ -73,7 +73,7 @@ public class MagicPlayerListener extends PlayerListener {
 			ItemStack inHand = player.getItemInHand();
 			
 			// cycle spell
-			Spell spell = MagicSpells.spellbooks.get(player.getName()).nextSpell(inHand.getTypeId());
+			Spell spell = MagicSpells.getSpellbook(player).nextSpell(inHand.getTypeId());
 			if (spell != null) {
 				Spell.sendMessage(player, spell.formatMessage(MagicSpells.strSpellChange, "%s", spell.getName()));
 			}

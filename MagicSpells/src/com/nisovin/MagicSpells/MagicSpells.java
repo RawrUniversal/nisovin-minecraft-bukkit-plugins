@@ -3,6 +3,8 @@ package com.nisovin.MagicSpells;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,51 +29,51 @@ public class MagicSpells extends JavaPlugin {
 
 	public static MagicSpells plugin;
 
-	public static boolean debug;
-	public static ChatColor textColor;
-	public static int broadcastRange;
+	protected static boolean debug;
+	protected static ChatColor textColor;
+	protected static int broadcastRange;
 	
-	public static boolean opsHaveAllSpells;
-	public static List<String> castForFree;
-	public static boolean freecastNoCooldown;
+	protected static boolean opsHaveAllSpells;
+	protected static List<String> castForFree;
+	protected static boolean freecastNoCooldown;
 	
-	public static boolean ignoreDefaultBindings;
-	public static List<Integer> losTransparentBlocks;
+	protected static boolean ignoreDefaultBindings;
+	protected static List<Integer> losTransparentBlocks;
 	
-	public static boolean enableManaBars;
-	public static int maxMana;
-	public static String manaBarPrefix;
-	public static int manaBarSize;
-	public static ChatColor manaBarColorFull;
-	public static ChatColor manaBarColorEmpty;
-	public static int manaRegenTickRate;
-	public static int manaRegenPercent;
-	public static boolean showManaOnUse;
-	public static boolean showManaOnRegen;
-	public static boolean showManaOnWoodTool;
-	public static int manaBarToolSlot;
-	public static int manaPotionCooldown;
-	public static String strManaPotionOnCooldown;
-	public static HashMap<MaterialData,Integer> manaPotions;
+	protected static boolean enableManaBars;
+	protected static int maxMana;
+	protected static String manaBarPrefix;
+	protected static int manaBarSize;
+	protected static ChatColor manaBarColorFull;
+	protected static ChatColor manaBarColorEmpty;
+	protected static int manaRegenTickRate;
+	protected static int manaRegenPercent;
+	protected static boolean showManaOnUse;
+	protected static boolean showManaOnRegen;
+	protected static boolean showManaOnWoodTool;
+	protected static int manaBarToolSlot;
+	protected static int manaPotionCooldown;
+	protected static String strManaPotionOnCooldown;
+	protected static HashMap<MaterialData,Integer> manaPotions;
 	
-	public static String strCastUsage;
-	public static String strUnknownSpell;
-	public static String strSpellChange;
-	public static String strOnCooldown;
-	public static String strMissingReagents;
-	public static String strCantCast;
-	public static String strNoMagicZone;
+	protected static String strCastUsage;
+	protected static String strUnknownSpell;
+	protected static String strSpellChange;
+	protected static String strOnCooldown;
+	protected static String strMissingReagents;
+	protected static String strCantCast;
+	protected static String strNoMagicZone;
 	public static String strConsoleName;
 	
-	public static HashMap<String,Spell> spells; // map internal names to spells
-	public static HashMap<String,Spell> spellNames; // map configured names to spells
-	public static HashMap<String,Spellbook> spellbooks; // player spellbooks
+	protected static HashMap<String,Spell> spells; // map internal names to spells
+	protected static HashMap<String,Spell> spellNames; // map configured names to spells
+	protected static HashMap<String,Spellbook> spellbooks; // player spellbooks
 	
-	public static HashMap<Event.Type,HashSet<Spell>> listeners;
+	protected static HashMap<Event.Type,HashSet<Spell>> listeners;
 	
-	public static ManaBarManager mana;
-	public static HashMap<Player,Long> manaPotionCooldowns;
-	public static NoMagicZoneManager noMagicZones;
+	protected static ManaBarManager mana;
+	protected static HashMap<Player,Long> manaPotionCooldowns;
+	protected static NoMagicZoneManager noMagicZones;
 	
 	@Override
 	public void onEnable() {
@@ -190,49 +192,69 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// load spells
-		BindSpell.load(config);
-		BlinkSpell.load(config);
-		BuildSpell.load(config);
-		CombustSpell.load(config);
-		ConfusionSpell.load(config);
-		DrainlifeSpell.load(config);
-		EntombSpell.load(config);
-		ExplodeSpell.load(config);
-		ExternalCommandSpell.load(config);
-		FireballSpell.load(config);
-		FirenovaSpell.load(config);
-		FlamewalkSpell.load(config);
-		ForcepushSpell.load(config);
-		ForgetSpell.load(config);
-		FrostwalkSpell.load(config);
-		GateSpell.load(config);
-		GeyserSpell.load(config);
-		GillsSpell.load(config);
-		HealSpell.load(config);
-		HelpSpell.load(config);
-		InvulnerabilitySpell.load(config);
-		LeapSpell.load(config);
-		LifewalkSpell.load(config);
-		LightningSpell.load(config);
-		LightwalkSpell.load(config);
-		ListSpell.load(config);
-		MarkSpell.load(config);
-		MinionSpell.load(config);
-		PainSpell.load(config);
-		PrayerSpell.load(config);
-		PurgeSpell.load(config);
-		RecallSpell.load(config);
-		SafefallSpell.load(config);
-		SpellbookSpell.load(config);
-		StealthSpell.load(config);
-		StonevisionSpell.load(config);
-		TeachSpell.load(config);
-		TelekinesisSpell.load(config);
-		if (getServer().getPluginManager().isPluginEnabled("BookWorm")) TomeSpell.load(config);
-		VolleySpell.load(config);
-		WallSpell.load(config);
-		WindwalkSpell.load(config);
-		ZapSpell.load(config);
+		ArrayList<Class<? extends Spell>> spellClasses = new ArrayList<Class<? extends Spell>>();spellClasses.add(BindSpell.class);
+		spellClasses.add(BlinkSpell.class);
+		spellClasses.add(BuildSpell.class);
+		spellClasses.add(CombustSpell.class);
+		spellClasses.add(ConfusionSpell.class);
+		spellClasses.add(DrainlifeSpell.class);
+		spellClasses.add(EntombSpell.class);
+		spellClasses.add(ExplodeSpell.class);
+		spellClasses.add(ExternalCommandSpell.class);
+		spellClasses.add(FireballSpell.class);
+		spellClasses.add(FirenovaSpell.class);
+		spellClasses.add(FlamewalkSpell.class);
+		spellClasses.add(ForcepushSpell.class);
+		spellClasses.add(ForgetSpell.class);
+		spellClasses.add(FrostwalkSpell.class);
+		spellClasses.add(GateSpell.class);
+		spellClasses.add(GeyserSpell.class);
+		spellClasses.add(GillsSpell.class);
+		spellClasses.add(HealSpell.class);
+		spellClasses.add(HelpSpell.class);
+		spellClasses.add(InvulnerabilitySpell.class);
+		spellClasses.add(LeapSpell.class);
+		spellClasses.add(LifewalkSpell.class);
+		spellClasses.add(LightningSpell.class);
+		spellClasses.add(LightwalkSpell.class);
+		spellClasses.add(ListSpell.class);
+		spellClasses.add(MarkSpell.class);
+		spellClasses.add(MinionSpell.class);
+		spellClasses.add(PainSpell.class);
+		spellClasses.add(PrayerSpell.class);
+		spellClasses.add(PurgeSpell.class);
+		spellClasses.add(RecallSpell.class);
+		spellClasses.add(SafefallSpell.class);
+		spellClasses.add(SpellbookSpell.class);
+		spellClasses.add(StealthSpell.class);
+		spellClasses.add(StonevisionSpell.class);
+		spellClasses.add(TeachSpell.class);
+		spellClasses.add(TelekinesisSpell.class);
+		if (getServer().getPluginManager().isPluginEnabled("BookWorm")) spellClasses.add(TomeSpell.class);
+		spellClasses.add(VolleySpell.class);
+		spellClasses.add(WallSpell.class);
+		spellClasses.add(WindwalkSpell.class);
+		spellClasses.add(ZapSpell.class);
+		for (Class<? extends Spell> c : spellClasses) {
+			try {
+				String spellName;
+				try {
+					Field spellNameField = c.getDeclaredField("SPELL_NAME");
+					spellNameField.setAccessible(true);
+					spellName = (String)spellNameField.get(null);
+				} catch (NoSuchFieldException e) {
+					spellName = c.getSimpleName().replace("Spell", "").toLowerCase(); 
+				}
+				if (config.getBoolean("spells." + spellName + ".enabled", true)) {
+					Constructor<? extends Spell> constructor = c.getConstructor(Configuration.class, String.class);
+					Spell spell = constructor.newInstance(config, spellName);
+					spells.put(spellName, spell);
+					debug("Loaded spell: " + spellName);
+				}
+			} catch (Exception e) {
+				getServer().getLogger().severe("MagicSpells: Failed to load spell: " + c.getName());
+			}
+		}
 		
 		// load spell copies
 		List<String> copies = config.getStringList("spellcopies", null);
@@ -242,7 +264,11 @@ public class MagicSpells extends JavaPlugin {
 				Spell spell = spells.get(data[1]);
 				if (spell != null) {
 					try {
-						spell.getClass().getMethod("load", Configuration.class, String.class).invoke(null, config, data[0]);
+						if (config.getBoolean("spells." + data[0] + ".enabled", true)) {
+							Spell spellCopy = spell.getClass().getConstructor(Configuration.class, String.class).newInstance(config, data[0]);
+							spells.put(data[0], spellCopy);
+							debug("Loaded spell copy: " + data[0] + " (copy of " + data[1] + ")");
+						}
 					} catch (Exception e) {
 						getServer().getLogger().severe("Unable to create spell copy: " + copy);
 					}
@@ -262,6 +288,14 @@ public class MagicSpells extends JavaPlugin {
 		
 		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");
 		
+	}
+	
+	public static Spell getSpellByInternalName(String spellName) {
+		return spells.get(spellName);
+	}
+	
+	public static Spell getSpellByInGameName(String spellName) {
+		return spellNames.get(spellName);
 	}
 	
 	public static Spellbook getSpellbook(Player player) {

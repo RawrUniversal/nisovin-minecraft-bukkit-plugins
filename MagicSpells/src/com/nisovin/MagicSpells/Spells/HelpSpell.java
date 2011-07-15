@@ -11,22 +11,10 @@ import com.nisovin.MagicSpells.Spellbook;
 
 public class HelpSpell extends CommandSpell {
 	
-	private static final String SPELL_NAME = "help";
-	
 	private String strUsage;
 	private String strNoSpell;
 	private String strDescLine;
 	private String strCostLine;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new HelpSpell(config, spellName));
-		}
-	}
 
 	public HelpSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -43,7 +31,7 @@ public class HelpSpell extends CommandSpell {
 			if (args == null || args.length == 0) {
 				sendMessage(player, strUsage);
 			} else {
-				Spell spell = MagicSpells.spellNames.get(args[0]);
+				Spell spell = MagicSpells.getSpellByInGameName(args[0]);
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spell == null || spellbook == null || !spellbook.hasSpell(spell)) {
 					sendMessage(player, strNoSpell);

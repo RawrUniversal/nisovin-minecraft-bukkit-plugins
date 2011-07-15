@@ -12,26 +12,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.MagicSpells;
 
 public class GillsSpell extends BuffSpell {
-
-	private static final String SPELL_NAME = "gills";
 
 	private boolean glassHeadEffect;
 	
 	private HashSet<String> fishes;
 	private HashMap<Player,ItemStack> helmets;
-	
-	public static void load(Configuration config) {
-		load(config, SPELL_NAME);
-	}
-	
-	public static void load(Configuration config, String spellName) {
-		if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-			MagicSpells.spells.put(spellName, new GillsSpell(config, spellName));
-		}
-	}
 	
 	public GillsSpell(Configuration config, String spellName) {
 		super(config, spellName);
