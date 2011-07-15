@@ -1,6 +1,7 @@
 package com.nisovin.MagicSpells.Spells;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -24,6 +25,7 @@ public class WindwalkSpell extends BuffSpell {
 	private boolean cancelOnTeleport;
 	
 	private HashMap<String,BlockPlatform> windwalkers;
+	private HashSet<Player> falling;
 
 	public WindwalkSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -34,6 +36,7 @@ public class WindwalkSpell extends BuffSpell {
 		cancelOnTeleport = config.getBoolean("spells." + spellName + ".cancel-on-teleport", true);
 		
 		windwalkers = new HashMap<String,BlockPlatform>();
+		falling = new HashSet<Player>();
 		
 		addListener(Event.Type.PLAYER_MOVE);
 		addListener(Event.Type.PLAYER_TOGGLE_SNEAK);
@@ -60,14 +63,22 @@ public class WindwalkSpell extends BuffSpell {
 
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
-		if (windwalkers.containsKey(event.getPlayer().getName())) {
+		BlockPlatform platform = windwalkers.get(event.getPlayer().getName());
+		if (platform != null) {
 			Player player = event.getPlayer();
 			if (isExpired(player)) {
 				turnOff(player);
 			} else {
-				if (!player.isSneaking()) {
+				if (falling.contains(player)) {
+					if (event.getTo().getY() < event.getFrom().getY()) {
+						falling.remove(player);
+					} else {
+						return;
+					}
+				}
+				if (!player.isSneaking()) { 
 					Block block = event.getTo().subtract(0,1,0).getBlock();
-					boolean moved = windwalkers.get(player.getName()).movePlatform(block);
+					boolean moved = platform.movePlatform(block);
 					if (moved) {
 						addUse(player);
 						chargeUseCost(player);
@@ -87,6 +98,7 @@ public class WindwalkSpell extends BuffSpell {
 				Block block = player.getLocation().subtract(0,2,0).getBlock();
 				boolean moved = windwalkers.get(player.getName()).movePlatform(block);
 				if (moved) {
+					falling.add(player);
 					addUse(player);
 					chargeUseCost(player);
 				}

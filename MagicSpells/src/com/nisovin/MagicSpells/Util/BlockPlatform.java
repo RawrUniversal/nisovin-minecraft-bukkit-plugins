@@ -3,6 +3,7 @@ package com.nisovin.MagicSpells.Util;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
@@ -86,13 +87,27 @@ public class BlockPlatform {
 	}
 	
 	public boolean movePlatform(Block center) {
-		if (!center.getLocation().equals(this.center.getLocation())) {
+		return movePlatform(center, false);
+	}
+	
+	public boolean movePlatform(Block center, boolean force) {
+		if (force || isMoved(center)) {
 			this.center = center;
 			createPlatform();
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean isMoved(Block newCenter) {
+		return !newCenter.getLocation().equals(center.getLocation());
+	}
+	
+	public boolean isMovedHorizontally(Block newCenter) {
+		Location loc1 = center.getLocation();
+		Location loc2 = newCenter.getLocation();
+		return loc1.getBlockX() != loc2.getBlockX() || loc1.getBlockZ() != loc2.getBlockZ();
 	}
 	
 	public boolean blockInPlatform(Block block) {
