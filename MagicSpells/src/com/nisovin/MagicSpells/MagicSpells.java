@@ -38,7 +38,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static int broadcastRange;
 	
 	protected static boolean opsHaveAllSpells;
-	protected static List<String> castForFree;
+	public static List<String> castForFree;
 	protected static boolean freecastNoCooldown;
 	
 	protected static boolean ignoreDefaultBindings;
