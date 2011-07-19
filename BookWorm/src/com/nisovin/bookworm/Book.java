@@ -22,6 +22,7 @@ public class Book {
 	private String author;
 	private String text;
 	private String[] contents;
+	private String lastText;
 	private HashMap<String,String> hiddenData;
 	private int pages;
 	
@@ -50,6 +51,9 @@ public class Book {
 				String para = BookWorm.INDENT + paras[i].trim();
 				while (para.length() > BookWorm.LINE_LENGTH) {
 					int end = para.substring(0, BookWorm.LINE_LENGTH).lastIndexOf(' ');
+                    if (end < 0) {
+                        end = BookWorm.LINE_LENGTH;
+                    }
 					contents.add(para.substring(0, end));
 					para = para.substring(end+1);
 				}
@@ -115,6 +119,7 @@ public class Book {
 	}
 	
 	public String write(String text) {
+		lastText = this.text;
 		this.text += " " + text.trim();
 		this.text = this.text.trim();
 		unsaved = true;
@@ -122,6 +127,7 @@ public class Book {
 	}
 	
 	public String write(String[] text) {
+		lastText = this.text;
 		String line = "";
 		for (int i = 0; i < text.length; i++) {
 			this.text += " " + text[i];
@@ -140,19 +146,32 @@ public class Book {
 		if (!s.contains(fromTo[0].trim())) {
 			return false;
 		}
+		lastText = text;
 		text = text.replace(fromTo[0].trim(), fromTo[1].trim());
 		unsaved = true;
 		return true;
 	}
 	
 	public void erase(String s) {
+		lastText = text;
 		text = text.replace(s, "");
 		unsaved = true;
 	}
 	
 	public void eraseAll() {
+		lastText = text;
 		text = "";
 		unsaved = true;
+	}
+	
+	public boolean undo() {
+		if (lastText != null && !lastText.equals("")) {
+			text = lastText;
+			lastText = "";
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean isLoaded() {
