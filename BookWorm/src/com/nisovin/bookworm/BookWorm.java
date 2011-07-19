@@ -43,6 +43,7 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean USE_FULL_FILENAMES = true;
 	protected static boolean AUTO_CHAT_MODE = true;
 	protected static boolean BOOK_INFO_ACHIEVEMENT = true;
+	protected static boolean DROP_BOOKSHELF = false;
 	
 	protected static int CLEAN_INTERVAL = 600;
 	protected static int REMOVE_DELAY = 300;
@@ -438,6 +439,7 @@ public class BookWorm extends JavaPlugin {
 		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
 		AUTO_CHAT_MODE = config.getBoolean("general.auto-chat-mode", AUTO_CHAT_MODE);
 		BOOK_INFO_ACHIEVEMENT = config.getBoolean("general.book-info-achievement", BOOK_INFO_ACHIEVEMENT);
+		DROP_BOOKSHELF = config.getBoolean("general.drop-bookshelf-on-break", DROP_BOOKSHELF);
 
 		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
 		USE_FULL_FILENAMES = config.getBoolean("general.use-full-filenames", USE_FULL_FILENAMES);

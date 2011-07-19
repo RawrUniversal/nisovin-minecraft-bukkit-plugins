@@ -22,14 +22,14 @@ public class BookWormBlockListener extends BlockListener {
 			Player player = event.getPlayer();
 			Location l = event.getBlock().getLocation();
 			String locStr = l.getWorld().getName() + "," + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ();
+			boolean dropShelf = BookWorm.DROP_BOOKSHELF;
 			if (plugin.bookshelves.containsKey(locStr)) {
 				// get book
 				short bookId = plugin.bookshelves.get(locStr);
 				Book book = plugin.getBookById(bookId);
 				if (book == null) {
-					return;
-				}
-				if (plugin.perms.canDestroyBook(player, book)) {
+					// do nothing
+				} else if (plugin.perms.canDestroyBook(player, book)) {
 					// remove book from bookshelf list
 					plugin.bookshelves.remove(locStr);
 					plugin.saveAll();
@@ -39,7 +39,11 @@ public class BookWormBlockListener extends BlockListener {
 					// someone else's book
 					player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_CANNOT_DESTROY);
 					event.setCancelled(true);
+					dropShelf = false;
 				}
+			}
+			if (dropShelf) {
+				l.getWorld().dropItemNaturally(l, new ItemStack(Material.BOOKSHELF, 1));
 			}
 		}
 	}	
