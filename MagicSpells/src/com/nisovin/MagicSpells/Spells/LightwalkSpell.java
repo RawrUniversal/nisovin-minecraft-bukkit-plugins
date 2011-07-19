@@ -42,7 +42,7 @@ public class LightwalkSpell extends BuffSpell {
 		if (lightwalkers.containsKey(event.getPlayer().getName())) {
 			Player p = event.getPlayer();
 			Block oldBlock = lightwalkers.get(p.getName());
-			Block newBlock = p.getLocation().getBlock().getFace(BlockFace.DOWN);
+			Block newBlock = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
 			if ((oldBlock == null || !oldBlock.equals(newBlock)) && allowedType(newBlock.getType()) && newBlock.getType() != Material.AIR) {
 				if (isExpired(p)) {
 					turnOff(p);

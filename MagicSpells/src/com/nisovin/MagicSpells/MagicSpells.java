@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 
@@ -19,6 +20,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.material.MaterialData;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
@@ -191,6 +195,13 @@ public class MagicSpells extends JavaPlugin {
 			noMagicZones = null;
 		}
 		
+		// permission prep
+		PluginManager pm = getServer().getPluginManager();
+		HashMap<String, Boolean> permGrantChildren = new HashMap<String,Boolean>();
+		HashMap<String, Boolean> permLearnChildren = new HashMap<String,Boolean>();
+		HashMap<String, Boolean> permCastChildren = new HashMap<String,Boolean>();
+		HashMap<String, Boolean> permTeachChildren = new HashMap<String,Boolean>();
+		
 		// load spells
 		ArrayList<Class<? extends Spell>> spellClasses = new ArrayList<Class<? extends Spell>>();spellClasses.add(BindSpell.class);
 		spellClasses.add(BlinkSpell.class);
@@ -237,6 +248,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(ZapSpell.class);
 		for (Class<? extends Spell> c : spellClasses) {
 			try {
+				// get spell name
 				String spellName;
 				try {
 					Field spellNameField = c.getDeclaredField("SPELL_NAME");
@@ -245,10 +257,22 @@ public class MagicSpells extends JavaPlugin {
 				} catch (NoSuchFieldException e) {
 					spellName = c.getSimpleName().replace("Spell", "").toLowerCase(); 
 				}
+				// check enabled
 				if (config.getBoolean("spells." + spellName + ".enabled", true)) {
+					// initialize spell
 					Constructor<? extends Spell> constructor = c.getConstructor(Configuration.class, String.class);
 					Spell spell = constructor.newInstance(config, spellName);
 					spells.put(spellName, spell);
+					// add permissions
+					addPermission(pm, "grant." + spellName, PermissionDefault.OP);
+					addPermission(pm, "learn." + spellName, PermissionDefault.TRUE);
+					addPermission(pm, "cast." + spellName, PermissionDefault.TRUE);
+					addPermission(pm, "teach." + spellName, PermissionDefault.TRUE);
+					permGrantChildren.put("magicspells.grant." + spellName, true);
+					permLearnChildren.put("magicspells.learn." + spellName, true);
+					permCastChildren.put("magicspells.cast." + spellName, true);
+					permTeachChildren.put("magicspells.teach." + spellName, true);
+					// spell load complete
 					debug("Loaded spell: " + spellName);
 				}
 			} catch (Exception e) {
@@ -262,19 +286,38 @@ public class MagicSpells extends JavaPlugin {
 			for (String copy : copies) {
 				String[] data = copy.split("=");
 				Spell spell = spells.get(data[1]);
+				String spellName = data[0];
 				if (spell != null) {
 					try {
-						if (config.getBoolean("spells." + data[0] + ".enabled", true)) {
-							Spell spellCopy = spell.getClass().getConstructor(Configuration.class, String.class).newInstance(config, data[0]);
-							spells.put(data[0], spellCopy);
+						// check enabled
+						if (config.getBoolean("spells." + spellName + ".enabled", true)) {
+							// initialize spell
+							Spell spellCopy = spell.getClass().getConstructor(Configuration.class, String.class).newInstance(config, spellName);
+							spells.put(spellName, spellCopy);
+							// add permissions
+							addPermission(pm, "grant." + spellName, PermissionDefault.OP);
+							addPermission(pm, "learn." + spellName, PermissionDefault.TRUE);
+							addPermission(pm, "cast." + spellName, PermissionDefault.TRUE);
+							addPermission(pm, "teach." + spellName, PermissionDefault.TRUE);
+							permGrantChildren.put("magicspells.grant." + spellName, true);
+							permLearnChildren.put("magicspells.learn." + spellName, true);
+							permCastChildren.put("magicspells.cast." + spellName, true);
+							permTeachChildren.put("magicspells.teach." + spellName, true);	
+							// load complete
 							debug("Loaded spell copy: " + data[0] + " (copy of " + data[1] + ")");
 						}
 					} catch (Exception e) {
-						getServer().getLogger().severe("Unable to create spell copy: " + copy);
+						getServer().getLogger().severe("MagicSpells: Failed to create spell copy: " + copy);
 					}
 				}
 			}
 		}
+		
+		// finalize permissions
+		addPermission(pm, "grant.*", PermissionDefault.OP, permGrantChildren);
+		addPermission(pm, "learn.*", PermissionDefault.TRUE, permGrantChildren);
+		addPermission(pm, "cast.*", PermissionDefault.TRUE, permGrantChildren);
+		addPermission(pm, "teach.*", PermissionDefault.TRUE, permGrantChildren);
 		
 		// load in-game spell names
 		for (Spell spell : spells.values()) {
@@ -288,6 +331,16 @@ public class MagicSpells extends JavaPlugin {
 		
 		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");
 		
+	}
+	
+	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault) {
+		addPermission(pm, perm, permDefault, null);
+	}
+	
+	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault, Map<String,Boolean> children) {
+		if (pm.getPermission("magicspells." + perm) == null) {
+			pm.addPermission(new Permission("magicspells." + perm, permDefault, children));
+		}
 	}
 	
 	public static Spell getSpellByInternalName(String spellName) {
