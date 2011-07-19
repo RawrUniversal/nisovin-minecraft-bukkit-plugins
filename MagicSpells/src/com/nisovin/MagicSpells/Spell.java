@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -143,7 +144,7 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	protected boolean onCooldown(Player player) {
-		if (cooldown == 0 || (MagicSpells.freecastNoCooldown && MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase()))) {
+		if (cooldown == 0 || (MagicSpells.castNoCooldown.contains(player.getName().toLowerCase()))) {
 			return false;
 		}
 		
@@ -338,6 +339,7 @@ public abstract class Spell implements Comparable<Spell> {
 	public void onPlayerJoin(PlayerJoinEvent event) {}
 	public void onPlayerQuit(PlayerQuitEvent event) {}
 	public void onPlayerInteract(PlayerInteractEvent event) {}
+	public void onItemHeldChange(PlayerItemHeldEvent event) {}
 	public void onPlayerMove(PlayerMoveEvent event) {}
 	public void onPlayerTeleport(PlayerTeleportEvent event) {}
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {}

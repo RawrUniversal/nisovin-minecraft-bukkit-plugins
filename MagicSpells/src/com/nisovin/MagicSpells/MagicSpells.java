@@ -39,7 +39,7 @@ public class MagicSpells extends JavaPlugin {
 	
 	protected static boolean opsHaveAllSpells;
 	public static List<String> castForFree;
-	protected static boolean freecastNoCooldown;
+	protected static List<String> castNoCooldown;
 	
 	protected static boolean ignoreDefaultBindings;
 	protected static List<Integer> losTransparentBlocks;
@@ -124,7 +124,12 @@ public class MagicSpells extends JavaPlugin {
 				castForFree.set(i, castForFree.get(i).toLowerCase());
 			}
 		}
-		freecastNoCooldown = config.getBoolean("general.freecast-no-cooldown", true);
+		castNoCooldown = config.getStringList("general.cast-no-cooldown", null);
+		if (castForFree != null) {
+			for (int i = 0; i < castNoCooldown.size(); i++) {
+				castNoCooldown.set(i, castNoCooldown.get(i).toLowerCase());
+			}
+		}
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
 		losTransparentBlocks = config.getIntList("general.los-transparent-blocks", null);
 		if (losTransparentBlocks == null || losTransparentBlocks.size() == 0) {
@@ -235,6 +240,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(PurgeSpell.class);
 		spellClasses.add(RecallSpell.class);
 		spellClasses.add(SafefallSpell.class);
+		spellClasses.add(ScrollSpell.class);
 		spellClasses.add(SpellbookSpell.class);
 		spellClasses.add(StealthSpell.class);
 		spellClasses.add(StonevisionSpell.class);

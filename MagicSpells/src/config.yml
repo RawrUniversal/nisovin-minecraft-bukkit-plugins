@@ -18,7 +18,9 @@ general:
         - admin1
         - admin2
         - joemagicuser
-    freecast-no-cooldown: true
+    cast-no-cooldown:
+        - admin1
+        - admin2
     ignore-default-bindings: false
     mana:
         enable-mana-bars: true
@@ -518,6 +520,23 @@ spells:
         str-cost: 2 redstone dust, plus 1 feather each time you fall
         str-cast-self: You feel lighter.
         str-fade: Your normal weight returns.
+    scroll:
+        name: scroll
+        description: Create a limited use spell scroll.
+        cast-for-free: true
+        default-uses: 5
+        item-id: 339
+        right-click-cast: true
+        left-click-cast: false
+        set-unstackable: true
+        str-scroll-over: "Spell Scroll: %s (%u uses remaining)"
+        str-usage: |
+            You must hold a single blank paper 
+            and type /cast scroll <spell> <uses>.
+        str-fail: You cannot create a spell scroll at this time.
+        str-no-spell: You do not know a spell by that name.
+        str-cast-self: You have created a spell scroll for %s.
+        str-on-use: "Spell Scroll: %s used. %u uses remaining."
     stealth:
         name: stealth
         description: Become invisible to monsters.
