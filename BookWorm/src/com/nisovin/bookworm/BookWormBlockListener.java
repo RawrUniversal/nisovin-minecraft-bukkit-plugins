@@ -14,7 +14,7 @@ public class BookWormBlockListener extends BlockListener {
 	
 	public BookWormBlockListener(BookWorm plugin) {
 		this.plugin = plugin;
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.Normal, plugin);		
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.Highest, plugin);		
 	}
 	
 	public void onBlockBreak(BlockBreakEvent event) {

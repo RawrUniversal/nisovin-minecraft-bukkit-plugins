@@ -168,6 +168,7 @@ public class Book {
 		if (lastText != null && !lastText.equals("")) {
 			text = lastText;
 			lastText = "";
+			unsaved = true;
 			return true;
 		} else {
 			return false;

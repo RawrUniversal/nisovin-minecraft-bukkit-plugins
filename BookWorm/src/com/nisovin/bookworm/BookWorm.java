@@ -62,6 +62,7 @@ public class BookWorm extends JavaPlugin {
 	protected static String S_COMM_HELP = "help";
 	protected static String S_COMM_READ = "read";
 	protected static String S_COMM_TITLE = "title";
+	protected static String S_COMM_UNDO = "undo";
 	protected static String S_COMM_ERASE = "erase";
 	protected static String S_COMM_REPLACE = "replace";
 	protected static String S_COMM_ERASEALL = "eraseall";	
@@ -70,10 +71,13 @@ public class BookWorm extends JavaPlugin {
 	protected static String S_COMM_HELP_TEXT = "Special commands:\n" +
 			"   /%c -chat -- toggle chat write mode\n" +
 			"   /%c -read <page> -- read the specified page\n" +
+			"   /%c -undo -- undo the last write action\n" +
 			"   /%c -erase <text> -- erase the given text\n" +
 			"   /%c -replace <old text> -> <new text> -- replace text\n" +
 			"   /%c -title <new title> -- change the book's title\n" +
 			"   /%c -eraseall -- erase the entire book";	
+	protected static String S_COMM_UNDO_DONE = "Undo successful.";
+	protected static String S_COMM_UNDO_FAIL = "Unable to undo.";
 	protected static String S_COMM_ERASE_DONE = "Text erased.";
 	protected static String S_COMM_REPLACE_DONE = "Text replaced.";
 	protected static String S_COMM_REPLACE_FAIL = "Text not found.";
@@ -288,6 +292,17 @@ public class BookWorm extends JavaPlugin {
 						} else {
 							player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);							
 						}
+					} else if (args[0].equalsIgnoreCase("-" + S_COMM_UNDO)) {
+						if (perms.canModifyBook(player, book)) {
+							boolean undone = book.undo();
+							if (undone) {
+								player.sendMessage(TEXT_COLOR + S_COMM_UNDO_DONE);
+							} else {
+								player.sendMessage(TEXT_COLOR + S_COMM_UNDO_FAIL);
+							}
+						} else {
+							player.sendMessage(TEXT_COLOR + S_NO_PERMISSION);
+						}
 					} else if (args[0].equalsIgnoreCase("-" + S_COMM_ERASE) && args.length > 1) {
 						if (perms.canModifyBook(player, book)) {
 							String s = "";
@@ -464,12 +479,15 @@ public class BookWorm extends JavaPlugin {
 		S_COMM_HELP = config.getString("strings.command-help", S_COMM_HELP);
 		S_COMM_READ = config.getString("strings.command-read", S_COMM_READ);
 		S_COMM_TITLE = config.getString("strings.command-title", S_COMM_TITLE);
+		S_COMM_UNDO = config.getString("strings.command-undo", S_COMM_UNDO);
 		S_COMM_ERASE = config.getString("strings.command-erase", S_COMM_ERASE);
 		S_COMM_REPLACE = config.getString("strings.command-replace", S_COMM_REPLACE);
 		S_COMM_ERASEALL = config.getString("strings.command-eraseall", S_COMM_ERASEALL);
 		S_COMM_CHATMODE = config.getString("strings.command-chatmode", S_COMM_CHATMODE);
 		
 		S_COMM_HELP_TEXT = config.getString("strings.command-help-text", S_COMM_HELP_TEXT);
+		S_COMM_UNDO_DONE = config.getString("strings.command-undo-done", S_COMM_UNDO_DONE);
+		S_COMM_UNDO_FAIL = config.getString("strings.command-undo-fail", S_COMM_UNDO_FAIL);
 		S_COMM_ERASE_DONE = config.getString("strings.command-erase-done", S_COMM_ERASE_DONE);
 		S_COMM_REPLACE_DONE = config.getString("strings.command-replace-done", S_COMM_REPLACE_DONE);
 		S_COMM_REPLACE_FAIL = config.getString("strings.command-replace-fail", S_COMM_REPLACE_FAIL);
