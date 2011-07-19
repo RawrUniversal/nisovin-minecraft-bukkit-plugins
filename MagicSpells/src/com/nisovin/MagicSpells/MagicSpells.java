@@ -184,18 +184,16 @@ public class MagicSpells extends JavaPlugin {
 			manaPotionCooldowns = new HashMap<Player,Long>();
 		}
 		
-		// load permissions
-		if (config.getBoolean("general.use-permissions", false)) {
-			Spellbook.initPermissions();
-		}
-		
 		// load no-magic zones
 		noMagicZones = new NoMagicZoneManager(config);
 		if (noMagicZones.zoneCount() == 0) {
 			noMagicZones = null;
 		}
 		
-		// permission prep
+		// load permissions
+		if (config.getBoolean("general.use-permissions", false)) {
+			Spellbook.initPermissions();
+		}
 		PluginManager pm = getServer().getPluginManager();
 		HashMap<String, Boolean> permGrantChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permLearnChildren = new HashMap<String,Boolean>();
@@ -203,7 +201,8 @@ public class MagicSpells extends JavaPlugin {
 		HashMap<String, Boolean> permTeachChildren = new HashMap<String,Boolean>();
 		
 		// load spells
-		ArrayList<Class<? extends Spell>> spellClasses = new ArrayList<Class<? extends Spell>>();spellClasses.add(BindSpell.class);
+		ArrayList<Class<? extends Spell>> spellClasses = new ArrayList<Class<? extends Spell>>();
+		spellClasses.add(BindSpell.class);
 		spellClasses.add(BlinkSpell.class);
 		spellClasses.add(BuildSpell.class);
 		spellClasses.add(CombustSpell.class);

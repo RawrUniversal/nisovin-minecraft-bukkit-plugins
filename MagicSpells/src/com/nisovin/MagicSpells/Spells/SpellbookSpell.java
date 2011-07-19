@@ -23,6 +23,9 @@ import com.nisovin.MagicSpells.Spellbook;
 import com.nisovin.MagicSpells.Util.MagicLocation;
 
 public class SpellbookSpell extends CommandSpell {
+
+	@SuppressWarnings("unused")
+	private static final String SPELL_NAME = "spellbook";
 	
 	private int defaultUses;
 	private boolean destroyBookcase;
