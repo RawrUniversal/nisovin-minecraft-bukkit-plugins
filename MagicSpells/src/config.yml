@@ -563,6 +563,37 @@ spells:
         str-cost: 4 redstone dust, 2 stone and 2 glass
         str-cast-self: You can see through stone!
         str-fade: You can no longer see through stone.
+    summon:
+        name: summon
+        description: Summon another player to your position.
+        channel-time: 30
+        req-participants: 3
+        req-percent: 0
+        max-distance: 10
+        require-exact-name: false
+        require-acceptance: true
+        max-accept-delay: 90
+        accept-command: accept
+        str-too-far-away: You are too far away from the summoning ritual.
+        str-start-channel: You begin to channel a summoning spell.
+        str-moved: You have stopped channeling.
+        str-spell-success: You have successfully summoned %k.
+        str-summon-pending: You are being summoned! Type /accept to teleport.
+        str-summon-accepted: You have been summoned.
+        str-summon-expired: The summon has expired.
+    sun:
+        name: sun
+        description: Changes the time to morning.
+        channel-time: 30
+        req-participants: 2
+        req-percent: 35
+        max-distance: 20
+        time-to-set: 0
+        str-too-far-away: You are too far away from the ritual.
+        str-start-channel: You begin to channel the sun spell.
+        str-moved: You have stopped channeling.
+        str-spell-success: You have successfully called the sun.
+        str-announce: The sun has suddenly appeared in the sky!        
     telekinesis:
         name: telekinesis
         description: Manipulate switches and buttons remotely.

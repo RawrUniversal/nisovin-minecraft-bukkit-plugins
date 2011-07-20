@@ -77,7 +77,7 @@ public class MagicPlayerListener extends PlayerListener {
 			// cycle spell
 			Spell spell = MagicSpells.getSpellbook(player).nextSpell(inHand.getTypeId());
 			if (spell != null) {
-				Spell.sendMessage(player, spell.formatMessage(MagicSpells.strSpellChange, "%s", spell.getName()));
+				Spell.sendMessage(player, MagicSpells.strSpellChange, "%s", spell.getName());
 			}
 			
 			// check for mana pots

@@ -244,6 +244,8 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(SpellbookSpell.class);
 		spellClasses.add(StealthSpell.class);
 		spellClasses.add(StonevisionSpell.class);
+		spellClasses.add(SummonSpell.class);
+		spellClasses.add(SunSpell.class);
 		spellClasses.add(TeachSpell.class);
 		spellClasses.add(TelekinesisSpell.class);
 		if (getServer().getPluginManager().isPluginEnabled("BookWorm")) spellClasses.add(TomeSpell.class);

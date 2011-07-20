@@ -266,7 +266,7 @@ public abstract class Spell implements Comparable<Spell> {
 		inventory.setContents(items);
 	}
 	
-	protected String formatMessage(String message, String... replacements) {
+	static protected String formatMessage(String message, String... replacements) {
 		if (message == null) return null;
 		
 		String msg = message;
@@ -274,6 +274,10 @@ public abstract class Spell implements Comparable<Spell> {
 			msg = msg.replace(replacements[i], replacements[i+1]);
 		}
 		return msg;
+	}
+	
+	static protected void sendMessage(Player player, String message, String... replacements) {
+		sendMessage(player, formatMessage(message, replacements));
 	}
 	
 	static protected void sendMessage(Player player, String message) {
