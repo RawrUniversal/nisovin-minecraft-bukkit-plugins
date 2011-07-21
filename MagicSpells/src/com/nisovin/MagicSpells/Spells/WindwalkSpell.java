@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.Util.BlockPlatform;
 
 public class WindwalkSpell extends BuffSpell {
@@ -67,7 +66,6 @@ public class WindwalkSpell extends BuffSpell {
 		BlockPlatform platform = windwalkers.get(event.getPlayer().getName());
 		if (platform != null) {
 			Player player = event.getPlayer();
-			MagicSpells.debug("Move: " + (player.isSneaking()?"sneak":"nosneak") + " from " + event.getFrom().getY() + " to " + event.getTo().getY());
 			if (isExpired(player)) {
 				turnOff(player);
 			} else {
