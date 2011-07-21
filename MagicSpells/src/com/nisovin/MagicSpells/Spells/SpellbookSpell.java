@@ -79,6 +79,15 @@ public class SpellbookSpell extends CommandSpell {
 				// fail: show usage string
 				sendMessage(player, strUsage);
 			} else {
+				// check for reload
+				if (player.isOp() && args[0].equalsIgnoreCase("reload")) {
+					bookLocations = new ArrayList<MagicLocation>();
+					bookSpells = new ArrayList<String>();
+					bookUses = new ArrayList<Integer>();
+					loadSpellbooks();
+					player.sendMessage("Spellbook file reloaded.");
+					return true;
+				}
 				Spell spell = MagicSpells.getSpellbook(player).getSpellByName(args[0]);
 				if (spell == null) {
 					// fail: no such spell
@@ -180,6 +189,20 @@ public class SpellbookSpell extends CommandSpell {
 		}
 	}
 	
+	@Override
+	public boolean castFromConsole(CommandSender sender, String[] args) {
+		if (sender.isOp() && args != null && args.length > 0 && args[0].equalsIgnoreCase("reload")) {
+			bookLocations = new ArrayList<MagicLocation>();
+			bookSpells = new ArrayList<String>();
+			bookUses = new ArrayList<Integer>();
+			loadSpellbooks();
+			sender.sendMessage("Spellbook file reloaded.");
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private void loadSpellbooks() {
 		try {
 			Scanner scanner = new Scanner(new File(MagicSpells.plugin.getDataFolder(), "books.txt"));
@@ -216,11 +239,6 @@ public class SpellbookSpell extends CommandSpell {
 		} catch (Exception e) {
 			MagicSpells.plugin.getServer().getLogger().severe("MagicSpells: Error saving spellbooks");
 		}
-	}
-	
-	@Override
-	public boolean castFromConsole(CommandSender sender, String[] args) {
-		return false;
 	}
 	
 }
