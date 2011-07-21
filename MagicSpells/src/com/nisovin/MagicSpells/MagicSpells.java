@@ -30,7 +30,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.Spells.*;
-import com.nisovin.MagicSpells.Util.NoMagicZoneManager;
 
 public class MagicSpells extends JavaPlugin {
 

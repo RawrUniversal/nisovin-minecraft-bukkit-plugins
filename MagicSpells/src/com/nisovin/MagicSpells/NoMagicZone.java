@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Util;
+package com.nisovin.MagicSpells;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
