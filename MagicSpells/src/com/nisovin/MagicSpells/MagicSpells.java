@@ -2,9 +2,12 @@ package com.nisovin.MagicSpells;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -285,6 +288,51 @@ public class MagicSpells extends JavaPlugin {
 			} catch (Exception e) {
 				getServer().getLogger().severe("MagicSpells: Failed to load spell: " + c.getName());
 			}
+		}
+		
+		// load spells from plugin folder
+		File[] classFiles = getDataFolder().listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				if (name.endsWith(".class")) {
+					return true;
+				} else {
+					return false;
+				}
+			}			
+		});
+		try {
+			URLClassLoader ucl = new URLClassLoader(new URL[]{getDataFolder().toURI().toURL()}, getClassLoader());
+			for (File file : classFiles) {
+				// load spell from class file
+				Class<? extends Spell> c = ucl.loadClass(file.getName().replace(".class", "")).asSubclass(Spell.class);
+				// get spell name
+				String spellName;
+				try {
+					Field spellNameField = c.getDeclaredField("SPELL_NAME");
+					spellNameField.setAccessible(true);
+					spellName = (String)spellNameField.get(null);
+				} catch (NoSuchFieldException e) {
+					spellName = c.getSimpleName().replace("Spell", "").toLowerCase(); 
+				}
+				if (config.getBoolean("spells." + spellName + ".enabled", true)) {
+					// initialize spell
+					Spell spell = c.getConstructor(Configuration.class, String.class).newInstance(config, spellName);
+					spells.put(spellName, spell);
+					// add permissions
+					addPermission(pm, "grant." + spellName, PermissionDefault.OP);
+					addPermission(pm, "learn." + spellName, PermissionDefault.TRUE);
+					addPermission(pm, "cast." + spellName, PermissionDefault.TRUE);
+					addPermission(pm, "teach." + spellName, PermissionDefault.TRUE);
+					permGrantChildren.put("magicspells.grant." + spellName, true);
+					permLearnChildren.put("magicspells.learn." + spellName, true);
+					permCastChildren.put("magicspells.cast." + spellName, true);
+					permTeachChildren.put("magicspells.teach." + spellName, true);
+					// spell load complete
+					debug("Loaded external spell: " + spellName);
+				}
+			}
+		} catch (Exception e) {
+			getServer().getLogger().severe("MagicSpells: Failed to create external spells");
 		}
 		
 		// load spell copies
