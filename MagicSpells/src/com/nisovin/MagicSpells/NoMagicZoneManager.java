@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class NoMagicZoneManager {
 	
@@ -30,13 +31,28 @@ public class NoMagicZoneManager {
 				String[] data = s.split(":");
 				if (data[0].equalsIgnoreCase("worldguard") && worldGuard != null) {
 					World w = Bukkit.getServer().getWorld(data[1]);
-					zones.add(new NoMagicZone(worldGuard.getRegionManager(w).getRegion(data[2])));
+					if (w != null) {
+						ProtectedRegion region = worldGuard.getRegionManager(w).getRegion(data[2]);
+						if (region != null) {
+							zones.add(new NoMagicZone(region));
+						} else {
+							Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone WorldGuard region: " + data[2]);
+						}
+					} else {
+						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone world: " + data[1]);						
+					}
 				} else if (data[0].equalsIgnoreCase("cuboid")) {
 					String[] p1 = data[1].split(",");
 					String[] p2 = data[2].split(",");
-					Vector point1 = new Vector(Integer.parseInt(p1[0]), Integer.parseInt(p1[1]), Integer.parseInt(p1[2]));
-					Vector point2 = new Vector(Integer.parseInt(p2[0]), Integer.parseInt(p2[1]), Integer.parseInt(p2[2]));
-					zones.add(new NoMagicZone(point1, point2));
+					try {
+						Vector point1 = new Vector(Integer.parseInt(p1[0]), Integer.parseInt(p1[1]), Integer.parseInt(p1[2]));
+						Vector point2 = new Vector(Integer.parseInt(p2[0]), Integer.parseInt(p2[1]), Integer.parseInt(p2[2]));
+						zones.add(new NoMagicZone(point1, point2));
+					} catch (NumberFormatException e) {
+						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone defined cuboid: " + data[1]+":"+data[2]);							
+					} catch (ArrayIndexOutOfBoundsException e) {
+						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone defined cuboid: " + data[1]+":"+data[2]);							
+					}
 				}
 			}
 		}

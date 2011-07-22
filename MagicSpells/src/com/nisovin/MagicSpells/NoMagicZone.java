@@ -1,5 +1,6 @@
 package com.nisovin.MagicSpells;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -51,7 +52,7 @@ public class NoMagicZone {
 		if (region != null) {
 			com.sk89q.worldedit.Vector v = new com.sk89q.worldedit.Vector(location.getX(), location.getY(), location.getZ());
 			return region.contains(v);
-		} else {
+		} else if (point1 != null && point2 != null) {
 			int x = location.getBlockX();
 			int y = location.getBlockY();
 			int z = location.getBlockZ();
@@ -62,6 +63,9 @@ public class NoMagicZone {
 			} else {
 				return false;
 			}
+		} else {
+			Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone!");
+			return false;
 		}
 	}
 	
