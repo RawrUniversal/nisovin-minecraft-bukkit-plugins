@@ -21,6 +21,8 @@ public class SummonSpell extends ChanneledSpell {
 	private boolean requireAcceptance;
 	private int maxAcceptDelay;
 	private String acceptCommand;
+	private String strUsage;
+	private String strNoTarget;
 	private String strSummonPending;
 	private String strSummonAccepted;
 	private String strSummonExpired;
@@ -35,6 +37,8 @@ public class SummonSpell extends ChanneledSpell {
 		requireAcceptance = getConfigBoolean(config, "require-acceptance", true);
 		maxAcceptDelay = getConfigInt(config, "max-accept-delay", 90);
 		acceptCommand = getConfigString(config, "accept-command", "accept");
+		strUsage = getConfigString(config, "str-usage", "Usage: /cast summon <playername>, or /cast summon \nwhile looking at a sign with a player name on the first line.");
+		strNoTarget = getConfigString(config, "str-no-target", "Target player not found.");
 		strSummonPending = getConfigString(config, "str-summon-pending", "You are being summoned! Type /accept to teleport.");
 		strSummonAccepted = getConfigString(config, "str-summon-accepted", "You have been summoned.");
 		strSummonExpired = getConfigString(config, "str-summon-expired", "The summon has expired.");
@@ -65,6 +69,7 @@ public class SummonSpell extends ChanneledSpell {
 			// check usage
 			if (targetName.equals("")) {
 				// fail -- show usage
+				sendMessage(player, strUsage);
 				return true;
 			}
 			
@@ -83,11 +88,12 @@ public class SummonSpell extends ChanneledSpell {
 			}
 			if (target == null) {
 				// fail -- no player target
+				sendMessage(player, strNoTarget);
 				return true;
 			}
 			
 			// start channel
-			boolean success = addChanneler(target.getName(), target);
+			boolean success = addChanneler(target.getName(), player);
 			if (!success) {
 				// failed to channel -- don't charge stuff or cooldown
 				return true;

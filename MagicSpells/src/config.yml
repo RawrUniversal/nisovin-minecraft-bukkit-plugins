@@ -574,6 +574,10 @@ spells:
         require-acceptance: true
         max-accept-delay: 90
         accept-command: accept
+        str-usage: |
+            Usage: /cast summon <playername>, or /cast summon 
+            while looking at a sign with a player name on the first line.
+        str-no-target: Target player not found.
         str-too-far-away: You are too far away from the summoning ritual.
         str-start-channel: You begin to channel a summoning spell.
         str-moved: You have stopped channeling.

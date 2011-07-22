@@ -1,6 +1,7 @@
 package com.nisovin.MagicSpells;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import org.bukkit.Bukkit;
@@ -26,6 +27,7 @@ public abstract class ChanneledSpell extends Spell {
 	
 	private HashMap<String,HashMap<Player,Long>> channelers;
 	private HashMap<String,Location> locations;
+	private static HashSet<Player> allChannelers;
 	
 	public ChanneledSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -48,13 +50,23 @@ public abstract class ChanneledSpell extends Spell {
 		if (maxDistance > 0) {
 			locations = new HashMap<String,Location>();
 		}
+		
+		if (allChannelers == null) {
+			allChannelers = new HashSet<Player>();
+		}
 	}
 	
 	protected boolean addChanneler(String key, Player player) {
 		HashMap<Player,Long> c = channelers.get(key);
 		
+		// create the map if it doesn't exist
+		if (c == null) {
+			c = new HashMap<Player,Long>();
+			channelers.put(key, c);
+		}
+		
 		// remove expired channelers
-		if (channelTime > 0) {
+		if (channelTime > 0 && c.size() > 0) {
 			Iterator<Player> i = c.keySet().iterator();
 			while (i.hasNext()) {
 				Player p = i.next();
@@ -78,6 +90,7 @@ public abstract class ChanneledSpell extends Spell {
 		
 		// add player to channelers
 		c.put(player, System.currentTimeMillis());
+		allChannelers.add(player);
 		sendMessage(player, strStartChannel, "%k", key);
 		
 		// check if there are enough channelers to complete the spell
@@ -85,6 +98,7 @@ public abstract class ChanneledSpell extends Spell {
 			finishSpell(key, locations.get(key));
 			for (Player p : c.keySet()) {
 				sendMessage(p, strSpellSuccess, "%k", key);
+				allChannelers.remove(p);
 			}
 			c.clear();
 			channelers.remove(key);
@@ -114,13 +128,20 @@ public abstract class ChanneledSpell extends Spell {
 		return castByCommand;
 	}
 	
+	private void removeChanneler(Player player) {
+		for (HashMap<Player,Long> c : channelers.values()) {
+			c.remove(player);
+		}
+		allChannelers.remove(player);
+	}
+	
 	@Override
 	public final void onPlayerMove(PlayerMoveEvent event) {
-		if (channelers.containsKey(event.getPlayer())) {
+		if (allChannelers.contains(event.getPlayer())) {
 			Location from = event.getFrom();
 			Location to = event.getTo();
 			if (from.getX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ()) {
-				channelers.remove(event.getPlayer());
+				removeChanneler(event.getPlayer());
 				sendMessage(event.getPlayer(), strMoved);
 			}
 		}
@@ -128,8 +149,8 @@ public abstract class ChanneledSpell extends Spell {
 	
 	@Override
 	public final void onPlayerQuit(PlayerQuitEvent event) {
-		if (channelers.containsKey(event.getPlayer())) {
-			channelers.remove(event.getPlayer());
+		if (allChannelers.contains(event.getPlayer())) {
+			removeChanneler(event.getPlayer());
 		}		
 	}
 
