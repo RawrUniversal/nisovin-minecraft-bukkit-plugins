@@ -7,3 +7,43 @@ commands:
         description: Basic bookworm command
         usage: /<command>
         aliases: [bw, write, w]
+permissions:
+    bookworm.*:
+        description: Gives access to all BookWorm abilities
+        children:
+            bookworm.create: true
+            bookworm.write.own: true
+            bookworm.write.others: true
+            bookworm.copy.own: true
+            bookworm.copy.others: true
+            bookworm.remove.own: true
+            bookworm.remove.others: true
+            bookworm.destroy.own: true
+            bookworm.destroy.others: true
+    bookworm.create:
+        description: Create a new book
+        default: true
+    bookworm.write.own:
+        description: Write in your own book
+        default: true
+    bookworm.write.others:
+        description: Write in another player's book
+        default: op
+    bookworm.copy.own:
+        description: Copy your book from a bookshelf
+        default: true
+    bookworm.copy.others:
+        description: Copy another player's book from a bookshelf
+        default: true
+    bookworm.remove.own:
+        description: Remove your book from a bookshelf
+        default: true
+    bookworm.remove.others:
+        description: Remove another player's book from a bookshelf
+        default: op
+    bookworm.destroy.own:
+        description: Destroy your own bookshelf
+        default: true
+    bookworm.destroy.others:
+        description: Destroy another player's bookshelf
+        default: op
