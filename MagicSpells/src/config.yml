@@ -143,6 +143,17 @@ spells:
             - 263 1
         str-cost: 1 redstone dust and 1 coal
         str-no-target: No target found.
+    confusion:
+        name: confusion
+        description: Cause nearby monsters to attack each other.
+        cast-item: 283
+        cooldown: 30
+        range: 20
+        cost:
+            - 331 4
+        str-cost: 4 redstone dust
+        str-cast-self: You cause nearby monsters to become confused and attack each other.
+        str-cast-others: "%a causes nearby monsters to attack each other."
     drainlife:
         name: drainlife
         description: Drain life from your enemy and give it to you.
@@ -528,6 +539,7 @@ spells:
         item-id: 339
         right-click-cast: true
         left-click-cast: false
+        ignore-cast-perm: false
         set-unstackable: true
         str-scroll-over: "Spell Scroll: %s (%u uses remaining)"
         str-usage: |

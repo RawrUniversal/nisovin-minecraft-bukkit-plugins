@@ -26,6 +26,7 @@ public class ScrollSpell extends CommandSpell {
 	private int itemId;
 	private boolean rightClickCast;
 	private boolean leftClickCast;
+	private boolean ignoreCastPerm;
 	private boolean setUnstackable;
 	private String stackByDataVar;
 	private int maxScrolls;
@@ -46,6 +47,7 @@ public class ScrollSpell extends CommandSpell {
 		itemId = getConfigInt(config, "item-id", Material.PAPER.getId());
 		rightClickCast = getConfigBoolean(config, "right-click-cast", true);
 		leftClickCast = getConfigBoolean(config, "left-click-cast", false);
+		ignoreCastPerm = getConfigBoolean(config, "ignore-cast-perm", false);
 		setUnstackable = getConfigBoolean(config, "set-unstackable", true);
 		stackByDataVar = getConfigString(config, "stack-by-data-var", "bj");
 		maxScrolls = getConfigInt(config, "max-scrolls", 500);
@@ -169,6 +171,9 @@ public class ScrollSpell extends CommandSpell {
 					boolean freeCastOverride = (castForFree && !MagicSpells.castForFree.contains(name));
 					
 					// cast spell
+					if (ignoreCastPerm && !player.hasPermission("magicspells.cast." + spell.getInternalName())) {
+						player.addAttachment(MagicSpells.plugin, "magicspells.cast." + spell.getInternalName(), true, 1);
+					}
 					if (freeCastOverride) MagicSpells.castForFree.add(name);
 					spell.cast(player);
 					if (freeCastOverride) MagicSpells.castForFree.remove(name);
