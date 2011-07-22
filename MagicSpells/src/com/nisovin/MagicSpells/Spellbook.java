@@ -66,12 +66,14 @@ public class Spellbook {
 	public void addGrantedSpells() {
 		MagicSpells.debug("  Adding granted spells...");
 		boolean added = false;
-		boolean grantedAll = player.hasPermission("magicspells.grant.*");
 		for (Spell spell : MagicSpells.spells.values()) {
 			MagicSpells.debug("    Checking spell " + spell.getInternalName() + "...");
 			if (!hasSpell(spell)) {
 				String perm = "magicspells.grant." + spell.getInternalName();
-				if (grantedAll || player.hasPermission(perm) || (permissionHandler != null && permissionHandler.has(player, perm))) {
+				if (
+						(permissionHandler == null && player.hasPermission(perm)) || 
+						(permissionHandler != null && permissionHandler.has(player, perm))
+						) {
 					addSpell(spell);
 					added = true;
 				}
@@ -84,7 +86,7 @@ public class Spellbook {
 	
 	public boolean canLearn(Spell spell) {
 		if (permissionHandler == null) {
-			return player.hasPermission("magicspells.learn." + spell.getInternalName()) || player.hasPermission("magicspells.learn.*");
+			return player.hasPermission("magicspells.learn." + spell.getInternalName());
 		} else {
 			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.learn." + spell.getInternalName());
 		}
@@ -92,7 +94,7 @@ public class Spellbook {
 	
 	public boolean canCast(Spell spell) {
 		if (permissionHandler == null) {
-			return player.hasPermission("magicspells.cast." + spell.getInternalName()) || player.hasPermission("magicspells.cast.*");
+			return player.hasPermission("magicspells.cast." + spell.getInternalName());
 		} else {
 			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.cast." + spell.getInternalName());
 		}
@@ -100,7 +102,7 @@ public class Spellbook {
 	
 	public boolean canTeach(Spell spell) {
 		if (permissionHandler == null) {
-			return player.hasPermission("magicspells.cast." + spell.getInternalName()) || player.hasPermission("magicspells.teach.*");
+			return player.hasPermission("magicspells.teach." + spell.getInternalName());
 		} else {
 			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.teach." + spell.getInternalName());
 		}
