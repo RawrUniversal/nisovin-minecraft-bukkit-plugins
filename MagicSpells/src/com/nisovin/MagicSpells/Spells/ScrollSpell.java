@@ -23,11 +23,13 @@ public class ScrollSpell extends CommandSpell {
 
 	private boolean castForFree;
 	private int defaultUses;
+	private int maxUses;
 	private int itemId;
 	private boolean rightClickCast;
 	private boolean leftClickCast;
 	private boolean ignoreCastPerm;
 	private boolean setUnstackable;
+	private boolean chargeReagentsForSpellPerCharge;
 	private String stackByDataVar;
 	private int maxScrolls;
 	private String strScrollOver;
@@ -44,11 +46,13 @@ public class ScrollSpell extends CommandSpell {
 		
 		castForFree = getConfigBoolean(config, "cast-for-free", true);
 		defaultUses = getConfigInt(config, "default-uses", 5);
+		maxUses = getConfigInt(config, "max-uses", 10);
 		itemId = getConfigInt(config, "item-id", Material.PAPER.getId());
 		rightClickCast = getConfigBoolean(config, "right-click-cast", true);
 		leftClickCast = getConfigBoolean(config, "left-click-cast", false);
 		ignoreCastPerm = getConfigBoolean(config, "ignore-cast-perm", false);
 		setUnstackable = getConfigBoolean(config, "set-unstackable", true);
+		chargeReagentsForSpellPerCharge = getConfigBoolean(config, "charge-reagents-for-spell-per-charge", false);
 		stackByDataVar = getConfigString(config, "stack-by-data-var", "bj");
 		maxScrolls = getConfigInt(config, "max-scrolls", 500);
 		strScrollOver = getConfigString(config, "str-scroll-over", "Spell Scroll: %s (%u uses remaining)");
@@ -131,6 +135,29 @@ public class ScrollSpell extends CommandSpell {
 			if (args.length > 1 && args[1].matches("^[0-9]+$")) {
 				uses = Integer.parseInt(args[1]);
 			}
+			if (uses > maxUses || (maxUses > 0 && uses < 0)) {
+				uses = maxUses;
+			}
+			
+			// get additional reagent cost
+			if (chargeReagentsForSpellPerCharge) {
+				ItemStack[] reagents = spell.getReagentCost().clone();
+				for (ItemStack item : reagents) {
+					if (item != null) {
+						item.setAmount(item.getAmount() * uses);
+					}
+				}
+				int manaCost = spell.getManaCost() * uses;
+				int healthCost = spell.getHealthCost() * uses;
+				if (!hasReagents(player, reagents, healthCost, manaCost)) {
+					// missing reagents
+					sendMessage(player, MagicSpells.strMissingReagents);
+					return true;
+				} else {
+					// has reagents, so just remove them
+					removeReagents(player, reagents, healthCost, manaCost);
+				}
+			}
 			
 			// create scroll
 			inHand.setDurability(id);
@@ -143,6 +170,7 @@ public class ScrollSpell extends CommandSpell {
 			setCooldown(player);
 			sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
 			save();
+			return true;
 		}
 		return false;
 	}
@@ -175,20 +203,22 @@ public class ScrollSpell extends CommandSpell {
 						player.addAttachment(MagicSpells.plugin, "magicspells.cast." + spell.getInternalName(), true, 1);
 					}
 					if (freeCastOverride) MagicSpells.castForFree.add(name);
-					spell.cast(player);
+					SpellCastState state = spell.cast(player);
 					if (freeCastOverride) MagicSpells.castForFree.remove(name);
-					
-					// remove use
-					int uses = scrollUses.get(id) - 1;
-					if (uses > 0) {
-						scrollUses.put(id, uses);
-					} else {
-						scrollSpells.remove(id);
-						scrollUses.remove(id);
+
+					if (state == SpellCastState.NORMAL) {
+						// remove use							
+						int uses = scrollUses.get(id) - 1;
+						if (uses > 0) {
+							scrollUses.put(id, uses);
+						} else {
+							scrollSpells.remove(id);
+							scrollUses.remove(id);
+						}
+						
+						// send msg
+						sendMessage(player, formatMessage(strOnUse, "%s", spell.getName(), "%u", uses+""));
 					}
-					
-					// send msg
-					sendMessage(player, formatMessage(strOnUse, "%s", spell.getName(), "%u", uses+""));
 				}
 			}		
 		}

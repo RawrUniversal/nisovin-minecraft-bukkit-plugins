@@ -536,6 +536,7 @@ spells:
         description: Create a limited use spell scroll.
         cast-for-free: true
         default-uses: 5
+        max-uses: 10
         item-id: 339
         right-click-cast: true
         left-click-cast: false
@@ -626,6 +627,8 @@ spells:
         description: Create a tome that teaches a spell.
         cancel-read-on-learn: true
         allow-overwrite: false
+        max-uses: -1
+        default-uses: -1
         str-usage: "Usage: While holding a book, /cast tome <spell>"
         str-no-spell: You do not know a spell with that name.
         str-no-book: You must be holding a book.

@@ -66,7 +66,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static String strUnknownSpell;
 	protected static String strSpellChange;
 	protected static String strOnCooldown;
-	protected static String strMissingReagents;
+	public static String strMissingReagents;
 	protected static String strCantCast;
 	protected static String strNoMagicZone;
 	public static String strConsoleName;

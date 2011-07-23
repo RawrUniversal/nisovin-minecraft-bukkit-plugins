@@ -93,11 +93,11 @@ public abstract class Spell implements Comparable<Spell> {
 		return config.getString("spells." + internalName + "." + key, defaultValue);
 	}
 
-	public final void cast(Player player) {
-		cast(player, null);
+	public final SpellCastState cast(Player player) {
+		return cast(player, null);
 	}
 	
-	public final void cast(Player player, String[] args) {
+	public final SpellCastState cast(Player player, String[] args) {
 		MagicSpells.debug("Player " + player.getName() + " is trying to cast " + internalName);
 		SpellCastState state;
 		if (!MagicSpells.getSpellbook(player).canCast(this)) {
@@ -129,6 +129,8 @@ public abstract class Spell implements Comparable<Spell> {
 				sendMessage(player, MagicSpells.strNoMagicZone);
 			}
 		}
+		
+		return state;
 	}
 	
 	public abstract boolean canCastWithItem();
@@ -327,6 +329,18 @@ public abstract class Spell implements Comparable<Spell> {
 	
 	public String getDescription() {
 		return this.description;
+	}
+	
+	public ItemStack[] getReagentCost() {
+		return this.cost;
+	}
+	
+	public int getManaCost() {
+		return this.manaCost;
+	}
+	
+	public int getHealthCost() {
+		return this.healthCost;
 	}
 	
 	protected void addListener(Event.Type eventType) {

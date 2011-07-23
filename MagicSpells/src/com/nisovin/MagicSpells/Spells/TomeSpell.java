@@ -17,6 +17,8 @@ public class TomeSpell extends CommandSpell {
 
 	private boolean cancelReadOnLearn;
 	private boolean allowOverwrite;
+	private int defaultUses;
+	private int maxUses;
 	private String strUsage;
 	private String strNoSpell;
 	private String strNoBook;
@@ -34,6 +36,8 @@ public class TomeSpell extends CommandSpell {
 		
 		cancelReadOnLearn = getConfigBoolean(config, "cancel-read-on-learn", true);
 		allowOverwrite = getConfigBoolean(config, "allow-overwrite", false);
+		defaultUses = getConfigInt(config, "default-uses", -1);
+		maxUses = getConfigInt(config, "max-uses", 5);
 		strUsage = getConfigString(config, "str-usage", "Usage: While holding a book, /cast " + name + " <spell> [uses]");
 		strNoSpell = getConfigString(config, "str-no-spell", "You do not know a spell with that name.");
 		strNoBook = getConfigString(config, "str-no-book", "You must be holding a book.");
@@ -70,9 +74,12 @@ public class TomeSpell extends CommandSpell {
 				sendMessage(player, strAlreadyHasSpell);
 				return true;
 			} else {
-				int uses = -1;
+				int uses = defaultUses;
 				if (args.length > 1 && args[1].matches("^[0-9]+$")) {
 					uses = Integer.parseInt(args[1]);
+				}
+				if (uses > maxUses || (maxUses > 0 && uses < 0)) {
+					uses = maxUses;
 				}
 				book.addHiddenData("MagicSpell", spell.getInternalName() + (uses>0?","+uses:""));
 				book.save();
