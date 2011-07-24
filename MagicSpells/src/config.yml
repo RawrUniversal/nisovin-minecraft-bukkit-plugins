@@ -542,6 +542,7 @@ spells:
         left-click-cast: false
         ignore-cast-perm: false
         set-unstackable: true
+        charge-reagents-for-spell-per-charge: false
         str-scroll-over: "Spell Scroll: %s (%u uses remaining)"
         str-usage: |
             You must hold a single blank paper 
