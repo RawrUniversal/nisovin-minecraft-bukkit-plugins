@@ -344,6 +344,10 @@ public class MagicSpells extends JavaPlugin {
 		
 		// load spell copies
 		List<String> copies = config.getStringList("spellcopies", null);
+		List<String> moreCopies = config.getStringList("spells.spellcopies", null);
+		if (moreCopies != null && copies != null) {
+			copies.addAll(moreCopies);
+		}
 		if (copies != null && copies.size() > 0) {
 			for (String copy : copies) {
 				String[] data = copy.split("=");
