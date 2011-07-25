@@ -141,11 +141,15 @@ public class ScrollSpell extends CommandSpell {
 			
 			// get additional reagent cost
 			if (chargeReagentsForSpellPerCharge) {
-				ItemStack[] reagents = spell.getReagentCost().clone();
-				for (ItemStack item : reagents) {
+				ItemStack[] spellReagents = spell.getReagentCost();
+				ItemStack[] reagents = new ItemStack[spellReagents.length];
+				for (int i = 0; i < reagents.length; i++) {
+					ItemStack item = spellReagents[i];
 					if (item != null) {
+						item = item.clone();
 						item.setAmount(item.getAmount() * uses);
 					}
+					reagents[i] = item;
 				}
 				int manaCost = spell.getManaCost() * uses;
 				int healthCost = spell.getHealthCost() * uses;
