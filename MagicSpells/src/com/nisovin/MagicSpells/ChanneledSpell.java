@@ -18,6 +18,7 @@ public abstract class ChanneledSpell extends Spell {
 	private int reqParticipants;
 	private int reqPercent;
 	private int maxDistance;
+	private int castDelay;
 	private boolean castWithItem;
 	private boolean castByCommand;
 	private String strTooFarAway;
@@ -39,6 +40,7 @@ public abstract class ChanneledSpell extends Spell {
 		reqParticipants = getConfigInt(config, "req-participants", 1);
 		reqPercent = getConfigInt(config, "req-percent", 0);
 		maxDistance = getConfigInt(config, "max-distance", 0);
+		castDelay = getConfigInt(config, "cast-delay", 0);
 		castWithItem = getConfigBoolean(config, "can-cast-with-item", true);
 		castByCommand = getConfigBoolean(config, "can-cast-by-command", true);
 		strTooFarAway = getConfigString(config, "str-too-far-away", "You are too far away.");
@@ -56,7 +58,7 @@ public abstract class ChanneledSpell extends Spell {
 		}
 	}
 	
-	protected boolean addChanneler(String key, Player player) {
+	protected boolean addChanneler(final String key, Player player) {
 		HashMap<Player,Long> c = channelers.get(key);
 		
 		// create the map if it doesn't exist
@@ -95,14 +97,15 @@ public abstract class ChanneledSpell extends Spell {
 		
 		// check if there are enough channelers to complete the spell
 		if (c.size() >= reqParticipants && (double)c.size() / (double)Bukkit.getServer().getOnlinePlayers().length * 100.0 > reqPercent) {
-			finishSpell(key, locations.get(key));
-			for (Player p : c.keySet()) {
-				sendMessage(p, strSpellSuccess, "%k", key);
-				allChannelers.remove(p);
+			if (castDelay == 0) {
+				finishSpell(key, c);
+			} else {
+				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+					public void run() {
+						finishSpell(key, (HashMap<Player,Long>)null);
+					}
+				}, castDelay);
 			}
-			c.clear();
-			channelers.remove(key);
-			locations.remove(key);
 		}
 		
 		return true;
@@ -114,6 +117,21 @@ public abstract class ChanneledSpell extends Spell {
 		} else {
 			return 0;
 		}
+	}
+	
+	private void finishSpell(String key, HashMap<Player,Long> c) {
+		if (c == null) {
+			c = channelers.get(key);
+		}
+		
+		finishSpell(key, locations.get(key));
+		for (Player p : c.keySet()) {
+			sendMessage(p, strSpellSuccess, "%k", key);
+			allChannelers.remove(p);
+		}
+		c.clear();
+		channelers.remove(key);
+		locations.remove(key);
 	}
 	
 	protected abstract void finishSpell(String key, Location location);
