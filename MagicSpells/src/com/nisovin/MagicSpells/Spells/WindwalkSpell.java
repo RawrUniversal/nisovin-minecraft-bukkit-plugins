@@ -50,15 +50,15 @@ public class WindwalkSpell extends BuffSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (windwalkers.containsKey(player.getName())) {
 			turnOff(player);
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
 			windwalkers.put(player.getName(), new BlockPlatform(platformBlock, Material.AIR, player.getLocation().getBlock().getRelative(0,-1,0), size, true, "square"));
 			startSpellDuration(player);
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 	@Override

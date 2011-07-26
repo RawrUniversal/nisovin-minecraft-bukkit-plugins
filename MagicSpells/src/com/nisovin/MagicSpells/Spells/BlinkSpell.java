@@ -24,7 +24,7 @@ public class BlinkSpell extends InstantSpell {
 		strCantBlink = config.getString("spells." + spellName + ".str-cant-blink", "You can't blink there.");
 	}
 	
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			BlockIterator iter = new BlockIterator(player, range>0&&range<150?range:150);
 			HashSet<Location> smokes = null;
@@ -69,14 +69,14 @@ public class BlinkSpell extends InstantSpell {
 					}
 				} else {
 					sendMessage(player, strCantBlink);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				}
 			} else {
 				sendMessage(player, strCantBlink);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 }

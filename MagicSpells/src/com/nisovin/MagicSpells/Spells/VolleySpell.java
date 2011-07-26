@@ -26,7 +26,7 @@ public class VolleySpell extends InstantSpell {
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No target found.");
 	}
 	
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Location spawn = player.getLocation();
 			spawn.setY(spawn.getY()+3);
@@ -34,7 +34,7 @@ public class VolleySpell extends InstantSpell {
 			Block target = player.getTargetBlock(null, range>0?range:100);
 			if (target == null || target.getType() == Material.AIR) {
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {				
 				Vector v = target.getLocation().toVector().subtract(spawn.toVector()).normalize();
 				for (int i = 0; i < arrows; i++) {
@@ -43,7 +43,7 @@ public class VolleySpell extends InstantSpell {
 				}
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 }

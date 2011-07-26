@@ -33,7 +33,7 @@ public class LightningSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = null;
 			if (requireEntityTarget) {
@@ -49,7 +49,7 @@ public class LightningSpell extends InstantSpell {
 					target = e.getLocation().getBlock();
 				} else {
 					sendMessage(player, strNoTarget);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				}
 			} else {
 				target = player.getTargetBlock(null, range>0?range:500);
@@ -65,9 +65,9 @@ public class LightningSpell extends InstantSpell {
 				}
 			} else {
 				sendMessage(player, strCastFail);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 }

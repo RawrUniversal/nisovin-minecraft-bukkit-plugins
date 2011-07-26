@@ -20,12 +20,15 @@ public class SunSpell extends ChanneledSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			String world = player.getWorld().getName();
-			addChanneler(world, player);
+			boolean success = addChanneler(world, player);
+			if (!success) {
+				return PostCastAction.ALREADY_HANDLED;
+			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 	@Override

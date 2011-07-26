@@ -48,19 +48,19 @@ public class TomeSpell extends CommandSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Spell spell;
 			if (args == null || args.length == 0) {
 				// fail -- no args
 				sendMessage(player, strUsage);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				spell = MagicSpells.getSpellbook(player).getSpellByName(args[0]);
 				if (spell == null) {
 					// fail -- no spell
 					sendMessage(player, strNoSpell);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				}
 			}
 			
@@ -68,11 +68,11 @@ public class TomeSpell extends CommandSpell {
 			if (book == null) {
 				// fail -- no book
 				sendMessage(player, strNoBook);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else if (!allowOverwrite && book.hasHiddenData("MagicSpell")) {
 				// fail -- already has a spell
 				sendMessage(player, strAlreadyHasSpell);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				int uses = defaultUses;
 				if (args.length > 1 && args[1].matches("^[0-9]+$")) {
@@ -85,7 +85,7 @@ public class TomeSpell extends CommandSpell {
 				book.save();
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 	@Override

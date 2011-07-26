@@ -43,13 +43,13 @@ public class GeyserSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
 				// fail -- no target
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// check plugins
@@ -58,7 +58,7 @@ public class GeyserSpell extends InstantSpell {
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled()) {
 					sendMessage(player, strNoTarget);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				}				
 			}
 			
@@ -82,7 +82,7 @@ public class GeyserSpell extends InstantSpell {
 				new GeyserAnimation(target.getLocation(), playersNearby);
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	private class GeyserAnimation extends SpellAnimation {

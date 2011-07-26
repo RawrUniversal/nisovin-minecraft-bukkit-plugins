@@ -16,7 +16,8 @@ public class PurgeSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+		// TODO: make this spell more customizable, also don't charge if there was nothing nearby
 		if (state == SpellCastState.NORMAL) {
 			List<Entity> entities = player.getNearbyEntities(range*2, range*2, range*2);
 			for (Entity entity : entities) {
@@ -25,7 +26,7 @@ public class PurgeSpell extends InstantSpell {
 				}
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}	
 	
 }

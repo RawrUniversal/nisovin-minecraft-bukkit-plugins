@@ -100,18 +100,18 @@ public class ScrollSpell extends CommandSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (args == null || args.length == 0) {
 				// fail -- no args
 				sendMessage(player, strUsage);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} 
 			
 			// check for base scroll
 			if (player.isOp() && args[0].equalsIgnoreCase("-base")) {
 				createBaseScroll(args, player);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// get item in hand
@@ -120,7 +120,7 @@ public class ScrollSpell extends CommandSpell {
 			if (inHand.getTypeId() != itemId || inHand.getAmount() != 1 || scrollSpells.containsKey(id)) {
 				// fail -- incorrect item in hand
 				sendMessage(player, strUsage);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// get scroll id
@@ -129,7 +129,7 @@ public class ScrollSpell extends CommandSpell {
 				if (id == 0) {
 					// fail -- no more scroll space
 					sendMessage(player, strFail);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				}
 			}
 			
@@ -138,7 +138,7 @@ public class ScrollSpell extends CommandSpell {
 			if (spell == null) {
 				// fail -- no such spell
 				sendMessage(player, strNoSpell);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// get uses
@@ -167,7 +167,7 @@ public class ScrollSpell extends CommandSpell {
 				if (!hasReagents(player, reagents, healthCost, manaCost)) {
 					// missing reagents
 					sendMessage(player, MagicSpells.strMissingReagents);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					// has reagents, so just remove them
 					removeReagents(player, reagents, healthCost, manaCost);
@@ -182,13 +182,11 @@ public class ScrollSpell extends CommandSpell {
 			dirtyData = true;
 			
 			// done
-			removeReagents(player);
-			setCooldown(player);
 			sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
 			save();
-			return true;
+			return PostCastAction.NO_MESSAGES;
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

@@ -75,12 +75,12 @@ public class MinionSpell extends BuffSpell {
 	}
 	
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (minions.containsKey(player.getName())) {
 			LivingEntity minion = minions.get(player.getName());
 			if (!minion.isDead()) { // don't toggle off if the minion is dead
 				turnOff(player);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 		} 
 		if (state == SpellCastState.NORMAL) {
@@ -108,9 +108,10 @@ public class MinionSpell extends BuffSpell {
 				startSpellDuration(player);
 			} else {
 				// fail -- no creature found
+				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

@@ -37,7 +37,7 @@ public class MarkSpell extends CommandSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		//((CraftPlayer)player).getHandle().a(new ChunkCoordinates(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()));
 		if (state == SpellCastState.NORMAL) {
 			marks.put(player.getName(), new MagicLocation(player.getLocation()));
@@ -45,7 +45,7 @@ public class MarkSpell extends CommandSpell {
 				saveMarks();
 			}
 		}
-		return false;		
+		return PostCastAction.HANDLE_NORMALLY;		
 	}
 	
 	@Override

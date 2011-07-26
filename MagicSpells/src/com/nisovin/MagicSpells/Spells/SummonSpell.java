@@ -52,7 +52,7 @@ public class SummonSpell extends ChanneledSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get target name
 			String targetName = "";
@@ -70,7 +70,7 @@ public class SummonSpell extends ChanneledSpell {
 			if (targetName.equals("")) {
 				// fail -- show usage
 				sendMessage(player, strUsage);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// get player
@@ -89,18 +89,18 @@ public class SummonSpell extends ChanneledSpell {
 			if (target == null) {
 				// fail -- no player target
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// start channel
 			boolean success = addChanneler(target.getName(), player);
 			if (!success) {
 				// failed to channel -- don't charge stuff or cooldown
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 	@Override

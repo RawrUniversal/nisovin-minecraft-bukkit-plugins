@@ -22,15 +22,15 @@ public class StealthSpell extends BuffSpell {
 	}
 	
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (stealthy.contains(player.getName())) {
 			turnOff(player);
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
 			stealthy.add(player.getName());
 			startSpellDuration(player);
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

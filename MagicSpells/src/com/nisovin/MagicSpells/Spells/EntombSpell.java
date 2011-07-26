@@ -33,7 +33,7 @@ public class EntombSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target != null) {
@@ -105,10 +105,10 @@ public class EntombSpell extends InstantSpell {
 				}
 			} else {
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 		}		
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	private class TombRemover implements Runnable {

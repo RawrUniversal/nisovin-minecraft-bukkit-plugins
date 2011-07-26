@@ -16,7 +16,7 @@ public class ConfusionSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			List<Entity> entities = player.getNearbyEntities(range, range, range);
 			List<Monster> monsters = new ArrayList<Monster>();
@@ -33,7 +33,7 @@ public class ConfusionSpell extends InstantSpell {
 				monsters.get(i).setTarget(monsters.get(next));
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 }

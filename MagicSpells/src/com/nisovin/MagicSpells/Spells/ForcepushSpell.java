@@ -27,11 +27,11 @@ public class ForcepushSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			knockback(player, range, targetPlayers);
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	public void knockback(Player player, int range, boolean targetPlayers) {

@@ -34,7 +34,7 @@ public class TeachSpell extends CommandSpell {
 	}
 	
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (args == null || args.length != 2) {
 				// fail: missing args
@@ -71,16 +71,15 @@ public class TeachSpell extends CommandSpell {
 								targetSpellbook.save();
 								sendMessage(players.get(0), formatMessage(strCastTarget, "%a", player.getName(), "%s", spell.getName(), "%t", players.get(0).getName()));
 								sendMessage(player, formatMessage(strCastSelf, "%a", player.getName(), "%s", spell.getName(), "%t", players.get(0).getName()));
-								setCooldown(player);
-								removeReagents(player);
+								return PostCastAction.NO_MESSAGES;
 							}
 						}
 					}
 				}
 			}
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

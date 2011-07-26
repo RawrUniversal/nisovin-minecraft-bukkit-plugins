@@ -24,7 +24,7 @@ public class BindSpell extends CommandSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (args == null || args.length != 1) {
 				sendMessage(player, strUsage);
@@ -54,9 +54,9 @@ public class BindSpell extends CommandSpell {
 					sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
 				}
 			}
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		}		
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 	@Override

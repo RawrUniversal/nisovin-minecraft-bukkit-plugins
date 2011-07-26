@@ -28,12 +28,12 @@ public class CombustSpell extends InstantSpell {
 	}
 	
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range>0?range:100, targetPlayers, obeyLos);
 			if (target == null) {
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				if (target instanceof Player && checkPlugins) {
 					// call other plugins
@@ -41,13 +41,13 @@ public class CombustSpell extends InstantSpell {
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
-						return true;
+						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
 				target.setFireTicks(fireTicks);
 				// TODO: manually send messages with replacements
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 }

@@ -35,12 +35,12 @@ public class FirenovaSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			fireImmunity.add(player);
 			new FirenovaAnimation(player);
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 	@Override

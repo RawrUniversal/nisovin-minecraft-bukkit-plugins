@@ -26,7 +26,7 @@ public class HealSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Player target = getTargetedPlayer(player, range, precision, obeyLos);
 			if (target == null) {
@@ -47,9 +47,9 @@ public class HealSpell extends InstantSpell {
 				sendMessageNear(player, formatMessage(strCastOthers, "%t", target.getName(), "%a", player.getName()));
 			}
 			
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 }

@@ -33,15 +33,15 @@ public class StonevisionSpell extends BuffSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (seers.containsKey(player.getName())) {
 			turnOff(player);
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
 			seers.put(player.getName(), new TransparentBlockSet(player, range, transparentType));
 			startSpellDuration(player);
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

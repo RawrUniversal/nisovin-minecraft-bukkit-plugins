@@ -73,7 +73,7 @@ public class SpellbookSpell extends CommandSpell {
 	}
 	
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (args == null || args.length < 1 || args.length > 2 || (args.length == 2 && !args[1].matches("^[0-9]+$"))) {
 				// fail: show usage string
@@ -86,7 +86,7 @@ public class SpellbookSpell extends CommandSpell {
 					bookUses = new ArrayList<Integer>();
 					loadSpellbooks();
 					player.sendMessage("Spellbook file reloaded.");
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				}
 				Spell spell = MagicSpells.getSpellbook(player).getSpellByName(args[0]);
 				if (spell == null) {
@@ -114,13 +114,13 @@ public class SpellbookSpell extends CommandSpell {
 						}
 						saveSpellbooks();
 						sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
-						setCooldown(player);
-						removeReagents(player);
+						return PostCastAction.NO_MESSAGES;
 					}
 				}
 			}
+			return PostCastAction.ALREADY_HANDLED;
 		}
-		return true;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	private void removeSpellbook(int index) {

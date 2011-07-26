@@ -53,27 +53,27 @@ public class FireballSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = player.getTargetBlock(null, range);
 			if (target == null || target.getType() == Material.AIR) {
 				// fail -- no target
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {				
 				// get a target if required
 				if (requireEntityTarget) {
 					LivingEntity entity = getTargetedEntity(player, range, targetPlayers, obeyLos);
 					if (entity == null) {
 						sendMessage(player, strNoTarget);
-						return true;
+						return PostCastAction.ALREADY_HANDLED;
 					} else if (entity instanceof Player && checkPlugins) {
 						// run a pvp damage check
 						EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, 1);
 						Bukkit.getServer().getPluginManager().callEvent(event);
 						if (event.isCancelled()) {
 							sendMessage(player, strNoTarget);
-							return true;
+							return PostCastAction.ALREADY_HANDLED;
 						}
 					}
 				}
@@ -85,7 +85,7 @@ public class FireballSpell extends InstantSpell {
 				fireballs.add(fireball);
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

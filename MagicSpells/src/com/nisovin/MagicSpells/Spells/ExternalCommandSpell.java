@@ -32,10 +32,10 @@ public class ExternalCommandSpell extends Spell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (commandToExecute.equals("")) {
 			Bukkit.getServer().getLogger().severe("MagicSpells: External command spell '" + name + "' has no command to execute.");
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
 			for (String comm : commandToExecute) {
 				if (args != null && args.length > 0) {
@@ -46,7 +46,7 @@ public class ExternalCommandSpell extends Spell {
 				player.performCommand(comm);
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

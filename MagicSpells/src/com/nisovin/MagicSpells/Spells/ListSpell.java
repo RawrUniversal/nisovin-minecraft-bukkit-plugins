@@ -25,7 +25,7 @@ public class ListSpell extends CommandSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			if (spellbook != null && reloadGrantedSpells) {
@@ -53,9 +53,9 @@ public class ListSpell extends CommandSpell {
 					sendMessage(player, s);
 				}
 			}
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		}		
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

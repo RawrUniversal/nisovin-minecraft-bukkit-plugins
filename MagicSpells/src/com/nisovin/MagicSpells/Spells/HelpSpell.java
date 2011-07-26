@@ -26,7 +26,7 @@ public class HelpSpell extends CommandSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (args == null || args.length == 0) {
 				sendMessage(player, strUsage);
@@ -42,9 +42,9 @@ public class HelpSpell extends CommandSpell {
 					}
 				}
 			}
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

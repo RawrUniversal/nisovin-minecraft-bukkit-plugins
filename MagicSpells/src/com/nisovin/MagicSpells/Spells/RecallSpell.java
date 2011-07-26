@@ -26,32 +26,32 @@ public class RecallSpell extends CommandSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (MarkSpell.marks == null || !MarkSpell.marks.containsKey(player.getName())) {
 				// no mark
 				sendMessage(player, strNoMark);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				Location mark = MarkSpell.marks.get(player.getName()).getLocation();
 				if (mark == null) {
 					sendMessage(player, strNoMark);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				} else if (!allowCrossWorld && !mark.getWorld().getName().equals(player.getLocation().getWorld().getName())) {
 					// can't cross worlds
 					sendMessage(player, strOtherWorld);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				} else if (maxRange > 0 && mark.toVector().distanceSquared(player.getLocation().toVector()) > maxRange*maxRange) {
 					// too far
 					sendMessage(player, strTooFar);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					// all good!
 					player.teleport(mark);
 				}
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override

@@ -39,20 +39,20 @@ public class DrainlifeSpell extends InstantSpell {
 		checkPlugins = getConfigBoolean(config, "check-plugins", true);
 	}
 	
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
 				// fail: no target
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				if (target instanceof Player && checkPlugins) {
 					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.CUSTOM, damage);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
-						return true;
+						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
 				target.damage(damage, player);
@@ -62,7 +62,7 @@ public class DrainlifeSpell extends InstantSpell {
 				new DrainlifeAnimation(player, target);
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	private class DrainlifeAnimation implements Runnable {

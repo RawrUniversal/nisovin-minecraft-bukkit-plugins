@@ -93,6 +93,14 @@ public abstract class Spell implements Comparable<Spell> {
 	protected String getConfigString(Configuration config, String key, String defaultValue) {
 		return config.getString("spells." + internalName + "." + key, defaultValue);
 	}
+	
+	protected List<Integer> getConfigIntList(Configuration config, String key, List<Integer> defaultValue) {
+		return config.getIntList("spells." + internalName + "." + key, defaultValue);
+	}
+	
+	protected List<String> getConfigStringList(Configuration config, String key, List<String> defaultValue) {
+		return config.getStringList("spells." + internalName + "." + key, defaultValue);
+	}
 
 	public final SpellCastState cast(Player player) {
 		return cast(player, null);
@@ -113,13 +121,19 @@ public abstract class Spell implements Comparable<Spell> {
 			state = SpellCastState.NORMAL;
 		}
 		
-		boolean handled = castSpell(player, state, args);
-		if (!handled) {
+		PostCastAction action = castSpell(player, state, args);
+		if (action != null && action != PostCastAction.ALREADY_HANDLED) {
 			if (state == SpellCastState.NORMAL) {
-				setCooldown(player);
-				removeReagents(player);
-				sendMessage(player, strCastSelf);
-				sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getName()));
+				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.COOLDOWN_ONLY || action == PostCastAction.NO_MESSAGES || action == PostCastAction.NO_REAGENTS) {
+					setCooldown(player);
+				}
+				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.REAGENTS_ONLY || action == PostCastAction.NO_MESSAGES || action == PostCastAction.NO_COOLDOWN) {
+					removeReagents(player);
+				}
+				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.MESSAGES_ONLY || action == PostCastAction.NO_COOLDOWN || action == PostCastAction.NO_REAGENTS) {
+					sendMessage(player, strCastSelf);
+					sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getName()));
+				}
 			} else if (state == SpellCastState.ON_COOLDOWN) {
 				sendMessage(player, formatMessage(MagicSpells.strOnCooldown, "%c", getCooldown(player)+""));
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
@@ -132,6 +146,12 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 		
 		return state;
+	}
+	
+	protected abstract PostCastAction castSpell(Player player, SpellCastState state, String[] args);
+
+	public boolean castFromConsole(CommandSender sender, String[] args) {
+		return false;
 	}
 	
 	public abstract boolean canCastWithItem();
@@ -314,12 +334,6 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 	}
 	
-	protected abstract boolean castSpell(Player player, SpellCastState state, String[] args);
-
-	public boolean castFromConsole(CommandSender sender, String[] args) {
-		return false;
-	}
-	
 	public String getInternalName() {
 		return this.internalName;
 	}
@@ -383,6 +397,17 @@ public abstract class Spell implements Comparable<Spell> {
 		MISSING_REAGENTS,
 		CANT_CAST,
 		NO_MAGIC_ZONE
+	}
+	
+	protected enum PostCastAction {
+		HANDLE_NORMALLY,
+		ALREADY_HANDLED,
+		NO_MESSAGES,
+		NO_REAGENTS,
+		NO_COOLDOWN,
+		MESSAGES_ONLY,
+		REAGENTS_ONLY,
+		COOLDOWN_ONLY
 	}
 	
 	@Override

@@ -41,10 +41,10 @@ public class LifewalkSpell extends BuffSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (lifewalkers.contains(player.getName())) {
 			turnOff(player);
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
 			lifewalkers.add(player.getName());
 			if (grower == null) {
@@ -52,7 +52,7 @@ public class LifewalkSpell extends BuffSpell {
 			}
 			startSpellDuration(player);
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}	
 	
 	@Override

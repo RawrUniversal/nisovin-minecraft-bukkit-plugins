@@ -33,10 +33,10 @@ public class GillsSpell extends BuffSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (fishes.contains(player.getName())) {
 			turnOff(player);
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
 			fishes.add(player.getName());
 			if (glassHeadEffect) {
@@ -48,7 +48,7 @@ public class GillsSpell extends BuffSpell {
 			}
 			startSpellDuration(player);
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 	@Override

@@ -38,10 +38,10 @@ public class FlamewalkSpell extends BuffSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (flamewalkers.contains(player.getName())) {
 			turnOff(player);
-			return true;
+			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
 			flamewalkers.add(player.getName());
 			if (burner == null) {
@@ -49,7 +49,7 @@ public class FlamewalkSpell extends BuffSpell {
 			}
 			startSpellDuration(player);
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}	
 	
 	@Override

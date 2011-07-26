@@ -30,7 +30,7 @@ public class GateSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get world
 			World world;
@@ -45,7 +45,7 @@ public class GateSpell extends InstantSpell {
 				// fail -- no world
 				Bukkit.getServer().getLogger().warning("MagicSpells: " + name + ": world " + this.world + " does not exist");
 				sendMessage(player, strGateFailed);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// get location
@@ -62,7 +62,7 @@ public class GateSpell extends InstantSpell {
 				// fail -- no location
 				Bukkit.getServer().getLogger().warning("MagicSpells: " + name + ": " + this.coords + " is not a valid location");
 				sendMessage(player, strGateFailed);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			location.setX(location.getX()+.5);
 			location.setZ(location.getZ()+.5);
@@ -73,7 +73,7 @@ public class GateSpell extends InstantSpell {
 				// fail -- blocked
 				Bukkit.getServer().getLogger().warning("MagicSpells: " + name + ": landing spot blocked");
 				sendMessage(player, strGateFailed);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// spell effect
@@ -105,7 +105,7 @@ public class GateSpell extends InstantSpell {
 			// teleport caster
 			player.teleport(location);
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 }

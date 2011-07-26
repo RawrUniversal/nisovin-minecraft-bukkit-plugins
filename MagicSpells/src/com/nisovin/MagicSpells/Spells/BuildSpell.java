@@ -39,14 +39,14 @@ public class BuildSpell extends InstantSpell {
 		strCantBuild = config.getString("spells." + spellName + "str-cant-build", "You can't build there.");
 	}
 	
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get mat
 			ItemStack item = player.getInventory().getItem(slot);
 			if (item == null || !isAllowed(item.getType())) {
 				// fail
 				sendMessage(player, strInvalidBlock);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// get target
@@ -54,7 +54,7 @@ public class BuildSpell extends InstantSpell {
 			if (lastBlocks.size() < 2 || lastBlocks.get(1).getType() == Material.AIR) {
 				// fail
 				sendMessage(player, strCantBuild);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				// check plugins
 				Block b = lastBlocks.get(0);
@@ -65,7 +65,7 @@ public class BuildSpell extends InstantSpell {
 					if (event.isCancelled() && b.getType() == item.getType()) {
 						b.setType(Material.AIR);
 						sendMessage(player, strCantBuild);
-						return true;
+						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
 				if (showEffect) {
@@ -82,7 +82,7 @@ public class BuildSpell extends InstantSpell {
 				}
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	private boolean isAllowed(Material mat) {

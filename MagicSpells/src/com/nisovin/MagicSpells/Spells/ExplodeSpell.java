@@ -34,13 +34,13 @@ public class ExplodeSpell extends InstantSpell {
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "Cannot explode there.");
 	}
 	
-	public boolean castSpell(Player player, SpellCastState state, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = player.getTargetBlock(null, range);
 			if (target == null || target.getType() == Material.AIR) {
 				// fail: no target
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				// backfire chance
 				if (backfireChance > 0) {
@@ -57,13 +57,13 @@ public class ExplodeSpell extends InstantSpell {
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
-						return false;
+						return PostCastAction.HANDLE_NORMALLY;
 					}
 				}
 				createExplosion(player, target.getLocation(), explosionSize);
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	public void createExplosion(Player player, Location location, float size) {

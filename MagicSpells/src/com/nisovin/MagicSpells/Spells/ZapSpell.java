@@ -38,7 +38,7 @@ public class ZapSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get targeted block
 			Block target = player.getTargetBlock(transparentBlockTypes, range>0?range:100);
@@ -47,7 +47,7 @@ public class ZapSpell extends InstantSpell {
 				for (int i = 0; i < disallowedBlockTypes.length; i++) {
 					if (target.getTypeId() == disallowedBlockTypes[i]) {
 						sendMessage(player, strCantZap);
-						return true;
+						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
 				// check for protection
@@ -56,7 +56,7 @@ public class ZapSpell extends InstantSpell {
 				if (event.isCancelled()) {
 					// a plugin cancelled the event
 					sendMessage(player, strCantZap);
-					return true;
+					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					// drop block
 					if (dropBlock) {
@@ -69,9 +69,9 @@ public class ZapSpell extends InstantSpell {
 				}
 			} else {
 				sendMessage(player, strCantZap);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 }

@@ -29,13 +29,13 @@ public class TelekinesisSpell extends InstantSpell {
 		transparent.add((byte)Material.TORCH.getId());
 	}
 	
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = player.getTargetBlock(transparent, range>0?range:100);
 			if (target == null) {
 				// fail
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else if (target.getType() == Material.LEVER || target.getType() == Material.STONE_BUTTON) {
 				//target.setData((byte) (target.getData() ^ 0x8));
 				net.minecraft.server.Block.byId[target.getType().getId()].interact(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ(), null);
@@ -47,9 +47,9 @@ public class TelekinesisSpell extends InstantSpell {
 			} else {
 				// fail
 				sendMessage(player, strNoTarget);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 }

@@ -18,11 +18,11 @@ public class PrayerSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (player.getHealth() == 20) {
 				sendMessage(player, strAtFullHealth);
-				return true;
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				int health = player.getHealth() + amountHealed;
 				if (health > 20) {
@@ -31,7 +31,7 @@ public class PrayerSpell extends InstantSpell {
 				player.setHealth(health);
 			}
 		}
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 }

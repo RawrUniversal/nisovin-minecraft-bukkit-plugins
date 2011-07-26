@@ -33,7 +33,7 @@ public class LeapSpell extends InstantSpell {
 	}
 
 	@Override
-	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Vector v = player.getLocation().getDirection();
 			v.setY(0).normalize().multiply(forwardVelocity).setY(upwardVelocity);
@@ -43,7 +43,7 @@ public class LeapSpell extends InstantSpell {
 			}
 		}
 		
-		return false;
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@Override
