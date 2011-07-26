@@ -493,7 +493,7 @@ public class MagicSpells extends JavaPlugin {
 				Spell spell = spellNames.get(args[0]);
 				if (spell == null) {
 					sender.sendMessage("Unknown spell.");
-				} else if (spell instanceof CommandSpell) {
+				} else {
 					String[] spellArgs = null;
 					if (args.length > 1) {
 						spellArgs = new String[args.length-1];
@@ -501,12 +501,10 @@ public class MagicSpells extends JavaPlugin {
 							spellArgs[i-1] = args[i];
 						}
 					}
-					boolean ok = ((CommandSpell)spell).castFromConsole(sender, spellArgs);
+					boolean ok = spell.castFromConsole(sender, spellArgs);
 					if (!ok) {
 						sender.sendMessage("Cannot cast that spell from console.");
 					}
-				} else {
-					sender.sendMessage("Cannot cast that spell from console.");					
 				}
 			}
 			return true;

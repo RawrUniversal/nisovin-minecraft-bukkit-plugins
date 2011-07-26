@@ -3,6 +3,7 @@ package com.nisovin.MagicSpells;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -315,6 +316,10 @@ public abstract class Spell implements Comparable<Spell> {
 	
 	protected abstract boolean castSpell(Player player, SpellCastState state, String[] args);
 
+	public boolean castFromConsole(CommandSender sender, String[] args) {
+		return false;
+	}
+	
 	public String getInternalName() {
 		return this.internalName;
 	}

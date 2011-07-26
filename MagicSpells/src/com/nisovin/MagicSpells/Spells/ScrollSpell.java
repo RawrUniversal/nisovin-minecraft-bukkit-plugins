@@ -108,6 +108,12 @@ public class ScrollSpell extends CommandSpell {
 				return true;
 			} 
 			
+			// check for base scroll
+			if (player.isOp() && args[0].equalsIgnoreCase("-base")) {
+				createBaseScroll(args, player);
+				return true;
+			}
+			
 			// get item in hand
 			ItemStack inHand = player.getItemInHand();
 			short id = inHand.getDurability();
@@ -185,6 +191,48 @@ public class ScrollSpell extends CommandSpell {
 		return false;
 	}
 	
+	@Override
+	public boolean castFromConsole(CommandSender sender, String[] args) {
+		if (args.length >= 2 && (args[0].equalsIgnoreCase("base") || args[0].equalsIgnoreCase("-base"))) {
+			createBaseScroll(args, sender);
+		} else if (args.length == 1 && args[0].equalsIgnoreCase("save")) {
+			save();
+			sender.sendMessage("Scrolls saved");
+		} else if (args.length == 1 && args[0].equalsIgnoreCase("load")) {
+			load();
+			sender.sendMessage("Scrolls loaded");
+		}
+		return true;
+	}
+	
+	private void createBaseScroll(String[] args, CommandSender sender) {
+		// get spell
+		Spell spell = MagicSpells.getSpellByInGameName(args[1]);
+		if (spell == null) {
+			sender.sendMessage("No such spell");
+		}
+		
+		// get uses
+		int uses = defaultUses;
+		if (args.length > 2 && args[2].matches("^[0-9]+$")) {
+			uses = Integer.parseInt(args[2]);
+		}
+		
+		// get id
+		short id = getNextNegativeId();
+		if (id == 0) {
+			sender.sendMessage("Out of scroll space");
+		}
+		
+		// create scroll
+		scrollSpells.put(id, spell);
+		scrollUses.put(id, uses);
+		dirtyData = true;
+		save();
+		
+		sender.sendMessage("Base scroll created for spell " + spell.getName() + ": id = " + id);
+	}
+	
 	private short getNextId() {
 		for (short i = 1; i < maxScrolls; i++) {
 			if (!scrollSpells.containsKey(i)) {
@@ -194,7 +242,6 @@ public class ScrollSpell extends CommandSpell {
 		return 0;
 	}
 	
-	@SuppressWarnings("unused")
 	private short getNextNegativeId() {
 		for (short i = -1; i > -maxScrolls; i--) {
 			if (!scrollSpells.containsKey(i)) {
@@ -316,11 +363,6 @@ public class ScrollSpell extends CommandSpell {
 			}
 			dirtyData = false;
 		}
-	}
-
-	@Override
-	public boolean castFromConsole(CommandSender sender, String[] args) {
-		return false;
 	}
 
 }
