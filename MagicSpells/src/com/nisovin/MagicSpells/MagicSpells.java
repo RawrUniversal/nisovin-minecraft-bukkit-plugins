@@ -391,9 +391,10 @@ public class MagicSpells extends JavaPlugin {
 		permAllChildren.putAll(permTeachChildren);
 		addPermission(pm, "*", PermissionDefault.OP, permAllChildren);
 		
-		// load in-game spell names
+		// load in-game spell names and initialize spells
 		for (Spell spell : spells.values()) {
 			spellNames.put(spell.getName(), spell);
+			spell.initialize();
 		}
 		
 		// load online player spellbooks
@@ -426,7 +427,8 @@ public class MagicSpells extends JavaPlugin {
 	public static Spellbook getSpellbook(Player player) {
 		Spellbook spellbook = spellbooks.get(player.getName());
 		if (spellbook == null) {
-			spellbooks.put(player.getName(), new Spellbook(player, plugin));
+			spellbook = new Spellbook(player, plugin);
+			spellbooks.put(player.getName(), spellbook);
 		}
 		return spellbook;
 	}

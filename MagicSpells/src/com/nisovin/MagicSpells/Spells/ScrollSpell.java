@@ -40,6 +40,7 @@ public class ScrollSpell extends CommandSpell {
 	
 	private HashMap<Short,Spell> scrollSpells;
 	private HashMap<Short,Integer> scrollUses;
+	private boolean dirtyData;
 	
 	public ScrollSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -66,7 +67,6 @@ public class ScrollSpell extends CommandSpell {
 		
 		scrollSpells = new HashMap<Short,Spell>();
 		scrollUses = new HashMap<Short,Integer>();
-		load();
 		
 		// prevent paper stacking
 		if (setUnstackable) {
@@ -93,6 +93,11 @@ public class ScrollSpell extends CommandSpell {
 			}
 		}
 	}
+	
+	@Override
+	protected void initialize() {
+		load();
+	}
 
 	@Override
 	protected boolean castSpell(Player player, SpellCastState state, String[] args) {
@@ -115,7 +120,7 @@ public class ScrollSpell extends CommandSpell {
 			// get scroll id
 			if (id == 0) {
 				id = getNextId();
-				if (id == -1) {
+				if (id == 0) {
 					// fail -- no more scroll space
 					sendMessage(player, strFail);
 					return true;
@@ -168,6 +173,7 @@ public class ScrollSpell extends CommandSpell {
 			player.setItemInHand(inHand);
 			scrollSpells.put(id, spell);
 			scrollUses.put(id, uses);
+			dirtyData = true;
 			
 			// done
 			removeReagents(player);
@@ -185,7 +191,17 @@ public class ScrollSpell extends CommandSpell {
 				return i;
 			}
 		}
-		return -1;
+		return 0;
+	}
+	
+	@SuppressWarnings("unused")
+	private short getNextNegativeId() {
+		for (short i = -1; i > -maxScrolls; i--) {
+			if (!scrollSpells.containsKey(i)) {
+				return i;
+			}
+		}
+		return 0;
 	}
 	
 	@Override
@@ -199,6 +215,22 @@ public class ScrollSpell extends CommandSpell {
 				Spell spell = scrollSpells.get(id);
 			
 				if (spell != null) {
+					// make a copy of the scroll
+					if (id < 0) {
+						short newId = getNextId();
+						if (newId == 0) {
+							// fail -- no more scroll space
+							sendMessage(player, strFail);
+							return;
+						}
+						inHand.setDurability(newId);
+						player.setItemInHand(inHand);
+						scrollSpells.put(newId, spell);
+						scrollUses.put(newId, scrollUses.get(id));
+						id = newId;
+						dirtyData = true;
+					}
+					
 					String name = player.getName().toLowerCase();
 					boolean freeCastOverride = (castForFree && !MagicSpells.castForFree.contains(name));
 					
@@ -219,6 +251,7 @@ public class ScrollSpell extends CommandSpell {
 							scrollSpells.remove(id);
 							scrollUses.remove(id);
 						}
+						dirtyData = true;
 						
 						// send msg
 						sendMessage(player, formatMessage(strOnUse, "%s", spell.getName(), "%u", uses+""));
@@ -245,33 +278,43 @@ public class ScrollSpell extends CommandSpell {
 	}
 	
 	private void save() {
-		File file = new File(MagicSpells.plugin.getDataFolder(), "scrolls.txt");
-		if (file.exists()) {
-			file.delete();
+		if (dirtyData) {
+			MagicSpells.debug("Saving scrolls...");
+			File file = new File(MagicSpells.plugin.getDataFolder(), "scrolls.txt");
+			if (file.exists()) {
+				file.delete();
+			}
+			Configuration c = new Configuration(file);
+			String data;
+			for (short i : scrollSpells.keySet()) {
+				data = scrollSpells.get(i).getInternalName() + "|" + scrollUses.get(i);
+				MagicSpells.debug("    " + i + " : " + data);
+				c.setProperty(i+"", data);
+			}
+			c.save();
 		}
-		Configuration c = new Configuration(file);
-		for (short i : scrollSpells.keySet()) {
-			c.setProperty(i+"", scrollSpells.get(i).getInternalName() + "|" + scrollUses.get(i));
-		}
-		c.save();
 	}
 	
 	private void load() {
 		File file = new File(MagicSpells.plugin.getDataFolder(), "scrolls.txt");
 		if (file.exists()) {
+			MagicSpells.debug("Loading scrolls...");
 			Configuration c = new Configuration(file);
 			c.load();
 			List<String> keys = c.getKeys();
 			for (String s : keys) {
 				short id = Short.parseShort(s);
 				String[] data = c.getString(s).split("\\|");
+				MagicSpells.debug("    Raw data: " + c.getString(s));
 				Spell spell = MagicSpells.getSpellByInternalName(data[0]);
 				int uses = Integer.parseInt(data[1]);
 				if (spell != null) {
 					scrollSpells.put(id, spell);
 					scrollUses.put(id, uses);
+					MagicSpells.debug("        Loaded scroll: " + id + " - " + spell.getInternalName() + " - " + uses);
 				}
 			}
+			dirtyData = false;
 		}
 	}
 

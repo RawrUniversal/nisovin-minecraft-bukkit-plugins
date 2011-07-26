@@ -95,7 +95,6 @@ public class MinionSpell extends BuffSpell {
 					n += chances[i];
 				}
 			}
-			System.out.println(creatureType);
 			if (creatureType != null) {
 				// get spawn location TODO: improve this
 				Location loc = null;

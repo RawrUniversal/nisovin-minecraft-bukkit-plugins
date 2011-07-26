@@ -39,7 +39,6 @@ public class WallSpell extends InstantSpell {
 				TemporaryBlockSet blockSet = new TemporaryBlockSet(Material.AIR, wallType);
 				Location loc = target.getLocation();
 				Vector dir = player.getLocation().getDirection();
-				System.out.println(dir);
 				if (Math.abs(dir.getX()) > Math.abs(dir.getZ())) {
 					for (int z = loc.getBlockZ() - (wallWidth/2); z <= loc.getBlockZ() + (wallWidth/2); z++) {
 						for (int y = loc.getBlockY() - 1; y < loc.getBlockY() + wallHeight - 1; y++) {

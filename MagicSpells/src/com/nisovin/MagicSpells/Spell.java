@@ -351,6 +351,9 @@ public abstract class Spell implements Comparable<Spell> {
 		MagicSpells.removeSpellListener(eventType, this);
 	}
 	
+	protected void initialize() {		
+	}
+	
 	protected void turnOff() {		
 	}
 	
