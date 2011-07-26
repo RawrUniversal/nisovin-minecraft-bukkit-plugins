@@ -143,7 +143,7 @@ public class ScrollSpell extends CommandSpell {
 			
 			// get uses
 			int uses = defaultUses;
-			if (args.length > 1 && args[1].matches("^[0-9]+$")) {
+			if (args.length > 1 && args[1].matches("^-?[0-9]+$")) {
 				uses = Integer.parseInt(args[1]);
 			}
 			if (uses > maxUses || (maxUses > 0 && uses < 0)) {
@@ -214,7 +214,7 @@ public class ScrollSpell extends CommandSpell {
 		
 		// get uses
 		int uses = defaultUses;
-		if (args.length > 2 && args[2].matches("^[0-9]+$")) {
+		if (args.length > 2 && args[2].matches("^-?[0-9]+$")) {
 			uses = Integer.parseInt(args[2]);
 		}
 		
@@ -304,7 +304,7 @@ public class ScrollSpell extends CommandSpell {
 						}
 						
 						// send msg
-						sendMessage(player, formatMessage(strOnUse, "%s", spell.getName(), "%u", (String)(uses>=0?uses:"many")));
+						sendMessage(player, formatMessage(strOnUse, "%s", spell.getName(), "%u", (uses>=0?uses+"":"many")));
 					}
 				}
 			}		
