@@ -299,6 +299,7 @@ public class ScrollSpell extends CommandSpell {
 							} else {
 								scrollSpells.remove(id);
 								scrollUses.remove(id);
+								player.setItemInHand(null);
 							}
 							dirtyData = true;
 						}
