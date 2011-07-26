@@ -151,7 +151,7 @@ public class ScrollSpell extends CommandSpell {
 			}
 			
 			// get additional reagent cost
-			if (chargeReagentsForSpellPerCharge) {
+			if (chargeReagentsForSpellPerCharge && uses > 0) {
 				ItemStack[] spellReagents = spell.getReagentCost();
 				ItemStack[] reagents = new ItemStack[spellReagents.length];
 				for (int i = 0; i < reagents.length; i++) {
@@ -262,7 +262,7 @@ public class ScrollSpell extends CommandSpell {
 				Spell spell = scrollSpells.get(id);
 			
 				if (spell != null) {
-					// make a copy of the scroll
+					// make a copy of the base scroll
 					if (id < 0) {
 						short newId = getNextId();
 						if (newId == 0) {
@@ -290,18 +290,21 @@ public class ScrollSpell extends CommandSpell {
 					if (freeCastOverride) MagicSpells.castForFree.remove(name);
 
 					if (state == SpellCastState.NORMAL) {
-						// remove use							
-						int uses = scrollUses.get(id) - 1;
+						// remove use
+						int uses = scrollUses.get(id);
 						if (uses > 0) {
-							scrollUses.put(id, uses);
-						} else {
-							scrollSpells.remove(id);
-							scrollUses.remove(id);
+							uses -= 1;
+							if (uses > 0) {
+								scrollUses.put(id, uses);
+							} else {
+								scrollSpells.remove(id);
+								scrollUses.remove(id);
+							}
+							dirtyData = true;
 						}
-						dirtyData = true;
 						
 						// send msg
-						sendMessage(player, formatMessage(strOnUse, "%s", spell.getName(), "%u", uses+""));
+						sendMessage(player, formatMessage(strOnUse, "%s", spell.getName(), "%u", (String)(uses>=0?uses:"many")));
 					}
 				}
 			}		
