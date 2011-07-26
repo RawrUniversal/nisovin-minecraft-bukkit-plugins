@@ -20,11 +20,11 @@ public class PainSpell extends InstantSpell {
 	public PainSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		damage = getConfigInt(config, "damage", 4);
-		obeyLos = getConfigBoolean(config, "obey-los", true);
-		targetPlayers = getConfigBoolean(config, "target-players", false);
-		checkPlugins = getConfigBoolean(config, "check-plugins", true);
-		strNoTarget = getConfigString(config, "str-no-target", "No target found.");
+		damage = getConfigInt("damage", 4);
+		obeyLos = getConfigBoolean("obey-los", true);
+		targetPlayers = getConfigBoolean("target-players", false);
+		checkPlugins = getConfigBoolean("check-plugins", true);
+		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
 
 	@Override

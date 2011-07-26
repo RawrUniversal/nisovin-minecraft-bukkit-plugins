@@ -45,22 +45,22 @@ public class ScrollSpell extends CommandSpell {
 	public ScrollSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		castForFree = getConfigBoolean(config, "cast-for-free", true);
-		defaultUses = getConfigInt(config, "default-uses", 5);
-		maxUses = getConfigInt(config, "max-uses", 10);
-		itemId = getConfigInt(config, "item-id", Material.PAPER.getId());
-		rightClickCast = getConfigBoolean(config, "right-click-cast", true);
-		leftClickCast = getConfigBoolean(config, "left-click-cast", false);
-		ignoreCastPerm = getConfigBoolean(config, "ignore-cast-perm", false);
-		setUnstackable = getConfigBoolean(config, "set-unstackable", true);
-		chargeReagentsForSpellPerCharge = getConfigBoolean(config, "charge-reagents-for-spell-per-charge", false);
-		stackByDataVar = getConfigString(config, "stack-by-data-var", "bj");
-		maxScrolls = getConfigInt(config, "max-scrolls", 500);
-		strScrollOver = getConfigString(config, "str-scroll-over", "Spell Scroll: %s (%u uses remaining)");
-		strUsage = getConfigString(config, "str-usage", "You must hold a single blank paper \nand type /cast scroll <spell> <uses>.");
-		strFail = getConfigString(config, "str-fail", "You cannot create a spell scroll at this time.");
-		strNoSpell = getConfigString(config, "str-no-spell", "You do not know a spell by that name.");
-		strOnUse = getConfigString(config, "str-on-use", "Spell Scroll: %s used. %u uses remaining.");
+		castForFree = getConfigBoolean("cast-for-free", true);
+		defaultUses = getConfigInt("default-uses", 5);
+		maxUses = getConfigInt("max-uses", 10);
+		itemId = getConfigInt("item-id", Material.PAPER.getId());
+		rightClickCast = getConfigBoolean("right-click-cast", true);
+		leftClickCast = getConfigBoolean("left-click-cast", false);
+		ignoreCastPerm = getConfigBoolean("ignore-cast-perm", false);
+		setUnstackable = getConfigBoolean("set-unstackable", true);
+		chargeReagentsForSpellPerCharge = getConfigBoolean("charge-reagents-for-spell-per-charge", false);
+		stackByDataVar = getConfigString("stack-by-data-var", "bj");
+		maxScrolls = getConfigInt("max-scrolls", 500);
+		strScrollOver = getConfigString("str-scroll-over", "Spell Scroll: %s (%u uses remaining)");
+		strUsage = getConfigString("str-usage", "You must hold a single blank paper \nand type /cast scroll <spell> <uses>.");
+		strFail = getConfigString("str-fail", "You cannot create a spell scroll at this time.");
+		strNoSpell = getConfigString("str-no-spell", "You do not know a spell by that name.");
+		strOnUse = getConfigString("str-on-use", "Spell Scroll: %s used. %u uses remaining.");
 		
 		addListener(Event.Type.PLAYER_INTERACT);
 		addListener(Event.Type.PLAYER_ITEM_HELD);

@@ -36,10 +36,10 @@ public class FireballSpell extends InstantSpell {
 	public FireballSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		requireEntityTarget = getConfigBoolean(config, "require-entity-target", false);
-		obeyLos = getConfigBoolean(config, "obey-los", true);
-		targetPlayers = getConfigBoolean(config, "target-players", false);
-		checkPlugins = getConfigBoolean(config, "check-plugins", true);
+		requireEntityTarget = getConfigBoolean("require-entity-target", false);
+		obeyLos = getConfigBoolean("obey-los", true);
+		targetPlayers = getConfigBoolean("target-players", false);
+		checkPlugins = getConfigBoolean("check-plugins", true);
 		additionalDamage = config.getInt("spells." + spellName + ".additional-damage", 0);
 		noExplosion = config.getBoolean("spells." + spellName + ".no-explosion", false);
 		noFire = config.getBoolean("spells." + spellName + ".no-fire", false);

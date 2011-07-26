@@ -36,17 +36,17 @@ public abstract class ChanneledSpell extends Spell {
 		addListener(Event.Type.PLAYER_MOVE);
 		addListener(Event.Type.PLAYER_QUIT);
 		
-		channelTime = getConfigInt(config, "channel-time", 30);
-		reqParticipants = getConfigInt(config, "req-participants", 1);
-		reqPercent = getConfigInt(config, "req-percent", 0);
-		maxDistance = getConfigInt(config, "max-distance", 0);
-		castDelay = getConfigInt(config, "cast-delay", 0);
-		castWithItem = getConfigBoolean(config, "can-cast-with-item", true);
-		castByCommand = getConfigBoolean(config, "can-cast-by-command", true);
-		strTooFarAway = getConfigString(config, "str-too-far-away", "You are too far away.");
-		strStartChannel = getConfigString(config, "str-start-channel", "");
-		strMoved = getConfigString(config, "str-moved", "You have stopped channeling.");
-		strSpellSuccess = getConfigString(config, "str-spell-success", "");
+		channelTime = getConfigInt("channel-time", 30);
+		reqParticipants = getConfigInt("req-participants", 1);
+		reqPercent = getConfigInt("req-percent", 0);
+		maxDistance = getConfigInt("max-distance", 0);
+		castDelay = getConfigInt("cast-delay", 0);
+		castWithItem = getConfigBoolean("can-cast-with-item", true);
+		castByCommand = getConfigBoolean("can-cast-by-command", true);
+		strTooFarAway = getConfigString("str-too-far-away", "You are too far away.");
+		strStartChannel = getConfigString("str-start-channel", "");
+		strMoved = getConfigString("str-moved", "You have stopped channeling.");
+		strSpellSuccess = getConfigString("str-spell-success", "");
 		
 		channelers = new HashMap<String,HashMap<Player,Long>>();
 		if (maxDistance > 0) {

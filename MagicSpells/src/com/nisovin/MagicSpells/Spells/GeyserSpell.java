@@ -32,14 +32,14 @@ public class GeyserSpell extends InstantSpell {
 	public GeyserSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		damage = getConfigInt(config, "damage", 0);
-		velocity = getConfigInt(config, "velocity", 10) / 10.0D;
-		tickInterval = getConfigInt(config, "animation-speed", 2);
-		geyserHeight = getConfigInt(config, "geyser-height", 4);
-		obeyLos = getConfigBoolean(config, "obey-los", true);
-		targetPlayers = getConfigBoolean(config, "target-players", false);
-		checkPlugins = getConfigBoolean(config, "check-plugins", true);
-		strNoTarget = getConfigString(config, "str-no-target", "No target found.");
+		damage = getConfigInt("damage", 0);
+		velocity = getConfigInt("velocity", 10) / 10.0D;
+		tickInterval = getConfigInt("animation-speed", 2);
+		geyserHeight = getConfigInt("geyser-height", 4);
+		obeyLos = getConfigBoolean("obey-los", true);
+		targetPlayers = getConfigBoolean("target-players", false);
+		checkPlugins = getConfigBoolean("check-plugins", true);
+		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
 
 	@Override

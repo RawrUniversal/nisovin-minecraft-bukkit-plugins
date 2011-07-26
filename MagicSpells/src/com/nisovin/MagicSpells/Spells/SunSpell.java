@@ -15,8 +15,8 @@ public class SunSpell extends ChanneledSpell {
 	public SunSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		timeToSet = getConfigInt(config, "time-to-set", 0);
-		strAnnounce = getConfigString(config, "str-announce", "The sun suddenly appears in the sky.");
+		timeToSet = getConfigInt("time-to-set", 0);
+		strAnnounce = getConfigString("str-announce", "The sun suddenly appears in the sky.");
 	}
 
 	@Override

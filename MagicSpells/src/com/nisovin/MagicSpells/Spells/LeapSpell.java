@@ -22,9 +22,9 @@ public class LeapSpell extends InstantSpell {
 	public LeapSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		forwardVelocity = getConfigInt(config, "forward-velocity", 40) / 10D;
-		upwardVelocity = getConfigInt(config, "upward-velocity", 15) / 10D;
-		cancelDamage = getConfigBoolean(config, "cancel-damage", true);
+		forwardVelocity = getConfigInt("forward-velocity", 40) / 10D;
+		upwardVelocity = getConfigInt("upward-velocity", 15) / 10D;
+		cancelDamage = getConfigBoolean("cancel-damage", true);
 		
 		if (cancelDamage) {
 			addListener(Event.Type.ENTITY_DAMAGE);

@@ -27,6 +27,7 @@ import org.bukkit.util.config.Configuration;
 
 public abstract class Spell implements Comparable<Spell> {
 
+	private Configuration config;
 	protected String internalName;
 	protected String name;
 	protected String description;
@@ -43,6 +44,7 @@ public abstract class Spell implements Comparable<Spell> {
 	private HashMap<String, Long> lastCast;
 	
 	public Spell(Configuration config, String spellName) {
+		this.config = config;
 		this.internalName = spellName;
 		this.name = config.getString("spells." + spellName + ".name", spellName);
 		this.description = config.getString("spells." + spellName + ".description", "");
@@ -82,23 +84,23 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 	}
 	
-	protected int getConfigInt(Configuration config, String key, int defaultValue) {
+	protected int getConfigInt(String key, int defaultValue) {
 		return config.getInt("spells." + internalName + "." + key, defaultValue);
 	}
 	
-	protected boolean getConfigBoolean(Configuration config, String key, boolean defaultValue) {
+	protected boolean getConfigBoolean(String key, boolean defaultValue) {
 		return config.getBoolean("spells." + internalName + "." + key, defaultValue);
 	}
 	
-	protected String getConfigString(Configuration config, String key, String defaultValue) {
+	protected String getConfigString(String key, String defaultValue) {
 		return config.getString("spells." + internalName + "." + key, defaultValue);
 	}
 	
-	protected List<Integer> getConfigIntList(Configuration config, String key, List<Integer> defaultValue) {
+	protected List<Integer> getConfigIntList(String key, List<Integer> defaultValue) {
 		return config.getIntList("spells." + internalName + "." + key, defaultValue);
 	}
 	
-	protected List<String> getConfigStringList(Configuration config, String key, List<String> defaultValue) {
+	protected List<String> getConfigStringList(String key, List<String> defaultValue) {
 		return config.getStringList("spells." + internalName + "." + key, defaultValue);
 	}
 

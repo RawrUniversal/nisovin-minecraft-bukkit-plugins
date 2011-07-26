@@ -33,15 +33,15 @@ public class SummonSpell extends ChanneledSpell {
 	public SummonSpell(Configuration config, String spellName) {
 		super(config, spellName);		
 		
-		requireExactName = getConfigBoolean(config, "require-exact-name", false);
-		requireAcceptance = getConfigBoolean(config, "require-acceptance", true);
-		maxAcceptDelay = getConfigInt(config, "max-accept-delay", 90);
-		acceptCommand = getConfigString(config, "accept-command", "accept");
-		strUsage = getConfigString(config, "str-usage", "Usage: /cast summon <playername>, or /cast summon \nwhile looking at a sign with a player name on the first line.");
-		strNoTarget = getConfigString(config, "str-no-target", "Target player not found.");
-		strSummonPending = getConfigString(config, "str-summon-pending", "You are being summoned! Type /accept to teleport.");
-		strSummonAccepted = getConfigString(config, "str-summon-accepted", "You have been summoned.");
-		strSummonExpired = getConfigString(config, "str-summon-expired", "The summon has expired.");
+		requireExactName = getConfigBoolean("require-exact-name", false);
+		requireAcceptance = getConfigBoolean("require-acceptance", true);
+		maxAcceptDelay = getConfigInt("max-accept-delay", 90);
+		acceptCommand = getConfigString("accept-command", "accept");
+		strUsage = getConfigString("str-usage", "Usage: /cast summon <playername>, or /cast summon \nwhile looking at a sign with a player name on the first line.");
+		strNoTarget = getConfigString("str-no-target", "Target player not found.");
+		strSummonPending = getConfigString("str-summon-pending", "You are being summoned! Type /accept to teleport.");
+		strSummonAccepted = getConfigString("str-summon-accepted", "You have been summoned.");
+		strSummonExpired = getConfigString("str-summon-expired", "The summon has expired.");
 
 		if (requireAcceptance) {
 			addListener(Event.Type.PLAYER_COMMAND_PREPROCESS);

@@ -34,17 +34,17 @@ public class TomeSpell extends CommandSpell {
 		listener = new BookListener();
 		BookWorm.registerListener(listener);
 		
-		cancelReadOnLearn = getConfigBoolean(config, "cancel-read-on-learn", true);
-		allowOverwrite = getConfigBoolean(config, "allow-overwrite", false);
-		defaultUses = getConfigInt(config, "default-uses", -1);
-		maxUses = getConfigInt(config, "max-uses", 5);
-		strUsage = getConfigString(config, "str-usage", "Usage: While holding a book, /cast " + name + " <spell> [uses]");
-		strNoSpell = getConfigString(config, "str-no-spell", "You do not know a spell with that name.");
-		strNoBook = getConfigString(config, "str-no-book", "You must be holding a book.");
-		strAlreadyHasSpell = getConfigString(config, "str-already-has-spell", "That book already contains a spell.");
-		strAlreadyKnown = getConfigString(config, "str-already-known", "You already know the %s spell.");
-		strCantLearn = getConfigString(config, "str-cant-learn", "You cannot learn the spell in this tome.");
-		strLearned = getConfigString(config, "str-learned", "You have learned the %s spell.");
+		cancelReadOnLearn = getConfigBoolean("cancel-read-on-learn", true);
+		allowOverwrite = getConfigBoolean("allow-overwrite", false);
+		defaultUses = getConfigInt("default-uses", -1);
+		maxUses = getConfigInt("max-uses", 5);
+		strUsage = getConfigString("str-usage", "Usage: While holding a book, /cast " + name + " <spell> [uses]");
+		strNoSpell = getConfigString("str-no-spell", "You do not know a spell with that name.");
+		strNoBook = getConfigString("str-no-book", "You must be holding a book.");
+		strAlreadyHasSpell = getConfigString("str-already-has-spell", "That book already contains a spell.");
+		strAlreadyKnown = getConfigString("str-already-known", "You already know the %s spell.");
+		strCantLearn = getConfigString("str-cant-learn", "You cannot learn the spell in this tome.");
+		strLearned = getConfigString("str-learned", "You have learned the %s spell.");
 	}
 
 	@Override

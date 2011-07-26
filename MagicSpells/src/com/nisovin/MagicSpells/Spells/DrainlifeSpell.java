@@ -31,12 +31,12 @@ public class DrainlifeSpell extends InstantSpell {
 	public DrainlifeSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		damage = getConfigInt(config, "damage", 2);
-		heal = getConfigInt(config, "heal", 2);
-		animationSpeed = getConfigInt(config, "animation-speed", 2);
-		obeyLos = getConfigBoolean(config, "obey-los", true);
-		targetPlayers = getConfigBoolean(config, "target-players", false);
-		checkPlugins = getConfigBoolean(config, "check-plugins", true);
+		damage = getConfigInt("damage", 2);
+		heal = getConfigInt("heal", 2);
+		animationSpeed = getConfigInt("animation-speed", 2);
+		obeyLos = getConfigBoolean("obey-los", true);
+		targetPlayers = getConfigBoolean("target-players", false);
+		checkPlugins = getConfigBoolean("check-plugins", true);
 	}
 	
 	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
