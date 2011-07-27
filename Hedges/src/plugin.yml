@@ -1,0 +1,4 @@
+name: Hedges
+main: com.nisovin.hedges.Hedges
+version: 1.0
+description: Allow leaves to be placed without decaying.
