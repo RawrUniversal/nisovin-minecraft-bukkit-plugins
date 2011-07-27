@@ -1,5 +1,6 @@
 general:
     debug: false
+    alt-config: altConfig.yml
     str-cast-usage: |
         Usage: /cast <spell>. 
         Use /cast list to see a list of spells.

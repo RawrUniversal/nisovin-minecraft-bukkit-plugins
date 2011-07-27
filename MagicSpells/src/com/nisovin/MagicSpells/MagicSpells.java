@@ -30,6 +30,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.MagicSpells.Spells.*;
+import com.nisovin.MagicSpells.Util.MagicConfig;
 
 public class MagicSpells extends JavaPlugin {
 
@@ -106,8 +107,7 @@ public class MagicSpells extends JavaPlugin {
 		
 		// load config
 		loadConfigFromJar();
-		Configuration config = this.getConfiguration();
-		config.load();
+		Configuration config = new MagicConfig(new File(this.getDataFolder(), "config.yml"));
 		debug = config.getBoolean("general.debug", false);
 		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
