@@ -19,8 +19,10 @@ public class TomeSpell extends CommandSpell {
 	private boolean allowOverwrite;
 	private int defaultUses;
 	private int maxUses;
+	private boolean requireTeachPerm;
 	private String strUsage;
 	private String strNoSpell;
+	private String strCantTeach;
 	private String strNoBook;
 	private String strAlreadyHasSpell;
 	private String strAlreadyKnown;
@@ -38,8 +40,10 @@ public class TomeSpell extends CommandSpell {
 		allowOverwrite = getConfigBoolean("allow-overwrite", false);
 		defaultUses = getConfigInt("default-uses", -1);
 		maxUses = getConfigInt("max-uses", 5);
+		requireTeachPerm = getConfigBoolean("require-teach-perm", true);
 		strUsage = getConfigString("str-usage", "Usage: While holding a book, /cast " + name + " <spell> [uses]");
 		strNoSpell = getConfigString("str-no-spell", "You do not know a spell with that name.");
+		strCantTeach = getConfigString("str-cant-teach", "You cannot create a tome with that spell.");
 		strNoBook = getConfigString("str-no-book", "You must be holding a book.");
 		strAlreadyHasSpell = getConfigString("str-already-has-spell", "That book already contains a spell.");
 		strAlreadyKnown = getConfigString("str-already-known", "You already know the %s spell.");
@@ -60,6 +64,9 @@ public class TomeSpell extends CommandSpell {
 				if (spell == null) {
 					// fail -- no spell
 					sendMessage(player, strNoSpell);
+					return PostCastAction.ALREADY_HANDLED;
+				} else if (requireTeachPerm && !MagicSpells.getSpellbook(player).canTeach(spell)) {
+					sendMessage(player, strCantTeach);
 					return PostCastAction.ALREADY_HANDLED;
 				}
 			}

@@ -543,12 +543,14 @@ spells:
         ignore-cast-perm: false
         set-unstackable: true
         charge-reagents-for-spell-per-charge: false
+        require-teach-perm: true
         str-scroll-over: "Spell Scroll: %s (%u uses remaining)"
         str-usage: |
             You must hold a single blank paper 
             and type /cast scroll <spell> <uses>.
         str-fail: You cannot create a spell scroll at this time.
         str-no-spell: You do not know a spell by that name.
+        str-cant-teach: You cannot create a tome with that spell.
         str-cast-self: You have created a spell scroll for %s.
         str-on-use: "Spell Scroll: %s used. %u uses remaining."
     stealth:
@@ -630,8 +632,10 @@ spells:
         allow-overwrite: false
         max-uses: -1
         default-uses: -1
+        require-teach-perm: true
         str-usage: "Usage: While holding a book, /cast tome <spell>"
         str-no-spell: You do not know a spell with that name.
+        str-cant-teach: You cannot create a tome with that spell.
         str-no-book: You must be holding a book.
         str-already-has-spell: That book already contains a spell.
         str-already-known: You already know the %s spell.

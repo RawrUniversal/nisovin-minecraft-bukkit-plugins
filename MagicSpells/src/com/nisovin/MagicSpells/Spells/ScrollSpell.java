@@ -30,12 +30,14 @@ public class ScrollSpell extends CommandSpell {
 	private boolean ignoreCastPerm;
 	private boolean setUnstackable;
 	private boolean chargeReagentsForSpellPerCharge;
+	private boolean requireTeachPerm;
 	private String stackByDataVar;
 	private int maxScrolls;
 	private String strScrollOver;
 	private String strUsage;
 	private String strFail;
 	private String strNoSpell;
+	private String strCantTeach;
 	private String strOnUse;
 	
 	private HashMap<Short,Spell> scrollSpells;
@@ -54,12 +56,14 @@ public class ScrollSpell extends CommandSpell {
 		ignoreCastPerm = getConfigBoolean("ignore-cast-perm", false);
 		setUnstackable = getConfigBoolean("set-unstackable", true);
 		chargeReagentsForSpellPerCharge = getConfigBoolean("charge-reagents-for-spell-per-charge", false);
+		requireTeachPerm = getConfigBoolean("require-teach-perm", true);
 		stackByDataVar = getConfigString("stack-by-data-var", "bj");
 		maxScrolls = getConfigInt("max-scrolls", 500);
 		strScrollOver = getConfigString("str-scroll-over", "Spell Scroll: %s (%u uses remaining)");
 		strUsage = getConfigString("str-usage", "You must hold a single blank paper \nand type /cast scroll <spell> <uses>.");
 		strFail = getConfigString("str-fail", "You cannot create a spell scroll at this time.");
 		strNoSpell = getConfigString("str-no-spell", "You do not know a spell by that name.");
+		strCantTeach = getConfigString("str-cant-teach", "You cannot create a scroll with that spell.");
 		strOnUse = getConfigString("str-on-use", "Spell Scroll: %s used. %u uses remaining.");
 		
 		addListener(Event.Type.PLAYER_INTERACT);
@@ -138,6 +142,9 @@ public class ScrollSpell extends CommandSpell {
 			if (spell == null) {
 				// fail -- no such spell
 				sendMessage(player, strNoSpell);
+				return PostCastAction.ALREADY_HANDLED;
+			} else if (requireTeachPerm && !MagicSpells.getSpellbook(player).canTeach(spell)) {
+				sendMessage(player, strCantTeach);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
