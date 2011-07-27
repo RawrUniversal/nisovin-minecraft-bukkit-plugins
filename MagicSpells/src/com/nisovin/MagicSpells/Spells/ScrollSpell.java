@@ -31,6 +31,7 @@ public class ScrollSpell extends CommandSpell {
 	private boolean setUnstackable;
 	private boolean chargeReagentsForSpellPerCharge;
 	private boolean requireTeachPerm;
+	private boolean requireScrollCastPermOnUse;
 	private String stackByDataVar;
 	private int maxScrolls;
 	private String strScrollOver;
@@ -39,6 +40,7 @@ public class ScrollSpell extends CommandSpell {
 	private String strNoSpell;
 	private String strCantTeach;
 	private String strOnUse;
+	private String strUseFail;
 	
 	private HashMap<Short,Spell> scrollSpells;
 	private HashMap<Short,Integer> scrollUses;
@@ -57,6 +59,7 @@ public class ScrollSpell extends CommandSpell {
 		setUnstackable = getConfigBoolean("set-unstackable", true);
 		chargeReagentsForSpellPerCharge = getConfigBoolean("charge-reagents-for-spell-per-charge", false);
 		requireTeachPerm = getConfigBoolean("require-teach-perm", true);
+		requireScrollCastPermOnUse = getConfigBoolean("require-scroll-cast-perm-on-use", true);
 		stackByDataVar = getConfigString("stack-by-data-var", "bj");
 		maxScrolls = getConfigInt("max-scrolls", 500);
 		strScrollOver = getConfigString("str-scroll-over", "Spell Scroll: %s (%u uses remaining)");
@@ -65,6 +68,7 @@ public class ScrollSpell extends CommandSpell {
 		strNoSpell = getConfigString("str-no-spell", "You do not know a spell by that name.");
 		strCantTeach = getConfigString("str-cant-teach", "You cannot create a scroll with that spell.");
 		strOnUse = getConfigString("str-on-use", "Spell Scroll: %s used. %u uses remaining.");
+		strUseFail = getConfigString("str-use-fail", "Unable to use this scroll right now.");
 		
 		addListener(Event.Type.PLAYER_INTERACT);
 		addListener(Event.Type.PLAYER_ITEM_HELD);
@@ -267,8 +271,15 @@ public class ScrollSpell extends CommandSpell {
 				Spell spell = scrollSpells.get(id);
 			
 				if (spell != null) {
-					// make a copy of the base scroll
+					// check for permission
+					if (requireScrollCastPermOnUse && !MagicSpells.getSpellbook(player).canCast(this)) {
+						sendMessage(player, strUseFail);
+						return;
+					}
+					
+					// check for base scroll
 					if (id < 0) {
+						// make a copy of the base scroll
 						short newId = getNextId();
 						if (newId == 0) {
 							// fail -- no more scroll space
