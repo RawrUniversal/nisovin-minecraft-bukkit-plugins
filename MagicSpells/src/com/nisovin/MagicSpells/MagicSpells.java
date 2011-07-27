@@ -92,7 +92,7 @@ public class MagicSpells extends JavaPlugin {
 		new MagicBlockListener(this);
 	}
 	
-	public void load() {
+	private void load() {
 		plugin = this;
 		
 		// create storage stuff
@@ -416,24 +416,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	public static Spell getSpellByInternalName(String spellName) {
-		return spells.get(spellName);
-	}
-	
-	public static Spell getSpellByInGameName(String spellName) {
-		return spellNames.get(spellName);
-	}
-	
-	public static Spellbook getSpellbook(Player player) {
-		Spellbook spellbook = spellbooks.get(player.getName());
-		if (spellbook == null) {
-			spellbook = new Spellbook(player, plugin);
-			spellbooks.put(player.getName(), spellbook);
-		}
-		return spellbook;
-	}
-	
-	public static void addSpellListener(Event.Type eventType, Spell spell) {
+	protected static void addSpellListener(Event.Type eventType, Spell spell) {
 		HashSet<Spell> spells = listeners.get(eventType);
 		if (spells == null) {
 			spells = new HashSet<Spell>();
@@ -442,7 +425,7 @@ public class MagicSpells extends JavaPlugin {
 		spells.add(spell);
 	}
 	
-	public static void removeSpellListener(Event.Type eventType, Spell spell) {
+	protected static void removeSpellListener(Event.Type eventType, Spell spell) {
 		HashSet<Spell> spells = listeners.get(eventType);
 		if (spells != null) {
 			spells.remove(spell);
@@ -518,12 +501,63 @@ public class MagicSpells extends JavaPlugin {
 		return false;
 	}
 	
+	/**
+	 * Gets the instance of the MagicSpells plugin
+	 * @return the MagicSpells plugin
+	 */
+	public static MagicSpells getInstance() {
+		return plugin;
+	}
+	
+	/**
+	 * Gets a spell by its internal name (the key name in the config file)
+	 * @param spellName the internal name of the spell to find
+	 * @return the Spell found, or null if no spell with that name was found
+	 */
+	public static Spell getSpellByInternalName(String spellName) {
+		return spells.get(spellName);
+	}
+	
+	/**
+	 * Gets a spell by its in-game name (the name specified with the 'name' config option)
+	 * @param spellName the in-game name of the spell to find
+	 * @return the Spell found, or null if no spell with that name was found
+	 */
+	public static Spell getSpellByInGameName(String spellName) {
+		return spellNames.get(spellName);
+	}
+	
+	/**
+	 * Gets a player's spellbook, which contains known spells and handles spell permissions. 
+	 * If a player does not have a spellbook, one will be created.
+	 * @param player the player to get a spellbook for
+	 * @return the player's spellbook
+	 */
+	public static Spellbook getSpellbook(Player player) {
+		Spellbook spellbook = spellbooks.get(player.getName());
+		if (spellbook == null) {
+			spellbook = new Spellbook(player, plugin);
+			spellbooks.put(player.getName(), spellbook);
+		}
+		return spellbook;
+	}
+	
+	/**
+	 * Writes a debug message to the console if the debug option is enabled.
+	 * @param message the message to write to the console
+	 */
 	public static void debug(String message) {
 		if (MagicSpells.debug) {
 			plugin.getServer().getLogger().info("MagicSpells: " + message);
 		}
 	}
 	
+	/**
+	 * Teaches a player a spell (adds it to their spellbook)
+	 * @param player the player to teach
+	 * @param spellName the spell name, either the in-game name or the internal name
+	 * @return whether the spell was taught to the player
+	 */
 	public static boolean teachSpell(Player player, String spellName) {
 		Spell spell = spellNames.get(spellName);
 		if (spell == null) {
@@ -544,7 +578,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	public void loadConfigFromJar() {
+	private void loadConfigFromJar() {
 		File configFile = new File(this.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             InputStream fis = getClass().getResourceAsStream("/config.yml");

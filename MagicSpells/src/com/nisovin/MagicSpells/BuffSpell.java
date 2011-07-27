@@ -75,12 +75,21 @@ public abstract class BuffSpell extends Spell {
 		return castByCommand;
 	}
 	
+	/**
+	 * Begins counting the spell duration for a player
+	 * @param player the player to begin counting duration
+	 */
 	protected void startSpellDuration(Player player) {
 		if (duration > 0 && durationStartTime != null) {
 			durationStartTime.put(player.getName(), System.currentTimeMillis());
 		}
 	}
 	
+	/**
+	 * Checks whether the spell's duration has expired for a player
+	 * @param player the player to check
+	 * @return true if the spell has expired, false otherwise
+	 */
 	protected boolean isExpired(Player player) {
 		if (duration <= 0 || durationStartTime == null) {
 			return false;
@@ -96,6 +105,12 @@ public abstract class BuffSpell extends Spell {
 		}
 	}
 	
+	/**
+	 * Adds a use to the spell for the player. If the number of uses exceeds the amount allowed, the spell will immediately expire.
+	 * This does not automatically charge the use cost.
+	 * @param player the player to add the use for
+	 * @return the player's current number of uses (returns 0 if the use counting feature is disabled)
+	 */
 	protected int addUse(Player player) {
 		if (numUses > 0 || (useCost != null && useCostInterval > 0)) {
 			Integer uses = useCounter.get(player.getName());
@@ -116,6 +131,11 @@ public abstract class BuffSpell extends Spell {
 		}
 	}
 	
+	/**
+	 * Removes this spell's use cost from the player's inventory. 
+	 * @param player the player to remove the cost from
+	 * @return true if the reagents were removed, or if the use cost is disabled, false otherwise
+	 */
 	protected boolean chargeUseCost(Player player) {
 		if (useCost != null && useCostInterval > 0 && useCounter != null && useCounter.containsKey(player.getName())) {
 			int uses = useCounter.get(player.getName());
@@ -132,6 +152,11 @@ public abstract class BuffSpell extends Spell {
 		return true;
 	}
 	
+	/**
+	 * Turns off this spell for the specified player. This can be called from many situations, including when the spell expires or the uses run out.
+	 * When overriding this function, you should always be sure to call super.turnOff(player).
+	 * @param player
+	 */
 	protected void turnOff(Player player) {
 		if (useCounter != null) useCounter.remove(player.getName());
 		if (durationStartTime != null) durationStartTime.remove(player.getName());

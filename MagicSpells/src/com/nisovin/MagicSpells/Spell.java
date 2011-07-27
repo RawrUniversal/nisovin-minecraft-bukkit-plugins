@@ -84,14 +84,38 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 	}
 	
+	/**
+	 * Access an integer config value for this spell.
+	 * 
+	 * @param key The key of the config value
+	 * @param defaultValue The value to return if it does not exist in the config
+	 * 
+	 * @return The config value, or defaultValue if it does not exist
+	 */
 	protected int getConfigInt(String key, int defaultValue) {
 		return config.getInt("spells." + internalName + "." + key, defaultValue);
 	}
 	
+	/**
+	 * Access a boolean config value for this spell.
+	 * 
+	 * @param key The key of the config value
+	 * @param defaultValue The value to return if it does not exist in the config
+	 * 
+	 * @return The config value, or defaultValue if it does not exist
+	 */
 	protected boolean getConfigBoolean(String key, boolean defaultValue) {
 		return config.getBoolean("spells." + internalName + "." + key, defaultValue);
 	}
 	
+	/**
+	 * Access a String config value for this spell.
+	 * 
+	 * @param key The key of the config value
+	 * @param defaultValue The value to return if it does not exist in the config
+	 * 
+	 * @return The config value, or defaultValue if it does not exist
+	 */
 	protected String getConfigString(String key, String defaultValue) {
 		return config.getString("spells." + internalName + "." + key, defaultValue);
 	}
@@ -150,8 +174,21 @@ public abstract class Spell implements Comparable<Spell> {
 		return state;
 	}
 	
+	/**
+	 * This method is called when a player casts a spell, either by command, with a wand item, or otherwise.
+	 * @param player the player casting the spell
+	 * @param state the state of the spell cast (normal, on cooldown, missing reagents, etc)
+	 * @param args the spell arguments, if cast by command
+	 * @return the action to take after the spell is processed
+	 */
 	protected abstract PostCastAction castSpell(Player player, SpellCastState state, String[] args);
 
+	/**
+	 * This method is called when the spell is cast from the console.
+	 * @param sender the console sender.
+	 * @param args the command arguments
+	 * @return true if the spell was handled, false otherwise
+	 */
 	public boolean castFromConsole(CommandSender sender, String[] args) {
 		return false;
 	}
@@ -168,6 +205,11 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 	}
 	
+	/**
+	 * Check whether this spell is currently on cooldown for the specified player
+	 * @param player The player to check
+	 * @return whether the spell is on cooldown
+	 */
 	protected boolean onCooldown(Player player) {
 		if (cooldown == 0 || (MagicSpells.castNoCooldown.contains(player.getName().toLowerCase()))) {
 			return false;
@@ -182,6 +224,11 @@ public abstract class Spell implements Comparable<Spell> {
 		return false;
 	}
 	
+	/**
+	 * Get how many seconds remain on the cooldown of this spell for the specified player
+	 * @param player The player to check
+	 * @return The number of seconds remaining in the cooldown
+	 */
 	protected int getCooldown(Player player) {
 		if (cooldown <= 0) {
 			return 0;
@@ -195,20 +242,43 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 	}
 	
+	/**
+	 * Begins the cooldown for the spell for the specified player
+	 * @param player The player to set the cooldown for
+	 */
 	protected void setCooldown(Player player) {
 		if (cooldown > 0) {
 			lastCast.put(player.getName(), System.currentTimeMillis());
 		}
 	}
 	
+	/**
+	 * Checks if a player has the reagents required to cast this spell
+	 * @param player the player to check
+	 * @return true if the player has the reagents, false otherwise
+	 */
 	protected boolean hasReagents(Player player) {
 		return hasReagents(player, cost, healthCost, manaCost);
 	}
 	
+	/**
+	 * Checks if a player has the specified reagents
+	 * @param player the player to check
+	 * @param cost the reagents to look for
+	 * @return true if the player has the reagents, false otherwise
+	 */
 	protected boolean hasReagents(Player player, ItemStack[] cost) {
 		return hasReagents(player, cost, 0, 0);
 	}
 	
+	/**
+	 * Checks if a player has the specified reagents, including health and mana
+	 * @param player the player to check
+	 * @param reagents the inventory item reagents to look for
+	 * @param healthCost the health cost, in half-hearts
+	 * @param manaCost the mana cost
+	 * @return true if the player has all the reagents, false otherwise
+	 */
 	protected boolean hasReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost) {
 		if (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase())) {
 			return true;
@@ -230,14 +300,33 @@ public abstract class Spell implements Comparable<Spell> {
 		return true;		
 	}
 	
+	/**
+	 * Removes the reagent cost of this spell from the player's inventoryy.
+	 * This does not check if the player has the reagents, use hasReagents() for that.
+	 * @param player the player to remove reagents from
+	 */
 	protected void removeReagents(Player player) {
 		removeReagents(player, cost, healthCost, manaCost);
 	}
 	
+	/**
+	 * Removes the specified reagents from the player's inventoryy.
+	 * This does not check if the player has the reagents, use hasReagents() for that.
+	 * @param player the player to remove the reagents from
+	 * @param reagents the inventory item reagents to remove
+	 */
 	protected void removeReagents(Player player, ItemStack[] reagents) {
 		removeReagents(player, reagents, 0, 0);
 	}
 	
+	/**
+	 * Removes the specified reagents, including health and mana, from the player's inventory.
+	 * This does not check if the player has the reagents, use hasReagents() for that.
+	 * @param player the player to remove the reagents from
+	 * @param reagents the inventory item reagents to remove
+	 * @param healthCost the health to remove
+	 * @param manaCost the mana to remove
+	 */
 	protected void removeReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost) {
 		if (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase())) {
 			return;
@@ -271,7 +360,7 @@ public abstract class Spell implements Comparable<Spell> {
 		return false;
 	}
 	
-	public void removeFromInventory(Inventory inventory, ItemStack item) {
+	private void removeFromInventory(Inventory inventory, ItemStack item) {
 		int amt = item.getAmount();
 		ItemStack[] items = inventory.getContents();
 		for (int i = 0; i < items.length; i++) {
@@ -291,7 +380,13 @@ public abstract class Spell implements Comparable<Spell> {
 		inventory.setContents(items);
 	}
 	
-	static protected String formatMessage(String message, String... replacements) {
+	/**
+	 * Formats a string by performing the specified replacements.
+	 * @param message the string to format
+	 * @param replacements the replacements to make, in pairs.
+	 * @return the formatted string
+	 */
+	static public String formatMessage(String message, String... replacements) {
 		if (message == null) return null;
 		
 		String msg = message;
@@ -301,11 +396,22 @@ public abstract class Spell implements Comparable<Spell> {
 		return msg;
 	}
 	
-	static protected void sendMessage(Player player, String message, String... replacements) {
+	/**
+	 * Sends a message to a player, first making the specified replacements. This method also does color replacement and has multi-line functionality.
+	 * @param player the player to send the message to
+	 * @param message the message to send
+	 * @param replacements the replacements to be made, in pairs
+	 */
+	static public void sendMessage(Player player, String message, String... replacements) {
 		sendMessage(player, formatMessage(message, replacements));
 	}
 	
-	static protected void sendMessage(Player player, String message) {
+	/**
+	 * Sends a message to a player. This method also does color replacement and has multi-line functionality.
+	 * @param player the player to send the message to
+	 * @param message the message to send
+	 */
+	static public void sendMessage(Player player, String message) {
 		if (message != null && !message.equals("")) {
 			String [] msgs = message.replaceAll("&([0-9a-f])", "\u00A7$1").split("\n");
 			for (String msg : msgs) {
@@ -316,10 +422,21 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 	}
 	
+	/**
+	 * Sends a message to all players near the specified player, within the configured broadcast range.
+	 * @param player the "center" player used to find nearby players
+	 * @param message the message to send
+	 */
 	protected void sendMessageNear(Player player, String message) {
 		sendMessageNear(player, message, broadcastRange);
 	}
 	
+	/**
+	 * Sends a message to all players near the specified player, within the specified broadcast range.
+	 * @param player the "center" player used to find nearby players
+	 * @param message the message to send
+	 * @param range the broadcast range
+	 */
 	protected void sendMessageNear(Player player, String message, int range) {
 		if (message != null && !message.equals("")) {
 			String [] msgs = message.replaceAll("&([0-9a-f])", "\u00A7$1").split("\n");
@@ -364,17 +481,31 @@ public abstract class Spell implements Comparable<Spell> {
 		return this.healthCost;
 	}
 	
+	/**
+	 * Makes this spell listen for the specified event
+	 * @param eventType the event to listen for
+	 */
 	protected void addListener(Event.Type eventType) {
 		MagicSpells.addSpellListener(eventType, this);
 	}
 	
+	/**
+	 * Makes this spell stop listening for the specified event
+	 * @param eventType the event
+	 */
 	protected void removeListener(Event.Type eventType) {
 		MagicSpells.removeSpellListener(eventType, this);
 	}
 	
-	protected void initialize() {		
+	/**
+	 * This method is called immediately after all spells have been loaded into the plugin.
+	 */
+	protected void initialize() {
 	}
 	
+	/**
+	 * This methid is called when the plugin is being disabled, for any reason.
+	 */
 	protected void turnOff() {		
 	}
 	

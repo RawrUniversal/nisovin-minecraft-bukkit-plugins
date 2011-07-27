@@ -8,7 +8,6 @@ import com.nisovin.MagicSpells.InstantSpell;
 public class HealSpell extends InstantSpell {
 	
 	private int healAmount;
-	private int precision;
 	private boolean obeyLos;
 	private String strNoTarget;
 	private String strMaxHealth;
@@ -18,7 +17,6 @@ public class HealSpell extends InstantSpell {
 		super(config, spellName);
 		
 		healAmount = config.getInt("spells." + spellName + ".heal-amount", 10);
-		precision = config.getInt("spells." + spellName + ".precision", 15);
 		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No target to heal.");
 		strMaxHealth = config.getString("spells." + spellName + ".str-max-health", "%t is already at max health.");
@@ -28,7 +26,7 @@ public class HealSpell extends InstantSpell {
 	@Override
 	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Player target = getTargetedPlayer(player, range, precision, obeyLos);
+			Player target = getTargetedPlayer(player, range, obeyLos);
 			if (target == null) {
 				sendMessage(player, strNoTarget);
 			} else if (target.getHealth() == 20) {

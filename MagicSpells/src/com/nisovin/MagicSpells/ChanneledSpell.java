@@ -58,6 +58,12 @@ public abstract class ChanneledSpell extends Spell {
 		}
 	}
 	
+	/**
+	 * Adds a player to the list of channelers for the channeling "session" defined by the provided key.
+	 * @param key the name of the channeling session
+	 * @param player the player to add as a channeler
+	 * @return whether the player was added to the list of channelers (can return false if the player was out of range, for example)
+	 */
 	protected boolean addChanneler(final String key, Player player) {
 		HashMap<Player,Long> c = channelers.get(key);
 		
@@ -111,6 +117,11 @@ public abstract class ChanneledSpell extends Spell {
 		return true;
 	}
 	
+	/**
+	 * Gets the current number of channelers for the specified channeling "session"
+	 * @param key the channeling session name
+	 * @return the number of channelers for the session
+	 */
 	protected int getChannelerCount(String key) {
 		if (channelers.containsKey(key)) {
 			return channelers.get(key).size();
@@ -118,7 +129,6 @@ public abstract class ChanneledSpell extends Spell {
 			return 0;
 		}
 	}
-	
 	private void finishSpell(String key, HashMap<Player,Long> c) {
 		if (c == null) {
 			c = channelers.get(key);
@@ -134,6 +144,11 @@ public abstract class ChanneledSpell extends Spell {
 		locations.remove(key);
 	}
 	
+	/**
+	 * This method is called when the number of channelers for the session meets the required amount, and the spell is ready to perform its action.
+	 * @param key the name of the channeling session
+	 * @param location the location of the first channeling player
+	 */
 	protected abstract void finishSpell(String key, Location location);
 	
 	@Override

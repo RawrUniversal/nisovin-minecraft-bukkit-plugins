@@ -17,6 +17,7 @@ public abstract class CommandSpell extends Spell {
 		return true;
 	}
 	
+	@Override
 	public abstract boolean castFromConsole(CommandSender sender, String[] args);
 
 }

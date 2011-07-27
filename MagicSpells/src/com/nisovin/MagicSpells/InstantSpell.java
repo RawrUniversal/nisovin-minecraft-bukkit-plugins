@@ -33,19 +33,37 @@ public abstract class InstantSpell extends Spell {
 		return castByCommand;
 	}
 
+	/**
+	 * Checks whether two locations are within a certain distance from each other.
+	 * @param loc1 The first location
+	 * @param loc2 The second location
+	 * @param range The maximum distance
+	 * @return true if the distance is less than the range, false otherwise
+	 */
 	protected boolean inRange(Location loc1, Location loc2, int range) {
-		return sq(loc1.getX()-loc2.getX()) + sq(loc1.getY()-loc2.getY()) + sq(loc1.getZ()-loc2.getZ()) < sq(range);
+		return loc1.distanceSquared(loc2) < range*range;
 	}
 	
-	private double sq(double n) {
-		return n*n;
-	}
-	
+	/**
+	 * Gets the living entity a player is currently looking at
+	 * @param player player to get target for
+	 * @param range the maximum range to check
+	 * @param targetPlayers whether to allow players as targets
+	 * @param checkLos whether to obey line-of-sight restrictions
+	 * @return the targeted LivingEntity, or null if none was found
+	 */
 	protected LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean checkLos) {
 		return getTargetedEntity(player, range, targetPlayers, true, checkLos);
 	}
 	
-	protected Player getTargetedPlayer(Player player, int range, int variance, boolean checkLos) {
+	/**
+	 * Gets the player a player is currently looking at, ignoring other living entities
+	 * @param player the player to get the target for
+	 * @param range the maximum range to check
+	 * @param checkLos whether to obey line-of-sight restrictions
+	 * @return the targeted Player, or null if none was found
+	 */
+	protected Player getTargetedPlayer(Player player, int range, boolean checkLos) {
 		LivingEntity entity = getTargetedEntity(player, range, true, false, checkLos);
 		if (entity instanceof Player) {
 			return (Player)entity;
@@ -54,7 +72,7 @@ public abstract class InstantSpell extends Spell {
 		}
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos) {
+	private LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos) {
 		// get nearby living entities, filtered by player targeting options
 		List<Entity> ne = player.getNearbyEntities(range, range, range);
 		ArrayList<LivingEntity> entities = new ArrayList<LivingEntity>(); 
