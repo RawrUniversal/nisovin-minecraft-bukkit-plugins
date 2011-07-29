@@ -44,6 +44,7 @@ public class MagicSpells extends JavaPlugin {
 	public static List<String> castForFree;
 	protected static List<String> castNoCooldown;
 	
+	protected static boolean allowCycleToNoSpell;
 	protected static boolean ignoreDefaultBindings;
 	protected static List<Integer> losTransparentBlocks;
 	
@@ -66,6 +67,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static String strCastUsage;
 	protected static String strUnknownSpell;
 	protected static String strSpellChange;
+	protected static String strSpellChangeEmpty;
 	protected static String strOnCooldown;
 	public static String strMissingReagents;
 	protected static String strCantCast;
@@ -111,10 +113,12 @@ public class MagicSpells extends JavaPlugin {
 		debug = config.getBoolean("general.debug", false);
 		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
+		allowCycleToNoSpell = config.getBoolean("general.allow-cycle-to-no-spell", false);
 		opsHaveAllSpells = config.getBoolean("general.ops-have-all-spells", true);
 		strCastUsage = config.getString("general.str-cast-usage", "Usage: /cast <spell>. Use /cast list to see a list of spells.");
 		strUnknownSpell = config.getString("general.str-unknown-spell", "You do not know a spell with that name.");
 		strSpellChange = config.getString("general.str-spell-change", "You are now using the %s spell.");
+		strSpellChangeEmpty = config.getString("general.str-spell-change-empty", "You are no longer using a spell.");
 		strOnCooldown = config.getString("general.str-on-cooldown", "That spell is on cooldown.");
 		strMissingReagents = config.getString("general.str-missing-reagents", "You do not have the reagents for that spell.");
 		strCantCast = config.getString("general.str-cant-cast", "You can't cast that spell right now.");

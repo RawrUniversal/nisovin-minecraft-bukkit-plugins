@@ -6,6 +6,7 @@ general:
         Use /cast list to see a list of spells.
     str-unknown-spell: You do not know a spell with that name.
     str-spell-change: You are now using the %s spell.
+    str-spell-change-empty: You are no longer using a spell.
     str-on-cooldown: That spell is on cooldown (%c seconds remaining).
     str-missing-reagents: You do not have the required reagents for that spell.
     str-cant-cast: You can't cast that spell right now.
@@ -14,6 +15,7 @@ general:
     text-color: 3
     broadcast-range: 20
     use-permissions: false
+    allow-cycle-to-no-spell: false
     ops-have-all-spells: true
     cast-for-free:
         - admin1

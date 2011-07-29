@@ -55,7 +55,7 @@ public class Spellbook {
 		// sort spells or pre-select if just one
 		for (Integer i : itemSpells.keySet()) {
 			ArrayList<Spell> spells = itemSpells.get(i);
-			if (spells.size() == 1) {
+			if (spells.size() == 1 && !MagicSpells.allowCycleToNoSpell) {
 				activeSpells.put(i, 0);
 			} else {
 				Collections.sort(spells);
@@ -147,14 +147,20 @@ public class Spellbook {
 		return this.allSpells;
 	}
 	
-	public Spell nextSpell(int castItem) {
-		Integer i = activeSpells.get(castItem);
+	protected Spell nextSpell(int castItem) {
+		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
-			ArrayList<Spell> spells = itemSpells.get(castItem);
-			if (spells.size() > 1 || i.equals(-1)) {
+			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
+			if (spells.size() > 1 || i.equals(-1) || MagicSpells.allowCycleToNoSpell) {
 				i++;
 				if (i >= spells.size()) {
-					i = 0;
+					if (MagicSpells.allowCycleToNoSpell) {
+						activeSpells.put(castItem, -1);
+						Spell.sendMessage(player, MagicSpells.strSpellChangeEmpty);
+						return null;
+					} else {
+						i = 0;
+					}
 				}
 				activeSpells.put(castItem, i);
 				return spells.get(i);
@@ -194,6 +200,7 @@ public class Spellbook {
 			} else if (MagicSpells.ignoreDefaultBindings) {
 				return; // no cast item provided and ignoring default, so just stop here
 			}
+			MagicSpells.debug("        Cast item: " + item + (castItem!=0?" (custom)":" (default)"));
 			ArrayList<Spell> temp = itemSpells.get(item);
 			if (temp != null) {
 				temp.add(spell);
