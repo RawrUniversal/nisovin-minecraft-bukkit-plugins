@@ -1,0 +1,8 @@
+name: RealRP
+main: com.nisovin.realrp.RealRP
+version: 0.1
+author: nisovin
+commands:
+    spawnnpc:
+        description: Spawn an NPC
+        usage: /<command>
