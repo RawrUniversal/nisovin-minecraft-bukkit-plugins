@@ -8,6 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -45,6 +48,7 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean AUTO_CHAT_MODE = true;
 	protected static boolean BOOK_INFO_ACHIEVEMENT = true;
 	protected static boolean DROP_BOOKSHELF = false;
+	protected static boolean KEEP_ALL_BOOKS_LOADED = false;
 	
 	protected static int CLEAN_INTERVAL = 600;
 	protected static int REMOVE_DELAY = 300;
@@ -139,8 +143,18 @@ public class BookWorm extends JavaPlugin {
 		new BookWormContribInventoryListener(this);
 		
 		// start memory cleaner
-		if (CLEAN_INTERVAL > 0) {
+		if (CLEAN_INTERVAL > 0 && !KEEP_ALL_BOOKS_LOADED) {
 			unloader = new BookUnloader(this);
+		}
+		
+		// load all books
+		if (KEEP_ALL_BOOKS_LOADED) {
+			short maxId = getCurrentBookId();
+			if (maxId > 0) {
+				for (short i = 0; i < maxId; i++) {
+					getBookById(i);
+				}
+			}
 		}
 		
 		// initialize world guard
@@ -180,7 +194,7 @@ public class BookWorm extends JavaPlugin {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
-		if (sender.isOp() && args.length == 1 && args[0].equals("-reload")) {
+		if (sender.hasPermission("bookworm.reload") && args.length == 1 && args[0].equalsIgnoreCase("-reload")) {
 			for (Book book : books.values()) {
 				if (!book.isSaved()) {
 					book.save();
@@ -192,6 +206,47 @@ public class BookWorm extends JavaPlugin {
 			loadBooks();
 			loadConfig();
 			sender.sendMessage("BookWorm data reloaded.");
+		} else if (sender.hasPermission("bookworm.list") && args.length >= 1 && args[0].equalsIgnoreCase("-list")) {
+			ArrayList<Book> bookList = new ArrayList<Book>();
+			bookList.addAll(books.values());
+			Collections.sort(bookList, new Comparator<Book>() {
+				public int compare(Book book1, Book book2) {
+					return book1.getId() - book2.getId();
+				}
+			});
+			
+			int page = 0;
+			if (args.length > 1) {
+				page = Integer.parseInt(args[1]) - 1;
+			}
+			
+			int BOOKS_PER_PAGE = 10;
+			Book b;
+			for (int i = page*BOOKS_PER_PAGE; i < page*BOOKS_PER_PAGE+BOOKS_PER_PAGE && i < bookList.size(); i++) {
+				b = bookList.get(i);
+				sender.sendMessage(b.getId() + " - " + b.getAuthor() + " - " + b.getTitle());
+			}
+		} else if (sender.hasPermission("bookworm.search") && args.length > 2 && args[0].equalsIgnoreCase("-search")) {
+			ArrayList<Book> results = new ArrayList<Book>();
+			if (args[1].equalsIgnoreCase("author")) {
+				String author = args[2].toLowerCase();
+				for (Book book : books.values()) {
+					if (book.getAuthor().toLowerCase().contains(author)) {
+						results.add(book);
+					}
+				}
+			} else if (args[1].equalsIgnoreCase("title")) {
+				String title = "";
+				for (int i = 2; i < args.length; i++) {
+					title += args[i].toLowerCase() + " ";
+				}
+				title = title.trim();
+				for (Book book : books.values()) {
+					if (book.getTitle().toLowerCase().contains(title)) {
+						results.add(book);
+					}
+				}
+			}
 		} else if (sender instanceof Player) {
 			Player player = (Player)sender;
 			ItemStack inHand = player.getItemInHand();
@@ -454,6 +509,7 @@ public class BookWorm extends JavaPlugin {
 		AUTO_CHAT_MODE = config.getBoolean("general.auto-chat-mode", AUTO_CHAT_MODE);
 		BOOK_INFO_ACHIEVEMENT = config.getBoolean("general.book-info-achievement", BOOK_INFO_ACHIEVEMENT);
 		DROP_BOOKSHELF = config.getBoolean("general.drop-bookshelf-on-break", DROP_BOOKSHELF);
+		KEEP_ALL_BOOKS_LOADED = config.getBoolean("general.keep-all-books-loaded", KEEP_ALL_BOOKS_LOADED);
 
 		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
 		USE_PERMISSIONS_PLUGIN = config.getBoolean("general.use-permissions-plugin", USE_PERMISSIONS_PLUGIN);
@@ -531,6 +587,25 @@ public class BookWorm extends JavaPlugin {
 	}
 	
 	protected short getNextBookId() {
+		short id = (short) (getCurrentBookId() + 1);
+		if (id > 0) {
+			File file = new File(getDataFolder(), "bookid.txt");
+			PrintWriter writer = null;
+			try {
+				writer = new PrintWriter(new FileWriter(file, false));
+				writer.println(id);
+			} catch (IOException e) {
+				return -1;
+			} finally {
+				if (writer != null) {
+					writer.close();
+				}
+			}
+		}
+		return id;
+	}
+	
+	protected short getCurrentBookId() {
 		short id;
 		File file = new File(getDataFolder(), "bookid.txt");
 		if (!file.exists()) {
@@ -541,25 +616,13 @@ public class BookWorm extends JavaPlugin {
 				reader = new BufferedReader(new FileReader(file));
 				String s = reader.readLine();
 				id = Short.parseShort(s);
-				id++;
 			} catch (Exception e) {
-				return -1;
+				id = -1;
 			} finally {
 				try {
 					if (reader != null) reader.close();
 				} catch (Exception e) {
 				}
-			}
-		}
-		PrintWriter writer = null;
-		try {
-			writer = new PrintWriter(new FileWriter(file, false));
-			writer.println(id);
-		} catch (IOException e) {
-			return -1;
-		} finally {
-			if (writer != null) {
-				writer.close();
 			}
 		}
 		return id;

@@ -20,6 +20,12 @@ permissions:
             bookworm.remove.others: true
             bookworm.destroy.own: true
             bookworm.destroy.others: true
+    bookworm.reload:
+        description: Reload the config and book files
+        default: op
+    bookworm.list:
+        description: List all books
+        default: op
     bookworm.create:
         description: Create a new book
         default: true
