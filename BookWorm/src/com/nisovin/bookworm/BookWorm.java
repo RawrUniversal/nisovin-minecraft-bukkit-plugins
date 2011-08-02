@@ -193,6 +193,7 @@ public class BookWorm extends JavaPlugin {
 			bookshelves.clear();
 			bookmarks.clear();
 			loadBooks();
+			loadConfig();
 			sender.sendMessage("BookWorm data reloaded.");
 		} else if (sender instanceof Player) {
 			Player player = (Player)sender;

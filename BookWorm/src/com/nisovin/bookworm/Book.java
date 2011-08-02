@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.packet.PacketItemName;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class Book {
 	
@@ -41,6 +45,7 @@ public class Book {
 		this.loaded = true;
 		this.unsaved = true;
 		hiddenData = new HashMap<String,String>();
+		setItemName();
 	}
 	
 	private void generateContents() {
@@ -89,6 +94,15 @@ public class Book {
 		}
 		this.title = title;
 		unsaved = true;
+		setItemName();
+	}
+	
+	private void setItemName() {
+		SpoutManager.getItemManager().setItemName(Material.BOOK, this.id, BookWorm.S_READ_BOOK + ": " + this.title);
+		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+			SpoutPlayer sp = (SpoutPlayer)p;
+			sp.sendPacket(new PacketItemName(Material.BOOK.getId(), this.id, BookWorm.S_READ_BOOK + ": " + this.title));
+		}
 	}
 	
 	public String getContents() {
@@ -267,6 +281,7 @@ public class Book {
 			this.text = text;
 			this.loaded = true;
 			this.unsaved = false;
+			setItemName();
 			generateContents();
 			return true;
 		} catch (FileNotFoundException e) {

@@ -3,9 +3,9 @@ package com.nisovin.bookworm;
 import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.bukkitcontrib.event.inventory.InventoryClickEvent;
-import org.bukkitcontrib.event.inventory.InventoryListener;
-import org.bukkitcontrib.player.ContribPlayer;
+import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
+import org.getspout.spoutapi.event.inventory.InventoryListener;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class BookWormContribInventoryListener extends InventoryListener {
 
@@ -21,7 +21,7 @@ public class BookWormContribInventoryListener extends InventoryListener {
 			if (BookWorm.BOOK_INFO_ACHIEVEMENT && itemHolding == null && !event.isLeftClick() && itemClicked.getDurability() != 0) {
 				Book book = BookWorm.getBook(itemClicked);
 				if (book != null) {
-					ContribPlayer player = (ContribPlayer)event.getPlayer();
+					SpoutPlayer player = (SpoutPlayer)event.getPlayer();
 					player.sendNotification(book.getTitle(), "by " + book.getAuthor(), Material.BOOK);
 					event.setCancelled(true);
 				}
