@@ -8,7 +8,7 @@ import java.util.Map;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
-import org.bukkitcontrib.BukkitContrib;
+import org.getspout.spoutapi.SpoutManager;
 
 import com.nisovin.realrp.RealRP;
 
@@ -41,18 +41,28 @@ public class PlayerCharacter implements GameCharacter {
 		}
 		
 		PlayerCharacter character = characters.get(player);
-		if (character == null) {
-			character = new PlayerCharacter(player);
-			characters.put(player, character);
+		if (character != null) {
+			return character;
+		} else {
+			File file = new File(RealRP.getPlugin().getDataFolder(), "players" + File.separator + player.getName().toLowerCase() + ".yml");
+			if (file.exists()) {
+				character = new PlayerCharacter(player, file);
+				characters.put(player, character);
+				return character;
+			} else {
+				return null;
+			}
 		}
-		
-		return character;
 	}
 	
 	public PlayerCharacter(Player player) {
+		this(player, new File(RealRP.getPlugin().getDataFolder(), "players" + File.separator + player.getName().toLowerCase() + ".yml"));
+	}
+	
+	public PlayerCharacter(Player player, File file) {
 		this.player = player;
 		
-		config = new Configuration(new File(RealRP.getPlugin().getDataFolder(), "players" + File.separator + player.getName().toLowerCase() + ".yml"));
+		config = new Configuration(file);
 		config.load();
 		
 		firstName = config.getString("first-name", player.getName());
@@ -73,20 +83,38 @@ public class PlayerCharacter implements GameCharacter {
 		
 		notes = new ArrayList<CharacterNote>();
 		Map<String,ConfigurationNode> noteNodes = config.getNodes("notes");
-		for (String key : noteNodes.keySet()) {
-			ConfigurationNode node = noteNodes.get(key);
-			Long time = Long.parseLong(key);
-			String by = node.getString("by");
-			String text = node.getString("note");
-			CharacterNote note = new CharacterNote(time, by, text);
-			notes.add(note);
-		}		
+		if (noteNodes != null) {
+			for (String key : noteNodes.keySet()) {
+				ConfigurationNode node = noteNodes.get(key);
+				Long time = Long.parseLong(key);
+				String by = node.getString("by");
+				String text = node.getString("note");
+				CharacterNote note = new CharacterNote(time, by, text);
+				notes.add(note);
+			}
+		}
 		
 		newNotes = new HashMap<Player,CharacterNote>();
 		
-		chatName = firstName;
-		emoteName = firstName;
-		nameplate = firstName;
+		setUpNames();
+	}
+	
+	public PlayerCharacter(Player player, String firstName, String lastName, int age, Sex sex, String description) {
+		characters.put(player, this);
+		
+		config = new Configuration(new File(RealRP.getPlugin().getDataFolder(), "players" + File.separator + player.getName().toLowerCase() + ".yml"));
+		
+		this.player = player;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.prefixTitle = "";
+		this.postfixTitle = "";
+		this.subTitle = "";
+		this.age = age;
+		this.sex = sex;
+		this.description = description;
+		this.notes = new ArrayList<CharacterNote>();
+		this.newNotes = new HashMap<Player,CharacterNote>();
 		
 		setUpNames();
 	}
@@ -98,9 +126,12 @@ public class PlayerCharacter implements GameCharacter {
 		}
 	}
 	
-	public void setUpNames() {
+	public void setUpNames() {		
+		chatName = firstName;
+		emoteName = firstName;
+		nameplate = firstName;		
 		player.setDisplayName(getChatName());
-		BukkitContrib.getAppearanceManager().setGlobalTitle(player, getNameplate());
+		SpoutManager.getAppearanceManager().setGlobalTitle(player, getNameplate());
 	}
 
 	@Override
@@ -136,11 +167,11 @@ public class PlayerCharacter implements GameCharacter {
 		} else {
 			config.setProperty("sex", "u");
 		}
-		config.setProperty("description", description);
-		
+		config.setProperty("description", description);		
 		for (CharacterNote note : notes) {
 			note.store(config);
 		}
+		config.save();
 	}
 	
 	public void startNote(Player by) {

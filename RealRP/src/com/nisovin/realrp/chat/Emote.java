@@ -53,10 +53,10 @@ public class Emote {
 		for (Entity entity : entities) {
 			if (entity instanceof Player) {
 				Player p = (Player)entity;
-				if (target == null && ChatColor.stripColor(p.getDisplayName()).toLowerCase().contains(strTarget)) {
+				if (target == null && strTarget != null && !strTarget.isEmpty() && ChatColor.stripColor(p.getDisplayName()).toLowerCase().contains(strTarget)) {
 					target = PlayerCharacter.get(p);
 					playerTarget = p;
-				} else {
+				} else if (!p.equals(player)) {
 					nearby.add(p);
 				}
 			} else if (entity instanceof HumanEntity) {
@@ -83,7 +83,7 @@ public class Emote {
 			}
 			for (Player p : nearby) {
 				EmoteManager.formatAndSend(p, strToNearbyWithTarget, actor, target);
-			}			
+			}
 		}
 		return EmoteResult.OK;
 	}

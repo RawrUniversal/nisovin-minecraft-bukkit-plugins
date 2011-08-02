@@ -3,7 +3,7 @@ package com.nisovin.realrp.character;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkitcontrib.BukkitContrib;
+import org.getspout.spoutapi.SpoutManager;
 import org.martin.bukkit.npclib.NPCEntity;
 import org.martin.bukkit.npclib.NPCManager;
 
@@ -36,9 +36,9 @@ public class AnimatableNPC implements GameCharacter {
 		animatorLoc = player.getLocation().clone();
 		
 		player.setDisplayName(getChatName());
-		BukkitContrib.getAppearanceManager().setGlobalTitle(player, getNameplate());
+		SpoutManager.getAppearanceManager().setGlobalTitle(player, getNameplate());
 		if (!skin.isEmpty()) {
-			BukkitContrib.getAppearanceManager().setGlobalSkin(player, skin);
+			SpoutManager.getAppearanceManager().setGlobalSkin(player, skin);
 		}
 		player.teleport(entity.getBukkitEntity().getLocation());
 		hide();
@@ -47,6 +47,11 @@ public class AnimatableNPC implements GameCharacter {
 	public void endAnimate() {
 		if (animator != null) {
 			PlayerCharacter pc = PlayerCharacter.get(animator);
+			if (pc == null) {
+				// severe error
+				return;
+			}
+			
 			pc.setUpNames();
 			animator.teleport(animatorLoc);
 			show();
@@ -58,7 +63,7 @@ public class AnimatableNPC implements GameCharacter {
 	public void show() {
 		entity = npcManager.spawnNPC(name, position);
 		if (!skin.equals("")) {
-			BukkitContrib.getAppearanceManager().setGlobalSkin((HumanEntity)entity.getBukkitEntity(), skin);
+			SpoutManager.getAppearanceManager().setGlobalSkin((HumanEntity)entity.getBukkitEntity(), skin);
 		}
 	}
 	

@@ -45,9 +45,11 @@ public class EmoteManager {
 		
 		// load emotes
 		Map<String,ConfigurationNode> nodes = config.getNodes("emotes");
-		for (Map.Entry<String,ConfigurationNode> entry : nodes.entrySet()) {
-			Emote emote = new Emote(entry.getValue());
-			emotes.put(entry.getKey(), emote);
+		if (nodes != null) {
+			for (Map.Entry<String,ConfigurationNode> entry : nodes.entrySet()) {
+				Emote emote = new Emote(entry.getValue());
+				emotes.put(entry.getKey(), emote);
+			}
 		}
 	}
 	
@@ -61,7 +63,9 @@ public class EmoteManager {
 	
 	public static void formatAndSend(Player to, String message, PlayerCharacter actor, GameCharacter target) {
 		message = message.replace("%actor", actor.getEmoteName());
-		message = message.replace("%target", target.getEmoteName());
+		if (target != null) {
+			message = message.replace("%target", target.getEmoteName());
+		}
 		if (actor.getSex() == Sex.Male) {
 			message = message.replace("%subj", proSubjMale);
 			message = message.replace("%obj", proObjMale);
@@ -81,7 +85,7 @@ public class EmoteManager {
 			message = message.replace("%poss2", proPoss2Unknown);
 			message = message.replace("%refl", proReflUnknown);
 		}
-		to.sendMessage(message);
+		RealRP.sendMessage(to, RealRP.settings().emotePrefix + message);
 	}
 	
 }

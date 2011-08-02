@@ -1,11 +1,15 @@
 package com.nisovin.realrp.listeners;
 
 import org.bukkit.event.Event;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.plugin.PluginManager;
 
 import com.nisovin.realrp.RealRP;
+import com.nisovin.realrp.character.CharacterCreator;
+import com.nisovin.realrp.character.PlayerCharacter;
 import com.nisovin.realrp.chat.Emote;
 
 public class RPPlayerListener extends PlayerListener {
@@ -16,12 +20,33 @@ public class RPPlayerListener extends PlayerListener {
 		this.plugin = plugin;
 		
 		PluginManager pm = plugin.getServer().getPluginManager();
+		pm.registerEvent(Event.Type.PLAYER_JOIN, this, Event.Priority.Monitor, plugin);
+		pm.registerEvent(Event.Type.PLAYER_CHAT, this, Event.Priority.High, plugin);
 		pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Monitor, plugin);
 	}
 	
 	@Override
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		PlayerCharacter pc = PlayerCharacter.get(event.getPlayer());
+		if (pc == null && RealRP.settings().enableCharacterCreator) {
+			plugin.startCharacterCreator(event.getPlayer());
+		} else if (pc != null) {
+			pc.setUpNames();
+		}
+	}
+	
+	@Override
+	public void onPlayerChat(PlayerChatEvent event) {
+		if (RealRP.settings().enableCharacterCreator && plugin.isCreatingCharacter(event.getPlayer())) {
+			CharacterCreator cc = plugin.getCharacterCreator(event.getPlayer());
+			cc.onChat(event.getMessage());
+			event.setCancelled(true);
+		}
+	}
+	
+	@Override
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (event.isCancelled()) {
+		if (event.isCancelled() || !RealRP.settings().enableEmotes) {
 			return;
 		}
 		
@@ -41,6 +66,7 @@ public class RPPlayerListener extends PlayerListener {
 		
 		// do the emote
 		emote.use(event.getPlayer(), target);
+		event.setCancelled(true);
 	}
 	
 }

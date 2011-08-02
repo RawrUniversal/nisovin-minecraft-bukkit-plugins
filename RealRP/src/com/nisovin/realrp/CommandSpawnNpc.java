@@ -24,7 +24,7 @@ public class CommandSpawnNpc implements CommandExecutor {
 		}
 		
 		if (player != null) {
-			AnimatableNPC npc = new AnimatableNPC("test", "", player.getLocation());
+			AnimatableNPC npc = new AnimatableNPC("test", "http://s3.amazonaws.com/MinecraftSkins/nisovin.png", player.getLocation());
 			npc.show();
 		}
 		
