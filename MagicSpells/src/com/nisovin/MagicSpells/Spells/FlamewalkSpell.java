@@ -74,6 +74,7 @@ public class FlamewalkSpell extends BuffSpell {
 
 	private class Burner implements Runnable {
 		int taskId;
+		String[] strArr = new String[0];
 		
 		public Burner() {
 			taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, tickInterval, tickInterval);
@@ -84,7 +85,7 @@ public class FlamewalkSpell extends BuffSpell {
 		}
 		
 		public void run() {
-			for (String s : flamewalkers) {
+			for (String s : flamewalkers.toArray(strArr)) {
 				Player player = Bukkit.getServer().getPlayer(s);
 				if (player != null) {
 					if (isExpired(player)) {

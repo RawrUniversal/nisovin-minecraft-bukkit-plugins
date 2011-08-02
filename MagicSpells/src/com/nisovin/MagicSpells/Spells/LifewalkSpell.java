@@ -77,6 +77,7 @@ public class LifewalkSpell extends BuffSpell {
 
 	private class Grower implements Runnable {
 		int taskId;
+		String[] strArr = new String[0];
 		
 		public Grower() {
 			taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, tickInterval, tickInterval);
@@ -87,7 +88,7 @@ public class LifewalkSpell extends BuffSpell {
 		}
 		
 		public void run() {
-			for (String s : lifewalkers) {
+			for (String s : lifewalkers.toArray(strArr)) {
 				Player player = Bukkit.getServer().getPlayer(s);
 				if (player != null) {
 					if (isExpired(player)) {
