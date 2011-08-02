@@ -49,6 +49,7 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean BOOK_INFO_ACHIEVEMENT = true;
 	protected static boolean DROP_BOOKSHELF = false;
 	protected static boolean KEEP_ALL_BOOKS_LOADED = false;
+	protected static boolean SPOUT_ENABLED = false;
 	
 	protected static int CLEAN_INTERVAL = 600;
 	protected static int REMOVE_DELAY = 300;
@@ -140,7 +141,16 @@ public class BookWorm extends JavaPlugin {
 		new BookWormPlayerListener(this);
 		new BookWormBlockListener(this);
 		new BookWormWorldListener(this);
-		new BookWormContribInventoryListener(this);
+		
+		// check for spout
+		Plugin spout = getServer().getPluginManager().getPlugin("Spout");
+		if (spout != null) {
+			SPOUT_ENABLED = true;
+			new BookWormContribInventoryListener(this);
+			getServer().getLogger().info("BookWorm 'Spout' support enabled.");
+		} else {
+			SPOUT_ENABLED = false;
+		}
 		
 		// start memory cleaner
 		if (CLEAN_INTERVAL > 0 && !KEEP_ALL_BOOKS_LOADED) {
@@ -609,7 +619,7 @@ public class BookWorm extends JavaPlugin {
 		short id;
 		File file = new File(getDataFolder(), "bookid.txt");
 		if (!file.exists()) {
-			id = 1;
+			id = 0;
 		} else {
 			BufferedReader reader = null;
 			try {
@@ -630,7 +640,9 @@ public class BookWorm extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		unloader.stop();
+		if (unloader != null) {
+			unloader.stop();
+		}
 		for (Book book : books.values()) {
 			if (!book.isSaved()) {
 				book.save();
