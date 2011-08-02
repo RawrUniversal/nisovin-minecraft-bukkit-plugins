@@ -3,11 +3,9 @@ package com.nisovin.hedges;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.plugin.PluginManager;
 
 public class HedgeBlockListener extends BlockListener {
 
@@ -15,9 +13,6 @@ public class HedgeBlockListener extends BlockListener {
 	
 	public HedgeBlockListener(Hedges plugin) {
 		this.plugin = plugin;
-		PluginManager pm = plugin.getServer().getPluginManager();
-		pm.registerEvent(Event.Type.LEAVES_DECAY, this, Event.Priority.Normal, plugin);
-		pm.registerEvent(Event.Type.BLOCK_PLACE, this, Event.Priority.Monitor, plugin);
 	}
 	
 	@Override
