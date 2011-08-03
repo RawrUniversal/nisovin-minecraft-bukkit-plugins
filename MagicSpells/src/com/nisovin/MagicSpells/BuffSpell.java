@@ -132,7 +132,7 @@ public abstract class BuffSpell extends Spell {
 	}
 	
 	/**
-	 * Removes this spell's use cost from the player's inventory. 
+	 * Removes this spell's use cost from the player's inventory. If the reagents aren't available, the spell will expire.
 	 * @param player the player to remove the cost from
 	 * @return true if the reagents were removed, or if the use cost is disabled, false otherwise
 	 */
@@ -150,6 +150,17 @@ public abstract class BuffSpell extends Spell {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Adds a use to the spell for the player. If the number of uses exceeds the amount allowed, the spell will immediately expire.
+	 * Removes this spell's use cost from the player's inventory. This does not return anything, to get useful return values, use
+	 * addUse() and chargeUseCost().
+	 * @param player the player to add a use and charge cost to
+	 */
+	protected void addUseAndChargeCost(Player player) {
+		addUse(player);
+		chargeUseCost(player);
 	}
 	
 	/**
