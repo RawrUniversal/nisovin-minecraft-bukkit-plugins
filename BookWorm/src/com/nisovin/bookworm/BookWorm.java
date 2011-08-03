@@ -42,6 +42,7 @@ public class BookWorm extends JavaPlugin {
 	
 	protected static boolean SHOW_TITLE_ON_HELD_CHANGE = true;
 	protected static boolean REQUIRE_BOOK_TO_COPY = false;
+	protected static boolean MAKE_REAL_COPY = false;
 	protected static boolean CHECK_WORLDGUARD = true;
 	protected static boolean USE_PERMISSIONS_PLUGIN = true;
 	protected static boolean USE_FULL_FILENAMES = true;
@@ -146,7 +147,7 @@ public class BookWorm extends JavaPlugin {
 		Plugin spout = getServer().getPluginManager().getPlugin("Spout");
 		if (spout != null) {
 			SPOUT_ENABLED = true;
-			new BookWormContribInventoryListener(this);
+			new BookWormSpoutInventoryListener(this);
 			getServer().getLogger().info("BookWorm 'Spout' support enabled.");
 		} else {
 			SPOUT_ENABLED = false;
@@ -469,6 +470,16 @@ public class BookWorm extends JavaPlugin {
 		return book;
 	}
 	
+	protected Book copyBook(Book book) {
+		short id = getNextBookId();
+		if (id == -1) {
+			return null;
+		}
+		Book copy = new Book(id, book);
+		books.put(id, copy);
+		return copy;
+	}
+	
 	public static void registerListener(BookWormListener listener) {
 		plugin.listeners.add(listener);
 	}
@@ -516,6 +527,7 @@ public class BookWorm extends JavaPlugin {
 		
 		SHOW_TITLE_ON_HELD_CHANGE = config.getBoolean("general.show-title-on-held-change", SHOW_TITLE_ON_HELD_CHANGE);
 		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
+		MAKE_REAL_COPY = config.getBoolean("general.make-real-copy", MAKE_REAL_COPY);
 		AUTO_CHAT_MODE = config.getBoolean("general.auto-chat-mode", AUTO_CHAT_MODE);
 		BOOK_INFO_ACHIEVEMENT = config.getBoolean("general.book-info-achievement", BOOK_INFO_ACHIEVEMENT);
 		DROP_BOOKSHELF = config.getBoolean("general.drop-bookshelf-on-break", DROP_BOOKSHELF);

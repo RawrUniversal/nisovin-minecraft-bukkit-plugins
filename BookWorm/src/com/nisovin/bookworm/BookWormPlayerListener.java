@@ -80,10 +80,16 @@ public class BookWormPlayerListener extends PlayerListener {
 				} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {	
 					if (!player.isSneaking() && plugin.perms.canCopyBook(player, book) && ((!BookWorm.REQUIRE_BOOK_TO_COPY && inHand.getType() == Material.AIR) || (inHand != null && inHand.getType() == Material.BOOK && inHand.getDurability() == 0))) {				
 						// copy book if allowed
+						short copyId = bookId;
+						if (BookWorm.MAKE_REAL_COPY) {
+							Book copy = plugin.copyBook(book);
+							if (copy == null) return;
+							copyId = copy.getId();
+						}
 						if (BookWorm.REQUIRE_BOOK_TO_COPY) {
-							player.getItemInHand().setDurability(bookId);
+							player.getItemInHand().setDurability(copyId);
 						} else {
-							player.setItemInHand(new ItemStack(Material.BOOK, 1, bookId));
+							player.setItemInHand(new ItemStack(Material.BOOK, 1, copyId));
 						}
 						player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COPIED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 					} else if (player.isSneaking() && plugin.perms.canRemoveBook(player, book) && inHand.getType() == Material.AIR) {

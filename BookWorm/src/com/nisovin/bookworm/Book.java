@@ -44,6 +44,20 @@ public class Book {
 		setItemName();
 	}
 	
+	protected Book(short id, Book book) {
+		this.id = id;
+		this.title = book.title;
+		this.author = book.author;
+		this.text = book.text;
+		this.contents = book.contents.clone();
+		this.lastText = "";
+		this.hiddenData = new HashMap<String,String>();
+		this.loaded = true;
+		this.unsaved = true;
+		setItemName();
+		save();
+	}
+	
 	private void generateContents() {
 		ArrayList<String> contents = new ArrayList<String>();
 		String[] paras = text.split(BookWorm.NEW_PARA);
@@ -227,7 +241,7 @@ public class Book {
 			if (t.length() > 15) {
 				t = t.substring(0, 15);
 			}
-			fileName = id + "_" + author + "_" + t; // TODO: what if they change the book title?
+			fileName = id + "_" + author + "_" + t;
 		} else {
 			fileName = id+"";
 		}

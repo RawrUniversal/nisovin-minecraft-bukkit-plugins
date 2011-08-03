@@ -7,9 +7,9 @@ import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
 import org.getspout.spoutapi.event.inventory.InventoryListener;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-public class BookWormContribInventoryListener extends InventoryListener {
+public class BookWormSpoutInventoryListener extends InventoryListener {
 
-	public BookWormContribInventoryListener(BookWorm plugin) {
+	public BookWormSpoutInventoryListener(BookWorm plugin) {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, this, Event.Priority.Monitor, plugin);
 	}
 	
