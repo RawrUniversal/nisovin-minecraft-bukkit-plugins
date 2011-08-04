@@ -3,6 +3,7 @@ package com.nisovin.realrp;
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.martin.bukkit.npclib.NPCManager;
 
@@ -16,7 +17,8 @@ public class RealRP extends JavaPlugin {
 	private Settings settings;
 	
 	private HashMap<Player,CharacterCreator> characterCreators;
-	private EmoteManager emotes;
+	private ChatManager chatManager;
+	private EmoteManager emoteManager;
 	
 	public static RealRP getPlugin() {
 		return plugin;
@@ -29,7 +31,12 @@ public class RealRP extends JavaPlugin {
 		settings = new Settings();
 		
 		characterCreators = new HashMap<Player,CharacterCreator>();
-		emotes = new EmoteManager();
+		if (settings.enableChatSystem) {
+			chatManager = new ChatManager(this);
+		}
+		if (settings.enableEmotes) {
+			emoteManager = new EmoteManager();
+		}
 		AnimatableNPC.npcManager = new NPCManager(this);
 		
 		new RPPlayerListener(this);
@@ -75,12 +82,18 @@ public class RealRP extends JavaPlugin {
 		characterCreators.remove(player);
 	}
 	
+	public void onChat(PlayerChatEvent event) {
+		if (chatManager != null) {
+			chatManager.onChat(event);
+		}
+	}
+	
 	public EmoteManager getEmoteManager() {
-		return emotes;
+		return emoteManager;
 	}
 	
 	public Emote getEmote(String emote) {
-		return emotes.getEmote(emote);
+		return emoteManager.getEmote(emote);
 	}
 
 	@Override

@@ -3,6 +3,60 @@ main: com.nisovin.realrp.RealRP
 version: 0.1
 author: nisovin
 commands:
+    character:
+        description: Modify a character's information
+        usage: /<command>
+        aliases: [char]
     spawnnpc:
         description: Spawn an NPC
         usage: /<command>
+        aliases: [npc]
+permissions:
+    realrp.char:
+        description: Allow modify all character data
+        children:
+            realrp.char.first: true
+            realrp.char.last: true
+    realrp.char.first:
+        description: Allow modify first name
+        default: op
+    realrp.char.last:
+        description: Allow modify last name
+        default: op
+    realrp.names.chat.first:
+        description: Show first name in chat
+        default: true
+    realrp.names.chat.last:
+        description: Show last name in chat
+        default: false
+    realrp.names.chat.prefix:
+        description: Show prefix title in chat
+        default: op
+    realrp.names.chat.postfix:
+        description: Show postfix title in chat
+        default: op
+    realrp.names.emote.first:
+        description: Show first name in emotes
+        default: true
+    realrp.names.emote.last:
+        description: Show last name in emotes
+        default: false
+    realrp.names.emote.prefix:
+        description: Show prefix title in emotes
+        default: false
+    realrp.names.emote.postfix:
+        description: Show postfix title in emotes
+        default: false
+    realrp.names.nameplate.first:
+        description: Show first name in nameplate
+        default: true
+    realrp.names.nameplate.last:
+        description: Show last name in nameplate
+        default: false
+    realrp.names.nameplate.prefix:
+        description: Show prefix title in nameplate
+        default: op
+    realrp.names.nameplate.postfix:
+        description: Show postfix title in nameplate
+        default: op
+    

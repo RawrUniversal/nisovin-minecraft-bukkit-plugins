@@ -20,7 +20,7 @@ public class RPPlayerListener extends PlayerListener {
 		this.plugin = plugin;
 		
 		PluginManager pm = plugin.getServer().getPluginManager();
-		pm.registerEvent(Event.Type.PLAYER_JOIN, this, Event.Priority.Monitor, plugin);
+		pm.registerEvent(Event.Type.PLAYER_JOIN, this, Event.Priority.Highest, plugin);
 		pm.registerEvent(Event.Type.PLAYER_CHAT, this, Event.Priority.High, plugin);
 		pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Monitor, plugin);
 	}
@@ -30,6 +30,7 @@ public class RPPlayerListener extends PlayerListener {
 		PlayerCharacter pc = PlayerCharacter.get(event.getPlayer());
 		if (pc == null && RealRP.settings().enableCharacterCreator) {
 			plugin.startCharacterCreator(event.getPlayer());
+			event.setJoinMessage(null);
 		} else if (pc != null) {
 			pc.setUpNames();
 		}
@@ -41,6 +42,8 @@ public class RPPlayerListener extends PlayerListener {
 			CharacterCreator cc = plugin.getCharacterCreator(event.getPlayer());
 			cc.onChat(event.getMessage());
 			event.setCancelled(true);
+		} else {
+			plugin.onChat(event);
 		}
 	}
 	

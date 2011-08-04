@@ -33,4 +33,28 @@ public class Settings {
 	public boolean enableEmotes = true;
 	public String emotePrefix = "&e* ";
 	
+	
+	public boolean enableChatSystem = true;
+	
+	public String csICName = "ic";
+	public String csICPrefix = ".";
+	public String csICFormat = "&e%1$s says: &f%2$s";
+	public int csICRange = 20;
+	
+	public boolean csLocalOOCEnabled = true;
+	public String csLocalOOCName = "ooc";
+	public String csLocalOOCPrefix = "((";
+	public String csLocalOOCFormat = "[&bOOC&f] <%1$s> %2$s";
+	public int csLocalOOCRange = 50;
+	
+	public boolean csGlobalOOCEnabled = true;
+	public String csGlobalOOCName = "global";
+	public String csGlobalOOCPrefix = "!!";
+	public String csGlobalOOCFormat = "[&3Global&f] <%1$s> %2$s";
+	
+	public boolean csIRCEnabled = false;
+	public String csIRCNetwork = "irc.esper.net";
+	public String csIRCNickname = "RPBot" + (int)(Math.random()*1000);
+	public String csIRCChannel = "#realrp";
+	
 }

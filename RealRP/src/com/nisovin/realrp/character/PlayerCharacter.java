@@ -126,12 +126,30 @@ public class PlayerCharacter implements GameCharacter {
 		}
 	}
 	
-	public void setUpNames() {		
-		chatName = firstName;
-		emoteName = firstName;
-		nameplate = firstName;		
+	public void setUpNames() {
+		chatName = generateName("chat");
+		emoteName = generateName("emote");
+		nameplate = generateName("nameplate");		
 		player.setDisplayName(getChatName());
 		SpoutManager.getAppearanceManager().setGlobalTitle(player, getNameplate());
+	}
+	
+	private String generateName(String type) {
+		String name = "";
+		if (!firstName.isEmpty() && player.hasPermission("realrp.names." + type + ".first")) {
+			name = firstName;
+		}
+		if (!lastName.isEmpty() && player.hasPermission("realrp.names." + type + ".last")) {
+			name += " " + lastName;
+			name.trim();
+		}
+		if (!prefixTitle.isEmpty() && player.hasPermission("realrp.names." + type + ".prefix")) {
+			name = prefixTitle + " " + name;
+		}
+		if (!postfixTitle.isEmpty() && player.hasPermission("realrp.names." + type + ".postfix")) {
+			name += " " + postfixTitle;
+		}
+		return name.trim();
 	}
 
 	@Override
