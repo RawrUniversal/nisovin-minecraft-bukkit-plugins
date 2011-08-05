@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -84,18 +86,28 @@ public class ChatManager {
 			removeOutOfRange(player, recipients, settings.csLocalOOCRange);
 		} else if (channel == Channel.GLOBAL_OOC) {
 			format = settings.csGlobalOOCFormat;
+		} else {
+			// no channel
 		}
 		event.setFormat(format.replace("%n","%1$s").replace("%m", "%2$s").replaceAll("&([0-9a-f])", "\u00A7$1"));
 		
 		// send to IRC if it's enabled and in Global OOC
 		if (channel == Channel.GLOBAL_OOC && settings.csIRCEnabled) {
-			
+			String ircMsg = ChatColor.stripColor(settings.csIRCFormatToIRC.replace("%n", player.getDisplayName()).replace("%m", event.getMessage()));
+			ircBot.sendMessage(ircMsg);
 		}
 		
 	}
 	
 	public void fromIRC(String name, String message) {
-		
+		String msg = settings.csIRCFormatToGame.replace("%n", name).replace("%m", message);
+		HashSet<Channel> channels;
+		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+			channels = playerChannels.get(p);
+			if (channels != null && channels.contains(Channel.GLOBAL_OOC)) {
+				p.sendMessage(msg);
+			}
+		}
 	}
 	
 	private void removeOutOfRange(Player speaker, Set<Player> recipients, int range) {
@@ -123,10 +135,13 @@ public class ChatManager {
 		}
 		if (channel.equalsIgnoreCase(settings.csICName)) {
 			channels.add(Channel.IC);
+			activeChannels.put(player, Channel.IC);
 		} else if (channel.equalsIgnoreCase(settings.csLocalOOCName)) {
 			channels.add(Channel.LOCAL_OOC);
+			activeChannels.put(player, Channel.LOCAL_OOC);
 		} else if (channel.equalsIgnoreCase(settings.csGlobalOOCName)) {
 			channels.add(Channel.GLOBAL_OOC);
+			activeChannels.put(player, Channel.GLOBAL_OOC);
 		} else {
 			return false;
 		}
@@ -149,6 +164,12 @@ public class ChatManager {
 		}
 		return true;
 		
+	}
+	
+	public void turnOff() {
+		if (ircBot != null && ircBot.isConnected()) {
+			ircBot.disconnect();
+		}
 	}
 	
 }

@@ -2,7 +2,12 @@ name: RealRP
 main: com.nisovin.realrp.RealRP
 version: 0.1
 author: nisovin
+depend: [Spout]
 commands:
+    emote:
+        description: Emote an action
+        usage: /<command> action
+        aliases: [me]
     character:
         description: Modify a character's information
         usage: /<command>

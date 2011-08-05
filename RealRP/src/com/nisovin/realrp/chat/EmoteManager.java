@@ -2,8 +2,10 @@ package com.nisovin.realrp.chat;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
@@ -55,6 +57,17 @@ public class EmoteManager {
 	
 	public Emote getEmote(String emote) {
 		return emotes.get(emote);
+	}
+	
+	public void sendGenericEmote(Player player, String emote) {
+		int range = RealRP.settings().emEmoteRange;
+		List<Entity> entities = player.getNearbyEntities(range, range, range);
+		entities.add(player);
+		for (Entity entity : entities) {
+			if (entity instanceof Player) {
+				((Player)entity).sendMessage(RealRP.settings().emEmotePrefix + emote);
+			}
+		}
 	}
 	
 	public static void formatAndSend(Player to, String message, PlayerCharacter actor) {

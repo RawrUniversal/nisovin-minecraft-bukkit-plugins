@@ -42,6 +42,7 @@ public class RealRP extends JavaPlugin {
 		new RPPlayerListener(this);
 		
 		this.getCommand("spawnnpc").setExecutor(new CommandSpawnNpc(this));
+		this.getCommand("emote").setExecutor(new CommandEmote(this));
 	}
 	
 	public static Settings settings() {
@@ -98,8 +99,9 @@ public class RealRP extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		// TODO Auto-generated method stub
-		
+		if (chatManager != null) {
+			chatManager.turnOff();
+		}
 	}
 
 }

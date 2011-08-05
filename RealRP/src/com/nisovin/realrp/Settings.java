@@ -41,6 +41,7 @@ public class Settings {
 	
 	public boolean emEnableEmotes = true;
 	public String emEmotePrefix = "&e* ";
+	public int emEmoteRange = 20;
 	
 	// Chat System Section
 	
@@ -68,7 +69,7 @@ public class Settings {
 	public String csIRCNickservPass = "";
 	public String csIRCChannel = "#realrp";
 	public String csIRCFormatToIRC = "[Game] <%n> %m";
-	public String csIRCFormatToGame = "[IRC] <%n> %m";
+	public String csIRCFormatToGame = "[&aIRC&f] <%n> %m";
 	
 	
 	
