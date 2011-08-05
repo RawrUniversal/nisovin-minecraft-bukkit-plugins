@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.martin.bukkit.npclib.NPCManager;
 
@@ -41,8 +42,11 @@ public class RealRP extends JavaPlugin {
 		
 		new RPPlayerListener(this);
 		
-		this.getCommand("spawnnpc").setExecutor(new CommandSpawnNpc(this));
-		this.getCommand("emote").setExecutor(new CommandEmote(this));
+		this.getCommand("rpnpc").setExecutor(new CommandSpawnNpc(this));
+		//this.getCommand("emote").setExecutor(new CommandEmote(this));
+		
+		PluginDescriptionFile pdf = getDescription();
+		getServer().getLogger().info(pdf.getName() + " v" + pdf.getVersion() + " enabled!");
 	}
 	
 	public static Settings settings() {

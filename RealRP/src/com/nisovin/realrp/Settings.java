@@ -33,7 +33,7 @@ public class Settings {
 	public String ccSexInvalid = "Invalid sex.";
 	
 	public String ccDescriptionGet = "Please enter a short description for your character.";
-	public String ccDescriptionRegex = "^.*$";
+	public String ccDescriptionRegex = "^.{1,200}$";
 	public String ccDescriptionOk = "Description ok.";
 	public String ccDescriptionInvalid = "Description invalid.";
 	
@@ -65,13 +65,19 @@ public class Settings {
 	
 	public boolean csIRCEnabled = false;
 	public String csIRCNetwork = "irc.esper.net";
-	public String csIRCNickname = "RPBot" + (int)(Math.random()*1000);
+	public String csIRCNickname = "RPBot" + (int)(Math.random()*5000);
 	public String csIRCNickservPass = "";
+	public String csIRCAuthPass = "";
 	public String csIRCChannel = "#realrp";
 	public String csIRCFormatToIRC = "[Game] <%n> %m";
 	public String csIRCFormatToGame = "[&aIRC&f] <%n> %m";
 	
+	// Interact Request System
 	
+	public boolean irEnableInteractionSystem = true;
+	public int irMaxRequestId = 100;
+	public String irRequestLineFormat = "%id: %age - %player (%npc)";
+	public int irListPageSize = 5;
 	
 	public Settings(RealRP plugin) {
 		// make sure folder exists

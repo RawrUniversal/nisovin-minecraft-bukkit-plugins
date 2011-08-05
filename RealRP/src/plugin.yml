@@ -4,16 +4,20 @@ version: 0.1
 author: nisovin
 depend: [Spout]
 commands:
-    emote:
+    rpemote:
         description: Emote an action
         usage: /<command> action
-        aliases: [me]
-    character:
+        aliases: [emote,me]
+    rpcharacter:
         description: Modify a character's information
         usage: /<command>
-        aliases: [char]
-    spawnnpc:
-        description: Spawn an NPC
+        aliases: [character,char]
+    rpacceptrequest:
+        description: Accept an interaction request
+        usage: /<command> id
+        aliases: [acceptrequest, acceptreq, accreq, ar]
+    rpnpc:
+        description: Manage an NPC
         usage: /<command>
         aliases: [npc]
 permissions:

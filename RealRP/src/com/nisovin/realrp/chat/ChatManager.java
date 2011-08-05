@@ -48,7 +48,7 @@ public class ChatManager {
 		
 		// load irc bot
 		if (settings.csIRCEnabled) {
-			ircBot = new IrcBot(this, settings.csIRCNetwork, settings.csIRCNickname, settings.csIRCChannel, settings.csIRCNickservPass);
+			ircBot = new IrcBot(this, settings.csIRCNetwork, settings.csIRCNickname, settings.csIRCChannel, settings.csIRCNickservPass, settings.csIRCAuthPass);
 		}
 	}
 	
@@ -92,7 +92,7 @@ public class ChatManager {
 		event.setFormat(format.replace("%n","%1$s").replace("%m", "%2$s").replaceAll("&([0-9a-f])", "\u00A7$1"));
 		
 		// send to IRC if it's enabled and in Global OOC
-		if (channel == Channel.GLOBAL_OOC && settings.csIRCEnabled) {
+		if (channel == Channel.GLOBAL_OOC && ircBot != null && ircBot.isConnected()) {
 			String ircMsg = ChatColor.stripColor(settings.csIRCFormatToIRC.replace("%n", player.getDisplayName()).replace("%m", event.getMessage()));
 			ircBot.sendMessage(ircMsg);
 		}
