@@ -9,7 +9,7 @@ import org.martin.bukkit.npclib.NPCManager;
 
 import com.nisovin.realrp.character.*;
 import com.nisovin.realrp.chat.*;
-import com.nisovin.realrp.listeners.RPPlayerListener;
+import com.nisovin.realrp.listeners.*;
 
 public class RealRP extends JavaPlugin {
 
@@ -28,13 +28,13 @@ public class RealRP extends JavaPlugin {
 	public void onEnable() {
 		plugin = this;
 		
-		settings = new Settings();
+		settings = new Settings(this);
 		
 		characterCreators = new HashMap<Player,CharacterCreator>();
-		if (settings.enableChatSystem) {
+		if (settings.csEnableChatSystem) {
 			chatManager = new ChatManager(this);
 		}
-		if (settings.enableEmotes) {
+		if (settings.emEnableEmotes) {
 			emoteManager = new EmoteManager();
 		}
 		AnimatableNPC.npcManager = new NPCManager(this);

@@ -28,7 +28,7 @@ public class RPPlayerListener extends PlayerListener {
 	@Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		PlayerCharacter pc = PlayerCharacter.get(event.getPlayer());
-		if (pc == null && RealRP.settings().enableCharacterCreator) {
+		if (pc == null && RealRP.settings().ccEnableCharacterCreator) {
 			plugin.startCharacterCreator(event.getPlayer());
 			event.setJoinMessage(null);
 		} else if (pc != null) {
@@ -38,7 +38,7 @@ public class RPPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerChat(PlayerChatEvent event) {
-		if (RealRP.settings().enableCharacterCreator && plugin.isCreatingCharacter(event.getPlayer())) {
+		if (RealRP.settings().ccEnableCharacterCreator && plugin.isCreatingCharacter(event.getPlayer())) {
 			CharacterCreator cc = plugin.getCharacterCreator(event.getPlayer());
 			cc.onChat(event.getMessage());
 			event.setCancelled(true);
@@ -49,7 +49,7 @@ public class RPPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (event.isCancelled() || !RealRP.settings().enableEmotes) {
+		if (event.isCancelled() || !RealRP.settings().emEnableEmotes) {
 			return;
 		}
 		

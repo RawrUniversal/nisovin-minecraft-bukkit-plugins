@@ -85,7 +85,7 @@ public class EmoteManager {
 			message = message.replace("%poss2", proPoss2Unknown);
 			message = message.replace("%refl", proReflUnknown);
 		}
-		RealRP.sendMessage(to, RealRP.settings().emotePrefix + message);
+		RealRP.sendMessage(to, RealRP.settings().emEmotePrefix + message);
 	}
 	
 }

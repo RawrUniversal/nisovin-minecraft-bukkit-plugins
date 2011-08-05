@@ -2,11 +2,9 @@ package com.nisovin.realrp.chat;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -21,6 +19,8 @@ public class ChatManager {
 	
 	private HashMap<Player, Channel> activeChannels;
 	private HashMap<Player, HashSet<Channel>> playerChannels;
+	
+	private IrcBot ircBot;
 	
 	public ChatManager(RealRP plugin) {
 		//this.plugin = plugin;
@@ -42,6 +42,11 @@ public class ChatManager {
 			if (RealRP.settings().csGlobalOOCEnabled) {
 				channels.add(Channel.GLOBAL_OOC);
 			}
+		}
+		
+		// load irc bot
+		if (settings.csIRCEnabled) {
+			ircBot = new IrcBot(this, settings.csIRCNetwork, settings.csIRCNickname, settings.csIRCChannel, settings.csIRCNickservPass);
 		}
 	}
 	
@@ -80,7 +85,16 @@ public class ChatManager {
 		} else if (channel == Channel.GLOBAL_OOC) {
 			format = settings.csGlobalOOCFormat;
 		}
-		event.setFormat(format.replaceAll("&([0-9a-f])", "\u00A7$1"));
+		event.setFormat(format.replace("%n","%1$s").replace("%m", "%2$s").replaceAll("&([0-9a-f])", "\u00A7$1"));
+		
+		// send to IRC if it's enabled and in Global OOC
+		if (channel == Channel.GLOBAL_OOC && settings.csIRCEnabled) {
+			
+		}
+		
+	}
+	
+	public void fromIRC(String name, String message) {
 		
 	}
 	
