@@ -118,7 +118,7 @@ public class ScrollSpell extends CommandSpell {
 			} 
 			
 			// check for base scroll
-			if (player.isOp() && args[0].equalsIgnoreCase("-base")) {
+			if (MagicSpells.getSpellbook(player).hasAdvancedPerm() && args[0].equalsIgnoreCase("-base")) {
 				createBaseScroll(args, player);
 				return PostCastAction.ALREADY_HANDLED;
 			}

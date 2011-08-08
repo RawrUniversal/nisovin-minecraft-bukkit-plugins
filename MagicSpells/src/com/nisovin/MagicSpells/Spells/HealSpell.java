@@ -40,9 +40,9 @@ public class HealSpell extends InstantSpell {
 				if (health > 20) health = 20;
 				target.setHealth(health);
 				
-				sendMessage(player, formatMessage(strCastSelf, "%t", target.getName()));
-				sendMessage(target, formatMessage(strCastTarget, "%a", player.getName()));
-				sendMessageNear(player, formatMessage(strCastOthers, "%t", target.getName(), "%a", player.getName()));
+				sendMessage(player, formatMessage(strCastSelf, "%t", target.getDisplayName()));
+				sendMessage(target, formatMessage(strCastTarget, "%a", player.getDisplayName()));
+				sendMessageNear(player, formatMessage(strCastOthers, "%t", target.getDisplayName(), "%a", player.getDisplayName()));
 			}
 			
 			return PostCastAction.ALREADY_HANDLED;

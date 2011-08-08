@@ -108,6 +108,14 @@ public class Spellbook {
 		}
 	}
 	
+	public boolean hasAdvancedPerm() {
+		if (permissionHandler == null) {
+			return player.hasPermission("magicspells.advanced");
+		} else {
+			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.advanced");
+		}
+	}
+	
 	private void loadFromFile() {
 		try {
 			MagicSpells.debug("  Loading spells from player file...");
@@ -229,6 +237,13 @@ public class Spellbook {
 			}
 		}
 		allSpells.remove(spell);
+	}
+	
+	public void removeAllSpells() {
+		allSpells.clear();
+		itemSpells.clear();
+		activeSpells.clear();
+		customBindings.clear();
 	}
 	
 	public void save() {

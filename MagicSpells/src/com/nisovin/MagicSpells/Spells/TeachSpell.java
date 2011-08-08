@@ -69,8 +69,8 @@ public class TeachSpell extends CommandSpell {
 							} else {
 								targetSpellbook.addSpell(spell);
 								targetSpellbook.save();
-								sendMessage(players.get(0), formatMessage(strCastTarget, "%a", player.getName(), "%s", spell.getName(), "%t", players.get(0).getName()));
-								sendMessage(player, formatMessage(strCastSelf, "%a", player.getName(), "%s", spell.getName(), "%t", players.get(0).getName()));
+								sendMessage(players.get(0), formatMessage(strCastTarget, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+								sendMessage(player, formatMessage(strCastSelf, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
 								return PostCastAction.NO_MESSAGES;
 							}
 						}
@@ -109,8 +109,8 @@ public class TeachSpell extends CommandSpell {
 					} else {
 						targetSpellbook.addSpell(spell);
 						targetSpellbook.save();
-						sendMessage(players.get(0), formatMessage(strCastTarget, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getName()));
-						sender.sendMessage(formatMessage(strCastSelf, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getName()));
+						sendMessage(players.get(0), formatMessage(strCastTarget, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+						sender.sendMessage(formatMessage(strCastSelf, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
 					}
 				}
 			}

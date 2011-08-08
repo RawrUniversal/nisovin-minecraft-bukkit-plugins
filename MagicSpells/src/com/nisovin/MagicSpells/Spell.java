@@ -158,7 +158,7 @@ public abstract class Spell implements Comparable<Spell> {
 				}
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.MESSAGES_ONLY || action == PostCastAction.NO_COOLDOWN || action == PostCastAction.NO_REAGENTS) {
 					sendMessage(player, strCastSelf);
-					sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getName()));
+					sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getDisplayName()));
 				}
 			} else if (state == SpellCastState.ON_COOLDOWN) {
 				sendMessage(player, formatMessage(MagicSpells.strOnCooldown, "%c", getCooldown(player)+""));

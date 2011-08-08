@@ -12,3 +12,7 @@ commands:
         description: Show mana bar
         usage: /<command>
         aliases: [mana,m]
+permissions:
+    magicspells.advanced:
+        description: Advanced spell functionality
+        default: op
