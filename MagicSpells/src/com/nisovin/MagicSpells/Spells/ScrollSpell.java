@@ -18,6 +18,7 @@ import org.bukkit.util.config.Configuration;
 import com.nisovin.MagicSpells.CommandSpell;
 import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.Spell;
+import com.nisovin.MagicSpells.Spellbook;
 
 public class ScrollSpell extends CommandSpell {
 
@@ -143,11 +144,12 @@ public class ScrollSpell extends CommandSpell {
 			
 			// get spell
 			Spell spell = MagicSpells.getSpellByInGameName(args[0]);
-			if (spell == null) {
+			Spellbook spellbook = MagicSpells.getSpellbook(player);
+			if (spell == null || spellbook == null || !spellbook.hasSpell(spell)) {
 				// fail -- no such spell
 				sendMessage(player, strNoSpell);
-				return PostCastAction.ALREADY_HANDLED;
-			} else if (requireTeachPerm && !MagicSpells.getSpellbook(player).canTeach(spell)) {
+				return PostCastAction.ALREADY_HANDLED;			
+			} else if (requireTeachPerm && !spellbook.canTeach(spell)) {
 				sendMessage(player, strCantTeach);
 				return PostCastAction.ALREADY_HANDLED;
 			}
