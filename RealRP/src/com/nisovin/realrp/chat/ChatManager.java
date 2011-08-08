@@ -105,7 +105,7 @@ public class ChatManager {
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			channels = playerChannels.get(p);
 			if (channels != null && channels.contains(Channel.GLOBAL_OOC)) {
-				p.sendMessage(msg);
+				RealRP.sendMessage(p, msg);
 			}
 		}
 	}
