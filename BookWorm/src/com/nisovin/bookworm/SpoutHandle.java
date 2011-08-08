@@ -13,7 +13,9 @@ public class SpoutHandle {
 			SpoutManager.getItemManager().setItemName(Material.BOOK, id, BookWorm.S_READ_BOOK + ": " + title);
 			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 				SpoutPlayer sp = (SpoutPlayer)p;
-				sp.sendPacket(new PacketItemName(Material.BOOK.getId(), id, BookWorm.S_READ_BOOK + ": " + title));
+				if (sp.isSpoutCraftEnabled()) {
+					sp.sendPacket(new PacketItemName(Material.BOOK.getId(), id, BookWorm.S_READ_BOOK + ": " + title));
+				}
 			}
 		}
 	}
