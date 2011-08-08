@@ -1,5 +1,6 @@
 package com.nisovin.MagicSpells.Spells;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
@@ -28,6 +29,14 @@ public class ListSpell extends CommandSpell {
 	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
+			String extra = "";
+			if (args != null && args.length > 0 && spellbook.hasAdvancedPerm()) {
+				Player p = Bukkit.getServer().getPlayer(args[0]);
+				if (p != null) {
+					spellbook = MagicSpells.getSpellbook(p);
+					extra = "(" + p.getDisplayName() + ") ";
+				}
+			}
 			if (spellbook != null && reloadGrantedSpells) {
 				spellbook.addGrantedSpells();
 			}
@@ -43,7 +52,7 @@ public class ListSpell extends CommandSpell {
 						s += ", " + spell.getName();
 					}
 				}
-				s = strPrefix + " " + s;
+				s = strPrefix + " " + extra + s;
 				while (s.length() > lineLength) {
 					int i = s.substring(0, lineLength).lastIndexOf(' ');
 					sendMessage(player, s.substring(0, i));

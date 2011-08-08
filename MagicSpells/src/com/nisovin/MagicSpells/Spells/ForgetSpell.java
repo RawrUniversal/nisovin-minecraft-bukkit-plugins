@@ -41,26 +41,47 @@ public class ForgetSpell extends CommandSpell {
 					// fail: no player match
 					sendMessage(player, strNoTarget);
 				} else {
-					Spell spell = MagicSpells.getSpellByInGameName(args[1]);
-					if (spell == null) {
+					boolean all = false;
+					Spell spell = null;
+					if (args[1].equals("*")) {
+						all = true;
+					} else {
+						spell = MagicSpells.getSpellByInGameName(args[1]);
+					}
+					if (spell == null && !all) {
 						// fail: no spell match
 						sendMessage(player, strNoSpell);
 					} else {
 						Spellbook spellbook = MagicSpells.getSpellbook(player);
-						if (spellbook == null || !spellbook.hasSpell(spell)) {
+						if (spellbook == null) {
+							// fail: missing spellbook
+							sendMessage(player, strNoSpell);							
+						} else if (!all && !spellbook.hasSpell(spell)) {
 							// fail: player doesn't have spell
+							sendMessage(player, strNoSpell);
+						} else if (all && !spellbook.hasAdvancedPerm()) {
+							// fail: caster wants to remove all spells but doesn't have advanced perms
 							sendMessage(player, strNoSpell);
 						} else {
 							// yay! can forget!
 							Spellbook targetSpellbook = MagicSpells.getSpellbook(players.get(0));
-							if (targetSpellbook == null || !targetSpellbook.hasSpell(spell)) {
+							if (targetSpellbook == null) {
+								// fail: missing spellbook
+								sendMessage(player, strDoesntKnow);
+							} else if (!all && !targetSpellbook.hasSpell(spell)) {
 								// fail: no spellbook for some reason or can't learn the spell
 								sendMessage(player, strDoesntKnow);
-							} else {
+							} else if (!all) {
 								targetSpellbook.removeSpell(spell);
 								targetSpellbook.save();
-								sendMessage(players.get(0), formatMessage(strCastTarget, "%a", player.getName(), "%s", spell.getName(), "%t", players.get(0).getName()));
-								sendMessage(player, formatMessage(strCastSelf, "%a", player.getName(), "%s", spell.getName(), "%t", players.get(0).getName()));
+								sendMessage(players.get(0), formatMessage(strCastTarget, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+								sendMessage(player, formatMessage(strCastSelf, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+								return PostCastAction.NO_MESSAGES;
+							} else if (all) {
+								targetSpellbook.removeAllSpells();
+								targetSpellbook.addGrantedSpells();
+								targetSpellbook.save();
+								sendMessage(player, "You have reset " + players.get(0).getName() + "'s spellbook.");
 								return PostCastAction.NO_MESSAGES;
 							}
 						}
@@ -95,8 +116,8 @@ public class ForgetSpell extends CommandSpell {
 					} else {
 						targetSpellbook.removeSpell(spell);
 						targetSpellbook.save();
-						sendMessage(players.get(0), formatMessage(strCastTarget, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getName()));
-						sender.sendMessage(formatMessage(strCastSelf, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getName()));
+						sendMessage(players.get(0), formatMessage(strCastTarget, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+						sender.sendMessage(formatMessage(strCastSelf, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
 					}
 				}
 			}
