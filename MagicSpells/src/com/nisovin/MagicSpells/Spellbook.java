@@ -180,6 +180,31 @@ public class Spellbook {
 		}
 	}
 	
+	protected Spell prevSpell(int castItem) {
+		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
+		if (i != null) {
+			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
+			if (spells.size() > 1 || i.equals(-1) || MagicSpells.allowCycleToNoSpell) {
+				i--;
+				if (i < 0) {
+					if (MagicSpells.allowCycleToNoSpell) {
+						activeSpells.put(castItem, -1);
+						Spell.sendMessage(player, MagicSpells.strSpellChangeEmpty);
+						return null;
+					} else {
+						i = spells.size() - 1;
+					}
+				}
+				activeSpells.put(castItem, i);
+				return spells.get(i);
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}		
+	}
+	
 	public Spell getActiveSpell(int castItem) {
 		Integer i = activeSpells.get(castItem);
 		if (i != null && i != -1) {
