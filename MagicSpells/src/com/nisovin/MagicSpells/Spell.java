@@ -464,7 +464,11 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	public String getName() {
-		return this.name;
+		if (this.name != null && !this.name.isEmpty()) {
+			return this.name;
+		} else {
+			return this.internalName;
+		}
 	}
 	
 	public String[] getAliases() {

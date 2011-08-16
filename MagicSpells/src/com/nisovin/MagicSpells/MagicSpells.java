@@ -372,7 +372,7 @@ public class MagicSpells extends JavaPlugin {
 							permGrantChildren.put("magicspells.grant." + spellName, true);
 							permLearnChildren.put("magicspells.learn." + spellName, true);
 							permCastChildren.put("magicspells.cast." + spellName, true);
-							permTeachChildren.put("magicspells.teach." + spellName, true);	
+							permTeachChildren.put("magicspells.teach." + spellName, true);
 							// load complete
 							debug("Loaded spell copy: " + data[0] + " (copy of " + data[1] + ")");
 						}
@@ -380,6 +380,27 @@ public class MagicSpells extends JavaPlugin {
 						getServer().getLogger().severe("MagicSpells: Failed to create spell copy: " + copy);
 					}
 				}
+			}
+		}
+		
+		// load multi-spells
+		List<String> multiSpells = config.getStringList("multispells", null);
+		if (multiSpells != null) {
+			for (String spellName : multiSpells) {
+				// initialize spell
+				MultiSpell multiSpell = new MultiSpell(config, spellName);
+				spells.put(spellName, multiSpell);
+				// add permissions
+				addPermission(pm, "grant." + spellName, PermissionDefault.OP);
+				addPermission(pm, "learn." + spellName, PermissionDefault.TRUE);
+				addPermission(pm, "cast." + spellName, PermissionDefault.TRUE);
+				addPermission(pm, "teach." + spellName, PermissionDefault.TRUE);
+				permGrantChildren.put("magicspells.grant." + spellName, true);
+				permLearnChildren.put("magicspells.learn." + spellName, true);
+				permCastChildren.put("magicspells.cast." + spellName, true);
+				permTeachChildren.put("magicspells.teach." + spellName, true);
+				// load complete
+				debug("Loaded multi-spell: " + spellName);
 			}
 		}
 		

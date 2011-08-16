@@ -11,7 +11,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageByProjectileEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -137,11 +136,11 @@ public class FireballSpell extends InstantSpell {
 	
 	@Override
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (!event.isCancelled() && event instanceof EntityDamageByProjectileEvent) {
-			EntityDamageByProjectileEvent evt = (EntityDamageByProjectileEvent)event;
-			if (evt.getProjectile() instanceof Fireball && evt.getDamager() instanceof Player) {
-				Fireball fireball = (Fireball)evt.getProjectile();
-				if (fireballs.contains(fireball)) {
+		if (!event.isCancelled() && event instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
+			if (evt.getDamager() instanceof Fireball) {
+				Fireball fireball = (Fireball)evt.getEntity();
+				if (fireball.getShooter() instanceof Player && fireballs.contains(fireball)) {
 					event.setDamage(event.getDamage() + additionalDamage);
 				}
 			}
