@@ -101,7 +101,15 @@ public class BlockPlatform {
 	}
 	
 	public boolean isMoved(Block newCenter) {
-		return !newCenter.getLocation().equals(center.getLocation());
+		return isMoved(newCenter, true);
+	}
+	
+	public boolean isMoved(Block newCenter, boolean allowDown) {
+		if (!allowDown && newCenter.getY() < center.getY()) {
+			return false;
+		} else {
+			return !newCenter.getLocation().equals(center.getLocation());
+		}
 	}
 	
 	public boolean isMovedHorizontally(Block newCenter) {

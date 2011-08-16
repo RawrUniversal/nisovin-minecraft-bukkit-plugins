@@ -78,8 +78,9 @@ public class WindwalkSpell extends BuffSpell {
 				}
 				if (!player.isSneaking()) { 
 					Block block = event.getTo().subtract(0,1,0).getBlock();
-					boolean moved = platform.movePlatform(block);
+					boolean moved = platform.isMoved(block, false);
 					if (moved) {
+						platform.movePlatform(block, true);
 						addUse(player);
 						chargeUseCost(player);
 					}
