@@ -60,8 +60,9 @@ public class TomeSpell extends CommandSpell {
 				sendMessage(player, strUsage);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
-				spell = MagicSpells.getSpellbook(player).getSpellByName(args[0]);
-				if (spell == null) {
+				Spellbook spellbook = MagicSpells.getSpellbook(player);
+				spell = MagicSpells.getSpellByInGameName(args[0]);
+				if (spell == null || spellbook == null || !spellbook.hasSpell(spell)) {
 					// fail -- no spell
 					sendMessage(player, strNoSpell);
 					return PostCastAction.ALREADY_HANDLED;

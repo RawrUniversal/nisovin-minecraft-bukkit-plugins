@@ -30,6 +30,7 @@ public abstract class Spell implements Comparable<Spell> {
 	private Configuration config;
 	protected String internalName;
 	protected String name;
+	protected String[] aliases;
 	protected String description;
 	protected int castItem;
 	protected ItemStack[] cost;
@@ -47,6 +48,11 @@ public abstract class Spell implements Comparable<Spell> {
 		this.config = config;
 		this.internalName = spellName;
 		this.name = config.getString("spells." + spellName + ".name", spellName);
+		List<String> temp = config.getStringList("spells." + spellName + ".aliases", null);
+		if (temp != null) {
+			aliases = new String[temp.size()];
+			aliases = temp.toArray(aliases);
+		}
 		this.description = config.getString("spells." + spellName + ".description", "");
 		this.castItem = config.getInt("spells." + spellName + ".cast-item", 280);
 		List<String> costList = config.getStringList("spells." + spellName + ".cost", null);
@@ -459,6 +465,10 @@ public abstract class Spell implements Comparable<Spell> {
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	public String[] getAliases() {
+		return this.aliases;
 	}
 	
 	public int getCastItem() {

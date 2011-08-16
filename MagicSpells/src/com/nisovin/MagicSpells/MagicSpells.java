@@ -398,6 +398,14 @@ public class MagicSpells extends JavaPlugin {
 		// load in-game spell names and initialize spells
 		for (Spell spell : spells.values()) {
 			spellNames.put(spell.getName(), spell);
+			String[] aliases = spell.getAliases();
+			if (aliases != null && aliases.length > 0) {
+				for (String alias : aliases) {
+					if (!spellNames.containsKey(alias)) {
+						spellNames.put(alias, spell);
+					}
+				}
+			}
 			spell.initialize();
 		}
 		
@@ -463,8 +471,8 @@ public class MagicSpells extends JavaPlugin {
 			} else if (sender instanceof Player) {
 				Player player = (Player)sender;
 				Spellbook spellbook = getSpellbook(player);
-				Spell spell = spellbook.getSpellByName(args[0]);
-				if (spell != null && spell.canCastByCommand()) {
+				Spell spell = getSpellByInGameName(args[0]);
+				if (spell != null && spell.canCastByCommand() && spellbook.hasSpell(spell)) {
 					String[] spellArgs = null;
 					if (args.length > 1) {
 						spellArgs = new String[args.length-1];

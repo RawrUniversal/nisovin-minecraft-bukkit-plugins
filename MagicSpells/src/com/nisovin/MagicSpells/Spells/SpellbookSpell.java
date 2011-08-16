@@ -88,8 +88,9 @@ public class SpellbookSpell extends CommandSpell {
 					player.sendMessage("Spellbook file reloaded.");
 					return PostCastAction.ALREADY_HANDLED;
 				}
-				Spell spell = MagicSpells.getSpellbook(player).getSpellByName(args[0]);
-				if (spell == null) {
+				Spellbook spellbook = MagicSpells.getSpellbook(player);
+				Spell spell = MagicSpells.getSpellByInGameName(args[0]);
+				if (spellbook == null || spell == null || !spellbook.hasSpell(spell)) {
 					// fail: no such spell
 					sendMessage(player, strNoSpell);
 				} else if (!MagicSpells.getSpellbook(player).canTeach(spell)) {
