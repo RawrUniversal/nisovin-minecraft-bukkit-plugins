@@ -249,6 +249,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(SafefallSpell.class);
 		spellClasses.add(ScrollSpell.class);
 		spellClasses.add(SpellbookSpell.class);
+		spellClasses.add(StairSpell.class);
 		spellClasses.add(StealthSpell.class);
 		spellClasses.add(StonevisionSpell.class);
 		spellClasses.add(SummonSpell.class);
