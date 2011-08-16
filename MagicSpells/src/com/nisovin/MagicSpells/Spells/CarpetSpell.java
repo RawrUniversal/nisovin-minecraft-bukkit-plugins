@@ -17,7 +17,7 @@ import org.bukkit.util.config.Configuration;
 import com.nisovin.MagicSpells.BuffSpell;
 import com.nisovin.MagicSpells.Util.BlockPlatform;
 
-public class WindwalkSpell extends BuffSpell {
+public class CarpetSpell extends BuffSpell {
 	
 	private Material platformBlock;
 	private int size;
@@ -27,7 +27,7 @@ public class WindwalkSpell extends BuffSpell {
 	private HashMap<String,BlockPlatform> windwalkers;
 	private HashSet<Player> falling;
 
-	public WindwalkSpell(Configuration config, String spellName) {
+	public CarpetSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
 		platformBlock = Material.getMaterial(config.getInt("spells." + spellName + ".platform-block", Material.GLASS.getId()));

@@ -131,6 +131,24 @@ spells:
             - mana 5
         str-invalid-block: You can't build that block.
         str-cant-build: You can't build there.
+    carpet:
+        name: carpet
+        description: Lets you walk on a platform of glass.
+        cast-item: 317
+        cooldown: 30
+        cancel-on-logout: true
+        cancel-on-teleport: true
+        size: 2
+        cost:
+            - 331 5
+            - 288 5
+        use-cost:
+            - 288 1
+        use-cost-interval: 50
+        str-cost: 5 redstone, 5 feathers, plus 1 feather every 50 blocks
+        str-cast-self: You are now walking on air!
+        str-cast-others: "%a is now walking on air!"
+        str-fade: You are no longer walking on air.
     combust:
         name: combust
         description: Set a target on fire.
@@ -678,24 +696,6 @@ spells:
             - 1 2
         str-cost: 2 redstone dust and 2 stone
         str-no-target: Unable to create a wall.
-    windwalk:
-        name: windwalk
-        description: Lets you walk on a platform of air.
-        cast-item: 317
-        cooldown: 30
-        cancel-on-logout: true
-        cancel-on-teleport: true
-        size: 2
-        cost:
-            - 331 5
-            - 288 5
-        use-cost:
-            - 288 1
-        use-cost-interval: 50
-        str-cost: 5 redstone, 5 feathers, plus 1 feather every 50 blocks
-        str-cast-self: You are now walking on air!
-        str-cast-others: "%a is now walking on air!"
-        str-fade: You are no longer walking on air.
     zap:
         name: zap
         description: Instantly destroys a block.
