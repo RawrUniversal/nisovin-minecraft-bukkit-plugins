@@ -3,6 +3,7 @@ package com.nisovin.MagicSpells;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -10,6 +11,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.config.Configuration;
+
+import com.nisovin.MagicSpells.Events.SpellTargetEvent;
 
 public abstract class InstantSpell extends Spell {
 	
@@ -119,6 +122,15 @@ public abstract class InstantSpell extends Spell {
 		// check for anti-magic-zone
 		if (target != null && MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.inNoMagicZone(target.getLocation())) {
 			target = null;
+		}
+		
+		// call event listeners
+		SpellTargetEvent event = new SpellTargetEvent(this, player, target);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		if (event.isCancelled()) {
+			target = null;
+		} else {
+			target = event.getTarget();
 		}
 		
 		return target;

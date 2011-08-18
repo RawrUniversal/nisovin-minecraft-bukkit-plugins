@@ -3,6 +3,7 @@ package com.nisovin.MagicSpells;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -24,6 +25,8 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
+
+import com.nisovin.MagicSpells.Events.SpellCastEvent;
 
 public abstract class Spell implements Comparable<Spell> {
 
@@ -140,6 +143,8 @@ public abstract class Spell implements Comparable<Spell> {
 	
 	public final SpellCastState cast(Player player, String[] args) {
 		MagicSpells.debug("Player " + player.getName() + " is trying to cast " + internalName);
+		
+		// get spell state
 		SpellCastState state;
 		if (!MagicSpells.getSpellbook(player).canCast(this)) {
 			state = SpellCastState.CANT_CAST;
@@ -153,7 +158,17 @@ public abstract class Spell implements Comparable<Spell> {
 			state = SpellCastState.NORMAL;
 		}
 		
+		// call events
+		SpellCastEvent event = new SpellCastEvent(this, player, state);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		if (event.isCancelled()) {
+			return SpellCastState.CANT_CAST;
+		}
+		
+		// cast spell
 		PostCastAction action = castSpell(player, state, args);
+		
+		// perform post-cast action
 		if (action != null && action != PostCastAction.ALREADY_HANDLED) {
 			if (state == SpellCastState.NORMAL) {
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.COOLDOWN_ONLY || action == PostCastAction.NO_MESSAGES || action == PostCastAction.NO_REAGENTS) {
@@ -538,7 +553,7 @@ public abstract class Spell implements Comparable<Spell> {
 	public void onEntityCombust(EntityCombustEvent event) {}	
 	public void onExplosionPrime(ExplosionPrimeEvent event) {}	
 	
-	protected enum SpellCastState {
+	public enum SpellCastState {
 		NORMAL,
 		ON_COOLDOWN,
 		MISSING_REAGENTS,
