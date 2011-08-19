@@ -26,7 +26,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
 
+import com.nisovin.MagicSpells.Events.MagicEventType;
 import com.nisovin.MagicSpells.Events.SpellCastEvent;
+import com.nisovin.MagicSpells.Events.SpellTargetEvent;
 
 public abstract class Spell implements Comparable<Spell> {
 
@@ -519,10 +521,26 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	/**
+	 * Makes this spell listen for the specified event
+	 * @param eventType the event to listen for
+	 */
+	protected void addListener(MagicEventType eventType) {
+		MagicSpells.addSpellListener(eventType, this);
+	}
+	
+	/**
 	 * Makes this spell stop listening for the specified event
 	 * @param eventType the event
 	 */
 	protected void removeListener(Event.Type eventType) {
+		MagicSpells.removeSpellListener(eventType, this);
+	}
+	
+	/**
+	 * Makes this spell stop listening for the specified event
+	 * @param eventType the event
+	 */
+	protected void removeListener(MagicEventType eventType) {
 		MagicSpells.removeSpellListener(eventType, this);
 	}
 	
@@ -551,7 +569,9 @@ public abstract class Spell implements Comparable<Spell> {
 	public void onEntityDamage(EntityDamageEvent event) {}	
 	public void onEntityTarget(EntityTargetEvent event) {}	
 	public void onEntityCombust(EntityCombustEvent event) {}	
-	public void onExplosionPrime(ExplosionPrimeEvent event) {}	
+	public void onExplosionPrime(ExplosionPrimeEvent event) {}
+	public void onSpellCast(SpellCastEvent event) {}
+	public void onSpellTarget(SpellTargetEvent event) {}
 	
 	public enum SpellCastState {
 		NORMAL,

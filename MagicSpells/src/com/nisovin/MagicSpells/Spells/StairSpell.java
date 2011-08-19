@@ -135,9 +135,18 @@ public class StairSpell extends BuffSpell {
 			
 			if (x != prevX || z != prevZ || dirX != prevDirX || dirY != prevDirY || dirZ != prevDirZ) {
 				
-				Block down = origin.getRelative(0,-1,0);
-				if (down != null && origin.getType() == Material.AIR && down.getType() != Material.AIR) {
-					origin = down;
+				if (origin.getType() == Material.AIR) {
+					// check for weird stair positioning
+					Block up = origin.getRelative(0,1,0);
+					if (up != null && ((material == Material.WOOD && up.getType() == Material.WOOD_STAIRS) || (material == Material.COBBLESTONE && up.getType() == Material.COBBLESTONE_STAIRS))) {
+						origin = up;
+					} else {					
+						// allow down movement when stepping out over an edge
+						Block down = origin.getRelative(0,-1,0);
+						if (down != null && down.getType() != Material.AIR) {
+							origin = down;
+						}
+					}
 				}
 				
 				drawCarpet(origin, dirX, dirY, dirZ);
@@ -202,8 +211,8 @@ public class StairSpell extends BuffSpell {
 			
 			// get platform blocks
 			HashSet<Block> blocks = new HashSet<Block>();
-			blocks.add(origin);
-			for (int i = 1; i < size; i++) {
+			blocks.add(origin); // add standing block
+			for (int i = 1; i < size; i++) { // add blocks ahead
 				Block b = origin.getRelative(dirX*i, dirY*i, dirZ*i);
 				if (b != null) {
 					blocks.add(b);

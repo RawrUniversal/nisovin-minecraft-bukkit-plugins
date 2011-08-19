@@ -29,6 +29,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
+import com.nisovin.MagicSpells.Events.MagicEventType;
 import com.nisovin.MagicSpells.Spells.*;
 import com.nisovin.MagicSpells.Util.MagicConfig;
 
@@ -79,6 +80,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static HashMap<String,Spellbook> spellbooks; // player spellbooks
 	
 	protected static HashMap<Event.Type,HashSet<Spell>> listeners;
+	protected static HashMap<MagicEventType, HashSet<Spell>> customListeners;
 	
 	protected static ManaBarManager mana;
 	protected static HashMap<Player,Long> manaPotionCooldowns;
@@ -92,6 +94,7 @@ public class MagicSpells extends JavaPlugin {
 		new MagicPlayerListener(this);
 		new MagicEntityListener(this);
 		new MagicBlockListener(this);
+		new MagicSpellListener(this);
 	}
 	
 	private void load() {
@@ -102,6 +105,7 @@ public class MagicSpells extends JavaPlugin {
 		spellNames = new HashMap<String,Spell>();
 		spellbooks = new HashMap<String,Spellbook>();
 		listeners = new HashMap<Event.Type,HashSet<Spell>>();
+		customListeners = new HashMap<MagicEventType, HashSet<Spell>>();
 		
 		// make sure directories are created
 		this.getDataFolder().mkdir();
@@ -459,10 +463,32 @@ public class MagicSpells extends JavaPlugin {
 		spells.add(spell);
 	}
 	
+	protected static void addSpellListener(MagicEventType eventType, Spell spell) {
+		HashSet<Spell> spells = customListeners.get(eventType);
+		if (spells == null) {
+			spells = new HashSet<Spell>();
+			customListeners.put(eventType, spells);
+		}
+		spells.add(spell);		
+	}
+	
 	protected static void removeSpellListener(Event.Type eventType, Spell spell) {
 		HashSet<Spell> spells = listeners.get(eventType);
 		if (spells != null) {
 			spells.remove(spell);
+			if (spells.size() == 0) {
+				listeners.remove(eventType);
+			}
+		}
+	}
+	
+	protected static void removeSpellListener(MagicEventType eventType, Spell spell) {
+		HashSet<Spell> spells = customListeners.get(eventType);
+		if (spells != null) {
+			spells.remove(spell);
+			if (spells.size() == 0) {
+				customListeners.remove(eventType);
+			}
 		}
 	}
 	

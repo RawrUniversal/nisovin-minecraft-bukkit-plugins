@@ -125,12 +125,14 @@ public abstract class InstantSpell extends Spell {
 		}
 		
 		// call event listeners
-		SpellTargetEvent event = new SpellTargetEvent(this, player, target);
-		Bukkit.getServer().getPluginManager().callEvent(event);
-		if (event.isCancelled()) {
-			target = null;
-		} else {
-			target = event.getTarget();
+		if (target != null) {
+			SpellTargetEvent event = new SpellTargetEvent(this, player, target);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			if (event.isCancelled()) {
+				target = null;
+			} else {
+				target = event.getTarget();
+			}
 		}
 		
 		return target;
