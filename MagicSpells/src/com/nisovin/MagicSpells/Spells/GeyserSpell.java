@@ -24,6 +24,7 @@ public class GeyserSpell extends InstantSpell {
 	private double velocity;
 	private int tickInterval;
 	private int geyserHeight;
+	private Material geyserType;
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
@@ -36,6 +37,12 @@ public class GeyserSpell extends InstantSpell {
 		velocity = getConfigInt("velocity", 10) / 10.0D;
 		tickInterval = getConfigInt("animation-speed", 2);
 		geyserHeight = getConfigInt("geyser-height", 4);
+		String s = getConfigString("geyser-type", "water");
+		if (s.equalsIgnoreCase("lava")) {
+			geyserType = Material.STATIONARY_LAVA;
+		} else {
+			geyserType = Material.STATIONARY_WATER;
+		}
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
@@ -104,7 +111,7 @@ public class GeyserSpell extends InstantSpell {
 				Block block = start.clone().add(0,tick,0).getBlock();
 				if (block.getType() == Material.AIR) {
 					for (Player p : nearby) {
-						p.sendBlockChange(block.getLocation(), Material.STATIONARY_WATER, (byte)0);
+						p.sendBlockChange(block.getLocation(), geyserType, (byte)0);
 					}
 				}
 			} else {

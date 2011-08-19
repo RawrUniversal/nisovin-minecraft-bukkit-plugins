@@ -329,6 +329,7 @@ spells:
         velocity: 10
         animation-speed: 2
         geyser-height: 4
+        geyser-type: water
         obey-los: true
         target-players: false
         check-plugins: true
