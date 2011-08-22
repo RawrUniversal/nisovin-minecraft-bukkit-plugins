@@ -434,6 +434,7 @@ spells:
         cast-item: 283
         cooldown: 15
         range: 20
+        additional-damage: 0
         no-damage: false
         require-entity-target: false
         obey-los: true

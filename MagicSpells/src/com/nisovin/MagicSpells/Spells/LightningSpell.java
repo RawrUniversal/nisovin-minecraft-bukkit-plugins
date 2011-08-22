@@ -16,6 +16,7 @@ public class LightningSpell extends InstantSpell {
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
+	private int additionalDamage;
 	private boolean noDamage;
 	private String strCastFail;
 	private String strNoTarget;
@@ -27,7 +28,8 @@ public class LightningSpell extends InstantSpell {
 		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
-		noDamage = config.getBoolean("spells." + spellName + ".no-damage", false);
+		additionalDamage = getConfigInt("additional-damage", 0);
+		noDamage = config.getBoolean("spells." + spellName + ".no-damage", false);		
 		strCastFail = config.getString("spells." + spellName + ".str-cast-fail", "");
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "Unable to find target.");
 	}
@@ -47,6 +49,9 @@ public class LightningSpell extends InstantSpell {
 				}
 				if (e != null) {
 					target = e.getLocation().getBlock();
+					if (additionalDamage > 0) {
+						e.damage(additionalDamage, player);
+					}
 				} else {
 					sendMessage(player, strNoTarget);
 					return PostCastAction.ALREADY_HANDLED;
