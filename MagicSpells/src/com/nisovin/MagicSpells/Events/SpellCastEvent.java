@@ -8,14 +8,24 @@ import com.nisovin.MagicSpells.Spell;
 @SuppressWarnings("serial")
 public class SpellCastEvent extends SpellEvent implements Cancellable {
 
-	private boolean cancelled = false;
+	private double power;
 	private int cooldown;
 	private boolean chargeReagents;
+	private boolean cancelled = false;
 	
-	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, int cooldown, boolean chargeReagents) {
+	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, double power, int cooldown, boolean chargeReagents) {
 		super("SpellCast", spell, caster);
 		this.cooldown = cooldown;
 		this.chargeReagents = chargeReagents;
+		this.power = power;
+	}
+	
+	public double getPower() {
+		return power;
+	}
+	
+	public void setPower(float power) {
+		this.power = power;
 	}
 	
 	public int getCooldown() {

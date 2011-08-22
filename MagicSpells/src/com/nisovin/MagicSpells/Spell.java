@@ -161,19 +161,21 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 		
 		// call events
+		double power = 1.0;
 		int cooldown = this.cooldown;
 		boolean chargeReagents = true;
-		SpellCastEvent event = new SpellCastEvent(this, player, state, cooldown, chargeReagents);
+		SpellCastEvent event = new SpellCastEvent(this, player, state, power, cooldown, chargeReagents);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
 			return SpellCastState.CANT_CAST;
 		} else {
+			power = event.getPower();
 			cooldown = event.getCooldown();
 			chargeReagents = event.chargeReagents();
 		}
 		
 		// cast spell
-		PostCastAction action = castSpell(player, state, args);
+		PostCastAction action = castSpell(player, state, power, args);
 		
 		// perform post-cast action
 		if (action != null && action != PostCastAction.ALREADY_HANDLED) {
@@ -211,6 +213,10 @@ public abstract class Spell implements Comparable<Spell> {
 	 */
 	protected abstract PostCastAction castSpell(Player player, SpellCastState state, String[] args);
 
+	protected PostCastAction castSpell(Player player, SpellCastState state, double power, String[] args) {
+		return castSpell(player, state, args);
+	}
+	
 	/**
 	 * This method is called when the spell is cast from the console.
 	 * @param sender the console sender.
