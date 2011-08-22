@@ -31,10 +31,7 @@ public class HealSpell extends InstantSpell {
 				sendMessage(player, strNoTarget);
 			} else if (target.getHealth() == 20) {
 				sendMessage(player, formatMessage(strMaxHealth, "%t", target.getName()));
-			} else {
-				setCooldown(player);
-				removeReagents(player);
-				
+			} else {				
 				int health = target.getHealth();
 				health += healAmount;
 				if (health > 20) health = 20;
@@ -43,6 +40,8 @@ public class HealSpell extends InstantSpell {
 				sendMessage(player, formatMessage(strCastSelf, "%t", target.getDisplayName()));
 				sendMessage(target, formatMessage(strCastTarget, "%a", player.getDisplayName()));
 				sendMessageNear(player, formatMessage(strCastOthers, "%t", target.getDisplayName(), "%a", player.getDisplayName()));
+				
+				return PostCastAction.NO_MESSAGES;
 			}
 			
 			return PostCastAction.ALREADY_HANDLED;

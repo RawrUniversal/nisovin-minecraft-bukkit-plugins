@@ -161,10 +161,15 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 		
 		// call events
-		SpellCastEvent event = new SpellCastEvent(this, player, state);
+		int cooldown = this.cooldown;
+		boolean chargeReagents = true;
+		SpellCastEvent event = new SpellCastEvent(this, player, state, cooldown, chargeReagents);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
 			return SpellCastState.CANT_CAST;
+		} else {
+			cooldown = event.getCooldown();
+			chargeReagents = event.chargeReagents();
 		}
 		
 		// cast spell
@@ -174,10 +179,10 @@ public abstract class Spell implements Comparable<Spell> {
 		if (action != null && action != PostCastAction.ALREADY_HANDLED) {
 			if (state == SpellCastState.NORMAL) {
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.COOLDOWN_ONLY || action == PostCastAction.NO_MESSAGES || action == PostCastAction.NO_REAGENTS) {
-					setCooldown(player);
+					setCooldown(player, cooldown);
 				}
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.REAGENTS_ONLY || action == PostCastAction.NO_MESSAGES || action == PostCastAction.NO_COOLDOWN) {
-					removeReagents(player);
+					if (chargeReagents) removeReagents(player);
 				}
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.MESSAGES_ONLY || action == PostCastAction.NO_COOLDOWN || action == PostCastAction.NO_REAGENTS) {
 					sendMessage(player, strCastSelf);
@@ -269,7 +274,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * Begins the cooldown for the spell for the specified player
 	 * @param player The player to set the cooldown for
 	 */
-	protected void setCooldown(Player player) {
+	protected void setCooldown(Player player, int cooldown) {
 		if (cooldown > 0) {
 			lastCast.put(player.getName(), System.currentTimeMillis());
 		}

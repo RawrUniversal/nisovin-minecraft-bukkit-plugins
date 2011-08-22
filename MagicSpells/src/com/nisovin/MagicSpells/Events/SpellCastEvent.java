@@ -9,9 +9,29 @@ import com.nisovin.MagicSpells.Spell;
 public class SpellCastEvent extends SpellEvent implements Cancellable {
 
 	private boolean cancelled = false;
+	private int cooldown;
+	private boolean chargeReagents;
 	
-	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state) {
+	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, int cooldown, boolean chargeReagents) {
 		super("SpellCast", spell, caster);
+		this.cooldown = cooldown;
+		this.chargeReagents = chargeReagents;
+	}
+	
+	public int getCooldown() {
+		return cooldown;
+	}
+	
+	public void setCooldown(int cooldown) {
+		this.cooldown = cooldown;
+	}
+	
+	public boolean chargeReagents() {
+		return chargeReagents;
+	}
+	
+	public void setChargeReagents(boolean chargeReagents) {
+		this.chargeReagents = chargeReagents;
 	}
 
 	@Override

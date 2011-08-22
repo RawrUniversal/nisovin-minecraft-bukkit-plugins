@@ -49,9 +49,8 @@ public class BindSpell extends CommandSpell {
 						spellbook.addSpell(spell, player.getItemInHand().getTypeId());
 					}
 					spellbook.save();
-					removeReagents(player);
-					setCooldown(player);
 					sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
+					return PostCastAction.NO_MESSAGES;
 				}
 			}
 			return PostCastAction.ALREADY_HANDLED;
