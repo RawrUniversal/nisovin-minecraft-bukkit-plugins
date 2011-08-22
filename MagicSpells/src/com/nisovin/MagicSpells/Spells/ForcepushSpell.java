@@ -42,7 +42,11 @@ public class ForcepushSpell extends InstantSpell {
 			if (entity instanceof LivingEntity && (targetPlayers || !(entity instanceof Player))) {
 				e = entity.getLocation().toVector();
 				v = e.subtract(p).normalize().multiply(force/10.0);
-				v.setY(v.getY() * (yForce/10.0));
+				if (force != 0) {
+					v.setY(v.getY() * (yForce/10.0));
+				} else {
+					v.setY(yForce/10.0);
+				}
 				if (v.getY() > (maxYForce/10.0)) {
 					v.setY(maxYForce/10.0);
 				}
