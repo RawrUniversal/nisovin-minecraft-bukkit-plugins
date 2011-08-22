@@ -29,6 +29,7 @@ import org.bukkit.util.config.Configuration;
 import com.nisovin.MagicSpells.Events.MagicEventType;
 import com.nisovin.MagicSpells.Events.SpellCastEvent;
 import com.nisovin.MagicSpells.Events.SpellTargetEvent;
+import com.nisovin.MagicSpells.Util.SpellReagents;
 
 public abstract class Spell implements Comparable<Spell> {
 
@@ -163,15 +164,14 @@ public abstract class Spell implements Comparable<Spell> {
 		// call events
 		double power = 1.0;
 		int cooldown = this.cooldown;
-		boolean chargeReagents = true;
-		SpellCastEvent event = new SpellCastEvent(this, player, state, power, cooldown, chargeReagents);
+		SpellReagents reagents = new SpellReagents(cost, manaCost, healthCost);
+		SpellCastEvent event = new SpellCastEvent(this, player, state, power, cooldown, reagents);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
 			return SpellCastState.CANT_CAST;
 		} else {
 			power = event.getPower();
 			cooldown = event.getCooldown();
-			chargeReagents = event.chargeReagents();
 		}
 		
 		// cast spell
@@ -184,7 +184,7 @@ public abstract class Spell implements Comparable<Spell> {
 					setCooldown(player, cooldown);
 				}
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.REAGENTS_ONLY || action == PostCastAction.NO_MESSAGES || action == PostCastAction.NO_COOLDOWN) {
-					if (chargeReagents) removeReagents(player);
+					removeReagents(player, reagents.getItemsAsArray(), reagents.getHealth(), reagents.getMana());
 				}
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.MESSAGES_ONLY || action == PostCastAction.NO_COOLDOWN || action == PostCastAction.NO_REAGENTS) {
 					sendMessage(player, strCastSelf);

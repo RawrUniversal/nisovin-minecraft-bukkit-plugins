@@ -4,19 +4,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
 import com.nisovin.MagicSpells.Spell;
+import com.nisovin.MagicSpells.Util.SpellReagents;
 
 @SuppressWarnings("serial")
 public class SpellCastEvent extends SpellEvent implements Cancellable {
 
 	private double power;
 	private int cooldown;
-	private boolean chargeReagents;
+	private SpellReagents reagents;
 	private boolean cancelled = false;
 	
-	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, double power, int cooldown, boolean chargeReagents) {
+	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, double power, int cooldown, SpellReagents reagents) {
 		super("SpellCast", spell, caster);
 		this.cooldown = cooldown;
-		this.chargeReagents = chargeReagents;
+		this.reagents = reagents;
 		this.power = power;
 	}
 	
@@ -36,12 +37,8 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 		this.cooldown = cooldown;
 	}
 	
-	public boolean chargeReagents() {
-		return chargeReagents;
-	}
-	
-	public void setChargeReagents(boolean chargeReagents) {
-		this.chargeReagents = chargeReagents;
+	public SpellReagents getReagents() {
+		return reagents;
 	}
 
 	@Override
