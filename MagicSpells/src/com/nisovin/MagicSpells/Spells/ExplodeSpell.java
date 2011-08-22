@@ -57,7 +57,7 @@ public class ExplodeSpell extends InstantSpell {
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
-						return PostCastAction.HANDLE_NORMALLY;
+						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
 				createExplosion(player, target.getLocation(), explosionSize);

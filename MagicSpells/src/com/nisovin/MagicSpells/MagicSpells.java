@@ -216,6 +216,48 @@ public class MagicSpells extends JavaPlugin {
 		HashMap<String, Boolean> permTeachChildren = new HashMap<String,Boolean>();
 		
 		// load spells
+		loadNormalSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
+		loadCustomSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
+		loadSpellCopies(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
+		loadMultiSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
+		
+		// finalize permissions
+		addPermission(pm, "grant.*", PermissionDefault.FALSE, permGrantChildren);
+		addPermission(pm, "learn.*", PermissionDefault.TRUE, permLearnChildren);
+		addPermission(pm, "cast.*", PermissionDefault.TRUE, permCastChildren);
+		addPermission(pm, "teach.*", PermissionDefault.TRUE, permTeachChildren);
+		HashMap<String,Boolean> permAllChildren = new HashMap<String,Boolean>();
+		permAllChildren.putAll(permGrantChildren);
+		permAllChildren.putAll(permLearnChildren);
+		permAllChildren.putAll(permCastChildren);
+		permAllChildren.putAll(permTeachChildren);
+		addPermission(pm, "*", PermissionDefault.FALSE, permAllChildren);
+		
+		// load in-game spell names and initialize spells
+		for (Spell spell : spells.values()) {
+			spellNames.put(spell.getName(), spell);
+			String[] aliases = spell.getAliases();
+			if (aliases != null && aliases.length > 0) {
+				for (String alias : aliases) {
+					if (!spellNames.containsKey(alias)) {
+						spellNames.put(alias, spell);
+					}
+				}
+			}
+			spell.initialize();
+		}
+		
+		// load online player spellbooks
+		for (Player p : getServer().getOnlinePlayers()) {
+			spellbooks.put(p.getName(), new Spellbook(p, this));
+		}
+		
+		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");
+		
+	}
+	
+	private void loadNormalSpells(Configuration config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
+		// create list of spells
 		ArrayList<Class<? extends Spell>> spellClasses = new ArrayList<Class<? extends Spell>>();
 		spellClasses.add(BindSpell.class);
 		spellClasses.add(BlinkSpell.class);
@@ -264,6 +306,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(VolleySpell.class);
 		spellClasses.add(WallSpell.class);
 		spellClasses.add(ZapSpell.class);
+		// load the spells
 		for (Class<? extends Spell> c : spellClasses) {
 			try {
 				// get spell name
@@ -300,6 +343,9 @@ public class MagicSpells extends JavaPlugin {
 			}
 		}
 		
+	}
+	
+	private void loadCustomSpells(Configuration config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
 		// load spells from plugin folder
 		File[] classFiles = getDataFolder().listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
@@ -332,7 +378,7 @@ public class MagicSpells extends JavaPlugin {
 						Spell spell = c.getConstructor(Configuration.class, String.class).newInstance(config, spellName);
 						spells.put(spellName, spell);
 						// add permissions
-						addPermission(pm, "grant." + spellName, PermissionDefault.OP);
+						addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
 						addPermission(pm, "learn." + spellName, PermissionDefault.TRUE);
 						addPermission(pm, "cast." + spellName, PermissionDefault.TRUE);
 						addPermission(pm, "teach." + spellName, PermissionDefault.TRUE);
@@ -350,7 +396,9 @@ public class MagicSpells extends JavaPlugin {
 		} catch (Exception e) {
 			getServer().getLogger().severe("MagicSpells: Failed to create external spells");
 		}
-		
+	}
+	
+	private void loadSpellCopies(Configuration config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
 		// load spell copies
 		List<String> copies = config.getStringList("spellcopies", new ArrayList<String>());
 		List<String> moreCopies = config.getStringList("spells.spellcopies", null);
@@ -370,7 +418,7 @@ public class MagicSpells extends JavaPlugin {
 							Spell spellCopy = spell.getClass().getConstructor(Configuration.class, String.class).newInstance(config, spellName);
 							spells.put(spellName, spellCopy);
 							// add permissions
-							addPermission(pm, "grant." + spellName, PermissionDefault.OP);
+							addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
 							addPermission(pm, "learn." + spellName, PermissionDefault.TRUE);
 							addPermission(pm, "cast." + spellName, PermissionDefault.TRUE);
 							addPermission(pm, "teach." + spellName, PermissionDefault.TRUE);
@@ -387,7 +435,9 @@ public class MagicSpells extends JavaPlugin {
 				}
 			}
 		}
-		
+	}
+	
+	private void loadMultiSpells(Configuration config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
 		// load multi-spells
 		List<String> multiSpells = config.getStringList("multispells", null);
 		if (multiSpells != null) {
@@ -396,7 +446,7 @@ public class MagicSpells extends JavaPlugin {
 				MultiSpell multiSpell = new MultiSpell(config, spellName);
 				spells.put(spellName, multiSpell);
 				// add permissions
-				addPermission(pm, "grant." + spellName, PermissionDefault.OP);
+				addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
 				addPermission(pm, "learn." + spellName, PermissionDefault.TRUE);
 				addPermission(pm, "cast." + spellName, PermissionDefault.TRUE);
 				addPermission(pm, "teach." + spellName, PermissionDefault.TRUE);
@@ -408,40 +458,6 @@ public class MagicSpells extends JavaPlugin {
 				debug("Loaded multi-spell: " + spellName);
 			}
 		}
-		
-		// finalize permissions
-		addPermission(pm, "grant.*", PermissionDefault.OP, permGrantChildren);
-		addPermission(pm, "learn.*", PermissionDefault.TRUE, permLearnChildren);
-		addPermission(pm, "cast.*", PermissionDefault.TRUE, permCastChildren);
-		addPermission(pm, "teach.*", PermissionDefault.TRUE, permTeachChildren);
-		HashMap<String,Boolean> permAllChildren = new HashMap<String,Boolean>();
-		permAllChildren.putAll(permGrantChildren);
-		permAllChildren.putAll(permLearnChildren);
-		permAllChildren.putAll(permCastChildren);
-		permAllChildren.putAll(permTeachChildren);
-		addPermission(pm, "*", PermissionDefault.OP, permAllChildren);
-		
-		// load in-game spell names and initialize spells
-		for (Spell spell : spells.values()) {
-			spellNames.put(spell.getName(), spell);
-			String[] aliases = spell.getAliases();
-			if (aliases != null && aliases.length > 0) {
-				for (String alias : aliases) {
-					if (!spellNames.containsKey(alias)) {
-						spellNames.put(alias, spell);
-					}
-				}
-			}
-			spell.initialize();
-		}
-		
-		// load online player spellbooks
-		for (Player p : getServer().getOnlinePlayers()) {
-			spellbooks.put(p.getName(), new Spellbook(p, this));
-		}
-		
-		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");
-		
 	}
 	
 	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault) {

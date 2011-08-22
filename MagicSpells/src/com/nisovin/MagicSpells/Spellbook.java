@@ -215,7 +215,23 @@ public class Spellbook {
 	}
 	
 	public boolean hasSpell(Spell spell) {
-		return allSpells.contains(spell);
+		boolean has = allSpells.contains(spell);
+		if (has) {
+			return true;
+		} else {
+			boolean granted = false;
+			if (permissionHandler == null) {
+				granted = player.hasPermission("magicspells.grant." + spell.getInternalName());
+			} else {
+				granted = permissionHandler.has(player, "magicspells.grant." + spell.getInternalName());
+			}
+			if (granted) {
+				addSpell(spell);
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 	
 	public void addSpell(Spell spell) {

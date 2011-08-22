@@ -16,7 +16,7 @@ public class MagicSpellListener extends SpellListener {
 	}
 
 	@Override
-	public void onSpellTarget(SpellTargetEvent event) {		
+	public void onSpellTarget(SpellTargetEvent event) {
 		HashSet<Spell> spells = MagicSpells.customListeners.get(MagicEventType.SPELL_TARGET);
 		if (spells != null) {
 			for (Spell spell : spells) {
