@@ -15,7 +15,9 @@ public class SpellReagents {
 		this.items = new HashSet<ItemStack>();
 		if (items != null) {
 			for (ItemStack i : items) {
-				this.items.add(i.clone());
+				if (i != null) {
+					this.items.add(i.clone());
+				}
 			}
 		}
 		this.mana = mana;
