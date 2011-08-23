@@ -1,25 +1,8 @@
 package com.nisovin.bookworm;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class PermissionManager {
-	
-	private PermissionHandler perm = null;
-	
-	protected PermissionManager() {
-		if (BookWorm.USE_PERMISSIONS_PLUGIN) {
-			Plugin permissionsPlugin = Bukkit.getServer().getPluginManager().getPlugin("Permissions");
-	
-			if (perm == null && permissionsPlugin != null) {
-				perm = ((Permissions) permissionsPlugin).getHandler();
-			}
-		}
-	}
 	
 	public boolean canCreateBook(Player player) {
 		return hasPerm(player, "bookworm.create");
@@ -74,10 +57,6 @@ public class PermissionManager {
 	}
 	
 	private boolean hasPerm(Player player, String permission) {
-		if (perm == null) {
-			return player.hasPermission(permission);
-		} else {
-			return perm.has(player, permission);
-		}
+		return player.hasPermission(permission);
 	}
 }

@@ -22,7 +22,11 @@ public class BookWormSpoutInventoryListener extends InventoryListener {
 				Book book = BookWorm.getBook(itemClicked);
 				if (book != null) {
 					SpoutPlayer player = (SpoutPlayer)event.getPlayer();
-					player.sendNotification(book.getTitle(), "by " + book.getAuthor(), Material.BOOK);
+					String title = book.getTitle();
+					if (title.length() > 26) title = title.substring(0, 26);
+					String byLine = BookWorm.S_READ_BY + " " + book.getAuthor();
+					if (byLine.length() > 26) byLine = byLine.substring(0, 26);
+					player.sendNotification(title, byLine, Material.BOOK);
 					event.setCancelled(true);
 				}
 			}

@@ -44,7 +44,6 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean REQUIRE_BOOK_TO_COPY = false;
 	protected static boolean MAKE_REAL_COPY = false;
 	protected static boolean CHECK_WORLDGUARD = true;
-	protected static boolean USE_PERMISSIONS_PLUGIN = true;
 	protected static boolean USE_FULL_FILENAMES = true;
 	protected static boolean AUTO_CHAT_MODE = true;
 	protected static boolean BOOK_INFO_ACHIEVEMENT = true;
@@ -534,7 +533,6 @@ public class BookWorm extends JavaPlugin {
 		KEEP_ALL_BOOKS_LOADED = config.getBoolean("general.keep-all-books-loaded", KEEP_ALL_BOOKS_LOADED);
 
 		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
-		USE_PERMISSIONS_PLUGIN = config.getBoolean("general.use-permissions-plugin", USE_PERMISSIONS_PLUGIN);
 		USE_FULL_FILENAMES = config.getBoolean("general.use-full-filenames", USE_FULL_FILENAMES);
 		CLEAN_INTERVAL = config.getInt("general.clean-interval", CLEAN_INTERVAL);
 		REMOVE_DELAY = config.getInt("general.remove-delay", REMOVE_DELAY);
