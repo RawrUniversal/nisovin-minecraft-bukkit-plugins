@@ -10,17 +10,11 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
-import org.bukkit.plugin.Plugin;
-
 import org.bukkit.entity.Player;
 
 public class Spellbook {
 
 	private MagicSpells plugin;
-	
-	private static PermissionHandler permissionHandler = null;
 	
 	private Player player;
 	private String playerName;
@@ -69,11 +63,7 @@ public class Spellbook {
 		for (Spell spell : MagicSpells.spells.values()) {
 			MagicSpells.debug("    Checking spell " + spell.getInternalName() + "...");
 			if (!hasSpell(spell)) {
-				String perm = "magicspells.grant." + spell.getInternalName();
-				if (
-						(permissionHandler == null && player.hasPermission(perm)) || 
-						(permissionHandler != null && permissionHandler.has(player, perm))
-						) {
+				if (player.hasPermission("magicspells.grant." + spell.getInternalName())) {
 					addSpell(spell);
 					added = true;
 				}
@@ -85,35 +75,19 @@ public class Spellbook {
 	}	
 	
 	public boolean canLearn(Spell spell) {
-		if (permissionHandler == null) {
-			return player.hasPermission("magicspells.learn." + spell.getInternalName());
-		} else {
-			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.learn." + spell.getInternalName());
-		}
+		return player.hasPermission("magicspells.learn." + spell.getInternalName());
 	}
 	
 	public boolean canCast(Spell spell) {
-		if (permissionHandler == null) {
-			return player.hasPermission("magicspells.cast." + spell.getInternalName());
-		} else {
-			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.cast." + spell.getInternalName());
-		}
+		return player.hasPermission("magicspells.cast." + spell.getInternalName());
 	}
 	
 	public boolean canTeach(Spell spell) {
-		if (permissionHandler == null) {
-			return player.hasPermission("magicspells.teach." + spell.getInternalName());
-		} else {
-			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.teach." + spell.getInternalName());
-		}
+		return player.hasPermission("magicspells.teach." + spell.getInternalName());
 	}
 	
 	public boolean hasAdvancedPerm() {
-		if (permissionHandler == null) {
-			return player.hasPermission("magicspells.advanced");
-		} else {
-			return permissionHandler.has(MagicSpells.plugin.getServer().getPlayer(playerName), "magicspells.advanced");
-		}
+		return player.hasPermission("magicspells.advanced");
 	}
 	
 	private void loadFromFile() {
@@ -218,19 +192,11 @@ public class Spellbook {
 		boolean has = allSpells.contains(spell);
 		if (has) {
 			return true;
+		} else if (player.hasPermission("magicspells.grant." + spell.getInternalName())) {
+			addSpell(spell);
+			return true;
 		} else {
-			boolean granted = false;
-			if (permissionHandler == null) {
-				granted = player.hasPermission("magicspells.grant." + spell.getInternalName());
-			} else {
-				granted = permissionHandler.has(player, "magicspells.grant." + spell.getInternalName());
-			}
-			if (granted) {
-				addSpell(spell);
-				return true;
-			} else {
-				return false;
-			}
+			return false;
 		}
 	}
 	
@@ -301,18 +267,6 @@ public class Spellbook {
 		} catch (Exception e) {
 			plugin.getServer().getLogger().severe("Error saving player spellbook: " + playerName);
 		}		
-	}
-	
-	public static void initPermissions() {
-		Plugin permissionsPlugin = MagicSpells.plugin.getServer().getPluginManager().getPlugin("Permissions");
-
-		if (permissionHandler == null) {
-			if (permissionsPlugin != null) {
-				permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-			} else {
-				MagicSpells.plugin.getServer().getLogger().info("MagicSpells: enable-permissions enabled, but no Permissions plugin found.");
-			}
-		}
 	}
 	
 }

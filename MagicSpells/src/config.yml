@@ -14,7 +14,6 @@ general:
     str-console-name: Admin
     text-color: 3
     broadcast-range: 20
-    use-permissions: false
     allow-cycle-to-no-spell: false
     ops-have-all-spells: true
     cast-for-free:

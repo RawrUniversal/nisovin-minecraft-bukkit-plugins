@@ -206,9 +206,6 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// load permissions
-		if (config.getBoolean("general.use-permissions", false)) {
-			Spellbook.initPermissions();
-		}
 		PluginManager pm = getServer().getPluginManager();
 		HashMap<String, Boolean> permGrantChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permLearnChildren = new HashMap<String,Boolean>();
