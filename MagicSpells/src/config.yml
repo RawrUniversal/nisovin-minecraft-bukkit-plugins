@@ -289,6 +289,23 @@ spells:
         str-cost: 3 redstone dust
         str-cast-self: You push back your enemies!
         str-cast-others: "%a pushes back his enemies."
+    forcetoss:
+        name: forcetoss
+        description: Magically throw an enemy into the air.
+        cast-item: 283
+        cooldown: 5
+        range: 15
+        damage: 0
+        horizontal-force: 30
+        vertical-force: 15
+        obey-los: true
+        target-players: false
+        check-plugins: true
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cast-self: You push back your enemy!
+        str-cast-others: "%a pushes back his enemy."
     frostwalk:
         name: frostwalk
         description: Lets you walk on water.
@@ -458,6 +475,15 @@ spells:
         str-cost: 3 redstone and 3 torches, plus 1 redstone occasionally
         str-cast-self: Light appears at your feet.
         str-fade: The light at your feet goes out.
+    mana:
+        name: lifetap
+        description: Restores mana at the cost of life.
+        cooldown: 20
+        cast-item: 280
+        cost:
+            - health 4
+        str-cost: 2 hearts
+        str-cast-self: You restore mana.
     mark:
         name: mark
         description: Marks your location for later recall.
@@ -538,6 +564,24 @@ spells:
         str-other-world: You cannot recall to another world.
         str-too-far: Your marked location is too far away.
         str-cast-others: "%a disappears!"
+    repair:
+        name: repair
+        description: Repairs your gear.
+        cooldown: 120
+        to-repair:
+            - held
+            - hotbar
+            - inventory
+            - helmet
+            - chestplate
+            - leggings
+            - boots
+        cost:
+            - 331 3
+            - 265 1
+        str-cost: 3 redstone dust and 1 iron bar
+        str-cast-self: You've repaired your gear!
+        str-nothing-to-repair: You have nothing to repair.
     safefall:
         name: safefall
         description: Allows you to fall without taking damage.

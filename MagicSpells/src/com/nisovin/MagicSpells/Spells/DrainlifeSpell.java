@@ -49,7 +49,7 @@ public class DrainlifeSpell extends InstantSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				if (target instanceof Player && checkPlugins) {
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.CUSTOM, damage);
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, damage);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);

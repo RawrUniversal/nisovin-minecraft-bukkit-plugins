@@ -82,7 +82,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static HashMap<Event.Type,HashSet<Spell>> listeners;
 	protected static HashMap<MagicEventType, HashSet<Spell>> customListeners;
 	
-	protected static ManaBarManager mana;
+	public static ManaBarManager mana;
 	protected static HashMap<Player,Long> manaPotionCooldowns;
 	protected static NoMagicZoneManager noMagicZones;
 	
@@ -173,7 +173,7 @@ public class MagicSpells extends JavaPlugin {
 		manaPotionCooldown = config.getInt("general.mana.mana-potion-cooldown", 30);
 		strManaPotionOnCooldown = config.getString("general.mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
 		
-		// setup mana bar manager	
+		// setup mana bar manager
 		if (enableManaBars) {
 			mana = new ManaBarManager();
 			for (Player p : getServer().getOnlinePlayers()) {
@@ -270,6 +270,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(FirenovaSpell.class);
 		spellClasses.add(FlamewalkSpell.class);
 		spellClasses.add(ForcepushSpell.class);
+		spellClasses.add(ForcetossSpell.class);
 		spellClasses.add(ForgetSpell.class);
 		spellClasses.add(FrostwalkSpell.class);
 		spellClasses.add(GateSpell.class);
@@ -283,16 +284,18 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(LightningSpell.class);
 		spellClasses.add(LightwalkSpell.class);
 		spellClasses.add(ListSpell.class);
+		spellClasses.add(ManaSpell.class);
 		spellClasses.add(MarkSpell.class);
 		spellClasses.add(MinionSpell.class);
 		spellClasses.add(PainSpell.class);
 		spellClasses.add(PrayerSpell.class);
 		spellClasses.add(PurgeSpell.class);
 		spellClasses.add(RecallSpell.class);
+		spellClasses.add(RepairSpell.class);
 		spellClasses.add(SafefallSpell.class);
 		spellClasses.add(ScrollSpell.class);
 		spellClasses.add(SpellbookSpell.class);
-		//spellClasses.add(StairSpell.class);
+		spellClasses.add(StairSpell.class);
 		spellClasses.add(StealthSpell.class);
 		spellClasses.add(StonevisionSpell.class);
 		spellClasses.add(SummonSpell.class);
@@ -337,6 +340,7 @@ public class MagicSpells extends JavaPlugin {
 				}
 			} catch (Exception e) {
 				getServer().getLogger().severe("MagicSpells: Failed to load spell: " + c.getName());
+				e.printStackTrace();
 			}
 		}
 		
