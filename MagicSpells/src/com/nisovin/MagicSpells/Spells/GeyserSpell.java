@@ -50,7 +50,7 @@ public class GeyserSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
@@ -71,10 +71,10 @@ public class GeyserSpell extends InstantSpell {
 			
 			// do damage and launch target
 			if (damage > 0) {
-				target.damage(damage, player);				
+				target.damage(Math.round(damage*power), player);				
 			}
 			if (velocity > 0) {
-				target.setVelocity(new Vector(0, velocity, 0));
+				target.setVelocity(new Vector(0, velocity*power, 0));
 			}
 			
 			// create animation

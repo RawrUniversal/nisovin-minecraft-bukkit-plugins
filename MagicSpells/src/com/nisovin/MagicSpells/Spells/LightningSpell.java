@@ -35,7 +35,7 @@ public class LightningSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = null;
 			if (requireEntityTarget) {
@@ -50,7 +50,7 @@ public class LightningSpell extends InstantSpell {
 				if (e != null) {
 					target = e.getLocation().getBlock();
 					if (additionalDamage > 0) {
-						e.damage(additionalDamage, player);
+						e.damage(Math.round(additionalDamage*power), player);
 					}
 				} else {
 					sendMessage(player, strNoTarget);

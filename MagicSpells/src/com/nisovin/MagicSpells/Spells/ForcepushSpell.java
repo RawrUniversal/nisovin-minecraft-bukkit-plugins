@@ -27,25 +27,25 @@ public class ForcepushSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			knockback(player, range, targetPlayers);
+			knockback(player, range, power, targetPlayers);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	public void knockback(Player player, int range, boolean targetPlayers) {
+	public void knockback(Player player, int range, float power, boolean targetPlayers) {
 	    Vector p = player.getLocation().toVector();
 		List<Entity> entities = player.getNearbyEntities(range, range, range);
 		Vector e, v;
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity && (targetPlayers || !(entity instanceof Player))) {
 				e = entity.getLocation().toVector();
-				v = e.subtract(p).normalize().multiply(force/10.0);
+				v = e.subtract(p).normalize().multiply(force/10.0*power);
 				if (force != 0) {
-					v.setY(v.getY() * (yForce/10.0));
+					v.setY(v.getY() * (yForce/10.0*power));
 				} else {
-					v.setY(yForce/10.0);
+					v.setY(yForce/10.0*power);
 				}
 				if (v.getY() > (maxYForce/10.0)) {
 					v.setY(maxYForce/10.0);

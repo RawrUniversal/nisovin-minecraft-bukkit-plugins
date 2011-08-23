@@ -16,10 +16,11 @@ public class PurgeSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		// TODO: make this spell more customizable, also don't charge if there was nothing nearby
 		if (state == SpellCastState.NORMAL) {
-			List<Entity> entities = player.getNearbyEntities(range*2, range*2, range*2);
+			int range = Math.round(this.range*power);
+			List<Entity> entities = player.getNearbyEntities(range, range, range);
 			for (Entity entity : entities) {
 				if (entity instanceof LivingEntity && !(entity instanceof Player)) {
 					((LivingEntity)entity).setHealth(0);

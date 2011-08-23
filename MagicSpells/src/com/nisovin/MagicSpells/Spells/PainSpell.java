@@ -28,7 +28,7 @@ public class PainSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
@@ -45,7 +45,7 @@ public class PainSpell extends InstantSpell {
 						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
-				target.damage(damage);
+				target.damage(Math.round(damage*power));
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

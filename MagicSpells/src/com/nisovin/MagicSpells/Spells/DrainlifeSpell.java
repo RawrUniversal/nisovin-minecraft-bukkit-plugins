@@ -39,7 +39,8 @@ public class DrainlifeSpell extends InstantSpell {
 		checkPlugins = getConfigBoolean("check-plugins", true);
 	}
 	
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	@Override
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
@@ -55,8 +56,8 @@ public class DrainlifeSpell extends InstantSpell {
 						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
-				target.damage(damage, player);
-				int h = player.getHealth()+heal;
+				target.damage((int) Math.round(damage*power), player);
+				int h = player.getHealth()+Math.round(heal*power);
 				if (h>20) h=20;
 				player.setHealth(h);
 				new DrainlifeAnimation(player, target);

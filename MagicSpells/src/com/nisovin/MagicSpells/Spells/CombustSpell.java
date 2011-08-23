@@ -28,7 +28,7 @@ public class CombustSpell extends InstantSpell {
 	}
 	
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range>0?range:100, targetPlayers, obeyLos);
 			if (target == null) {
@@ -44,7 +44,7 @@ public class CombustSpell extends InstantSpell {
 						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
-				target.setFireTicks(fireTicks);
+				target.setFireTicks(Math.round(fireTicks*power));
 				// TODO: manually send messages with replacements
 			}
 		}

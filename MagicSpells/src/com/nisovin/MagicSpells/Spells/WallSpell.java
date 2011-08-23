@@ -28,9 +28,10 @@ public class WallSpell extends InstantSpell {
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "Unable to create a wall.");
 	}
 	
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	@Override
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block target = player.getTargetBlock(null, 3);
+			Block target = player.getTargetBlock(null, range>0&&range<15?range:3);
 			if (target == null || target.getType() != Material.AIR) {
 				// fail
 				sendMessage(player, strNoTarget);
@@ -39,6 +40,8 @@ public class WallSpell extends InstantSpell {
 				TemporaryBlockSet blockSet = new TemporaryBlockSet(Material.AIR, wallType);
 				Location loc = target.getLocation();
 				Vector dir = player.getLocation().getDirection();
+				int wallWidth = Math.round(this.wallWidth*power);
+				int wallHeight = Math.round(this.wallHeight*power);
 				if (Math.abs(dir.getX()) > Math.abs(dir.getZ())) {
 					for (int z = loc.getBlockZ() - (wallWidth/2); z <= loc.getBlockZ() + (wallWidth/2); z++) {
 						for (int y = loc.getBlockY() - 1; y < loc.getBlockY() + wallHeight - 1; y++) {
@@ -52,7 +55,7 @@ public class WallSpell extends InstantSpell {
 						}
 					}
 				}
-				blockSet.removeAfter(wallDuration);
+				blockSet.removeAfter(Math.round(wallDuration*power));
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

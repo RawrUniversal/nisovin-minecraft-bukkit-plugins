@@ -34,7 +34,7 @@ public class ExplodeSpell extends InstantSpell {
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "Cannot explode there.");
 	}
 	
-	public PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = player.getTargetBlock(null, range);
 			if (target == null || target.getType() == Material.AIR) {
@@ -53,14 +53,14 @@ public class ExplodeSpell extends InstantSpell {
 					// check plugins
 					EntityTNTPrimed e = new EntityTNTPrimed(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ());
 					CraftTNTPrimed c = new CraftTNTPrimed((CraftServer)Bukkit.getServer(), e);
-					ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize, false);
+					ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize*power, false);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
 						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
-				createExplosion(player, target.getLocation(), explosionSize);
+				createExplosion(player, target.getLocation(), explosionSize*power);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

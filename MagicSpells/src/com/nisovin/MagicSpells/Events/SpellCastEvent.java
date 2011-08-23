@@ -9,19 +9,19 @@ import com.nisovin.MagicSpells.Util.SpellReagents;
 @SuppressWarnings("serial")
 public class SpellCastEvent extends SpellEvent implements Cancellable {
 
-	private double power;
+	private float power;
 	private int cooldown;
 	private SpellReagents reagents;
 	private boolean cancelled = false;
 	
-	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, double power, int cooldown, SpellReagents reagents) {
+	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, int cooldown, SpellReagents reagents) {
 		super("SpellCast", spell, caster);
 		this.cooldown = cooldown;
 		this.reagents = reagents;
 		this.power = power;
 	}
 	
-	public double getPower() {
+	public float getPower() {
 		return power;
 	}
 	

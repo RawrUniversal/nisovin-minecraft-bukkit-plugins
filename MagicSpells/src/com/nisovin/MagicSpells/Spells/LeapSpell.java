@@ -33,10 +33,10 @@ public class LeapSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Vector v = player.getLocation().getDirection();
-			v.setY(0).normalize().multiply(forwardVelocity).setY(upwardVelocity);
+			v.setY(0).normalize().multiply(forwardVelocity*power).setY(upwardVelocity*power);
 			player.setVelocity(v);
 			if (cancelDamage) {
 				jumping.add(player);

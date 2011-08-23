@@ -24,7 +24,7 @@ public class HealSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Player target = getTargetedPlayer(player, range, obeyLos);
 			if (target == null) {
@@ -33,7 +33,7 @@ public class HealSpell extends InstantSpell {
 				sendMessage(player, formatMessage(strMaxHealth, "%t", target.getName()));
 			} else {				
 				int health = target.getHealth();
-				health += healAmount;
+				health += Math.round(healAmount*power);
 				if (health > 20) health = 20;
 				target.setHealth(health);
 				

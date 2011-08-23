@@ -16,8 +16,9 @@ public class ConfusionSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
+			int range = Math.round(this.range*power);
 			List<Entity> entities = player.getNearbyEntities(range, range, range);
 			List<Monster> monsters = new ArrayList<Monster>();
 			for (Entity e : entities) {

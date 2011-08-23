@@ -162,7 +162,7 @@ public abstract class Spell implements Comparable<Spell> {
 		}
 		
 		// call events
-		double power = 1.0;
+		float power = 1.0F;
 		int cooldown = this.cooldown;
 		SpellReagents reagents = new SpellReagents(cost, manaCost, healthCost);
 		SpellCastEvent event = new SpellCastEvent(this, player, state, power, cooldown, reagents);
@@ -211,9 +211,11 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param args the spell arguments, if cast by command
 	 * @return the action to take after the spell is processed
 	 */
-	protected abstract PostCastAction castSpell(Player player, SpellCastState state, String[] args);
+	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+		return PostCastAction.ALREADY_HANDLED;
+	}
 
-	protected PostCastAction castSpell(Player player, SpellCastState state, double power, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		return castSpell(player, state, args);
 	}
 	

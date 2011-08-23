@@ -37,7 +37,7 @@ public final class MultiSpell extends Spell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state,	String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// check cooldowns
 			if (checkIndividualCooldowns) {
@@ -51,7 +51,7 @@ public final class MultiSpell extends Spell {
 			}
 			
 			for (Spell spell : spells) {
-				spell.castSpell(player, SpellCastState.NORMAL, null);
+				spell.castSpell(player, SpellCastState.NORMAL, power, null);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

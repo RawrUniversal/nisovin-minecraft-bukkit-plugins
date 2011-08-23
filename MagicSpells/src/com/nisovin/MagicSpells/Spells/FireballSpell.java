@@ -1,5 +1,6 @@
 package com.nisovin.MagicSpells.Spells;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
@@ -30,7 +31,7 @@ public class FireballSpell extends InstantSpell {
 	private boolean noFire;
 	private String strNoTarget;
 	
-	private HashSet<Fireball> fireballs;
+	private HashMap<Fireball,Float> fireballs;
 	
 	public FireballSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -44,7 +45,7 @@ public class FireballSpell extends InstantSpell {
 		noFire = config.getBoolean("spells." + spellName + ".no-fire", false);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You cannot throw a fireball there.");
 		
-		fireballs = new HashSet<Fireball>();
+		fireballs = new HashMap<Fireball,Float>();
 		addListener(Event.Type.EXPLOSION_PRIME);
 		if (additionalDamage > 0) {
 			addListener(Event.Type.ENTITY_DAMAGE);
@@ -52,7 +53,7 @@ public class FireballSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = player.getTargetBlock(null, range);
 			if (target == null || target.getType() == Material.AIR) {
@@ -81,7 +82,7 @@ public class FireballSpell extends InstantSpell {
 				Location loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw(), player.getLocation().getPitch());
 				Fireball fireball = player.getWorld().spawn(loc, Fireball.class);
 				fireball.setShooter(player);
-				fireballs.add(fireball);
+				fireballs.put(fireball,power);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -95,7 +96,7 @@ public class FireballSpell extends InstantSpell {
 		
 		if (event.getEntity() instanceof Fireball) {
 			Fireball fireball = (Fireball)event.getEntity();
-			if (fireballs.contains(fireball)) {
+			if (fireballs.containsKey(fireball)) {
 				if (noExplosion) {
 					event.setCancelled(true);
 					Location loc = fireball.getLocation();
@@ -121,7 +122,7 @@ public class FireballSpell extends InstantSpell {
 										b.setType(Material.AIR);
 									}
 								}
-							}							
+							}
 						}, 20);
 					}
 				} else if (noFire) {
@@ -140,8 +141,9 @@ public class FireballSpell extends InstantSpell {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 			if (evt.getDamager() instanceof Fireball) {
 				Fireball fireball = (Fireball)evt.getEntity();
-				if (fireball.getShooter() instanceof Player && fireballs.contains(fireball)) {
-					event.setDamage(event.getDamage() + additionalDamage);
+				if (fireball.getShooter() instanceof Player && fireballs.containsKey(fireball)) {
+					float power = fireballs.get(fireball);
+					event.setDamage(Math.round((event.getDamage() + additionalDamage) * power));
 				}
 			}
 		}

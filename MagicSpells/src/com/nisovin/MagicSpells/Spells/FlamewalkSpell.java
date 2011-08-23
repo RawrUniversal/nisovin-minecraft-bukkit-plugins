@@ -1,6 +1,6 @@
 package com.nisovin.MagicSpells.Spells;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -22,7 +22,7 @@ public class FlamewalkSpell extends BuffSpell {
 	private boolean targetPlayers;
 	private boolean checkPlugins;
 	
-	private HashSet<String> flamewalkers;
+	private HashMap<String,Float> flamewalkers;
 	private Burner burner;
 	
 	public FlamewalkSpell(Configuration config, String spellName) {
@@ -34,16 +34,16 @@ public class FlamewalkSpell extends BuffSpell {
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		
-		flamewalkers = new HashSet<String>();
+		flamewalkers = new HashMap<String,Float>();
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
-		if (flamewalkers.contains(player.getName())) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+		if (flamewalkers.containsKey(player.getName())) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
-			flamewalkers.add(player.getName());
+			flamewalkers.put(player.getName(),power);
 			if (burner == null) {
 				burner = new Burner();
 			}
@@ -85,8 +85,9 @@ public class FlamewalkSpell extends BuffSpell {
 		}
 		
 		public void run() {
-			for (String s : flamewalkers.toArray(strArr)) {
+			for (String s : flamewalkers.keySet().toArray(strArr)) {
 				Player player = Bukkit.getServer().getPlayer(s);
+				float power = flamewalkers.get(s);
 				if (player != null) {
 					if (isExpired(player)) {
 						turnOff(player);
@@ -103,12 +104,12 @@ public class FlamewalkSpell extends BuffSpell {
 										continue;
 									}
 								}
-								entity.setFireTicks(fireTicks);
+								entity.setFireTicks(Math.round(fireTicks*power));
 								addUse(player);
 								chargeUseCost(player);
 							}
 						} else if (entity instanceof LivingEntity) {
-							entity.setFireTicks(fireTicks);
+							entity.setFireTicks(Math.round(fireTicks*power));
 							addUse(player);
 							chargeUseCost(player);
 						}
