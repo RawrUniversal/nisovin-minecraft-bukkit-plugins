@@ -295,7 +295,6 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(SafefallSpell.class);
 		spellClasses.add(ScrollSpell.class);
 		spellClasses.add(SpellbookSpell.class);
-		spellClasses.add(StairSpell.class);
 		spellClasses.add(StealthSpell.class);
 		spellClasses.add(StonevisionSpell.class);
 		spellClasses.add(SummonSpell.class);
@@ -304,6 +303,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(TelekinesisSpell.class);
 		if (getServer().getPluginManager().isPluginEnabled("BookWorm")) spellClasses.add(TomeSpell.class);
 		spellClasses.add(VolleySpell.class);
+		spellClasses.add(WalkwaySpell.class);
 		spellClasses.add(WallSpell.class);
 		spellClasses.add(ZapSpell.class);
 		// load the spells

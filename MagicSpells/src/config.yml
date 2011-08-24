@@ -49,6 +49,7 @@ spells:
     list:
         name: list
         description: List all the spells you know.
+        only-show-castable-spells: false
         reload-granted-spells: false
         str-prefix: "Known spells:"
         str-no-spells: You do not know any spells.
@@ -478,12 +479,13 @@ spells:
     mana:
         name: lifetap
         description: Restores mana at the cost of life.
-        cooldown: 20
+        cooldown: 3
         cast-item: 280
+        mana: 25
         cost:
             - health 4
         str-cost: 2 hearts
-        str-cast-self: You restore mana.
+        str-cast-self: You restore 25 mana.
     mark:
         name: mark
         description: Marks your location for later recall.
@@ -726,6 +728,21 @@ spells:
         str-cast-self: You fire a volley of magic arrows.
         str-cast-others: "%a fires a volley of arrows."
         str-no-target: No target found.
+    walkway:
+        name: walkway
+        description: Summon a moving magical walkway to take you places.
+        cast-item: 280
+        cooldown: 60
+        platform-type: 5
+        size: 6
+        cost:
+            - 331 4
+        use-cost:
+            - 331 1
+        use-cost-interval: 25
+        str-cost: 4 redstone, plus 1 redstone every 25 blocks
+        str-cast-self: You summon a magical walkway.
+        str-fade: Your magical walkway disappears.
     wall:
         name: wall
         description: Creates a temporary wall to block your enemies.

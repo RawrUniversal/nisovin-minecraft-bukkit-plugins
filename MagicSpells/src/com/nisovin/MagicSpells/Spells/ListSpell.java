@@ -13,6 +13,7 @@ import com.nisovin.MagicSpells.Spellbook;
 public class ListSpell extends CommandSpell {
 	
 	private int lineLength = 60;
+	private boolean onlyShowCastableSpells;
 	private boolean reloadGrantedSpells;
 	private String strNoSpells;
 	private String strPrefix;
@@ -20,6 +21,7 @@ public class ListSpell extends CommandSpell {
 	public ListSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
+		onlyShowCastableSpells = getConfigBoolean("only-show-castable-spells", false);
 		reloadGrantedSpells = config.getBoolean("spells." + spellName + ".reload-granted-spells", false);
 		strNoSpells = config.getString("spells." + spellName + ".str-no-spells", "You do not know any spells.");
 		strPrefix = config.getString("spells." + spellName + ".str-prefix", "Known spells:");
@@ -46,10 +48,12 @@ public class ListSpell extends CommandSpell {
 			} else {
 				String s = "";
 				for (Spell spell : spellbook.getSpells()) {
-					if (s.equals("")) {
-						s = spell.getName();
-					} else {
-						s += ", " + spell.getName();
+					if (!onlyShowCastableSpells || spellbook.canCast(spell)) {
+						if (s.equals("")) {
+							s = spell.getName();
+						} else {
+							s += ", " + spell.getName();
+						}
 					}
 				}
 				s = strPrefix + " " + extra + s;
