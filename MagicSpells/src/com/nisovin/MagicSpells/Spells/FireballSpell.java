@@ -140,7 +140,7 @@ public class FireballSpell extends InstantSpell {
 		if (!event.isCancelled() && event instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 			if (evt.getDamager() instanceof Fireball) {
-				Fireball fireball = (Fireball)evt.getEntity();
+				Fireball fireball = (Fireball)evt.getDamager();
 				if (fireball.getShooter() instanceof Player && fireballs.containsKey(fireball)) {
 					float power = fireballs.get(fireball);
 					event.setDamage(Math.round((event.getDamage() + additionalDamage) * power));
