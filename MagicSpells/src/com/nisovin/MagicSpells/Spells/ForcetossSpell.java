@@ -24,8 +24,8 @@ public class ForcetossSpell extends InstantSpell {
 		super(config, spellName);
 		
 		damage = getConfigInt("damage", 0);
-		hForce = getConfigInt("horizontal-force", 30) / 10.0F;
-		vForce = getConfigInt("vertical-force", 15) / 10.0F;
+		hForce = getConfigInt("horizontal-force", 20) / 10.0F;
+		vForce = getConfigInt("vertical-force", 10) / 10.0F;
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
@@ -57,7 +57,7 @@ public class ForcetossSpell extends InstantSpell {
 			}
 			
 			// throw target
-			Vector v = player.getLocation().toVector().subtract(target.getLocation().toVector())
+			Vector v = target.getLocation().toVector().subtract(player.getLocation().toVector())
 					.setY(0)
 					.normalize()
 					.multiply(hForce*power)
