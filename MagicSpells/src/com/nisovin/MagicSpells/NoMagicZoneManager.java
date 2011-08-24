@@ -29,12 +29,13 @@ public class NoMagicZoneManager {
 		if (zoneList != null) {
 			for (String s : zoneList) {
 				String[] data = s.split(":");
+				String worldName = data[1];
 				if (data[0].equalsIgnoreCase("worldguard") && worldGuard != null) {
-					World w = Bukkit.getServer().getWorld(data[1]);
+					World w = Bukkit.getServer().getWorld(worldName);
 					if (w != null) {
 						ProtectedRegion region = worldGuard.getRegionManager(w).getRegion(data[2]);
 						if (region != null) {
-							zones.add(new NoMagicZone(region));
+							zones.add(new NoMagicZone(worldName, region));
 						} else {
 							Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone WorldGuard region: " + data[2]);
 						}
@@ -42,12 +43,12 @@ public class NoMagicZoneManager {
 						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone world: " + data[1]);						
 					}
 				} else if (data[0].equalsIgnoreCase("cuboid")) {
-					String[] p1 = data[1].split(",");
-					String[] p2 = data[2].split(",");
+					String[] p1 = data[2].split(",");
+					String[] p2 = data[3].split(",");
 					try {
 						Vector point1 = new Vector(Integer.parseInt(p1[0]), Integer.parseInt(p1[1]), Integer.parseInt(p1[2]));
 						Vector point2 = new Vector(Integer.parseInt(p2[0]), Integer.parseInt(p2[1]), Integer.parseInt(p2[2]));
-						zones.add(new NoMagicZone(point1, point2));
+						zones.add(new NoMagicZone(worldName, point1, point2));
 					} catch (NumberFormatException e) {
 						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone defined cuboid: " + data[1]+":"+data[2]);							
 					} catch (ArrayIndexOutOfBoundsException e) {

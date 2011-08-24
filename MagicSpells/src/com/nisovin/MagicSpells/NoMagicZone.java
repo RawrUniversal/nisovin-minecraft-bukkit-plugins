@@ -9,15 +9,18 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class NoMagicZone {
 
+	private String worldName;
 	private ProtectedRegion region = null;
 	private Vector point1 = null;
 	private Vector point2 = null;
 	
-	public NoMagicZone(ProtectedRegion region) {
+	public NoMagicZone(String worldName, ProtectedRegion region) {
+		this.worldName = worldName;
 		this.region = region;
 	}
 	
-	public NoMagicZone(Vector v1, Vector v2) {
+	public NoMagicZone(String worldName, Vector v1, Vector v2) {
+		this.worldName = worldName;
 		int minx, miny, minz, maxx, maxy, maxz;
 		if (v1.getX() < v2.getX()) {
 			minx = v1.getBlockX();
@@ -49,7 +52,9 @@ public class NoMagicZone {
 	}
 	
 	public boolean inZone(Location location) {
-		if (region != null) {
+		if (!worldName.equalsIgnoreCase(location.getWorld().getName())) {
+			return false;
+		} else if (region != null) {
 			com.sk89q.worldedit.Vector v = new com.sk89q.worldedit.Vector(location.getX(), location.getY(), location.getZ());
 			return region.contains(v);
 		} else if (point1 != null && point2 != null) {
