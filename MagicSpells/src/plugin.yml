@@ -13,6 +13,15 @@ commands:
         usage: /<command>
         aliases: [mana,m]
 permissions:
+    magicspells.noreagents:
+        description: Cast without needing reagents
+        default: op
+    magicspells.nocooldown:
+        description: Spells do not cause cooldowns
+        default: op
+    magicspells.silent:
+        description: Cast spells without spell text messages
+        default: false
     magicspells.advanced:
         description: Advanced spell functionality
         default: op

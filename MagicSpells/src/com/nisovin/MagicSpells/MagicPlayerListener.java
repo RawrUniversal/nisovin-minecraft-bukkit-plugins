@@ -82,7 +82,7 @@ public class MagicPlayerListener extends PlayerListener {
 				spell = MagicSpells.getSpellbook(player).prevSpell(inHand.getTypeId());
 			}
 			if (spell != null) {
-				Spell.sendMessage(player, MagicSpells.strSpellChange, "%s", spell.getName());
+				MagicSpells.sendMessage(player, MagicSpells.strSpellChange, "%s", spell.getName());
 			}
 			
 			// check for mana pots
@@ -96,7 +96,7 @@ public class MagicPlayerListener extends PlayerListener {
 					if (MagicSpells.manaPotionCooldown > 0) {
 						Long c = MagicSpells.manaPotionCooldowns.get(player);
 						if (c != null && c > System.currentTimeMillis()) {
-							Spell.sendMessage(player, MagicSpells.strManaPotionOnCooldown.replace("%c", ""+(int)((c-System.currentTimeMillis())/1000)));
+							MagicSpells.sendMessage(player, MagicSpells.strManaPotionOnCooldown.replace("%c", ""+(int)((c-System.currentTimeMillis())/1000)));
 							return;
 						}
 					}

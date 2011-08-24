@@ -138,7 +138,7 @@ public class Spellbook {
 				if (i >= spells.size()) {
 					if (MagicSpells.allowCycleToNoSpell) {
 						activeSpells.put(castItem, -1);
-						Spell.sendMessage(player, MagicSpells.strSpellChangeEmpty);
+						MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
 						return null;
 					} else {
 						i = 0;
@@ -163,7 +163,7 @@ public class Spellbook {
 				if (i < 0) {
 					if (MagicSpells.allowCycleToNoSpell) {
 						activeSpells.put(castItem, -1);
-						Spell.sendMessage(player, MagicSpells.strSpellChangeEmpty);
+						MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
 						return null;
 					} else {
 						i = spells.size() - 1;

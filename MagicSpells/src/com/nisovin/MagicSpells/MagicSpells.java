@@ -514,7 +514,7 @@ public class MagicSpells extends JavaPlugin {
 		if (command.getName().equalsIgnoreCase("magicspellcast")) {
 			if (args == null || args.length == 0) {
 				if (sender instanceof Player) {
-					Spell.sendMessage((Player)sender, strCastUsage);
+					sendMessage((Player)sender, strCastUsage);
 				} else {
 					sender.sendMessage(textColor + strCastUsage);
 				}
@@ -547,7 +547,7 @@ public class MagicSpells extends JavaPlugin {
 					}
 					spell.cast(player, spellArgs);
 				} else {
-					Spell.sendMessage(player, strUnknownSpell);
+					sendMessage(player, strUnknownSpell);
 				}
 			} else { // not a player
 				Spell spell = spellNames.get(args[0]);
@@ -617,6 +617,48 @@ public class MagicSpells extends JavaPlugin {
 			spellbooks.put(player.getName(), spellbook);
 		}
 		return spellbook;
+	}
+	
+	/**
+	 * Formats a string by performing the specified replacements.
+	 * @param message the string to format
+	 * @param replacements the replacements to make, in pairs.
+	 * @return the formatted string
+	 */
+	static public String formatMessage(String message, String... replacements) {
+		if (message == null) return null;
+		
+		String msg = message;
+		for (int i = 0; i < replacements.length; i+=2) {
+			msg = msg.replace(replacements[i], replacements[i+1]);
+		}
+		return msg;
+	}
+	
+	/**
+	 * Sends a message to a player, first making the specified replacements. This method also does color replacement and has multi-line functionality.
+	 * @param player the player to send the message to
+	 * @param message the message to send
+	 * @param replacements the replacements to be made, in pairs
+	 */
+	static public void sendMessage(Player player, String message, String... replacements) {
+		sendMessage(player, formatMessage(message, replacements));
+	}
+	
+	/**
+	 * Sends a message to a player. This method also does color replacement and has multi-line functionality.
+	 * @param player the player to send the message to
+	 * @param message the message to send
+	 */
+	static public void sendMessage(Player player, String message) {
+		if (message != null && !message.equals("")) {
+			String [] msgs = message.replaceAll("&([0-9a-f])", "\u00A7$1").split("\n");
+			for (String msg : msgs) {
+				if (!msg.equals("")) {
+					player.sendMessage(MagicSpells.textColor + msg);
+				}
+			}
+		}
 	}
 	
 	/**

@@ -132,6 +132,18 @@ public abstract class Spell implements Comparable<Spell> {
 		return config.getString("spells." + internalName + "." + key, defaultValue);
 	}
 	
+	/**
+	 * Access a float config value for this spell.
+	 * 
+	 * @param key The key of the config value
+	 * @param defaultValue The value to return if it does not exist in the config
+	 * 
+	 * @return The config value, or defaultValue if it does not exist
+	 */
+	protected float getConfigFloat(String key, float defaultValue) {
+		return (float)config.getDouble("spells." + internalName + "." + key, defaultValue);
+	}
+	
 	protected List<Integer> getConfigIntList(String key, List<Integer> defaultValue) {
 		return config.getIntList("spells." + internalName + "." + key, defaultValue);
 	}
@@ -255,7 +267,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @return whether the spell is on cooldown
 	 */
 	protected boolean onCooldown(Player player) {
-		if (cooldown == 0 || (MagicSpells.castNoCooldown.contains(player.getName().toLowerCase()))) {
+		if (cooldown == 0 || player.hasPermission("magicspells.nocooldown") || (MagicSpells.castNoCooldown.contains(player.getName().toLowerCase()))) {
 			return false;
 		}
 		
@@ -324,7 +336,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @return true if the player has all the reagents, false otherwise
 	 */
 	protected boolean hasReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost) {
-		if (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase())) {
+		if (player.hasPermission("magicspells.noreagents") || (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase()))) {
 			return true;
 		}
 		if (reagents == null && healthCost <= 0) {
@@ -372,7 +384,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param manaCost the mana to remove
 	 */
 	protected void removeReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost) {
-		if (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase())) {
+		if (player.hasPermission("magicspells.noreagents") || (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase()))) {
 			return;
 		}
 		if (reagents != null) {
@@ -430,14 +442,8 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param replacements the replacements to make, in pairs.
 	 * @return the formatted string
 	 */
-	static public String formatMessage(String message, String... replacements) {
-		if (message == null) return null;
-		
-		String msg = message;
-		for (int i = 0; i < replacements.length; i+=2) {
-			msg = msg.replace(replacements[i], replacements[i+1]);
-		}
-		return msg;
+	protected String formatMessage(String message, String... replacements) {
+		return MagicSpells.formatMessage(message, replacements);
 	}
 	
 	/**
@@ -446,7 +452,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param message the message to send
 	 * @param replacements the replacements to be made, in pairs
 	 */
-	static public void sendMessage(Player player, String message, String... replacements) {
+	protected void sendMessage(Player player, String message, String... replacements) {
 		sendMessage(player, formatMessage(message, replacements));
 	}
 	
@@ -455,14 +461,9 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param player the player to send the message to
 	 * @param message the message to send
 	 */
-	static public void sendMessage(Player player, String message) {
-		if (message != null && !message.equals("")) {
-			String [] msgs = message.replaceAll("&([0-9a-f])", "\u00A7$1").split("\n");
-			for (String msg : msgs) {
-				if (!msg.equals("")) {
-					player.sendMessage(MagicSpells.textColor + msg);
-				}
-			}
+	protected void sendMessage(Player player, String message) {
+		if (!player.hasPermission("magicspells.silent")) {
+			MagicSpells.sendMessage(player, message);
 		}
 	}
 	
@@ -482,7 +483,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param range the broadcast range
 	 */
 	protected void sendMessageNear(Player player, String message, int range) {
-		if (message != null && !message.equals("")) {
+		if (message != null && !message.equals("") && !player.hasPermission("magicspells.silent")) {
 			String [] msgs = message.replaceAll("&([0-9a-f])", "\u00A7$1").split("\n");
 			List<Entity> entities = player.getNearbyEntities(range*2, range*2, range*2);
 			for (Entity entity : entities) {
