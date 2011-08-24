@@ -29,6 +29,10 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 		this.power = power;
 	}
 	
+	public void increasePower(float power) {
+		this.power *= power;
+	}
+	
 	public int getCooldown() {
 		return cooldown;
 	}

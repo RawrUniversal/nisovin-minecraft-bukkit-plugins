@@ -192,6 +192,23 @@ spells:
         str-cost: 2 redstone dust
         str-cast-self: You drain life from your enemy.
         str-no-target: No target found.
+    empower:
+        name: empower
+        description: Makes your spells more powerful.
+        cast-item: 280
+        power-multiplier: 1.5
+        cooldown: 120
+        duration: 30
+        num-uses: 10
+        cost:
+            - 331 3
+        use-cost:
+            - 331 2
+        use-cost-interval: 1
+        str-cost: 3 redstone, plus 2 redstone for each spell cast
+        str-cast-self: You feel yourself glowing with magical energy.
+        str-cast-others: "%a begins to glow with magical energy."
+        str-fade: You are no longer glowing with magical energy.
     entomb:
         name: entomb
         description: Encase an enemy in glass.
