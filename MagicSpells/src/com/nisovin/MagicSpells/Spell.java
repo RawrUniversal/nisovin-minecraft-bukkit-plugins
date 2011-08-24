@@ -267,7 +267,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @return whether the spell is on cooldown
 	 */
 	protected boolean onCooldown(Player player) {
-		if (cooldown == 0 || player.hasPermission("magicspells.nocooldown") || (MagicSpells.castNoCooldown.contains(player.getName().toLowerCase()))) {
+		if (cooldown == 0 || player.hasPermission("magicspells.nocooldown")) {
 			return false;
 		}
 		
@@ -336,7 +336,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @return true if the player has all the reagents, false otherwise
 	 */
 	protected boolean hasReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost) {
-		if (player.hasPermission("magicspells.noreagents") || (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase()))) {
+		if (player.hasPermission("magicspells.noreagents")) {
 			return true;
 		}
 		if (reagents == null && healthCost <= 0) {
@@ -384,7 +384,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param manaCost the mana to remove
 	 */
 	protected void removeReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost) {
-		if (player.hasPermission("magicspells.noreagents") || (MagicSpells.castForFree != null && MagicSpells.castForFree.contains(player.getName().toLowerCase()))) {
+		if (player.hasPermission("magicspells.noreagents")) {
 			return;
 		}
 		if (reagents != null) {

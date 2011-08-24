@@ -42,8 +42,6 @@ public class MagicSpells extends JavaPlugin {
 	protected static int broadcastRange;
 	
 	protected static boolean opsHaveAllSpells;
-	public static List<String> castForFree;
-	protected static List<String> castNoCooldown;
 	
 	protected static boolean allowCycleToNoSpell;
 	protected static boolean ignoreDefaultBindings;
@@ -128,18 +126,6 @@ public class MagicSpells extends JavaPlugin {
 		strCantCast = config.getString("general.str-cant-cast", "You can't cast that spell right now.");
 		strNoMagicZone = config.getString("general.str-no-magic-zone", "An anti-magic aura makes your spell fizzle.");
 		strConsoleName = config.getString("general.console-name", "Admin");
-		castForFree = config.getStringList("general.cast-for-free", null);
-		if (castForFree != null) {
-			for (int i = 0; i < castForFree.size(); i++) {
-				castForFree.set(i, castForFree.get(i).toLowerCase());
-			}
-		}
-		castNoCooldown = config.getStringList("general.cast-no-cooldown", null);
-		if (castForFree != null) {
-			for (int i = 0; i < castNoCooldown.size(); i++) {
-				castNoCooldown.set(i, castNoCooldown.get(i).toLowerCase());
-			}
-		}
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
 		losTransparentBlocks = config.getIntList("general.los-transparent-blocks", null);
 		if (losTransparentBlocks == null || losTransparentBlocks.size() == 0) {

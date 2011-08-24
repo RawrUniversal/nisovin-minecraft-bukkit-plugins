@@ -16,13 +16,6 @@ general:
     broadcast-range: 20
     allow-cycle-to-no-spell: false
     ops-have-all-spells: true
-    cast-for-free:
-        - admin1
-        - admin2
-        - joemagicuser
-    cast-no-cooldown:
-        - admin1
-        - admin2
     ignore-default-bindings: false
     mana:
         enable-mana-bars: true

@@ -295,17 +295,15 @@ public class ScrollSpell extends CommandSpell {
 						id = newId;
 						dirtyData = true;
 					}
-					
-					String name = player.getName().toLowerCase();
-					boolean freeCastOverride = (castForFree && !MagicSpells.castForFree.contains(name));
-					
+
 					// cast spell
 					if (ignoreCastPerm && !player.hasPermission("magicspells.cast." + spell.getInternalName())) {
 						player.addAttachment(MagicSpells.plugin, "magicspells.cast." + spell.getInternalName(), true, 1);
 					}
-					if (freeCastOverride) MagicSpells.castForFree.add(name);
+					if (castForFree && !player.hasPermission("magicspells.noreagents")) {
+						player.addAttachment(MagicSpells.plugin, "magicspells.noreagents", true, 1);
+					}
 					SpellCastState state = spell.cast(player);
-					if (freeCastOverride) MagicSpells.castForFree.remove(name);
 
 					if (state == SpellCastState.NORMAL) {
 						// remove use
