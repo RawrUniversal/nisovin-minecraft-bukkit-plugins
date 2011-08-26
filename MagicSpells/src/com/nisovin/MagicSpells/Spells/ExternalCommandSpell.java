@@ -6,6 +6,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.util.config.Configuration;
 
+import com.nisovin.MagicSpells.MagicSpells;
 import com.nisovin.MagicSpells.Spell;
 
 public class ExternalCommandSpell extends Spell {
@@ -16,6 +17,8 @@ public class ExternalCommandSpell extends Spell {
 	private boolean castWithItem;
 	private boolean castByCommand;
 	private String[] commandToExecute;
+	private String[] commandToExecuteLater;
+	private int commandDelay;
 	private String[] commandToBlock;
 	private String strCantUseCommand;
 
@@ -27,6 +30,8 @@ public class ExternalCommandSpell extends Spell {
 		castWithItem = config.getBoolean("spells." + spellName + ".can-cast-with-item", true);
 		castByCommand = config.getBoolean("spells." + spellName + ".can-cast-by-command", true);
 		commandToExecute = config.getString("spells." + spellName + ".command-to-execute", "").split("\\|\\|");
+		commandToExecuteLater = config.getString("spells." + spellName + ".command-to-execute-later", "").split("\\|\\|");
+		commandDelay = getConfigInt("command-delay", 0);
 		commandToBlock = config.getString("spells." + spellName + ".command-to-block", "").split("\\|\\|");
 		strCantUseCommand = config.getString("spells." + spellName + ".str-cant-use-command", "&4You don't have permission to do that.");
 	}
@@ -44,6 +49,9 @@ public class ExternalCommandSpell extends Spell {
 					}
 				}
 				player.performCommand(comm);
+			}
+			if (commandToExecuteLater != null && commandToExecuteLater.length > 0 && !commandToExecuteLater[0].isEmpty()) {
+				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new DelayedCommand(player), commandDelay);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -72,6 +80,25 @@ public class ExternalCommandSpell extends Spell {
 	@Override
 	public boolean canCastWithItem() {
 		return castWithItem;
+	}
+	
+	private class DelayedCommand implements Runnable {
+
+		private Player player;
+		
+		public DelayedCommand(Player player) {
+			this.player = player;
+		}
+		
+		@Override
+		public void run() {
+			for (String comm : commandToExecuteLater) {
+				if (comm != null && !comm.isEmpty()) {
+					player.performCommand(comm);
+				}
+			}			
+		}
+		
 	}
 
 }

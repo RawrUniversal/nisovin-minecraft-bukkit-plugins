@@ -245,6 +245,7 @@ spells:
         check-plugins: true
         additional-damage: 0
         no-fire: false
+        no-explosion: false
         cost: 
             - 331 3
             - 263 2
@@ -789,6 +790,8 @@ spells:
         can-cast-by-command: true
         can-cast-with-item: false
         command-to-execute: gt 25 4
+        command-to-execute-later: ''
+        command-delay: 0
         command-to-block: gt
         cost:
             - 331 10
