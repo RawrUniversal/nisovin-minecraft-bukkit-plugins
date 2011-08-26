@@ -6,10 +6,10 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.util.config.Configuration;
 
+import com.nisovin.MagicSpells.InstantSpell;
 import com.nisovin.MagicSpells.MagicSpells;
-import com.nisovin.MagicSpells.Spell;
 
-public class ExternalCommandSpell extends Spell {
+public class ExternalCommandSpell extends InstantSpell {
 	
 	@SuppressWarnings("unused")
 	private static final String SPELL_NAME = "external";
@@ -20,7 +20,10 @@ public class ExternalCommandSpell extends Spell {
 	private String[] commandToExecuteLater;
 	private int commandDelay;
 	private String[] commandToBlock;
+	private boolean requirePlayerTarget;
+	private boolean obeyLos;
 	private String strCantUseCommand;
+	private String strNoTarget;
 
 	public ExternalCommandSpell(Configuration config, String spellName) {
 		super(config, spellName);
@@ -33,7 +36,10 @@ public class ExternalCommandSpell extends Spell {
 		commandToExecuteLater = config.getString("spells." + spellName + ".command-to-execute-later", "").split("\\|\\|");
 		commandDelay = getConfigInt("command-delay", 0);
 		commandToBlock = config.getString("spells." + spellName + ".command-to-block", "").split("\\|\\|");
+		requirePlayerTarget = getConfigBoolean("require-player-target", false);
+		obeyLos = getConfigBoolean("obey-los", true);
 		strCantUseCommand = config.getString("spells." + spellName + ".str-cant-use-command", "&4You don't have permission to do that.");
+		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
 
 	@Override
@@ -42,11 +48,23 @@ public class ExternalCommandSpell extends Spell {
 			Bukkit.getServer().getLogger().severe("MagicSpells: External command spell '" + name + "' has no command to execute.");
 			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
+			Player target = null;
+			if (requirePlayerTarget) {
+				target = getTargetedPlayer(player, range, obeyLos);
+				if (target == null) {
+					sendMessage(player, strNoTarget);
+					return PostCastAction.ALREADY_HANDLED;
+				}
+			}
 			for (String comm : commandToExecute) {
 				if (args != null && args.length > 0) {
 					for (int i = 0; i < args.length; i++) {
 						comm = comm.replace("%"+(i+1), args[i]);
 					}
+				}
+				comm = comm.replace("%a", player.getName());
+				if (target != null) {
+					comm = comm.replace("%t", target.getName());
 				}
 				player.performCommand(comm);
 			}
