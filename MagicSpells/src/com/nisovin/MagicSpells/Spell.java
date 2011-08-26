@@ -206,6 +206,9 @@ public abstract class Spell implements Comparable<Spell> {
 				sendMessage(player, formatMessage(MagicSpells.strOnCooldown, "%c", getCooldown(player)+""));
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
 				sendMessage(player, MagicSpells.strMissingReagents);
+				if (MagicSpells.showStrCostOnMissingReagents && !strCost.isEmpty()) {
+					sendMessage(player, "(" + strCost + ")");
+				}
 			} else if (state == SpellCastState.CANT_CAST) {
 				sendMessage(player, MagicSpells.strCantCast);
 			} else if (state == SpellCastState.NO_MAGIC_ZONE) {

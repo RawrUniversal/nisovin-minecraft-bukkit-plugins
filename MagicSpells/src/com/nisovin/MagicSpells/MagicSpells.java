@@ -45,6 +45,7 @@ public class MagicSpells extends JavaPlugin {
 	
 	protected static boolean allowCycleToNoSpell;
 	protected static boolean ignoreDefaultBindings;
+	protected static boolean showStrCostOnMissingReagents;
 	protected static List<Integer> losTransparentBlocks;
 	
 	protected static boolean enableManaBars;
@@ -117,6 +118,7 @@ public class MagicSpells extends JavaPlugin {
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		allowCycleToNoSpell = config.getBoolean("general.allow-cycle-to-no-spell", false);
 		opsHaveAllSpells = config.getBoolean("general.ops-have-all-spells", true);
+		showStrCostOnMissingReagents = config.getBoolean("general.show-str-cost-on-missing-reagents", true);
 		strCastUsage = config.getString("general.str-cast-usage", "Usage: /cast <spell>. Use /cast list to see a list of spells.");
 		strUnknownSpell = config.getString("general.str-unknown-spell", "You do not know a spell with that name.");
 		strSpellChange = config.getString("general.str-spell-change", "You are now using the %s spell.");
