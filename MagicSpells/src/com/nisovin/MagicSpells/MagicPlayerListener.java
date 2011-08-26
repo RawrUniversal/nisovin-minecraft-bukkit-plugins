@@ -2,11 +2,10 @@ package com.nisovin.MagicSpells;
 
 import java.util.HashSet;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -30,7 +29,6 @@ public class MagicPlayerListener extends PlayerListener {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TELEPORT, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TOGGLE_SNEAK, this, Event.Priority.Monitor, plugin);
@@ -70,7 +68,35 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+		// first check if player is interacting with a special block
+		boolean noInteract = false;
+		if (event.hasBlock()) {
+			Material m = event.getClickedBlock().getType();
+			if (m == Material.WOODEN_DOOR || 
+					m == Material.BED || 
+					m == Material.WORKBENCH ||
+					m == Material.CHEST || 
+					m == Material.FURNACE || 
+					m == Material.LEVER ||
+					m == Material.STONE_BUTTON) {
+				noInteract = true;
+			}
+		}
+		if (noInteract) {
+			// special block -- don't do normal interactions
+		} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			// left click -- cast spell
+			ItemStack inHand = event.getPlayer().getItemInHand();
+			Spell spell = null;
+			try {
+				spell = MagicSpells.getSpellbook(event.getPlayer()).getActiveSpell(inHand.getTypeId());
+			} catch (NullPointerException e) {				
+			}
+			if (spell != null && spell.canCastWithItem()) {
+				spell.cast(event.getPlayer());
+			}			
+		} else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			// right click -- cycle spell and/or process mana pots
 			Player player = event.getPlayer();
 			ItemStack inHand = player.getItemInHand();
 			
@@ -120,26 +146,12 @@ public class MagicPlayerListener extends PlayerListener {
 			}
 		}
 		
+		// call spell listeners
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_INTERACT);
 		if (spells != null) {
 			for (Spell spell : spells) {
 				spell.onPlayerInteract(event);
 			}
-		}
-	}
-	
-	@Override
-	public void onPlayerAnimation(PlayerAnimationEvent event) {
-		if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
-			ItemStack inHand = event.getPlayer().getItemInHand();
-			Spell spell = null;
-			try {
-				spell = MagicSpells.spellbooks.get(event.getPlayer().getName()).getActiveSpell(inHand.getTypeId());
-			} catch (NullPointerException e) {				
-			}
-			if (spell != null && spell.canCastWithItem()) {
-				spell.cast(event.getPlayer());
-			}			
 		}
 	}
 	
