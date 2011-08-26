@@ -152,11 +152,11 @@ public abstract class Spell implements Comparable<Spell> {
 		return config.getStringList("spells." + internalName + "." + key, defaultValue);
 	}
 
-	public final SpellCastState cast(Player player) {
+	public final SpellCastResult cast(Player player) {
 		return cast(player, null);
 	}
 	
-	public final SpellCastState cast(Player player, String[] args) {
+	public final SpellCastResult cast(Player player, String[] args) {
 		MagicSpells.debug("Player " + player.getName() + " is trying to cast " + internalName);
 		
 		// get spell state
@@ -180,7 +180,7 @@ public abstract class Spell implements Comparable<Spell> {
 		SpellCastEvent event = new SpellCastEvent(this, player, state, power, cooldown, reagents);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
-			return SpellCastState.CANT_CAST;
+			return new SpellCastResult(SpellCastState.CANT_CAST, PostCastAction.HANDLE_NORMALLY);
 		} else {
 			power = event.getPower();
 			cooldown = event.getCooldown();
@@ -216,7 +216,7 @@ public abstract class Spell implements Comparable<Spell> {
 			}
 		}
 		
-		return state;
+		return new SpellCastResult(state, action);
 	}
 	
 	/**
@@ -581,6 +581,11 @@ public abstract class Spell implements Comparable<Spell> {
 	protected void turnOff() {		
 	}
 	
+	@Override
+	public int compareTo(Spell spell) {
+		return this.name.compareTo(spell.name);
+	}
+	
 	public void onPlayerJoin(PlayerJoinEvent event) {}
 	public void onPlayerQuit(PlayerQuitEvent event) {}
 	public void onPlayerInteract(PlayerInteractEvent event) {}
@@ -606,7 +611,7 @@ public abstract class Spell implements Comparable<Spell> {
 		NO_MAGIC_ZONE
 	}
 	
-	protected enum PostCastAction {
+	public enum PostCastAction {
 		HANDLE_NORMALLY,
 		ALREADY_HANDLED,
 		NO_MESSAGES,
@@ -617,9 +622,13 @@ public abstract class Spell implements Comparable<Spell> {
 		COOLDOWN_ONLY
 	}
 	
-	@Override
-	public int compareTo(Spell spell) {
-		return this.name.compareTo(spell.name);
+	public class SpellCastResult {
+		public SpellCastState state;
+		public PostCastAction action;
+		public SpellCastResult(SpellCastState state, PostCastAction action) {
+			this.state = state;
+			this.action = action;
+		}
 	}
 
 }

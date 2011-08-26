@@ -30,11 +30,13 @@ public class HelpSpell extends CommandSpell {
 		if (state == SpellCastState.NORMAL) {
 			if (args == null || args.length == 0) {
 				sendMessage(player, strUsage);
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				Spell spell = MagicSpells.getSpellByInGameName(args[0]);
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spell == null || spellbook == null || !spellbook.hasSpell(spell)) {
 					sendMessage(player, strNoSpell);
+					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					sendMessage(player, formatMessage(strDescLine, "%s", spell.getName(), "%d", spell.getDescription()));
 					if (spell.getCostStr() != null && !spell.getCostStr().equals("")) {
@@ -42,7 +44,6 @@ public class HelpSpell extends CommandSpell {
 					}
 				}
 			}
-			return PostCastAction.ALREADY_HANDLED;
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}

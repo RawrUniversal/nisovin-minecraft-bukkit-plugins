@@ -66,7 +66,6 @@ public class ListSpell extends CommandSpell {
 					sendMessage(player, s);
 				}
 			}
-			return PostCastAction.ALREADY_HANDLED;
 		}		
 		return PostCastAction.HANDLE_NORMALLY;
 	}

@@ -303,9 +303,9 @@ public class ScrollSpell extends CommandSpell {
 					if (castForFree && !player.hasPermission("magicspells.noreagents")) {
 						player.addAttachment(MagicSpells.plugin, "magicspells.noreagents", true, 1);
 					}
-					SpellCastState state = spell.cast(player);
+					SpellCastResult result = spell.cast(player);
 
-					if (state == SpellCastState.NORMAL) {
+					if (result.state == SpellCastState.NORMAL && result.action != PostCastAction.ALREADY_HANDLED) {
 						// remove use
 						int uses = scrollUses.get(id);
 						if (uses > 0) {
