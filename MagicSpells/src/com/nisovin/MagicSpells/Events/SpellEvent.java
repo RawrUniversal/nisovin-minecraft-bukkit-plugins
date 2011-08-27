@@ -17,10 +17,18 @@ public class SpellEvent extends Event {
 		this.caster = caster;
 	}
 	
+	/**
+	 * Gets the spell involved in the event.
+	 * @return the spell
+	 */
 	public Spell getSpell() {
 		return spell;
 	}
 	
+	/**
+	 * Gets the player casting the spell.
+	 * @return the casting player
+	 */
 	public Player getCaster() {
 		return caster;
 	}

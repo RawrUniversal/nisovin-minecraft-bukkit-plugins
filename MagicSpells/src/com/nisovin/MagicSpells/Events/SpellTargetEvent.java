@@ -17,10 +17,18 @@ public class SpellTargetEvent extends SpellEvent implements Cancellable {
 		this.target = target;
 	}
 	
+	/**
+	 * Gets the living entity that is being targeted by the spell.
+	 * @return the targeted living entity
+	 */
 	public LivingEntity getTarget() {
 		return target;
 	}
 	
+	/**
+	 * Sets the spell's target to the provided living entity.
+	 * @param target the new target
+	 */
 	public void setTarget(LivingEntity target) {
 		this.target = target;
 	}
