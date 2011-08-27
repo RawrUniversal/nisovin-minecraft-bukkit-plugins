@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,8 +11,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.MagicSpells;
 
 public class FlamewalkSpell extends BuffSpell {
 	

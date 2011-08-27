@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.ArrayList;
 
@@ -15,8 +15,8 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.InstantSpell;
-import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.MagicSpells;
 
 public class DrainlifeSpell extends InstantSpell {
 	

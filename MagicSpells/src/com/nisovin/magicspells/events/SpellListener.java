@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Events;
+package com.nisovin.magicspells.events;
 
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;

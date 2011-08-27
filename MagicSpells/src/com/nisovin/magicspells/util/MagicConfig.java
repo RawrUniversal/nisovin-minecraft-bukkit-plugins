@@ -1,12 +1,12 @@
-package com.nisovin.MagicSpells.Util;
+package com.nisovin.magicspells.util;
 
 import java.io.File;
 import java.util.List;
 
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.MagicSpells;
-import com.nisovin.MagicSpells.Spell;
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
 
 public class MagicConfig extends Configuration {
 

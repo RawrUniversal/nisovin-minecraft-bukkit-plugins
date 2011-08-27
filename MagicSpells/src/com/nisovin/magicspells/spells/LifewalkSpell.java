@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -10,8 +10,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.MagicSpells;
 
 public class LifewalkSpell extends BuffSpell {
 	

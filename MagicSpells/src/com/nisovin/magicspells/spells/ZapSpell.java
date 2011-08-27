@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashSet;
 
@@ -10,8 +10,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.MagicSpells;
-import com.nisovin.MagicSpells.InstantSpell;
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.InstantSpell;
 
 public class ZapSpell extends InstantSpell {
 	

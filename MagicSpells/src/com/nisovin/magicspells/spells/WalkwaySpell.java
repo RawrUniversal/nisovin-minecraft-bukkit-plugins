@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.BuffSpell;
+import com.nisovin.magicspells.BuffSpell;
 
 public class WalkwaySpell extends BuffSpell {
 

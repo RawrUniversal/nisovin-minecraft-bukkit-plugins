@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells;
+package com.nisovin.magicspells;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells;
+package com.nisovin.magicspells;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,9 +29,9 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.Events.MagicEventType;
-import com.nisovin.MagicSpells.Spells.*;
-import com.nisovin.MagicSpells.Util.MagicConfig;
+import com.nisovin.magicspells.events.MagicEventType;
+import com.nisovin.magicspells.spells.*;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class MagicSpells extends JavaPlugin {
 

@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -6,8 +6,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.InstantSpell;
-import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.MagicSpells;
 
 public class ExternalCommandSpell extends InstantSpell {
 	

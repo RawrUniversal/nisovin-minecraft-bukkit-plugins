@@ -1,13 +1,13 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.Events.MagicEventType;
-import com.nisovin.MagicSpells.Events.SpellCastEvent;
+import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.events.MagicEventType;
+import com.nisovin.magicspells.events.SpellCastEvent;
 
 public class EmpowerSpell extends BuffSpell {
 

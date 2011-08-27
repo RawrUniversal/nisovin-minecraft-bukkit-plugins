@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Util;
+package com.nisovin.magicspells.util;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,7 +6,7 @@ import java.util.HashSet;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.magicspells.MagicSpells;
 
 public class TemporaryBlockSet implements Runnable {
 	

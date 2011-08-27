@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells;
+package com.nisovin.magicspells;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.config.Configuration;

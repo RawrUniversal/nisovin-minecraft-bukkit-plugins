@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.ChanneledSpell;
+import com.nisovin.magicspells.ChanneledSpell;
 
 public class SummonSpell extends ChanneledSpell {
 

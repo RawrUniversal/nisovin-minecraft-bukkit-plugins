@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashSet;
 
@@ -7,7 +7,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.BuffSpell;
+import com.nisovin.magicspells.BuffSpell;
 
 public class StealthSpell extends BuffSpell {
 	

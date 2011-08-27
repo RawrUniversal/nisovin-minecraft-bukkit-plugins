@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashSet;
 
@@ -10,8 +10,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.InstantSpell;
-import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.MagicSpells;
 
 public class GateSpell extends InstantSpell {
 	

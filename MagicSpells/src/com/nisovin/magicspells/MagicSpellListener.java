@@ -1,13 +1,13 @@
-package com.nisovin.MagicSpells;
+package com.nisovin.magicspells;
 
 import java.util.HashSet;
 
 import org.bukkit.event.Event;
 
-import com.nisovin.MagicSpells.Events.MagicEventType;
-import com.nisovin.MagicSpells.Events.SpellCastEvent;
-import com.nisovin.MagicSpells.Events.SpellListener;
-import com.nisovin.MagicSpells.Events.SpellTargetEvent;
+import com.nisovin.magicspells.events.MagicEventType;
+import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.events.SpellListener;
+import com.nisovin.magicspells.events.SpellTargetEvent;
 
 public class MagicSpellListener extends SpellListener {
 	

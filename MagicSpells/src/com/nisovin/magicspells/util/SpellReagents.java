@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Util;
+package com.nisovin.magicspells.util;
 
 import java.util.Collection;
 import java.util.HashSet;

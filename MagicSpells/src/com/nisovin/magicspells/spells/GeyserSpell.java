@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +15,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.InstantSpell;
-import com.nisovin.MagicSpells.Util.SpellAnimation;
+import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.SpellAnimation;
 
 public class GeyserSpell extends InstantSpell {
 	

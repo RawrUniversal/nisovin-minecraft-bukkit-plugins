@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,9 +12,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.CommandSpell;
-import com.nisovin.MagicSpells.MagicSpells;
-import com.nisovin.MagicSpells.Util.MagicLocation;
+import com.nisovin.magicspells.CommandSpell;
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicLocation;
 
 public class MarkSpell extends CommandSpell {
 	

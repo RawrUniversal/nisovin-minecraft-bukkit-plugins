@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells;
+package com.nisovin.magicspells;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.Events.SpellTargetEvent;
+import com.nisovin.magicspells.events.SpellTargetEvent;
 
 public abstract class InstantSpell extends Spell {
 	

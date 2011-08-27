@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells;
+package com.nisovin.magicspells;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +26,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.Events.MagicEventType;
-import com.nisovin.MagicSpells.Events.SpellCastEvent;
-import com.nisovin.MagicSpells.Events.SpellTargetEvent;
-import com.nisovin.MagicSpells.Util.SpellReagents;
+import com.nisovin.magicspells.events.MagicEventType;
+import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.util.SpellReagents;
 
 public abstract class Spell implements Comparable<Spell> {
 

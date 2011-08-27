@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -15,10 +15,10 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.CommandSpell;
-import com.nisovin.MagicSpells.MagicSpells;
-import com.nisovin.MagicSpells.Spell;
-import com.nisovin.MagicSpells.Spellbook;
+import com.nisovin.magicspells.CommandSpell;
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.Spellbook;
 
 public class ScrollSpell extends CommandSpell {
 

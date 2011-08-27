@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.Random;
 
@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.InstantSpell;
+import com.nisovin.magicspells.InstantSpell;
 
 public class ExplodeSpell extends InstantSpell {
 	

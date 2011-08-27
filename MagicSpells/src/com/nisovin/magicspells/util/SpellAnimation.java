@@ -1,8 +1,8 @@
-package com.nisovin.MagicSpells.Util;
+package com.nisovin.magicspells.util;
 
 import org.bukkit.Bukkit;
 
-import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.magicspells.MagicSpells;
 
 /**
  * This class represents a spell animation. It facilitates creating a spell effect that happens over a period of time, 

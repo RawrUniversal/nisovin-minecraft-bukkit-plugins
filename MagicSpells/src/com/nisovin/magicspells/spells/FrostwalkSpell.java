@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
 
@@ -11,8 +11,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.Util.BlockPlatform;
+import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.BlockPlatform;
 
 public class FrostwalkSpell extends BuffSpell {
 	

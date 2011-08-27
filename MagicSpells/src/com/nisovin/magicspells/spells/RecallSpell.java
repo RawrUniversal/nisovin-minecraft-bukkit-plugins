@@ -1,11 +1,11 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.CommandSpell;
+import com.nisovin.magicspells.CommandSpell;
 
 public class RecallSpell extends CommandSpell {
 	

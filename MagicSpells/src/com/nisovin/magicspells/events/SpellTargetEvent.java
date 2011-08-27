@@ -1,10 +1,10 @@
-package com.nisovin.MagicSpells.Events;
+package com.nisovin.magicspells.events;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
-import com.nisovin.MagicSpells.Spell;
+import com.nisovin.magicspells.Spell;
 
 @SuppressWarnings("serial")
 public class SpellTargetEvent extends SpellEvent implements Cancellable {

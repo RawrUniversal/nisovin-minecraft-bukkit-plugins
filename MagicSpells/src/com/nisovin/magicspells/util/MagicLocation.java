@@ -1,9 +1,9 @@
-package com.nisovin.MagicSpells.Util;
+package com.nisovin.magicspells.util;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.magicspells.MagicSpells;
 
 public class MagicLocation {
 

@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,8 +17,8 @@ import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.InstantSpell;
-import com.nisovin.MagicSpells.MagicSpells;
+import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.MagicSpells;
 
 public class FireballSpell extends InstantSpell {
 	

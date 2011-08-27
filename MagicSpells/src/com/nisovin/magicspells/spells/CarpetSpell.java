@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,8 +14,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.BuffSpell;
-import com.nisovin.MagicSpells.Util.BlockPlatform;
+import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.BlockPlatform;
 
 public class CarpetSpell extends BuffSpell {
 	

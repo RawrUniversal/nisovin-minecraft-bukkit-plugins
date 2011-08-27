@@ -1,11 +1,11 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.ChanneledSpell;
+import com.nisovin.magicspells.ChanneledSpell;
 
 public class SunSpell extends ChanneledSpell {
 

@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Events;
+package com.nisovin.magicspells.events;
 
 /**
  * The event types in MagicSpells.

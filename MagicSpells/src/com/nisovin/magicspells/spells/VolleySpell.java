@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.InstantSpell;
+import com.nisovin.magicspells.InstantSpell;
 
 public class VolleySpell extends InstantSpell {
 

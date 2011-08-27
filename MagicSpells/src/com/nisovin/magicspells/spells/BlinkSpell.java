@@ -1,4 +1,4 @@
-package com.nisovin.MagicSpells.Spells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashSet;
 
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.MagicSpells.*;
+import com.nisovin.magicspells.*;
 
 public class BlinkSpell extends InstantSpell {
 	
