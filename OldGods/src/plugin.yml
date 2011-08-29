@@ -1,0 +1,9 @@
+name: OldGods
+main: com.nisovin.oldgods.OldGods
+version: 1.0
+softdepend: [MagicSpells]
+commands:
+    oldgods:
+        description: Stuff
+        usage: /<command>
+        aliases: [gods]
