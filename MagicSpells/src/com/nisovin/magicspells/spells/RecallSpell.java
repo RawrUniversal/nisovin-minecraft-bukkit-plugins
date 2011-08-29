@@ -1,13 +1,12 @@
 package com.nisovin.magicspells.spells;
 
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.magicspells.CommandSpell;
+import com.nisovin.magicspells.InstantSpell;
 
-public class RecallSpell extends CommandSpell {
+public class RecallSpell extends InstantSpell {
 	
 	private boolean allowCrossWorld;
 	private int maxRange;
@@ -52,11 +51,6 @@ public class RecallSpell extends CommandSpell {
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
-	}
-	
-	@Override
-	public boolean castFromConsole(CommandSender sender, String[] args) {
-		return false;
 	}
 
 }

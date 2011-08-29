@@ -6,17 +6,16 @@ import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.config.Configuration;
 
-import com.nisovin.magicspells.CommandSpell;
+import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.util.MagicLocation;
 
-public class MarkSpell extends CommandSpell {
+public class MarkSpell extends InstantSpell {
 	
 	private boolean permanentMarks;
 	
@@ -38,7 +37,6 @@ public class MarkSpell extends CommandSpell {
 
 	@Override
 	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
-		//((CraftPlayer)player).getHandle().a(new ChunkCoordinates(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ()));
 		if (state == SpellCastState.NORMAL) {
 			marks.put(player.getName(), new MagicLocation(player.getLocation()));
 			if (permanentMarks) {
@@ -87,11 +85,6 @@ public class MarkSpell extends CommandSpell {
 		} catch (Exception e) {
 			MagicSpells.plugin.getServer().getLogger().severe("MagicSpells: Error saving marks");
 		}		
-	}
-	
-	@Override
-	public boolean castFromConsole(CommandSender sender, String[] args) {
-		return false;
 	}
 
 }
