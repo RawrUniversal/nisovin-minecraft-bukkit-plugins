@@ -126,6 +126,16 @@ public class PlayerCharacter implements GameCharacter {
 		}
 	}
 	
+	public String fillInNames(String s) {
+		return s
+				.replace("%user", player.getName())
+				.replace("%first", firstName)
+				.replace("%last", lastName)
+				.replace("%prefix", prefixTitle)
+				.replace("%postfix", postfixTitle)
+				.replace("%sub", subTitle);
+	}
+	
 	public void setUpNames() {
 		chatName = generateName("chat");
 		emoteName = generateName("emote");

@@ -17,7 +17,7 @@ import com.nisovin.realrp.Settings;
 public class ChatManager {
 
 	//private RealRP plugin;
-	private Settings settings;
+	protected Settings settings;
 	
 	private HashMap<Player, Channel> activeChannels;
 	private HashMap<Player, HashSet<Channel>> playerChannels;

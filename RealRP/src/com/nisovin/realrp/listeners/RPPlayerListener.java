@@ -5,6 +5,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
 
 import com.nisovin.realrp.RealRP;
@@ -21,18 +22,36 @@ public class RPPlayerListener extends PlayerListener {
 		
 		PluginManager pm = plugin.getServer().getPluginManager();
 		pm.registerEvent(Event.Type.PLAYER_JOIN, this, Event.Priority.Highest, plugin);
+		pm.registerEvent(Event.Type.PLAYER_QUIT, this, Event.Priority.Highest, plugin);
 		pm.registerEvent(Event.Type.PLAYER_CHAT, this, Event.Priority.High, plugin);
 		pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Monitor, plugin);
 	}
 	
 	@Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		String joinFormat = RealRP.settings().gsJoinMessageFormat;
 		PlayerCharacter pc = PlayerCharacter.get(event.getPlayer());
 		if (pc == null && RealRP.settings().ccEnableCharacterCreator) {
 			plugin.startCharacterCreator(event.getPlayer());
-			event.setJoinMessage(null);
+			if (!joinFormat.isEmpty()) {
+				event.setJoinMessage(null);
+			}
 		} else if (pc != null) {
 			pc.setUpNames();
+			if (!joinFormat.isEmpty()) {
+				event.setJoinMessage(pc.fillInNames(joinFormat));
+			}
+		}
+	}
+	
+	@Override
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		String quitFormat = RealRP.settings().gsQuitMessageFormat;
+		if (!quitFormat.isEmpty()) {
+			PlayerCharacter pc = PlayerCharacter.get(event.getPlayer());
+			if (pc != null) {
+				event.setQuitMessage(pc.fillInNames(quitFormat));
+			}
 		}
 	}
 	

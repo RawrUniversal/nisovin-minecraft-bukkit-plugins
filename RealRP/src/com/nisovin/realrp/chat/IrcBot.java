@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
 
@@ -53,14 +54,30 @@ public class IrcBot extends PircBot {
 		}		
 	}
 	
+	public void forceReconnect() {
+		if (isConnected()) {
+			disconnect();
+		}
+		connect();
+	}
+	
 	public void sendMessage(String message) {
 		sendMessage(channel, message);
 	}
 	
 	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message) {
-		if (message.startsWith("!")) {
-			
+		if (cm.settings.csIRCWhoCommand.equals(message)) {
+			Player[] players = Bukkit.getServer().getOnlinePlayers();
+			String msg = "Online players (" + players.length + "): ";
+			if (players.length == 0) {
+				msg += "None.";
+			} else {
+				for (int i = 0; i < players.length; i++) {
+					msg += (i==0?" ":", ") + players[i].getName();
+				}
+			}
+			sendMessage(sender, msg);
 		} else {
 			cm.fromIRC(sender, message);
 		}

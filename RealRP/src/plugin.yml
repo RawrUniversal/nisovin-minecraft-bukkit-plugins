@@ -4,6 +4,14 @@ version: 0.1
 author: nisovin
 depend: [Spout]
 commands:
+    rpjoinchannel:
+        description: Join a chat channel
+        usage: /<command> <channel>
+        aliases: [join,channel,ch]
+    rpglobal:
+        description: Toggle the global chat
+        usage: /<command>
+        aliases: [global]
     rpemote:
         description: Emote an action
         usage: /<command> action
@@ -12,6 +20,10 @@ commands:
         description: Modify a character's information
         usage: /<command>
         aliases: [character,char]
+    rpplayernote:
+        description: Read or add player notes
+        usage: /<command> <list|read|new|write|save>
+        aliases: [playernote,charnote,pnote,cnote,note]
     rpacceptrequest:
         description: Accept an interaction request
         usage: /<command> id

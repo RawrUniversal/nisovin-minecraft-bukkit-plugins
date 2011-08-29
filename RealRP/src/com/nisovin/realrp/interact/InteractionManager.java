@@ -22,9 +22,16 @@ public class InteractionManager {
 		lastClicked.put(player, npc);
 	}
 	
-	public void interactCommand(Player player, String description) {
+	public boolean interactCommand(Player player, String description) {
 		AnimatableNPC npc = lastClicked.get(player);
+		if (npc == null) {
+			return false;
+		}
+		if (npc.getLocation().distanceSquared(player.getLocation()) > 100) {
+			return false;
+		}
 		newRequest(player, npc, description);
+		return true;
 	}
 	
 	public void newRequest(Player player, AnimatableNPC npc, String description) {

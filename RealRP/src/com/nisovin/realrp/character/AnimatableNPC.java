@@ -86,4 +86,8 @@ public class AnimatableNPC implements GameCharacter {
 		return name;
 	}
 	
+	public Location getLocation() {
+		return position;
+	}
+	
 }

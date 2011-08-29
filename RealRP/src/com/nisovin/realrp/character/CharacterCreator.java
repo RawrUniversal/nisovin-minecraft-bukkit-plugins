@@ -11,11 +11,11 @@ public class CharacterCreator {
 	
 	private static ArrayList<State> stateOrder = new ArrayList<State>();
 	static {
-		stateOrder.add(State.GET_FIRST_NAME); 
-		stateOrder.add(State.GET_LAST_NAME); 
-		stateOrder.add(State.GET_AGE); 
-		stateOrder.add(State.GET_SEX); 
-		stateOrder.add(State.GET_DESCRIPTION); 
+		stateOrder.add(State.GET_FIRST_NAME);
+		stateOrder.add(State.GET_LAST_NAME);
+		stateOrder.add(State.GET_AGE);
+		stateOrder.add(State.GET_SEX);
+		stateOrder.add(State.GET_DESCRIPTION);
 	}
 	
 	private Player player;

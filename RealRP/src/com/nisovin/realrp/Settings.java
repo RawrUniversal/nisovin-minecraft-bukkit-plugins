@@ -8,6 +8,11 @@ import org.bukkit.util.config.Configuration;
 
 public class Settings {
 
+	// General Settings
+	
+	public String gsJoinMessageFormat = "&e%prefix %first %last %postfix has joined the game.";
+	public String gsQuitMessageFormat = "&e%prefix %first %last %postfix has left the game.";
+	
 	// Character Creation Section
 	
 	public boolean ccEnableCharacterCreator = true;
@@ -71,6 +76,7 @@ public class Settings {
 	public String csIRCChannel = "#realrp";
 	public String csIRCFormatToIRC = "[Game] <%n> %m";
 	public String csIRCFormatToGame = "[&aIRC&f] <%n> %m";
+	public String csIRCWhoCommand = "!who";
 	
 	// Interact Request System
 	
@@ -94,9 +100,11 @@ public class Settings {
 		
 		// setup config categories
 		HashMap<String,String> prefixes = new HashMap<String,String>();
+		prefixes.put("gs", "GeneralSettings");
 		prefixes.put("cc", "CharCreator");
 		prefixes.put("em", "EmoteSystem");
 		prefixes.put("cs", "ChatSystem");
+		prefixes.put("ir", "InteractRequests");
 		
 		// load config automatically based on above field names (wow, I'm lazy)
 		Field[] fields = getClass().getDeclaredFields();
