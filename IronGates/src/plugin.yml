@@ -1,7 +1,24 @@
 name: IronGates
 main: com.nisovin.IronGates.IronGates
 version: 1.0
+depend: [HatuMisc]
 commands:
     gate:
-        description: Create iron gates
+        description: Create and control iron gates
         usage: /<command>
+permissions:
+    irongates.*:
+        description: All iron gate permissions
+        children:
+            irongates.new: true
+            irongates.list: true
+            irongates.tp: true
+    irongates.new:
+        description: Create a new iron gate
+        default: op
+    irongates.list:
+        description: List the iron gates
+        default: op
+    irongates.tp:
+        description: Teleport to an iron gate exit
+        default: op

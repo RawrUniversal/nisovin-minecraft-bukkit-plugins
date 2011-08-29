@@ -1,5 +1,6 @@
 package com.nisovin.IronGates;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerAnimationEvent;
@@ -33,12 +34,17 @@ public class IGPlayerListener extends PlayerListener {
 		String s = l.getWorld().getName() + "," + l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ();
 		
 		Gate gate = plugin.gates.get(s);
-		if (gate != null) {
+		if (gate != null && !p.hasPermission("irongates.deny." + gate.getName())) {
 			if (gate.key == -1 || p.getItemInHand().getTypeId() == gate.key) {
-				event.setFrom(gate.getExit());
-				event.setTo(gate.getExit());
-				event.setCancelled(true);
-				gate.teleportPlayerToExit(p);		
+				final Location loc = gate.getExit();
+				event.setTo(loc);
+				plugin.immunity.put(p.getName(), System.currentTimeMillis() + 5000);
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+					public void run() {
+						Chunk chunk = loc.getWorld().getChunkAt(loc);
+						chunk.getWorld().refreshChunk(chunk.getX(), chunk.getZ());
+					}
+				}, 5);
 			}
 		}
 	}

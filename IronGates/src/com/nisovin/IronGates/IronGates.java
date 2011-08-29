@@ -22,25 +22,30 @@ public class IronGates extends JavaPlugin {
 	
 	public HashMap<String, Gate> gates;
 	public HashMap<String, Gate> newGates = new HashMap<String, Gate>();
+	public HashMap<String, Long> immunity = new HashMap<String, Long>();
 	
 	@Override
-	public void onEnable() {
+	public void onEnable() {		
 		loadGates();
 
 		IGPlayerListener playerListener = new IGPlayerListener(this);
+		IGEntityListener entityListener = new IGEntityListener(this);
+		IGBlockListener blockListener = new IGBlockListener(this);
 
 		//this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, playerListener, Priority.Normal, this);
 		this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
+		this.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DAMAGE, entityListener, Priority.Normal, this);
+		this.getServer().getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
-			if (p.isOp() && command.getName().equalsIgnoreCase("gate")) {
-				if (args.length == 2 && args[0].equalsIgnoreCase("new")) {
+			if (command.getName().equalsIgnoreCase("gate")) {
+				if (p.hasPermission("irongates.new") && args.length == 2 && args[0].equalsIgnoreCase("new")) {
 					newGates.put(p.getName(), new Gate(args[1]));
 					p.sendMessage("New gate '" + args[1] + "' created. Set entrance and exit now.");
-				} else if (args.length == 1 && args[0].equalsIgnoreCase("entrance")) {
+				} else if (p.hasPermission("irongates.new") && args.length == 1 && args[0].equalsIgnoreCase("entrance")) {
 					Gate gate = newGates.get(p.getName());
 					if (gate != null) {
 						gate.setEntrance(p.getLocation());
@@ -51,7 +56,7 @@ public class IronGates extends JavaPlugin {
 					} else {
 						p.sendMessage("Use /gate new <name> first.");
 					}
-				} else if (args.length == 1 && args[0].equalsIgnoreCase("exit")) {
+				} else if (p.hasPermission("irongates.new") && args.length == 1 && args[0].equalsIgnoreCase("exit")) {
 					Gate gate = newGates.get(p.getName());
 					if (gate != null) {
 						gate.setExit(p.getLocation());
@@ -62,7 +67,7 @@ public class IronGates extends JavaPlugin {
 					} else {
 						p.sendMessage("Use /gate new <name> first.");
 					}
-				} else if (args.length == 1 && args[0].equalsIgnoreCase("key")) {
+				} else if (p.hasPermission("irongates.new") && args.length == 1 && args[0].equalsIgnoreCase("key")) {
 					Gate gate = newGates.get(p.getName());
 					if (gate != null) {
 						gate.setKey(p.getItemInHand());
@@ -70,7 +75,7 @@ public class IronGates extends JavaPlugin {
 					} else {
 						p.sendMessage("Use /gate new <name> first.");
 					}
-				} else if (args.length == 1 && args[0].equalsIgnoreCase("save")) {
+				} else if (p.hasPermission("irongates.new") && args.length == 1 && args[0].equalsIgnoreCase("save")) {
 					Gate gate = newGates.get(p.getName());
 					if (gate != null) {
 						if (gate.isReadyForSave()) {
@@ -84,7 +89,7 @@ public class IronGates extends JavaPlugin {
 					} else {
 						p.sendMessage("No gate to save.");
 					}
-				} else if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
+				} else if (p.hasPermission("irongates.list") && args.length == 1 && args[0].equalsIgnoreCase("list")) {
 					String list = "";
 					for (Gate gate : gates.values()) {
 						if (list.equals("")) {
@@ -94,7 +99,7 @@ public class IronGates extends JavaPlugin {
 						}
 					}
 					p.sendMessage("Gates: " + list);
-				} else if (args.length == 2 && args[0].equalsIgnoreCase("tp")) {
+				} else if (p.hasPermission("irongates.tp") && args.length == 2 && args[0].equalsIgnoreCase("tp")) {
 					for (Gate gate : gates.values()) {
 						if (gate.getName().equalsIgnoreCase(args[1])) {
 							gate.teleportPlayerToExit(p);
@@ -102,15 +107,15 @@ public class IronGates extends JavaPlugin {
 							break;
 						}
 					}
-				} else {
+				} else if (p.hasPermission("irongates.new") || p.hasPermission("irongates.list") || p.hasPermission("irongates.tp")) {
 					p.sendMessage("Usage of /gate :");
-					p.sendMessage("  /gate new <name> -- Start creating a new gate");
-					p.sendMessage("  /gate entrance -- Set your gate entrance to your location");
-					p.sendMessage("  /gate exit -- Set your gate exit to your location");
-					p.sendMessage("  /gate key -- Set your gate key to your in-hand item");
-					p.sendMessage("  /gate save -- Save your gate");
-					p.sendMessage("  /gate list -- List all gates");
-					p.sendMessage("  /gate tp <name> -- Teleport to the exit of the named gate");
+					if (p.hasPermission("irongates.new")) p.sendMessage("  /gate new <name> -- Start creating a new gate");
+					if (p.hasPermission("irongates.new")) p.sendMessage("  /gate entrance -- Set your gate entrance to your location");
+					if (p.hasPermission("irongates.new")) p.sendMessage("  /gate exit -- Set your gate exit to your location");
+					if (p.hasPermission("irongates.new")) p.sendMessage("  /gate key -- Set your gate key to your in-hand item");
+					if (p.hasPermission("irongates.new")) p.sendMessage("  /gate save -- Save your gate");
+					if (p.hasPermission("irongates.list")) p.sendMessage("  /gate list -- List all gates");
+					if (p.hasPermission("irongates.tp")) p.sendMessage("  /gate tp <name> -- Teleport to the exit of the named gate");
 					
 				}
 				return true;

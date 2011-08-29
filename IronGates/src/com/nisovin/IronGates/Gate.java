@@ -1,5 +1,6 @@
 package com.nisovin.IronGates;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -40,10 +41,12 @@ public class Gate {
 		this.exit = exit;
 	}
 	
-	public void teleportPlayerToExit(Player player) {
-		Location l = new Location(exit.getWorld(), exit.getBlockX() + .5, exit.getBlockY(), exit.getBlockZ() + .5);
+	public void teleportPlayerToExit(Player player) {		
+		Location l = new Location(exit.getWorld(), exit.getBlockX() + .5, exit.getBlockY() + .5, exit.getBlockZ() + .5);
 		l.setYaw(exit.getYaw());
 		player.teleport(l);
+		Chunk chunk = l.getWorld().getChunkAt(l);
+		chunk.getWorld().refreshChunk(chunk.getX(), chunk.getZ());
 	}
 	
 	public String getName() {
@@ -55,7 +58,9 @@ public class Gate {
 	}
 	
 	public Location getExit() {
-		return exit;
+		Location l = new Location(exit.getWorld(), exit.getBlockX() + .5, exit.getBlockY() + .5, exit.getBlockZ() + .5);
+		l.setYaw(exit.getYaw());
+		return l;
 	}
 	
 	public String getEntranceString() {
