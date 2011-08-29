@@ -241,6 +241,16 @@ public class ScrollSpell extends CommandSpell {
 		dirtyData = true;
 		save();
 		
+		// set paper
+		if (sender instanceof Player) {
+			Player player = (Player)sender;
+			ItemStack inHand = player.getItemInHand();
+			if (inHand.getTypeId() == itemId && inHand.getAmount() == 1 && inHand.getDurability() == 0) {
+				inHand.setDurability(id);
+				player.setItemInHand(inHand);
+			}
+		}
+		
 		sender.sendMessage("Base scroll created for spell " + spell.getName() + ": id = " + id);
 	}
 	

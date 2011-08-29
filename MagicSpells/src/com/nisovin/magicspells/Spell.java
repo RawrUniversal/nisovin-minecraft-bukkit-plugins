@@ -203,16 +203,16 @@ public abstract class Spell implements Comparable<Spell> {
 					sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getDisplayName()));
 				}
 			} else if (state == SpellCastState.ON_COOLDOWN) {
-				sendMessage(player, formatMessage(MagicSpells.strOnCooldown, "%c", getCooldown(player)+""));
+				MagicSpells.sendMessage(player, formatMessage(MagicSpells.strOnCooldown, "%c", getCooldown(player)+""));
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
-				sendMessage(player, MagicSpells.strMissingReagents);
+				MagicSpells.sendMessage(player, MagicSpells.strMissingReagents);
 				if (MagicSpells.showStrCostOnMissingReagents && !strCost.isEmpty()) {
-					sendMessage(player, "(" + strCost + ")");
+					MagicSpells.sendMessage(player, "    (" + strCost + ")");
 				}
 			} else if (state == SpellCastState.CANT_CAST) {
-				sendMessage(player, MagicSpells.strCantCast);
+				MagicSpells.sendMessage(player, MagicSpells.strCantCast);
 			} else if (state == SpellCastState.NO_MAGIC_ZONE) {
-				sendMessage(player, MagicSpells.strNoMagicZone);
+				MagicSpells.sendMessage(player, MagicSpells.strNoMagicZone);
 			}
 		}
 		

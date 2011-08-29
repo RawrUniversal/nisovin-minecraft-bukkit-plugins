@@ -793,6 +793,9 @@ spells:
         command-to-execute-later: ''
         command-delay: 0
         command-to-block: gt
+        require-player-target: false
+        obey-los: true
+        range: 20
         cost:
             - 331 10
             - 6 5
