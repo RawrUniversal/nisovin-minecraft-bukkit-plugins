@@ -7,9 +7,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,11 +28,13 @@ public class GraveyardSpawn extends JavaPlugin {
 	public int SIGN_REMOVE_DELAY = 300;
 	
 	public List<Graveyard> graveyards;
+	protected HashMap<String,Location> deathLocation = new HashMap<String,Location>();
 
 	@Override
 	public void onEnable() {				
 		loadGraveyards();		
 		GYPlayerListener playerListener = new GYPlayerListener(this);		
+		this.getServer().getPluginManager().registerEvent(Event.Type.ENTITY_DEATH, new GYEntityListener(this), Priority.Monitor, this);
 		this.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_RESPAWN, playerListener, Priority.Normal, this);
 		this.getServer().getLogger().info("GraveyardSpawn plugin loaded!");
 	}
@@ -64,6 +69,8 @@ public class GraveyardSpawn extends JavaPlugin {
 					for (Graveyard gy : graveyards) {
 						if (gy.getName().equalsIgnoreCase(args[1])) {
 							p.teleport(gy.getLocation());
+							Chunk chunk = gy.getLocation().getWorld().getChunkAt(gy.getLocation());
+							chunk.getWorld().refreshChunk(chunk.getX(), chunk.getZ());
 							p.sendMessage("You have teleported to graveyard '" + gy.getName() + "'.");
 							success = true;
 							break;

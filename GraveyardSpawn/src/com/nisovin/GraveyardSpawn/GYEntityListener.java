@@ -1,31 +1,28 @@
 package com.nisovin.GraveyardSpawn;
 
-import java.util.HashMap;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityListener;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class GYEntityListener extends EntityListener {
 	
 	private GraveyardSpawn plugin;
 	
-	private HashMap<String, String> lastDamage = new HashMap<String, String>();
-	private HashMap<String, String> graveSigns = new HashMap<String, String>();
+	//private HashMap<String, String> lastDamage = new HashMap<String, String>();
+	//private HashMap<String, String> graveSigns = new HashMap<String, String>();
 	
 	public GYEntityListener(GraveyardSpawn plugin) {
 		this.plugin = plugin;
 	}
 	
-	public void onEntityDamage(EntityDamageEvent evt) {
+	@Override
+	public void onEntityDeath(EntityDeathEvent event) {
+		if (event.getEntity() instanceof Player) {
+			plugin.deathLocation.put(((Player)event.getEntity()).getName(), event.getEntity().getLocation());
+		}
+	}
+	
+	/*public void onEntityDamage(EntityDamageEvent evt) {
 		if (!evt.isCancelled() && evt.getEntity() instanceof Player) {
 			Player defender = (Player)evt.getEntity();
 			
@@ -113,6 +110,6 @@ public class GYEntityListener extends EntityListener {
 				}
 			}
 		}
-	}
+	}*/
 
 }
