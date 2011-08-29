@@ -62,6 +62,7 @@ public class FireballSpell extends InstantSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			} else {				
 				// get a target if required
+				boolean selfTarget = false;
 				if (requireEntityTarget) {
 					LivingEntity entity = getTargetedEntity(player, range, targetPlayers, obeyLos);
 					if (entity == null) {
@@ -76,10 +77,18 @@ public class FireballSpell extends InstantSpell {
 							return PostCastAction.ALREADY_HANDLED;
 						}
 					}
+					if (entity.equals(player)) {
+						selfTarget = true;
+					}
 				}
 				
 				// create fireball
-				Location loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw(), player.getLocation().getPitch());
+				Location loc;
+				if (!selfTarget) {
+					loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw(), player.getLocation().getPitch());
+				} else {
+					loc = player.getLocation().toVector().add(player.getLocation().getDirection().setY(0).multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw()+180, 0);
+				}
 				Fireball fireball = player.getWorld().spawn(loc, Fireball.class);
 				fireball.setShooter(player);
 				fireballs.put(fireball,power);

@@ -577,6 +577,20 @@ spells:
         str-other-world: You cannot recall to another world.
         str-too-far: Your marked location is too far away.
         str-cast-others: "%a disappears!"
+    reflect:
+        name: reflect
+        description: Reflect spells cast at you.
+        cooldown: 30
+        num-uses: 5
+        cost:
+            - 331 3
+        use-cost:
+            - 331 1
+        use-cost-interval: 1
+        str-cost: 3 redstone dust plus 1 redstone per spell reflected
+        str-cast-self: You feel a magical barrier surround you.
+        str-cast-others: A magical barrier surrounds %a.
+        str-fade: Your magical barrier fades.
     repair:
         name: repair
         description: Repairs your gear.
