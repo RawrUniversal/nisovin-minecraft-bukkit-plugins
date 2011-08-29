@@ -5,3 +5,26 @@ commands:
     gy:
         description: Manipulate graveyards.
         usage: /<command> [add|remove|tp|list] [name]
+permissions:
+    gy.spawn.*:
+        description: Spawn at any graveyard
+        default: true
+    gy.admin.*:
+        description: All graveyard commands
+        children:
+            gy.add: true
+            gy.remove: true
+            gy.list: true
+            gy.tp: true
+    gy.admin.add:
+        description: Add a graveyard
+        default: op
+    gy.admin.remove:
+        description: Remove a graveyard
+        default: op
+    gy.admin.list:
+        description: List all graveyards
+        default: op
+    gy.admin.tp:
+        description: Teleport to a graveyard
+        default: op

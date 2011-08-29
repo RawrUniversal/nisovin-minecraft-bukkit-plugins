@@ -44,13 +44,13 @@ public class GraveyardSpawn extends JavaPlugin {
 			Player p = (Player) sender;
 			String comm = command.getName();
 			
-			if (p.isOp() && comm.equalsIgnoreCase("gy")) {
-				if (args.length == 2 && args[0].equalsIgnoreCase("add")) {
+			if (comm.equalsIgnoreCase("gy")) {
+				if (p.hasPermission("gy.admin.add") && args.length == 2 && args[0].equalsIgnoreCase("add")) {
 					Graveyard gy = new Graveyard(args[1], p.getLocation());
 					graveyards.add(gy);
 					saveGraveyard(gy);
 					p.sendMessage("Graveyard added: " + gy.getSaveString());
-				} else if (args.length == 2 && args[0].equalsIgnoreCase("remove")) {
+				} else if (p.hasPermission("gy.admin.remove") && args.length == 2 && args[0].equalsIgnoreCase("remove")) {
 					boolean success = false;
 					for (Graveyard gy : graveyards) {
 						if (gy.getName().equalsIgnoreCase(args[1])) {
@@ -64,7 +64,7 @@ public class GraveyardSpawn extends JavaPlugin {
 					if (!success) {
 						p.sendMessage("No such graveyard.");
 					}
-				} else if (args.length == 2 && args[0].equalsIgnoreCase("tp")) {
+				} else if (p.hasPermission("gy.admin.tp") && args.length == 2 && args[0].equalsIgnoreCase("tp")) {
 					boolean success = false;
 					for (Graveyard gy : graveyards) {
 						if (gy.getName().equalsIgnoreCase(args[1])) {
@@ -79,7 +79,7 @@ public class GraveyardSpawn extends JavaPlugin {
 					if (!success) {
 						p.sendMessage("No such graveyard.");
 					}
-				} else if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
+				} else if (p.hasPermission("gy.admin.list") && args.length == 1 && args[0].equalsIgnoreCase("list")) {
 					String list = "";
 					for (Graveyard gy : graveyards) {
 						if (list.equals("")) {
@@ -91,19 +91,14 @@ public class GraveyardSpawn extends JavaPlugin {
 					p.sendMessage("Graveyards: " + list);
 				} else {
 					p.sendMessage("Usage of /gy :");
-					p.sendMessage("  /gy add <name> -- Adds a new graveyard at your location");
-					p.sendMessage("  /gy remove <name> -- Removes the named graveyard");
-					p.sendMessage("  /gy list -- Lists all graveyards");
-					p.sendMessage("  /gy tp <name> -- Teleports to the named graveyard");
+					if (p.hasPermission("gy.admin.add")) p.sendMessage("  /gy add <name> -- Adds a new graveyard at your location");
+					if (p.hasPermission("gy.admin.remove")) p.sendMessage("  /gy remove <name> -- Removes the named graveyard");
+					if (p.hasPermission("gy.admin.list")) p.sendMessage("  /gy list -- Lists all graveyards");
+					if (p.hasPermission("gy.admin.tp")) p.sendMessage("  /gy tp <name> -- Teleports to the named graveyard");
 				}
-				
-				return true;
-			} else {
-				return false;
 			}
-		} else {
-			return false;
 		}
+		return true;
 	}
 	
 	public void loadGraveyards() {
