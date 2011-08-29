@@ -250,6 +250,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(CarpetSpell.class);
 		spellClasses.add(CombustSpell.class);
 		spellClasses.add(ConfusionSpell.class);
+		spellClasses.add(DisarmSpell.class);
 		spellClasses.add(DrainlifeSpell.class);
 		spellClasses.add(EntombSpell.class);
 		spellClasses.add(ExplodeSpell.class);

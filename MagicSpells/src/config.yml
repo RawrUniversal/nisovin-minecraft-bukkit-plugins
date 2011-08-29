@@ -168,6 +168,28 @@ spells:
         str-cost: 4 redstone dust
         str-cast-self: You cause nearby monsters to become confused and attack each other.
         str-cast-others: "%a causes nearby monsters to attack each other."
+    disarm:
+        name: disarm
+        description: Disarm your opponent.
+        cast-item: 283
+        cooldown: 15
+        range: 20
+        disarmable-items:
+            - 280
+            - 261
+            - 267
+            - 268
+            - 276
+            - 283
+        disarm-duration: 100
+        obey-los: true
+        cost:
+            - 331 4
+        str-cost: 4 redstone dust
+        str-no-target: No target found.
+        str-invalid-item: Your target could not be disarmed.
+        str-cast-self: You have disarmed %t.
+        str-cast-target: "%a has disarmed you."
     drainlife:
         name: drainlife
         description: Drain life from your enemy and give it to you.
