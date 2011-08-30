@@ -62,7 +62,7 @@ public class Spellbook {
 		boolean added = false;
 		for (Spell spell : MagicSpells.spells.values()) {
 			MagicSpells.debug("    Checking spell " + spell.getInternalName() + "...");
-			if (!hasSpell(spell)) {
+			if (!hasSpell(spell, false)) {
 				if (player.hasPermission("magicspells.grant." + spell.getInternalName())) {
 					addSpell(spell);
 					added = true;
@@ -189,11 +189,17 @@ public class Spellbook {
 	}
 	
 	public boolean hasSpell(Spell spell) {
+		return hasSpell(spell, true);
+	}
+	
+	public boolean hasSpell(Spell spell, boolean checkGranted) {
 		boolean has = allSpells.contains(spell);
 		if (has) {
 			return true;
-		} else if (player.hasPermission("magicspells.grant." + spell.getInternalName())) {
+		} else if (checkGranted && player.hasPermission("magicspells.grant." + spell.getInternalName())) {
+			MagicSpells.debug("Adding granted spell for " + player.getName() + ": " + spell.getName());
 			addSpell(spell);
+			save();
 			return true;
 		} else {
 			return false;
@@ -264,6 +270,7 @@ public class Spellbook {
 				writer.newLine();
 			}
 			writer.close();
+			MagicSpells.debug("Saved spellbook file: " + playerName.toLowerCase());
 		} catch (Exception e) {
 			plugin.getServer().getLogger().severe("Error saving player spellbook: " + playerName);
 		}		
