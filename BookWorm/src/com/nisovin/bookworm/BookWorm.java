@@ -147,6 +147,7 @@ public class BookWorm extends JavaPlugin {
 		if (spout != null) {
 			SPOUT_ENABLED = true;
 			new BookWormSpoutInventoryListener(this);
+			new BookWormSpoutScreenListener(this);
 			getServer().getLogger().info("BookWorm 'Spout' support enabled.");
 		} else {
 			SPOUT_ENABLED = false;

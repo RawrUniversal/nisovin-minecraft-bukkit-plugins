@@ -19,7 +19,31 @@ public class Bookmark {
 			this.page++;
 		}
 		lastRead = System.currentTimeMillis();
-		book.read(player, page);
+		read(player);
+	}
+	
+	public void nextPage(Player player) {
+		this.page++;
+		read(player);
+	}
+	
+	public void previousPage(Player player) {
+		this.page--;
+		if (this.page < 0) {
+			this.page = 0;
+		}
+		read(player);
+	}
+	
+	private void read(Player player) {
+		if (BookWorm.SPOUT_ENABLED) {
+			boolean shown = SpoutHandle.showBook(player, book, page);
+			if (!shown) {
+				book.read(player, page);
+			}
+		} else {
+			book.read(player, page);
+		}
 	}
 	
 }

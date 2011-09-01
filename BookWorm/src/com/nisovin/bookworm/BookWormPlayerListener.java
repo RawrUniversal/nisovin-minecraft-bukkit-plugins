@@ -164,6 +164,7 @@ public class BookWormPlayerListener extends PlayerListener {
 			
 				// set bookmark and read
 				bookmark.readBook(player, book);
+				//SpoutHandle.showBook(player, book, 0);
 				
 			}
 			

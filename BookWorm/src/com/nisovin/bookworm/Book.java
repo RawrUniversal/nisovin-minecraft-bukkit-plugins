@@ -232,6 +232,27 @@ public class Book {
 		}
 	}
 	
+	public String[] getPage(int page) {		
+		if (!loaded) {
+			load();
+		}
+		
+		if (page < 0 || page > pages) {
+			return null;
+		}
+		
+		String[] lines = new String[BookWorm.PAGE_LENGTH];
+		for (int i = 0; i < BookWorm.PAGE_LENGTH && page*BookWorm.PAGE_LENGTH + i < contents.length; i++) {
+			lines[i] = contents[page*BookWorm.PAGE_LENGTH + i];
+		}
+		
+		return lines;
+	}
+	
+	public int pageCount() {
+		return pages;
+	}
+	
 	public void save() {
 		generateContents();
 		
