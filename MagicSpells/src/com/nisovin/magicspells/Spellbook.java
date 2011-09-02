@@ -72,7 +72,7 @@ public class Spellbook {
 		if (added) {
 			save();
 		}
-	}	
+	}
 	
 	public boolean canLearn(Spell spell) {
 		return player.hasPermission("magicspells.learn." + spell.getInternalName());

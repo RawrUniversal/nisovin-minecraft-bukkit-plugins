@@ -825,10 +825,13 @@ spells:
         cooldown: 300
         can-cast-by-command: true
         can-cast-with-item: false
-        command-to-execute: gt 25 4
-        command-to-execute-later: ''
+        command-to-execute: 
+            - "gt 25 4"
+        command-to-execute-later: []
         command-delay: 0
-        command-to-block: gt
+        command-to-block:
+            - "gt"
+        temporary-permissions: []
         require-player-target: false
         obey-los: true
         range: 20
