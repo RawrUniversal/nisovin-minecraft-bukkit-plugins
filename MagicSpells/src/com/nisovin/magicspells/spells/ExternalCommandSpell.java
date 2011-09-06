@@ -126,6 +126,15 @@ public class ExternalCommandSpell extends InstantSpell {
 		
 		@Override
 		public void run() {
+			// grant permissions
+			if (temporaryPermissions != null) {
+				for (String perm : temporaryPermissions) {
+					if (!player.hasPermission(perm)) {
+						player.addAttachment(MagicSpells.plugin, perm, true, 5);
+					}
+				}
+			}
+			// run commands
 			for (String comm : commandToExecuteLater) {
 				if (comm != null && !comm.isEmpty()) {
 					comm = comm.replace("%a", player.getName());
