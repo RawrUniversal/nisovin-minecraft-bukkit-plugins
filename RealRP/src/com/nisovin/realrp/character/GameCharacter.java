@@ -8,4 +8,10 @@ public interface GameCharacter {
 	
 	public String getNameplate();
 	
+	public Sex getSex();
+	
+	public enum Sex {
+		Male, Female, Unknown
+	}
+	
 }

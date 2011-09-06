@@ -47,10 +47,15 @@ public class Settings {
 	public boolean emEnableEmotes = true;
 	public String emEmotePrefix = "&e* ";
 	public int emEmoteRange = 20;
+	public boolean emUseMeCommand = true;
 	
 	// Chat System Section
 	
 	public boolean csEnableChatSystem = true;
+	
+	//public boolean csSmartWrapEnabled = true;
+	//public int csWrapLineLength = 55;
+	//public int csWrapFirstLineOffset = 4;
 	
 	public String csICName = "ic";
 	public String csICPrefix = ".";

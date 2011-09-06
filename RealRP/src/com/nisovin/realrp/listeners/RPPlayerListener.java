@@ -29,7 +29,7 @@ public class RPPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		String joinFormat = RealRP.settings().gsJoinMessageFormat;
+		String joinFormat = RealRP.replaceColorCodes(RealRP.settings().gsJoinMessageFormat);
 		PlayerCharacter pc = PlayerCharacter.get(event.getPlayer());
 		if (pc == null && RealRP.settings().ccEnableCharacterCreator) {
 			plugin.startCharacterCreator(event.getPlayer());
@@ -46,7 +46,7 @@ public class RPPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		String quitFormat = RealRP.settings().gsQuitMessageFormat;
+		String quitFormat = RealRP.replaceColorCodes(RealRP.settings().gsQuitMessageFormat);
 		if (!quitFormat.isEmpty()) {
 			PlayerCharacter pc = PlayerCharacter.get(event.getPlayer());
 			if (pc != null) {
@@ -72,9 +72,23 @@ public class RPPlayerListener extends PlayerListener {
 			return;
 		}
 		
-		// get the emote
+		// get command
 		String[] split = event.getMessage().split(" ");
 		String c = split[0].substring(1);
+		
+		// get the emote
+		if (c.equalsIgnoreCase("me") && split.length > 1 && RealRP.settings().emUseMeCommand) {
+			// me command
+			StringBuilder message = new StringBuilder();
+			for (int i = 1; i < split.length; i++) {
+				message.append(split[i] + " ");
+			}
+			RealRP.getPlugin().getEmoteManager().sendGenericEmote(event.getPlayer(), message.toString().trim());
+			event.setCancelled(true);
+			return;
+		}
+		
+		// get emote
 		Emote emote = plugin.getEmote(c);
 		if (emote == null) {
 			return;

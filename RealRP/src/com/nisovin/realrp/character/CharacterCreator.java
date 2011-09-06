@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.bukkit.entity.Player;
 
 import com.nisovin.realrp.RealRP;
-import com.nisovin.realrp.character.PlayerCharacter.Sex;
+import com.nisovin.realrp.character.GameCharacter.Sex;
 
 public class CharacterCreator {
 	

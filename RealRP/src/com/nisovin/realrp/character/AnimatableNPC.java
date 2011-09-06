@@ -86,6 +86,11 @@ public class AnimatableNPC implements GameCharacter {
 		return name;
 	}
 	
+	@Override
+	public Sex getSex() {
+		return Sex.Unknown;
+	}
+	
 	public Location getLocation() {
 		return position;
 	}

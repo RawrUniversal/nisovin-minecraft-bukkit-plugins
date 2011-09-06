@@ -12,8 +12,8 @@ import org.bukkit.util.config.ConfigurationNode;
 
 import com.nisovin.realrp.RealRP;
 import com.nisovin.realrp.character.GameCharacter;
+import com.nisovin.realrp.character.GameCharacter.Sex;
 import com.nisovin.realrp.character.PlayerCharacter;
-import com.nisovin.realrp.character.PlayerCharacter.Sex;
 
 public class EmoteManager {
 
@@ -61,20 +61,25 @@ public class EmoteManager {
 	
 	public void sendGenericEmote(Player player, String emote) {
 		int range = RealRP.settings().emEmoteRange;
+		String name = player.getDisplayName();
+		PlayerCharacter pc = PlayerCharacter.get(player);
+		if (pc != null) {
+			name = pc.getEmoteName();
+		}
 		List<Entity> entities = player.getNearbyEntities(range, range, range);
 		entities.add(player);
 		for (Entity entity : entities) {
 			if (entity instanceof Player) {
-				((Player)entity).sendMessage(RealRP.settings().emEmotePrefix + emote);
+				RealRP.sendMessage((Player)entity, RealRP.settings().emEmotePrefix + name + " " + emote);
 			}
 		}
 	}
 	
-	public static void formatAndSend(Player to, String message, PlayerCharacter actor) {
+	public static void formatAndSend(Player to, String message, GameCharacter actor) {
 		formatAndSend(to, message, actor, null);
 	}
 	
-	public static void formatAndSend(Player to, String message, PlayerCharacter actor, GameCharacter target) {
+	public static void formatAndSend(Player to, String message, GameCharacter actor, GameCharacter target) {
 		message = message.replace("%actor", actor.getEmoteName());
 		if (target != null) {
 			message = message.replace("%target", target.getEmoteName());

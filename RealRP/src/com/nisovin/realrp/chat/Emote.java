@@ -9,6 +9,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.ConfigurationNode;
 
+import com.nisovin.realrp.character.EmptyPlayerCharacter;
 import com.nisovin.realrp.character.GameCharacter;
 import com.nisovin.realrp.character.PlayerCharacter;
 
@@ -43,7 +44,10 @@ public class Emote {
 	
 	public EmoteResult use(Player player, String strTarget) {
 		// get actor
-		PlayerCharacter actor = PlayerCharacter.get(player);
+		GameCharacter actor = PlayerCharacter.get(player);
+		if (actor == null) {
+			actor = new EmptyPlayerCharacter(player);
+		}
 		
 		// get target
 		GameCharacter target = null;

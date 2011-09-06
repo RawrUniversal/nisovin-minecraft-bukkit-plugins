@@ -43,7 +43,7 @@ public class RealRP extends JavaPlugin {
 		new RPPlayerListener(this);
 		
 		this.getCommand("rpnpc").setExecutor(new CommandSpawnNpc(this));
-		this.getCommand("emote").setExecutor(new CommandEmote(this));
+		this.getCommand("rpemote").setExecutor(new CommandEmote(this));
 		
 		PluginDescriptionFile pdf = getDescription();
 		getServer().getLogger().info(pdf.getName() + " v" + pdf.getVersion() + " enabled!");
@@ -57,15 +57,28 @@ public class RealRP extends JavaPlugin {
 		sendMessage(player, message, (String[])null);
 	}
 	
+	public static String replaceColorCodes(String message) {
+		return message.replaceAll("&([0-9a-f])", "\u00A7$1");
+	}
+	
 	public static void sendMessage(Player player, String message, String... replacements) {
 		if (replacements != null && replacements.length % 2 == 0) {
 			for (int i = 0; i < replacements.length; i+=2) {
 				message.replace(replacements[i], replacements[i+1]);
 			}
 		}
-		message = message.replaceAll("&([0-9a-f])", "\u00A7$1");
+		message = replaceColorCodes(message);
 		String[] msgs = message.split("\n");
 		for (String msg : msgs) {
+			/*if (plugin.settings.csSmartWrapEnabled) {
+				System.out.println("test1");
+				while (msg.length() > plugin.settings.csWrapLineLength) {
+					System.out.println("test2");
+					int i = msg.lastIndexOf(' ', plugin.settings.csWrapLineLength);
+					player.sendMessage(msg.substring(0, i-1));
+					msg = msg.substring(i+1);
+				}
+			}*/
 			player.sendMessage(msg);
 		}
 	}

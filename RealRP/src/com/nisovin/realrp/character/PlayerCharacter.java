@@ -231,10 +231,6 @@ public class PlayerCharacter implements GameCharacter {
 		return true;
 	}
 	
-	public enum Sex {
-		Male, Female, Unknown
-	}
-	
 	public class CharacterNote implements Comparable<CharacterNote> {
 		private Long time;
 		private String by;
