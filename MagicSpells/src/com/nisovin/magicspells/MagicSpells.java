@@ -433,20 +433,22 @@ public class MagicSpells extends JavaPlugin {
 		List<String> multiSpells = config.getStringList("multispells", null);
 		if (multiSpells != null) {
 			for (String spellName : multiSpells) {
-				// initialize spell
-				MultiSpell multiSpell = new MultiSpell(config, spellName);
-				spells.put(spellName, multiSpell);
-				// add permissions
-				addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
-				addPermission(pm, "learn." + spellName, PermissionDefault.TRUE);
-				addPermission(pm, "cast." + spellName, PermissionDefault.TRUE);
-				addPermission(pm, "teach." + spellName, PermissionDefault.TRUE);
-				permGrantChildren.put("magicspells.grant." + spellName, true);
-				permLearnChildren.put("magicspells.learn." + spellName, true);
-				permCastChildren.put("magicspells.cast." + spellName, true);
-				permTeachChildren.put("magicspells.teach." + spellName, true);
-				// load complete
-				debug("Loaded multi-spell: " + spellName);
+				if (config.getBoolean("spells." + spellName + ".enabled", true)) {
+					// initialize spell
+					MultiSpell multiSpell = new MultiSpell(config, spellName);
+					spells.put(spellName, multiSpell);
+					// add permissions
+					addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
+					addPermission(pm, "learn." + spellName, PermissionDefault.TRUE);
+					addPermission(pm, "cast." + spellName, PermissionDefault.TRUE);
+					addPermission(pm, "teach." + spellName, PermissionDefault.TRUE);
+					permGrantChildren.put("magicspells.grant." + spellName, true);
+					permLearnChildren.put("magicspells.learn." + spellName, true);
+					permCastChildren.put("magicspells.cast." + spellName, true);
+					permTeachChildren.put("magicspells.teach." + spellName, true);
+					// load complete
+					debug("Loaded multi-spell: " + spellName);
+				}
 			}
 		}
 	}
