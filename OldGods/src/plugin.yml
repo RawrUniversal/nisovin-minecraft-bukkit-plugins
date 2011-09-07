@@ -7,3 +7,41 @@ commands:
         description: Stuff
         usage: /<command>
         aliases: [gods]
+permissions:
+    oldgods.disciple.*:
+        description: Gives access to all devout blessings
+        children:
+            oldgods.disciple.cooking: true
+            oldgods.disciple.death: true
+            oldgods.disciple.exploration: true
+            oldgods.disciple.farming: true
+            oldgods.disciple.healing: true
+            oldgods.disciple.hunt: true
+            oldgods.disciple.love: true
+            oldgods.disciple.mining: true
+            oldgods.disciple.ocean: true
+            oldgods.disciple.war: true
+            oldgods.disciple.wisdom: true
+        default: op
+    oldgods.disciple.cooking:
+        default: false
+    oldgods.disciple.death:
+        default: false
+    oldgods.disciple.exploration:
+        default: false
+    oldgods.disciple.farming:
+        default: false
+    oldgods.disciple.healing:
+        default: false
+    oldgods.disciple.hunt:
+        default: false
+    oldgods.disciple.love:
+        default: false
+    oldgods.disciple.mining:
+        default: false
+    oldgods.disciple.ocean:
+        default: false
+    oldgods.disciple.war:
+        default: false
+    oldgods.disciple.wisdom:
+        default: false

@@ -12,10 +12,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class OldGods extends JavaPlugin {
 
-	private final int PRAYER_COOLDOWN = 60 * 1000;
-	private final ChatColor color = ChatColor.GOLD;
+	private static final int PRAYER_COOLDOWN = 60 * 1000;
+	private static final ChatColor color = ChatColor.GOLD;
+	private static final Random random = new Random();
 	
-	private God[] gods = {
+	private static God[] gods = {
 			God.COOKING, 
 			God.DEATH, 
 			God.EXPLORATION, 
@@ -29,7 +30,7 @@ public class OldGods extends JavaPlugin {
 			God.WISDOM,
 			God.NOTHING
 			};
-	private String[] godMessages = {
+	private static String[] godMessages = {
 			color + "Aitseh, goddess of " + ChatColor.DARK_PURPLE + "cooking" + color + ", blesses the world.",
 			color + "Sedah, god of " + ChatColor.DARK_GRAY + "death" + color + ", looks darkly upon the world.",
 			color + "Semreh, god of " + ChatColor.DARK_GREEN + "exploration" + color + ", sends aid to the world.",
@@ -38,8 +39,22 @@ public class OldGods extends JavaPlugin {
 			color + "Simretra, goddess of the " + ChatColor.YELLOW + "hunt" + color + ", turns her gaze to the world.",
 			color + "Etidorfa, goddess of " + ChatColor.RED + "love" + color + ", brings harmony to the world.",
 			color + "Sutseafeh, god of " + ChatColor.AQUA + "mining" + color + ", blesses the ground.",
-			color + "Nodiesop, god of the " + ChatColor.DARK_BLUE + "oceans" + color + ", blesses the waters.",
+			color + "Nodiesop, god of the " + ChatColor.DARK_BLUE + "ocean" + color + ", blesses the waters.",
 			color + "Sera, god of " + ChatColor.DARK_RED + "war" + color + ", focuses his energy on the world.",
+			color + "Anetha, goddess of " + ChatColor.DARK_AQUA + "wisdom" + color + ", blesses the world with knowledge.",
+			color + "Susynoid, god of " + ChatColor.GRAY + "laziness" + color + ", lets the world rest."
+	};
+	private static String[] devoutMessages = {
+			color + "Aitseh, goddess of " + ChatColor.DARK_PURPLE + "cooking" + color + ", blesses the world.",
+			color + "Sedah, god of " + ChatColor.DARK_GRAY + "death" + color + ", looks darkly upon the world.",
+			color + "Semreh, god of " + ChatColor.DARK_GREEN + "exploration" + color + ", sends aid to the world.",
+			color + "Retemed, god of " + ChatColor.GREEN + "farming" + color + ", blesses the growing things.",
+			color + "Ollopa, god of " + ChatColor.WHITE + "healing" + color + ", saves you from certain death.",
+			color + "Simretra, goddess of the " + ChatColor.YELLOW + "hunt" + color + ", grants you great bounty.",
+			color + "Etidorfa, goddess of " + ChatColor.RED + "love" + color + ", brings harmony to the world.",
+			color + "Sutseafeh, god of " + ChatColor.AQUA + "mining" + color + ", blesses the ground.",
+			color + "Nodiesop, god of the " + ChatColor.DARK_BLUE + "oceans" + color + ", blesses the waters.",
+			color + "Sera, god of " + ChatColor.DARK_RED + "war" + color + ", gives you great strength!",
 			color + "Anetha, goddess of " + ChatColor.DARK_AQUA + "wisdom" + color + ", blesses the world with knowledge.",
 			color + "Susynoid, god of " + ChatColor.GRAY + "laziness" + color + ", lets the world rest."
 	};
@@ -77,6 +92,8 @@ public class OldGods extends JavaPlugin {
 		new PListener(this);
 		new EListener(this);
 		new BListener(this);
+		new IListener(this);
+		//new VListener(this);
 		if (getServer().getPluginManager().isPluginEnabled("MagicSpells")) new SListener(this);
 		
 		newGod();
@@ -100,7 +117,7 @@ public class OldGods extends JavaPlugin {
 			}
 		}
 		
-		return true;		
+		return true;
 	}
 
 	public void newGod() {
@@ -200,6 +217,19 @@ public class OldGods extends JavaPlugin {
 		return altars;
 	}
 
+	public static int random() {
+		return random.nextInt(100);
+	}
+	
+	public static String getDevoutMessage(God god) {
+		for (int i = 0; i < gods.length; i++) {
+			if (gods[i] == god) {
+				return devoutMessages[i];
+			}
+		}
+		return "";
+	}
+	
 	@Override
 	public void onDisable() {
 	}

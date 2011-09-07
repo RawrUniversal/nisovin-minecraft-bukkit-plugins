@@ -1,7 +1,6 @@
 package com.nisovin.oldgods;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -9,6 +8,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.PluginManager;
+
+import com.nisovin.oldgods.godhandlers.*;
 
 public class PListener extends PlayerListener {
 
@@ -41,10 +42,7 @@ public class PListener extends PlayerListener {
 		God god = plugin.currentGod();
 		
 		if (god == God.EXPLORATION) {
-			Player p = event.getPlayer();
-			if (p.isSneaking() && event.getFrom().getY() == event.getTo().getY() && (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ())) {
-				p.setVelocity(p.getLocation().getDirection().setY(0).normalize().multiply(1.7));
-			}
+			ExplorationHandler.onPlayerMove(event);
 		}
 	}
 	

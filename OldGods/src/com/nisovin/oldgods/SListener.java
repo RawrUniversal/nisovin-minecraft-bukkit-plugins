@@ -1,14 +1,12 @@
 package com.nisovin.oldgods;
 
-import java.util.HashSet;
 
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellListener;
-import com.nisovin.magicspells.util.SpellReagents;
+import com.nisovin.oldgods.godhandlers.WisdomHandler;
 
 public class SListener extends SpellListener {
 
@@ -27,18 +25,8 @@ public class SListener extends SpellListener {
 		God god = plugin.currentGod();
 		
 		if (god == God.WISDOM) {
-			SpellReagents reagents = event.getReagents();
-			reagents.setHealth(reagents.getHealth() / 2);
-			reagents.setMana(reagents.getMana() / 2);
-			HashSet<ItemStack> items = reagents.getItems();
-			for (ItemStack item : items) {
-				if (item.getAmount() > 1) {
-					item.setAmount(item.getAmount() / 2);
-				}
-			}
+			WisdomHandler.onSpellCast(event);
 		}
 	}
-	
-	
 	
 }
