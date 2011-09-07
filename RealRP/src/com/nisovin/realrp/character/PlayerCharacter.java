@@ -36,12 +36,16 @@ public class PlayerCharacter implements GameCharacter {
 	private String nameplate;
 	
 	public static PlayerCharacter get(Player player) {
+		return get(player, false);
+	}
+	
+	public static PlayerCharacter get(Player player, boolean forceReload) {
 		if (characters == null) {
 			characters = new HashMap<Player,PlayerCharacter>();
 		}
 		
 		PlayerCharacter character = characters.get(player);
-		if (character != null) {
+		if (character != null && !forceReload) {
 			return character;
 		} else {
 			File file = new File(RealRP.getPlugin().getDataFolder(), "players" + File.separator + player.getName().toLowerCase() + ".yml");
@@ -133,7 +137,9 @@ public class PlayerCharacter implements GameCharacter {
 				.replace("%last", lastName)
 				.replace("%prefix", prefixTitle)
 				.replace("%postfix", postfixTitle)
-				.replace("%sub", subTitle);
+				.replace("%sub", subTitle)
+				.trim()
+				.replaceAll("  +", " ");
 	}
 	
 	public void setUpNames() {
@@ -158,6 +164,9 @@ public class PlayerCharacter implements GameCharacter {
 		}
 		if (!postfixTitle.isEmpty() && player.hasPermission("realrp.names." + type + ".postfix")) {
 			name += " " + postfixTitle;
+		}
+		if (!subTitle.isEmpty() && type.equals("nameplate") && player.hasPermission("realrp.names." + type + ".sub")) {
+			name += "\n" + subTitle;
 		}
 		return name.trim();
 	}

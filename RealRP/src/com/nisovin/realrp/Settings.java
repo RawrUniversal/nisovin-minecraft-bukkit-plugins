@@ -10,8 +10,9 @@ public class Settings {
 
 	// General Settings
 	
-	public String gsJoinMessageFormat = "&e%prefix %first %last %postfix has joined the game.";
-	public String gsQuitMessageFormat = "&e%prefix %first %last %postfix has left the game.";
+	public String gsJoinMessageFormat = "&e%prefix %first %last %postfix (%user) has joined the game.";
+	public String gsQuitMessageFormat = "&e%prefix %first %last %postfix (%user) has left the game.";
+	public String gsEncourageSpoutMessage = "&2THIS SERVER USES SPOUT!\n&aYou are encouraged to install the SpoutCraft client.";
 	
 	// Character Creation Section
 	
@@ -57,20 +58,25 @@ public class Settings {
 	//public int csWrapLineLength = 55;
 	//public int csWrapFirstLineOffset = 4;
 	
-	public String csICName = "ic";
+	public String csJoinChannelStr = "You have joined the %c channel.";
+	public String csLeaveChannelStr = "You have left the %c channel.";
+	public String csSwitchChannelStr = "You are now talking in %c.";
+	
+	public String csICName = "IC";
 	public String csICPrefix = ".";
-	public String csICFormat = "&e%n says: &f%m";
+	public String csICFormat = "&e%n says, \"&f%m&e\"";
 	public int csICRange = 20;
+	public String csICUnheard = "Nobody hears you.";
 	
 	public boolean csLocalOOCEnabled = true;
-	public String csLocalOOCName = "ooc";
+	public String csLocalOOCName = "OOC";
 	public String csLocalOOCPrefix = "((";
 	public String csLocalOOCFormat = "[&bOOC&f] <%n> %m";
 	public int csLocalOOCRange = 50;
 	
 	public boolean csGlobalOOCEnabled = true;
-	public String csGlobalOOCName = "global";
-	public String csGlobalOOCPrefix = "!!";
+	public String csGlobalOOCName = "Global";
+	public String csGlobalOOCPrefix = "::";
 	public String csGlobalOOCFormat = "[&3Global&f] <%n> %m";
 	
 	public boolean csIRCEnabled = false;

@@ -44,6 +44,7 @@ public class RealRP extends JavaPlugin {
 		
 		this.getCommand("rpnpc").setExecutor(new CommandSpawnNpc(this));
 		this.getCommand("rpemote").setExecutor(new CommandEmote(this));
+		this.getCommand("rpjoinchannel").setExecutor(new CommandJoin(this));
 		
 		PluginDescriptionFile pdf = getDescription();
 		getServer().getLogger().info(pdf.getName() + " v" + pdf.getVersion() + " enabled!");
@@ -64,7 +65,7 @@ public class RealRP extends JavaPlugin {
 	public static void sendMessage(Player player, String message, String... replacements) {
 		if (replacements != null && replacements.length % 2 == 0) {
 			for (int i = 0; i < replacements.length; i+=2) {
-				message.replace(replacements[i], replacements[i+1]);
+				message = message.replace(replacements[i], replacements[i+1]);
 			}
 		}
 		message = replaceColorCodes(message);
@@ -83,9 +84,13 @@ public class RealRP extends JavaPlugin {
 		}
 	}
 	
-	public void startCharacterCreator(Player player) {
-		CharacterCreator cc = new CharacterCreator(player);
-		characterCreators.put(player, cc);
+	public void startCharacterCreator(final Player player) {
+		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+				CharacterCreator cc = new CharacterCreator(player);
+				characterCreators.put(player, cc);
+			}
+		}, 20);
 	}
 	
 	public boolean isCreatingCharacter(Player player) {
@@ -104,6 +109,10 @@ public class RealRP extends JavaPlugin {
 		if (chatManager != null) {
 			chatManager.onChat(event);
 		}
+	}
+	
+	public ChatManager getChatManager() {
+		return chatManager;
 	}
 	
 	public EmoteManager getEmoteManager() {

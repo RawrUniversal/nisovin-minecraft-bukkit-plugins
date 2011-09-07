@@ -64,7 +64,7 @@ public class CharacterCreator {
 		if (state == State.GET_FIRST_NAME) {
 			if (message.matches(RealRP.settings().ccFirstNameRegex)) {
 				firstName = message;
-				RealRP.sendMessage(player, RealRP.settings().ccFirstNameOk);
+				RealRP.sendMessage(player, RealRP.settings().ccFirstNameOk, "%v", firstName);
 				nextState();
 			} else {
 				RealRP.sendMessage(player, RealRP.settings().ccFirstNameInvalid);
@@ -73,7 +73,7 @@ public class CharacterCreator {
 		} else if (state == State.GET_LAST_NAME) {
 			if (message.matches(RealRP.settings().ccLastNameRegex)) {
 				lastName = message;
-				RealRP.sendMessage(player, RealRP.settings().ccLastNameOk);
+				RealRP.sendMessage(player, RealRP.settings().ccLastNameOk, "%v", lastName);
 				nextState();
 			} else {
 				RealRP.sendMessage(player, RealRP.settings().ccLastNameInvalid);
@@ -82,7 +82,7 @@ public class CharacterCreator {
 		} else if (state == State.GET_AGE) {
 			if (message.matches(RealRP.settings().ccAgeRegex)) {
 				age = Integer.parseInt(message);
-				RealRP.sendMessage(player, RealRP.settings().ccAgeOk);
+				RealRP.sendMessage(player, RealRP.settings().ccAgeOk, "%v", age+" years");
 				nextState();
 			} else {
 				RealRP.sendMessage(player, RealRP.settings().ccAgeInvalid);
@@ -98,7 +98,7 @@ public class CharacterCreator {
 				} else {
 					sex = Sex.Unknown;
 				}
-				RealRP.sendMessage(player, RealRP.settings().ccSexOk);
+				RealRP.sendMessage(player, RealRP.settings().ccSexOk, "%v", sex.toString());
 				nextState();
 			} else {
 				RealRP.sendMessage(player, RealRP.settings().ccSexInvalid);

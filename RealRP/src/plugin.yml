@@ -80,4 +80,7 @@ permissions:
     realrp.names.nameplate.postfix:
         description: Show postfix title in nameplate
         default: op
+    realrp.names.nameplate.sub:
+        description: Show sub title in nameplate
+        default: true
     

@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.PluginManager;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 import com.nisovin.realrp.RealRP;
 import com.nisovin.realrp.character.CharacterCreator;
@@ -30,7 +31,7 @@ public class RPPlayerListener extends PlayerListener {
 	@Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		String joinFormat = RealRP.replaceColorCodes(RealRP.settings().gsJoinMessageFormat);
-		PlayerCharacter pc = PlayerCharacter.get(event.getPlayer());
+		PlayerCharacter pc = PlayerCharacter.get(event.getPlayer(), true);
 		if (pc == null && RealRP.settings().ccEnableCharacterCreator) {
 			plugin.startCharacterCreator(event.getPlayer());
 			if (!joinFormat.isEmpty()) {
@@ -41,6 +42,16 @@ public class RPPlayerListener extends PlayerListener {
 			if (!joinFormat.isEmpty()) {
 				event.setJoinMessage(pc.fillInNames(joinFormat));
 			}
+		}
+		if (!RealRP.settings().gsEncourageSpoutMessage.isEmpty()) {
+			final SpoutPlayer player = (SpoutPlayer)event.getPlayer();
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				public void run() {
+					if (!player.isSpoutCraftEnabled()) {
+						RealRP.sendMessage(player, RealRP.settings().gsEncourageSpoutMessage);
+					}
+				}
+			}, 100);
 		}
 	}
 	

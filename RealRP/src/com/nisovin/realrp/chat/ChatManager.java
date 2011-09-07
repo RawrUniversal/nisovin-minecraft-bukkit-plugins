@@ -53,7 +53,7 @@ public class ChatManager {
 	}
 	
 	public void onChat(PlayerChatEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		Channel channel = activeChannels.get(player);
 		
 		// force to IC if for some reason the player doesn't have a channel
@@ -81,6 +81,13 @@ public class ChatManager {
 		if (channel == Channel.IC) {
 			format = settings.csICFormat;
 			removeOutOfRange(player, recipients, settings.csICRange);
+			if (recipients.size() <= 1) {
+				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(RealRP.getPlugin(), new Runnable() {
+					public void run() {
+						player.sendMessage("Nobody hears you.");
+					}
+				}, 1);
+			}
 		} else if (channel == Channel.LOCAL_OOC) {
 			format = settings.csLocalOOCFormat;
 			removeOutOfRange(player, recipients, settings.csLocalOOCRange);
