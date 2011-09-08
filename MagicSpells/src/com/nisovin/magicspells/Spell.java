@@ -2,6 +2,7 @@ package com.nisovin.magicspells;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -43,6 +44,7 @@ public abstract class Spell implements Comparable<Spell> {
 	protected int healthCost = 0;
 	protected int manaCost = 0;
 	protected int cooldown;
+	protected HashMap<Spell, Integer> sharedCooldowns;
 	protected int broadcastRange;
 	protected String strCost;
 	protected String strCastSelf;
@@ -86,6 +88,18 @@ public abstract class Spell implements Comparable<Spell> {
 			cost = null;
 		}
 		this.cooldown = config.getInt("spells." + spellName + ".cooldown", 0);
+		List<String> cooldowns = config.getStringList("spells." + spellName + ".shared-cooldowns", null);
+		if (cooldowns != null) {
+			this.sharedCooldowns = new HashMap<Spell,Integer>();
+			for (String s : cooldowns) {
+				String[] data = s.split(" ");
+				Spell spell = MagicSpells.getSpellByInternalName(data[0]);
+				int cd = Integer.parseInt(data[1]);
+				if (spell != null) {
+					this.sharedCooldowns.put(spell, cd);
+				}
+			}
+		}
 		this.broadcastRange = config.getInt("spells." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 		this.strCost = config.getString("spells." + spellName + ".str-cost", null);
 		this.strCastSelf = config.getString("spells." + spellName + ".str-cast-self", null);
@@ -306,8 +320,21 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param player The player to set the cooldown for
 	 */
 	protected void setCooldown(Player player, int cooldown) {
+		setCooldown(player, cooldown, true);
+	}
+	
+	/**
+	 * Begins the cooldown for the spell for the specified player
+	 * @param player The player to set the cooldown for
+	 */
+	protected void setCooldown(Player player, int cooldown, boolean activateSharedCooldowns) {
 		if (cooldown > 0) {
 			lastCast.put(player.getName(), System.currentTimeMillis());
+		}
+		if (activateSharedCooldowns && sharedCooldowns != null) {
+			for (Map.Entry<Spell, Integer> scd : sharedCooldowns.entrySet()) {
+				scd.getKey().setCooldown(player, scd.getValue(), false);
+			}
 		}
 	}
 	
