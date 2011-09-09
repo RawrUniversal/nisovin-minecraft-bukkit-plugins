@@ -16,6 +16,7 @@ general:
     broadcast-range: 20
     allow-cycle-to-no-spell: false
     ops-have-all-spells: true
+    default-all-perms-false: false
     ignore-default-bindings: false
     mana:
         enable-mana-bars: true

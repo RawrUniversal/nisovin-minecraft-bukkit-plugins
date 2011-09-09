@@ -597,15 +597,15 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	/**
-	 * This method is called immediately after all spells have been loaded into the plugin.
+	 * This method is called immediately after all spells have been loaded.
 	 */
 	protected void initialize() {
 	}
 	
 	/**
-	 * This methid is called when the plugin is being disabled, for any reason.
+	 * This method is called when the plugin is being disabled, for any reason.
 	 */
-	protected void turnOff() {		
+	protected void turnOff() {
 	}
 	
 	@Override
