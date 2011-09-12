@@ -13,6 +13,7 @@ import com.nisovin.magicspells.Spellbook;
 
 public class TeachSpell extends CommandSpell {
 
+	private boolean requireKnownSpell;
 	private String strUsage;
 	private String strNoTarget;
 	private String strNoSpell;
@@ -24,6 +25,7 @@ public class TeachSpell extends CommandSpell {
 	public TeachSpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
+		requireKnownSpell = getConfigBoolean("require-known-spell", true);
 		strUsage = config.getString("spells." + spellName + ".str-usage", "Usage: /cast teach <target> <spell>");
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No such player.");
 		strNoSpell = config.getString("spells." + spellName + ".str-no-spell", "You do not know a spell by that name.");
@@ -51,7 +53,7 @@ public class TeachSpell extends CommandSpell {
 						sendMessage(player, strNoSpell);
 					} else {
 						Spellbook spellbook = MagicSpells.getSpellbook(player);
-						if (spellbook == null || !spellbook.hasSpell(spell)) {
+						if (spellbook == null || (!spellbook.hasSpell(spell) && requireKnownSpell)) {
 							// fail: player doesn't have spell
 							sendMessage(player, strNoSpell);
 						} else if (!spellbook.canTeach(spell)) {

@@ -57,6 +57,7 @@ spells:
     teach:
         name: teach
         description: Teach a spell to another player.
+        require-known-spell: true
         str-usage: "Usage: /cast teach <target> <spell>"
         str-no-target: No such player.
         str-no-spell: You do not know a spell by that name.
@@ -841,4 +842,4 @@ spells:
             - 6 5
         str-cost: 10 redstone dust and 5 saplings
         str-cast-self: You grow a tree!
-        str-cant-use-command: &4You don't have permission to do that.
+        str-cant-use-command: "&4You don't have permission to do that."
