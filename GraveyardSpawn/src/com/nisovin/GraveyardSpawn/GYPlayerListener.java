@@ -26,10 +26,12 @@ public class GYPlayerListener extends PlayerListener {
 			Graveyard closest = new Graveyard("temphome", event.getRespawnLocation());
 			double dist = closest.calculateDistanceFrom(location);
 			for (Graveyard gy : plugin.graveyards) {
-				double thisDist = gy.calculateDistanceFrom(location);
-				if (thisDist != -1 && (closest == null || dist == -1 || thisDist < dist)) {
-					closest = gy;
-					dist = thisDist;
+				if (p.hasPermission("gy.spawn." + gy.getName())) {
+					double thisDist = gy.calculateDistanceFrom(location);
+					if (thisDist != -1 && (closest == null || dist == -1 || thisDist < dist)) {
+						closest = gy;
+						dist = thisDist;
+					}
 				}
 			}
 			

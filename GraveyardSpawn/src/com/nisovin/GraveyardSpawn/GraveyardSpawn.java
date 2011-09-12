@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.bukkit.Chunk;
@@ -18,6 +19,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class GraveyardSpawn extends JavaPlugin {
@@ -46,9 +50,17 @@ public class GraveyardSpawn extends JavaPlugin {
 			
 			if (comm.equalsIgnoreCase("gy")) {
 				if (p.hasPermission("gy.admin.add") && args.length == 2 && args[0].equalsIgnoreCase("add")) {
+					// create graveyard
 					Graveyard gy = new Graveyard(args[1], p.getLocation());
 					graveyards.add(gy);
 					saveGraveyard(gy);
+					// add perms
+					getServer().getPluginManager().addPermission(new Permission("gy.spawn." + gy.getName(), PermissionDefault.TRUE));
+					Permission perm = getServer().getPluginManager().getPermission("gy.spawn.*");
+					Map<String,Boolean> permChildren = perm.getChildren();
+					permChildren.put("gy.spawn." + gy.getName(), true);
+					perm.recalculatePermissibles();
+					// done
 					p.sendMessage("Graveyard added: " + gy.getSaveString());
 				} else if (p.hasPermission("gy.admin.remove") && args.length == 2 && args[0].equalsIgnoreCase("remove")) {
 					boolean success = false;
@@ -109,17 +121,27 @@ public class GraveyardSpawn extends JavaPlugin {
 		
 		graveyards = new ArrayList<Graveyard>();
 		
+		PluginManager pm = getServer().getPluginManager();
+		Permission perm = pm.getPermission("gy.spawn.*");
+		Map<String,Boolean> permChildren = perm.getChildren();
+		permChildren.clear();
+		
 		File file = new File(folder, GRAVEYARD_FILE_PATH);
 		try {
 			Scanner scanner = new Scanner(file);
 			while (scanner.hasNext()) {
 				String line = scanner.nextLine();
-				graveyards.add(new Graveyard(line, getServer()));
+				Graveyard graveyard = new Graveyard(line, getServer());
+				graveyards.add(graveyard);
+				pm.addPermission(new Permission("gy.spawn." + graveyard.getName(), PermissionDefault.TRUE));
+				permChildren.put("gy.spawn." + graveyard.getName(), true);
 			}
 			scanner.close();
 		} catch (FileNotFoundException e) {
 			
 		}
+		
+		perm.recalculatePermissibles();
 	}
 	
 	public void saveGraveyard(Graveyard gy) {
