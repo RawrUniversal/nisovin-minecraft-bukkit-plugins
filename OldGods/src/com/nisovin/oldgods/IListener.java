@@ -32,6 +32,13 @@ public class IListener extends InventoryListener {
 
 	@Override
 	public void onFurnaceSmelt(FurnaceSmeltEvent event) {
+		if (event.isCancelled()) return;
+		
+		God god = plugin.currentGod();
+		
+		if (god == God.COOKING) {
+			CookingHandler.onFurnaceSmelt(event);
+		}
 	}
 	
 	

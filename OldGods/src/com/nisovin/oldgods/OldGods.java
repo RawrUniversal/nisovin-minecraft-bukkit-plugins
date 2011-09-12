@@ -12,6 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class OldGods extends JavaPlugin {
 
+	public static OldGods plugin;
+	
 	private static final int PRAYER_COOLDOWN = 60 * 1000;
 	private static final ChatColor color = ChatColor.GOLD;
 	private static final Random random = new Random();
@@ -48,13 +50,13 @@ public class OldGods extends JavaPlugin {
 			color + "Aitseh, goddess of " + ChatColor.DARK_PURPLE + "cooking" + color + ", blesses the world.",
 			color + "Sedah, god of " + ChatColor.DARK_GRAY + "death" + color + ", looks darkly upon the world.",
 			color + "Semreh, god of " + ChatColor.DARK_GREEN + "exploration" + color + ", sends aid to the world.",
-			color + "Retemed, god of " + ChatColor.GREEN + "farming" + color + ", blesses the growing things.",
+			color + "Retemed, god of " + ChatColor.GREEN + "farming" + color + ", increases your harvest.",
 			color + "Ollopa, god of " + ChatColor.WHITE + "healing" + color + ", saves you from certain death.",
 			color + "Simretra, goddess of the " + ChatColor.YELLOW + "hunt" + color + ", grants you great bounty.",
 			color + "Etidorfa, goddess of " + ChatColor.RED + "love" + color + ", brings harmony to the world.",
 			color + "Sutseafeh, god of " + ChatColor.AQUA + "mining" + color + ", blesses the ground.",
 			color + "Nodiesop, god of the " + ChatColor.DARK_BLUE + "oceans" + color + ", blesses the waters.",
-			color + "Sera, god of " + ChatColor.DARK_RED + "war" + color + ", gives you great strength!",
+			color + "Sera, god of " + ChatColor.DARK_RED + "war" + color + ", gives you rage!",
 			color + "Anetha, goddess of " + ChatColor.DARK_AQUA + "wisdom" + color + ", blesses the world with knowledge.",
 			color + "Susynoid, god of " + ChatColor.GRAY + "laziness" + color + ", lets the world rest."
 	};
@@ -83,6 +85,8 @@ public class OldGods extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		plugin = this;
+		
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdir();
 		}
@@ -175,6 +179,9 @@ public class OldGods extends JavaPlugin {
 				break;
 			}
 		}
+		if (player.hasPermission("oldgods.disciple." + god.toString().toLowerCase())) {
+			amount *= 2;
+		}
 		if (index != -1) {
 			currentChances[index] += amount;
 		}
@@ -219,6 +226,10 @@ public class OldGods extends JavaPlugin {
 
 	public static int random() {
 		return random.nextInt(100);
+	}
+	
+	public static boolean isDisciple(Player player, God god) {
+		return player.hasPermission("oldgods.disciple." + god.toString().toLowerCase());
 	}
 	
 	public static String getDevoutMessage(God god) {
