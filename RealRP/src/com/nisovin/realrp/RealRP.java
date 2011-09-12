@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.martin.bukkit.npclib.NPCManager;
 
 import com.nisovin.realrp.character.*;
 import com.nisovin.realrp.chat.*;
@@ -38,7 +37,7 @@ public class RealRP extends JavaPlugin {
 		if (settings.emEnableEmotes) {
 			emoteManager = new EmoteManager();
 		}
-		AnimatableNPC.npcManager = new NPCManager(this);
+		//AnimatableNPC.npcManager = new NPCManager(this);
 		
 		new RPPlayerListener(this);
 		
