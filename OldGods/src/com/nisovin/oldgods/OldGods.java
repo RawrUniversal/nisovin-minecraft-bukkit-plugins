@@ -107,17 +107,24 @@ public class OldGods extends JavaPlugin {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (args.length == 3 && args[0].equalsIgnoreCase("addaltar") && sender instanceof Player) {
+		if (sender.hasPermission("oldgods.admin.altar") && args.length == 3 && args[0].equalsIgnoreCase("addaltar") && sender instanceof Player) {
 			Player player = (Player)sender;
 			God god = God.valueOf(args[1].toUpperCase());
 			int amount = Integer.parseInt(args[2]);
 			Block block = player.getTargetBlock(null, 10);
 			altars.addAltar(block, god, amount);
 			sender.sendMessage("Altar added.");
-		} else if (args.length == 2 && args[0].equalsIgnoreCase("setgod")) {
+		} else if (sender.hasPermission("oldgods.admin.set") && args.length == 2 && args[0].equalsIgnoreCase("set")) {
 			God god = God.valueOf(args[1].toUpperCase());
 			if (god != null) {
 				newGod(god);
+			}
+		} else if (sender.hasPermission("oldgods.admin.set") && args.length == 1 && args[0].equalsIgnoreCase("next")) {
+			newGod();
+			sender.sendMessage("New chosen god: " + currentGod.toString());
+		} else if (sender.hasPermission("oldgods.admin.status") && args.length == 1 && args[0].equalsIgnoreCase("status")) {
+			for (int i = 0; i < gods.length; i++) {
+				sender.sendMessage(gods[i].toString() + " : " + currentChances[i]);
 			}
 		}
 		

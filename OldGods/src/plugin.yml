@@ -8,6 +8,22 @@ commands:
         usage: /<command>
         aliases: [gods]
 permissions:
+    oldgods.admin.*:
+        description: All admin permissions
+        default: op
+        children:
+            oldgods.admin.altar: true
+            oldgods.admin.set: true
+            oldgods.admin.status: true
+    oldgods.admin.altar:
+        description: Modify altars
+        default: op
+    oldgods.admin.set:
+        description: Set the current god
+        default: op
+    oldsgods.admin.status:
+        description: View current next god odds status
+        default: op
     oldgods.disciple.*:
         description: Gives access to all devout blessings
         children:
