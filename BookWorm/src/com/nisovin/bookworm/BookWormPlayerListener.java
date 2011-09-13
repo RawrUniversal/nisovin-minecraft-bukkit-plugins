@@ -111,6 +111,11 @@ public class BookWormPlayerListener extends PlayerListener {
 					return;
 				}
 				
+				// check permission
+				if (!plugin.perms.canPlaceBook(player, book)) {
+					return;
+				}
+				
 				// check listeners
 				BookPlaceEvent evt = new BookPlaceEvent("BOOK_PLACE", player, book, l);
 				plugin.callEvent(evt);
@@ -161,11 +166,8 @@ public class BookWormPlayerListener extends PlayerListener {
 			BookReadEvent evt = new BookReadEvent("BOOK_READ", book, player, bookmark.page);
 			plugin.callEvent(evt);
 			if (!evt.isCancelled()) {			
-			
 				// set bookmark and read
-				bookmark.readBook(player, book);
-				//SpoutHandle.showBook(player, book, 0);
-				
+				bookmark.readBook(player, book);				
 			}
 			
 		}

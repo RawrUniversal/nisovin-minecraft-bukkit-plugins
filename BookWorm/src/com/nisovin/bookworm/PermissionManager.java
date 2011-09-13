@@ -9,7 +9,9 @@ public class PermissionManager {
 	}
 	
 	public boolean canModifyBook(Player player, Book book) {
-		if (!hasPerm(player, "bookworm.write.own")) {
+		if (hasPerm(player, "bookworm.write.deny." + book.getId())) {
+			return false;
+		} else if (!hasPerm(player, "bookworm.write.own")) {
 			return false;
 		} else if (book.getAuthor().equalsIgnoreCase(player.getName())) {
 			return true;
@@ -21,7 +23,9 @@ public class PermissionManager {
 	}
 	
 	public boolean canCopyBook(Player player, Book book) {
-		if (!hasPerm(player, "bookworm.copy.own")) {
+		if (hasPerm(player, "bookworm.copy.deny." + book.getId())) {
+			return false;
+		} else if (!hasPerm(player, "bookworm.copy.own")) {
 			return false;
 		} else if (book.getAuthor().equalsIgnoreCase(player.getName())) {
 			return true;
@@ -32,8 +36,24 @@ public class PermissionManager {
 		}
 	}
 	
+	public boolean canPlaceBook(Player player, Book book) {
+		if (hasPerm(player, "bookworm.place.deny." + book.getId())) {
+			return false;
+		} else if (!hasPerm(player, "bookworm.place.own")) {
+			return false;
+		} else if (book.getAuthor().equalsIgnoreCase(player.getName())) {
+			return true;
+		} else if (hasPerm(player, "bookworm.place.others")) {
+			return true;
+		} else {
+			return false;
+		}		
+	}
+	
 	public boolean canRemoveBook(Player player, Book book) {
-		if (!hasPerm(player, "bookworm.remove.own")) {
+		if (hasPerm(player, "bookworm.remove.deny." + book.getId())) {
+			return false;
+		} else if (!hasPerm(player, "bookworm.remove.own")) {
 			return false;
 		} else if (book.getAuthor().equalsIgnoreCase(player.getName())) {
 			return true;
@@ -45,7 +65,9 @@ public class PermissionManager {
 	}
 	
 	public boolean canDestroyBook(Player player, Book book) {
-		if (!hasPerm(player, "bookworm.destroy.own")) {
+		if (hasPerm(player, "bookworm.destroy.deny." + book.getId())) {
+			return false;
+		} else if (!hasPerm(player, "bookworm.destroy.own")) {
 			return false;
 		} else if (book.getAuthor().equalsIgnoreCase(player.getName())) {
 			return true;

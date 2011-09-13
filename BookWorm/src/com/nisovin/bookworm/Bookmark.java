@@ -36,14 +36,14 @@ public class Bookmark {
 	}
 	
 	private void read(Player player) {
-		if (BookWorm.SPOUT_ENABLED) {
-			boolean shown = SpoutHandle.showBook(player, book, page);
-			if (!shown) {
-				book.read(player, page);
-			}
-		} else {
+		//if (BookWorm.SPOUT_ENABLED) {
+		//	boolean shown = SpoutHandle.showBook(player, book, page);
+		//	if (!shown) {
+		//		book.read(player, page);
+		//	}
+		//} else {
 			book.read(player, page);
-		}
+		//}
 	}
 	
 }
