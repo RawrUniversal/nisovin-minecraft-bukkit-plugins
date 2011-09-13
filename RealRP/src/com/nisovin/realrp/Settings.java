@@ -18,6 +18,10 @@ public class Settings {
 	
 	public boolean ccEnableCharacterCreator = true;
 	
+	public String ccRequiredPerm = "";
+	public String ccTeleportOnStart = "";
+	public boolean ccBlockInteractions = true;
+		
 	public String ccFirstNameGet = "Please enter your character's first name.";
 	public String ccFirstNameRegex = "^[A-Z][a-z][A-Za-z]+$";
 	public String ccFirstNameOk = "Your first name is: %v";

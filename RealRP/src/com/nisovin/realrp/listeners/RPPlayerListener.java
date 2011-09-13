@@ -1,8 +1,11 @@
 package com.nisovin.realrp.listeners;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -26,6 +29,7 @@ public class RPPlayerListener extends PlayerListener {
 		pm.registerEvent(Event.Type.PLAYER_QUIT, this, Event.Priority.Highest, plugin);
 		pm.registerEvent(Event.Type.PLAYER_CHAT, this, Event.Priority.High, plugin);
 		pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Monitor, plugin);
+		pm.registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.High, plugin);
 	}
 	
 	@Override
@@ -33,9 +37,18 @@ public class RPPlayerListener extends PlayerListener {
 		String joinFormat = RealRP.replaceColorCodes(RealRP.settings().gsJoinMessageFormat);
 		PlayerCharacter pc = PlayerCharacter.get(event.getPlayer(), true);
 		if (pc == null && RealRP.settings().ccEnableCharacterCreator) {
-			plugin.startCharacterCreator(event.getPlayer());
-			if (!joinFormat.isEmpty()) {
-				event.setJoinMessage(null);
+			String perm = RealRP.settings().ccRequiredPerm;
+			if (perm.equals("") || event.getPlayer().hasPermission(perm)) {
+				plugin.startCharacterCreator(event.getPlayer());
+				if (!joinFormat.isEmpty()) {
+					event.setJoinMessage(null);
+				}
+				String tp = RealRP.settings().ccTeleportOnStart;
+				if (!tp.isEmpty()) {
+					String[] tpdata = tp.split(",");
+					Location loc = new Location(Bukkit.getServer().getWorld(tpdata[0]), Double.parseDouble(tpdata[1]), Double.parseDouble(tpdata[2]), Double.parseDouble(tpdata[3]), Float.parseFloat(tpdata[4]), Float.parseFloat(tpdata[5]));
+					event.getPlayer().teleport(loc);
+				}
 			}
 		} else if (pc != null) {
 			pc.setUpNames();
@@ -115,5 +128,14 @@ public class RPPlayerListener extends PlayerListener {
 		emote.use(event.getPlayer(), target);
 		event.setCancelled(true);
 	}
+
+	@Override
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (RealRP.settings().ccBlockInteractions && plugin.isCreatingCharacter(event.getPlayer())) {
+			event.setCancelled(true);
+		}
+	}
+	
+	
 	
 }
