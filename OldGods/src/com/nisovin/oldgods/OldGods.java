@@ -1,5 +1,6 @@
 package com.nisovin.oldgods;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -9,6 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.config.Configuration;
 
 public class OldGods extends JavaPlugin {
 
@@ -99,7 +101,19 @@ public class OldGods extends JavaPlugin {
 		new IListener(this);
 		//new VListener(this);
 		if (getServer().getPluginManager().isPluginEnabled("MagicSpells")) new SListener(this);
+
+		// load state
+		File file = new File(getDataFolder(), "saved_state.yml");
+		if (file.exists()) {
+			// load chances
+			Configuration config = new Configuration(file);
+			config.load();
+			for (int i = 0; i < gods.length; i++) {
+				currentChances[i] = config.getInt(gods[i].name(), defaultChances[i]);
+			}
+		}
 		
+		// get first god
 		newGod();
 		
 		System.out.println("OldGods is loaded");
@@ -250,6 +264,16 @@ public class OldGods extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
+		// save state
+		File file = new File(getDataFolder(), "saved_state.yml");
+		if (file.exists()) {
+			file.delete();
+		}
+		Configuration config = new Configuration(file);
+		for (int i = 0; i < gods.length; i++) {
+			config.setProperty(gods[i].name(), currentChances[i]);
+		}
+		config.save();
 	}
 	
 	private class GodChanger implements Runnable {
