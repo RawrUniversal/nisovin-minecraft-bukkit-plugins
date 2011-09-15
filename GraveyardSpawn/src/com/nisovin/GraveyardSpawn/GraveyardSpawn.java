@@ -123,6 +123,10 @@ public class GraveyardSpawn extends JavaPlugin {
 		
 		PluginManager pm = getServer().getPluginManager();
 		Permission perm = pm.getPermission("gy.spawn.*");
+		if (perm == null) {
+			perm = new Permission("gy.spawn.*", PermissionDefault.TRUE);
+			getServer().getPluginManager().addPermission(perm);
+		}
 		Map<String,Boolean> permChildren = perm.getChildren();
 		permChildren.clear();
 		
