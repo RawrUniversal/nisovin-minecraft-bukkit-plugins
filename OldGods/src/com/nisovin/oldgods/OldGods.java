@@ -164,7 +164,10 @@ public class OldGods extends JavaPlugin {
 				// set new god's chance to zero for next time
 				currentChances[i] = 0;				
 				// send message announcement
-				getServer().broadcastMessage(godMessages[i]);
+				for (Player p : getServer().getOnlinePlayers()) {
+					p.sendMessage(godMessages[i]);
+				}
+				getServer().getLogger().info(godMessages[i]);
 			} else {
 				// increase other gods' chances
 				currentChances[i] += defaultChances[i];
