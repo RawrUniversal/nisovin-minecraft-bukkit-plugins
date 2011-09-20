@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.config.Configuration;
@@ -31,6 +32,7 @@ public class FrostwalkSpell extends BuffSpell {
 		
 		addListener(Event.Type.PLAYER_MOVE);
 		addListener(Event.Type.PLAYER_QUIT);
+		addListener(Event.Type.BLOCK_BREAK);
 	}
 
 	@Override
@@ -69,6 +71,18 @@ public class FrostwalkSpell extends BuffSpell {
 						loc.setY(event.getTo().getBlockY()+1);
 						player.teleport(loc);
 					}
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void onBlockBreak(BlockBreakEvent event) {
+		if (frostwalkers.size() > 0 && event.getBlock().getType() == Material.ICE) {
+			for (BlockPlatform platform : frostwalkers.values()) {
+				if (platform.blockInPlatform(event.getBlock())) {
+					event.setCancelled(true);
+					break;
 				}
 			}
 		}

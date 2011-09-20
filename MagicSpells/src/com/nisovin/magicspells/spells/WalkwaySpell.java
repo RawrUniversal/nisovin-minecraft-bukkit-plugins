@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.Vector;
@@ -27,6 +28,7 @@ public class WalkwaySpell extends BuffSpell {
 		
 		addListener(Event.Type.PLAYER_MOVE);
 		addListener(Event.Type.PLAYER_QUIT);
+		addListener(Event.Type.BLOCK_BREAK);
 		
 		material = Material.getMaterial(getConfigInt("platform-type", Material.WOOD.getId()));
 		size = getConfigInt("size", 6);
@@ -61,6 +63,16 @@ public class WalkwaySpell extends BuffSpell {
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		turnOff(event.getPlayer());
+	}
+	
+	@Override
+	public void onBlockBreak(BlockBreakEvent event) {
+		for (Platform platform : platforms.values()) {
+			if (platform.blockInPlatform(event.getBlock())) {
+				event.setCancelled(true);
+				return;
+			}
+		}
 	}
 	
 	@Override
@@ -172,6 +184,10 @@ public class WalkwaySpell extends BuffSpell {
 			}
 			
 			return false;
+		}
+		
+		public boolean blockInPlatform(Block block) {
+			return platform.contains(block);
 		}
 		
 		public void remove() {
