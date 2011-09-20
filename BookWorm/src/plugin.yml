@@ -11,6 +11,8 @@ permissions:
     bookworm.*:
         description: Gives access to all BookWorm abilities
         children:
+            bookworm.reload: true
+            bookworm.list: true
             bookworm.create: true
             bookworm.write.own: true
             bookworm.write.others: true
@@ -37,6 +39,12 @@ permissions:
     bookworm.write.others:
         description: Write in another player's book
         default: op
+    bookworm.place.own:
+        description: Place your book in a bookshelf
+        default: true
+    bookworm.place.others:
+        description: Place another player's book in a bookshelf
+        default: true
     bookworm.copy.own:
         description: Copy your book from a bookshelf
         default: true

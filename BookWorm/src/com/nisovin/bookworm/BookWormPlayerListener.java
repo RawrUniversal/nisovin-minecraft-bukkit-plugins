@@ -132,7 +132,7 @@ public class BookWormPlayerListener extends PlayerListener {
 					plugin.bookshelves.put(locStr, bookId);
 					plugin.saveAll(); // TODO: append instead of save all
 					player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_PLACED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
-					
+
 					// remove book in hand
 					player.setItemInHand(null);
 					

@@ -30,7 +30,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class BookWorm extends JavaPlugin {
 
-	protected static String STACK_BY_DATA_VAR = "bj";
+	protected static String STACK_BY_DATA_VAR = "bs";
 	
 	protected static ChatColor TEXT_COLOR = ChatColor.GREEN;
 	protected static ChatColor TEXT_COLOR_2 = ChatColor.WHITE;
