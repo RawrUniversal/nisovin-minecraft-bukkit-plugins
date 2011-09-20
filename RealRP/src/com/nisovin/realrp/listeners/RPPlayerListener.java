@@ -34,6 +34,10 @@ public class RPPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (RealRP.settings().csEnableChatSystem) {
+			plugin.getChatManager().playerJoin(event.getPlayer());
+		}
+		
 		String joinFormat = RealRP.replaceColorCodes(RealRP.settings().gsJoinMessageFormat);
 		PlayerCharacter pc = PlayerCharacter.get(event.getPlayer(), true);
 		if (pc == null && RealRP.settings().ccEnableCharacterCreator) {
@@ -70,6 +74,10 @@ public class RPPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		if (RealRP.settings().csEnableChatSystem) {
+			plugin.getChatManager().playerQuit(event.getPlayer());
+		}
+		
 		String quitFormat = RealRP.replaceColorCodes(RealRP.settings().gsQuitMessageFormat);
 		if (!quitFormat.isEmpty()) {
 			PlayerCharacter pc = PlayerCharacter.get(event.getPlayer());
@@ -81,6 +89,8 @@ public class RPPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerChat(PlayerChatEvent event) {
+		if (event.isCancelled()) return;
+		
 		if (RealRP.settings().ccEnableCharacterCreator && plugin.isCreatingCharacter(event.getPlayer())) {
 			CharacterCreator cc = plugin.getCharacterCreator(event.getPlayer());
 			cc.onChat(event.getMessage());

@@ -70,15 +70,6 @@ public class RealRP extends JavaPlugin {
 		message = replaceColorCodes(message);
 		String[] msgs = message.split("\n");
 		for (String msg : msgs) {
-			/*if (plugin.settings.csSmartWrapEnabled) {
-				System.out.println("test1");
-				while (msg.length() > plugin.settings.csWrapLineLength) {
-					System.out.println("test2");
-					int i = msg.lastIndexOf(' ', plugin.settings.csWrapLineLength);
-					player.sendMessage(msg.substring(0, i-1));
-					msg = msg.substring(i+1);
-				}
-			}*/
 			player.sendMessage(msg);
 		}
 	}

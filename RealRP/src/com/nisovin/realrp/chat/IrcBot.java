@@ -30,7 +30,7 @@ public class IrcBot extends PircBot {
 		this.setName(name);
 		
 		//new Thread(new IrcConnector(this)).run();
-		Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(RealRP.getPlugin(), new IrcConnector(this));
+		Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(RealRP.getPlugin(), new IrcConnector(this), 1, 60*20);
 	}
 	
 	public void connect() {
@@ -77,7 +77,7 @@ public class IrcBot extends PircBot {
 					msg += (i==0?" ":", ") + players[i].getName();
 				}
 			}
-			sendMessage(sender, msg);
+			sendMessage(channel, msg);
 		} else {
 			cm.fromIRC(sender, message);
 		}
@@ -116,7 +116,9 @@ public class IrcBot extends PircBot {
 		
 		@Override
 		public void run() {
-			bot.connect();
+			if (!bot.isConnected()) {
+				bot.connect();
+			}
 		}
 		
 	}

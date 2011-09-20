@@ -2,7 +2,7 @@ name: RealRP
 main: com.nisovin.realrp.RealRP
 version: 0.1
 author: nisovin
-depend: [Spout]
+softdepend: [Spout]
 commands:
     rpjoinchannel:
         description: Join a chat channel

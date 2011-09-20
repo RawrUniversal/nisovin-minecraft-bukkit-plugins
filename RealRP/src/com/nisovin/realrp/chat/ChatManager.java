@@ -115,6 +115,7 @@ public class ChatManager {
 				RealRP.sendMessage(p, msg);
 			}
 		}
+		System.out.println(ChatColor.stripColor(msg));
 	}
 	
 	private void removeOutOfRange(Player speaker, Set<Player> recipients, int range) {
@@ -139,6 +140,7 @@ public class ChatManager {
 		HashSet<Channel> channels = playerChannels.get(player);
 		if (channels == null) {
 			channels = new HashSet<Channel>();
+			playerChannels.put(player, channels);
 		}
 		if (channel.equalsIgnoreCase(settings.csICName)) {
 			channels.add(Channel.IC);
@@ -159,6 +161,7 @@ public class ChatManager {
 		HashSet<Channel> channels = playerChannels.get(player);
 		if (channels == null) {
 			channels = new HashSet<Channel>();
+			playerChannels.put(player, channels);
 		}
 		if (channel.equalsIgnoreCase(settings.csICName)) {
 			channels.remove(Channel.IC);
@@ -171,6 +174,28 @@ public class ChatManager {
 		}
 		return true;
 		
+	}
+	
+	public void playerJoin(Player player) {
+		if (!activeChannels.containsKey(player)) {
+			activeChannels.put(player, Channel.IC);
+		}
+		if (!playerChannels.containsKey(player)) {
+			HashSet<Channel> channels = new HashSet<Channel>();
+			channels.add(Channel.IC);
+			channels.add(Channel.LOCAL_OOC);
+			channels.add(Channel.GLOBAL_OOC);
+			playerChannels.put(player, channels);
+		}
+		if (ircBot != null && ircBot.isConnected()) {
+			ircBot.sendMessage(ChatColor.stripColor(player.getDisplayName()) + " has joined the game.");
+		}
+	}
+	
+	public void playerQuit(Player player) {
+		if (ircBot != null && ircBot.isConnected()) {
+			ircBot.sendMessage(ChatColor.stripColor(player.getDisplayName()) + " has left the game.");
+		}		
 	}
 	
 	public void turnOff() {
