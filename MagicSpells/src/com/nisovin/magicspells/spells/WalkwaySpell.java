@@ -70,6 +70,7 @@ public class WalkwaySpell extends BuffSpell {
 			super.turnOff(player);
 			platform.remove();
 			platforms.remove(player);
+			sendMessage(player, strFade);
 		}
 	}
 

@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -246,8 +247,10 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(CarpetSpell.class);
 		spellClasses.add(CombustSpell.class);
 		spellClasses.add(ConfusionSpell.class);
+		//spellClasses.add(CrippleSpell.class);
 		spellClasses.add(DisarmSpell.class);
 		spellClasses.add(DrainlifeSpell.class);
+		spellClasses.add(EmpowerSpell.class);
 		spellClasses.add(EntombSpell.class);
 		spellClasses.add(ExplodeSpell.class);
 		spellClasses.add(ExternalCommandSpell.class);
@@ -261,6 +264,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(GateSpell.class);
 		spellClasses.add(GeyserSpell.class);
 		spellClasses.add(GillsSpell.class);
+		//spellClasses.add(HasteSpell.class);
 		spellClasses.add(HealSpell.class);
 		spellClasses.add(HelpSpell.class);
 		spellClasses.add(InvulnerabilitySpell.class);
@@ -602,6 +606,10 @@ public class MagicSpells extends JavaPlugin {
 	 */
 	public static MagicSpells getInstance() {
 		return plugin;
+	}
+	
+	public static Collection<Spell> spells() {
+		return spells.values();
 	}
 	
 	/**

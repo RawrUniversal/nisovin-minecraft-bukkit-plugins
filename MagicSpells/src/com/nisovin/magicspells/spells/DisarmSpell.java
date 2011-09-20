@@ -56,7 +56,7 @@ public class DisarmSpell extends InstantSpell {
 				((EntityItem)((CraftItem)item).getHandle()).pickupDelay = disarmDuration;
 				// send messages
 				sendMessage(player, strCastSelf, "%t", target.getDisplayName());
-				sendMessage(player, strCastTarget, "%a", player.getDisplayName());
+				sendMessage(target, strCastTarget, "%a", player.getDisplayName());
 				sendMessageNear(player, formatMessage(strCastOthers, "%t", target.getDisplayName(), "%a", player.getDisplayName()));
 				return PostCastAction.NO_MESSAGES;
 			} else {

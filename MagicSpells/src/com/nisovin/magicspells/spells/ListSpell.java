@@ -1,5 +1,7 @@
 package com.nisovin.magicspells.spells;
 
+import java.util.Collection;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -72,7 +74,33 @@ public class ListSpell extends CommandSpell {
 	
 	@Override
 	public boolean castFromConsole(CommandSender sender, String[] args) {
-		return false;
+		StringBuilder s = new StringBuilder();
+		
+		// get spell list
+		Collection<Spell> spells = MagicSpells.spells();
+		if (args != null && args.length > 0) {
+			Player p = Bukkit.getServer().getPlayer(args[0]);
+			if (p == null) {
+				sender.sendMessage("No such player.");
+				return true;
+			} else {
+				spells = MagicSpells.getSpellbook(p).getSpells();
+				s.append(p.getName() + "'s spells: ");
+			}
+		} else {
+			s.append("All spells: ");
+		}
+		
+		// create string of spells
+		for (Spell spell : spells) {
+			s.append(spell.getName());
+			s.append(" ");
+		}
+		
+		// send message
+		sender.sendMessage(s.toString());
+		
+		return true;
 	}
 
 }

@@ -340,6 +340,7 @@ spells:
         cost:
             - 331 2
         str-cost: 2 redstone dust
+        str-no-target: No target found.
         str-cast-self: You push back your enemy!
         str-cast-others: "%a pushes back his enemy."
     frostwalk:
@@ -436,7 +437,9 @@ spells:
             - fire tick
             - lava
             - lightning
+            - projectile
             - suffocation
+            - void
         duration: 60
         cost: 
             - 331 5
