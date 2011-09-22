@@ -2,7 +2,9 @@ package com.nisovin.realrp.chat;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -16,7 +18,7 @@ import com.nisovin.realrp.Settings;
 
 public class ChatManager {
 
-	//private RealRP plugin;
+	private RealRP plugin;
 	protected Settings settings;
 	
 	private HashMap<Player, Channel> activeChannels;
@@ -25,7 +27,7 @@ public class ChatManager {
 	private IrcBot ircBot;
 	
 	public ChatManager(RealRP plugin) {
-		//this.plugin = plugin;
+		this.plugin = plugin;
 		this.settings = RealRP.settings();
 		
 		activeChannels = new HashMap<Player, Channel>();
@@ -55,6 +57,7 @@ public class ChatManager {
 	public void onChat(PlayerChatEvent event) {
 		final Player player = event.getPlayer();
 		Channel channel = activeChannels.get(player);
+		HashSet<Channel> channels = playerChannels.get(player);
 		
 		// force to IC if for some reason the player doesn't have a channel
 		if (channel == null) {
@@ -62,17 +65,29 @@ public class ChatManager {
 			activeChannels.put(player, channel);
 		}
 		
+		// set up channels if player doesn't have any
+		if (channels == null) {
+			channels = new HashSet<Channel>();
+			channels.add(Channel.IC);
+			channels.add(Channel.LOCAL_OOC);
+			channels.add(Channel.GLOBAL_OOC);
+			playerChannels.put(player, channels);
+		}
+		
 		// check for channel prefix
 		String message = event.getMessage();
-		if (message.startsWith(settings.csICPrefix)) {
+		if (message.startsWith(settings.csICPrefix) && channels.contains(Channel.IC)) {
 			channel = Channel.IC;
 			event.setMessage(message.substring(settings.csICPrefix.length()));
-		} else if (message.startsWith(settings.csLocalOOCPrefix)) {
+		} else if (message.startsWith(settings.csLocalOOCPrefix) && channels.contains(Channel.LOCAL_OOC)) {
 			channel = Channel.LOCAL_OOC;
 			event.setMessage(message.substring(settings.csLocalOOCPrefix.length()));
-		} else if (message.startsWith(settings.csGlobalOOCPrefix)) {
+		} else if (message.startsWith(settings.csGlobalOOCPrefix) && channels.contains(Channel.GLOBAL_OOC)) {
 			channel = Channel.GLOBAL_OOC;
 			event.setMessage(message.substring(settings.csGlobalOOCPrefix.length()));
+		} else if (message.startsWith(settings.csAdminPrefix) && channels.contains(Channel.ADMIN)) {
+			channel = Channel.ADMIN;
+			event.setMessage(message.substring(settings.csAdminPrefix.length()));
 		}
 		
 		// format message and set recipients
@@ -93,6 +108,28 @@ public class ChatManager {
 			removeOutOfRange(player, recipients, settings.csLocalOOCRange);
 		} else if (channel == Channel.GLOBAL_OOC) {
 			format = settings.csGlobalOOCFormat;
+			HashSet<Channel> c;
+			Player p;
+			Iterator<Player> iter = recipients.iterator();
+			while (iter.hasNext()) {
+				p = iter.next();
+				if (plugin.isCreatingCharacter(p)) {
+					iter.remove();
+				} else {
+					c = playerChannels.get(p);					
+					if (c != null && !c.contains(Channel.GLOBAL_OOC)) {
+						iter.remove();
+					}
+				}
+			}
+		} else if (channel == Channel.ADMIN) {
+			format = settings.csAdminFormat;
+			recipients.clear();
+			for (Map.Entry<Player, HashSet<Channel>> entry : playerChannels.entrySet()) {
+				if (entry.getValue().contains(Channel.ADMIN)) {
+					recipients.add(entry.getKey());
+				}
+			}
 		} else {
 			// no channel
 		}
@@ -130,7 +167,7 @@ public class ChatManager {
 		recipients.add(speaker);
 		List<Entity> entities = speaker.getNearbyEntities(range, range, range);
 		for (Entity entity : entities) {
-			if (entity instanceof Player) {
+			if (entity instanceof Player && !plugin.isCreatingCharacter((Player)entity)) {
 				recipients.add((Player)entity);
 			}
 		}
@@ -185,6 +222,9 @@ public class ChatManager {
 			channels.add(Channel.IC);
 			channels.add(Channel.LOCAL_OOC);
 			channels.add(Channel.GLOBAL_OOC);
+			if (player.hasPermission("realrp.chat.admin")) {
+				channels.add(Channel.ADMIN);
+			}
 			playerChannels.put(player, channels);
 		}
 		if (ircBot != null && ircBot.isConnected()) {
@@ -195,7 +235,7 @@ public class ChatManager {
 	public void playerQuit(Player player) {
 		if (ircBot != null && ircBot.isConnected()) {
 			ircBot.sendMessage(ChatColor.stripColor(player.getDisplayName()) + " has left the game.");
-		}		
+		}
 	}
 	
 	public void turnOff() {

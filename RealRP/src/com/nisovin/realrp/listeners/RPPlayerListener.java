@@ -44,9 +44,9 @@ public class RPPlayerListener extends PlayerListener {
 			String perm = RealRP.settings().ccRequiredPerm;
 			if (perm.equals("") || event.getPlayer().hasPermission(perm)) {
 				plugin.startCharacterCreator(event.getPlayer());
-				if (!joinFormat.isEmpty()) {
-					event.setJoinMessage(null);
-				}
+				//if (!joinFormat.isEmpty()) {
+					//event.setJoinMessage(null);
+				//}
 				String tp = RealRP.settings().ccTeleportOnStart;
 				if (!tp.isEmpty()) {
 					String[] tpdata = tp.split(",");

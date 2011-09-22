@@ -240,6 +240,14 @@ public class PlayerCharacter implements GameCharacter {
 		return true;
 	}
 	
+	public static void delete(Player player) {
+		characters.remove(player);
+		File file = new File(RealRP.getPlugin().getDataFolder(), "players" + File.separator + player.getName().toLowerCase() + ".yml");
+		if (file.exists()) {
+			file.delete();
+		}
+	}
+	
 	public class CharacterNote implements Comparable<CharacterNote> {
 		private Long time;
 		private String by;

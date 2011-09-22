@@ -83,6 +83,11 @@ public class Settings {
 	public String csGlobalOOCPrefix = "::";
 	public String csGlobalOOCFormat = "[&3Global&f] <%n> %m";
 	
+	public boolean csAdminEnabled = true;
+	public String csAdminName = "Staff";
+	public String csAdminPrefix = "!!";
+	public String csAdminFormat = "[&6Staff&f] <%n> %m";
+	
 	public boolean csIRCEnabled = false;
 	public String csIRCNetwork = "irc.esper.net";
 	public String csIRCNickname = "RPBot" + (int)(Math.random()*5000);

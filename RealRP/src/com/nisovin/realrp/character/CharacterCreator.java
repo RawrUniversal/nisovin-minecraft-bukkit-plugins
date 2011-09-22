@@ -37,9 +37,15 @@ public class CharacterCreator {
 		if (i == stateOrder.size()) {
 			// done
 			player.sendMessage("Character creation done.");
+			// finish up the char
 			PlayerCharacter pc = new PlayerCharacter(player, firstName, lastName, age, sex, description);
 			pc.save();
 			RealRP.getPlugin().finishCharacterCreator(player);
+			// send login message
+			//String joinMsg = pc.fillInNames(RealRP.settings().gsJoinMessageFormat);
+			//for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+			//	p.sendMessage(joinMsg);
+			//}
 		} else {
 			state = stateOrder.get(i);
 			askForInformation();

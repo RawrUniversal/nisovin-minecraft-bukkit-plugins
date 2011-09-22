@@ -44,6 +44,9 @@ permissions:
     realrp.char.last:
         description: Allow modify last name
         default: op
+    realrp.chat.admin:
+        description: Allow access to admin chat
+        default: op
     realrp.names.chat.first:
         description: Show first name in chat
         default: true
