@@ -170,6 +170,21 @@ spells:
         str-cost: 4 redstone dust
         str-cast-self: You cause nearby monsters to become confused and attack each other.
         str-cast-others: "%a causes nearby monsters to attack each other."
+    cripple:
+        name: cripple
+        description: Slow down a targeted enemy.
+        cast-item: 280
+        cooldown: 15
+        range: 20
+        effect-strength: 5
+        effect-duration: 100
+        target-players: true
+        obey-los: true
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cast-self: You have crippled your enemy.
+        str-no-target: No target found.
     disarm:
         name: disarm
         description: Disarm your opponent.
@@ -407,6 +422,21 @@ spells:
         str-cost: 3 redstone dust, plus 1 every few seconds
         str-cast-self: You form gills on your neck!
         str-fade: Your gills disappear.
+    haste:
+        name: haste
+        description: Run faster for a time.
+        cast-item: 294
+        effect-strength: 4
+        duration: 120
+        cost:
+            - 331 3
+        use-cost:
+            - 331 1
+        use-cost-interval: 15
+        str-cost: 3 redstone, plus 1 every 15 seconds
+        str-cast-self: You gain unnatural speed!
+        str-cast-others: "%a gains unnatural speed!"
+        str-fade: You lose your unnatural speed.
     heal:
         name: heal
         description: Heals a target player.
