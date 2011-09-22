@@ -787,6 +787,8 @@ spells:
         cooldown: 60
         platform-type: 5
         size: 6
+        cancel-on-logout: true
+        cancel-on-teleport: true
         cost:
             - 331 4
         use-cost:

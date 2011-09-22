@@ -11,6 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
@@ -20,18 +21,27 @@ public class WalkwaySpell extends BuffSpell {
 
 	private Material material;
 	private int size;
+	private boolean cancelOnLogout;
+	private boolean cancelOnTeleport;
 	
 	private HashMap<Player,Platform> platforms;
 	
 	public WalkwaySpell(Configuration config, String spellName) {
 		super(config, spellName);
 		
-		addListener(Event.Type.PLAYER_MOVE);
-		addListener(Event.Type.PLAYER_QUIT);
-		addListener(Event.Type.BLOCK_BREAK);
-		
 		material = Material.getMaterial(getConfigInt("platform-type", Material.WOOD.getId()));
 		size = getConfigInt("size", 6);
+		cancelOnLogout = getConfigBoolean("cancel-on-logout", true);
+		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
+		
+		addListener(Event.Type.PLAYER_MOVE);
+		addListener(Event.Type.BLOCK_BREAK);
+		if (cancelOnLogout) {
+			addListener(Event.Type.PLAYER_QUIT);
+		}
+		if (cancelOnTeleport) {
+			addListener(Event.Type.PLAYER_TELEPORT);
+		}
 		
 		platforms = new HashMap<Player,Platform>();
 		
@@ -63,6 +73,15 @@ public class WalkwaySpell extends BuffSpell {
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		turnOff(event.getPlayer());
+	}
+	
+	@Override
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		if (platforms.containsKey(event.getPlayer())) {
+			if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName()) || event.getFrom().toVector().distanceSquared(event.getTo().toVector()) > 50*50) {
+				turnOff(event.getPlayer());
+			}
+		}
 	}
 	
 	@Override
