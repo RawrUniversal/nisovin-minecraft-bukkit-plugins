@@ -1,5 +1,6 @@
 package com.nisovin.oldgods.godhandlers;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ public class DeathHandler {
 	public static void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (event.getEntity() instanceof Player && event.getDamager() instanceof Monster) {
 			event.setDamage(event.getDamage() * 2);
-		}		
+		}
 	}
 	
 	public static void onCreatureSpawn(CreatureSpawnEvent event) {
@@ -27,5 +28,9 @@ public class DeathHandler {
 				event.getEntity().getWorld().spawnCreature(event.getEntity().getLocation(), c);
 			}
 		}		
+	}
+	
+	public static void pray(Player player, Block block, int amount) {
+		
 	}
 }

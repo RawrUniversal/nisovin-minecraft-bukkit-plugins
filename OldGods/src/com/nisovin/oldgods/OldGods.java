@@ -16,7 +16,7 @@ public class OldGods extends JavaPlugin {
 
 	public static OldGods plugin;
 	
-	private static final int PRAYER_COOLDOWN = 60 * 1000;
+	private static final int PRAYER_COOLDOWN = 180 * 1000;
 	private static final ChatColor color = ChatColor.GOLD;
 	private static final Random random = new Random();
 	
@@ -64,7 +64,7 @@ public class OldGods extends JavaPlugin {
 	};
 	private int[] defaultChances = {
 			10, // cooking
-			10, // death
+			5, // death
 			10, // exploration
 			10, // farming
 			10, // healing
@@ -74,7 +74,7 @@ public class OldGods extends JavaPlugin {
 			10, // ocean
 			10, // war
 			10, // wisdom
-			10  // nothing
+			15  // nothing
 			};
 	private int[] currentChances = defaultChances.clone();
 	
@@ -249,7 +249,11 @@ public class OldGods extends JavaPlugin {
 	}
 
 	public static int random() {
-		return random.nextInt(100);
+		return random(100);
+	}
+	
+	public static int random(int r) {
+		return random.nextInt(r);
 	}
 	
 	public static boolean isDisciple(Player player, God god) {

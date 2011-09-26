@@ -2,8 +2,11 @@ package com.nisovin.oldgods.godhandlers;
 
 import java.util.HashSet;
 
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.util.SpellReagents;
 
@@ -19,6 +22,10 @@ public class WisdomHandler {
 				item.setAmount(item.getAmount() / 2);
 			}
 		}
+	}
+	
+	public static void pray(Player player, Block block, int amount) {
+		MagicSpells.mana.addMana(player, 100);
 	}
 	
 }

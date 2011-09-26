@@ -3,9 +3,13 @@ package com.nisovin.oldgods.godhandlers;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.oldgods.God;
 import com.nisovin.oldgods.OldGods;
@@ -35,6 +39,30 @@ public class WarHandler {
 		} else if (event.getEntity() instanceof Player && event.getDamager() instanceof Monster) {
 			event.setDamage(event.getDamage() / 2);
 		}
+	}
+	
+	public static void pray(Player player, Block block, int amount) {
+		int chance = player.hasPermission("oldgods.disciple.war") ? 35 : 3;
+		if (OldGods.random() > chance) return;
+		
+		Material type = null;
+		int r = OldGods.random(5);
+		if (r==0) {
+			type = Material.IRON_CHESTPLATE;
+		} else if (r==1) {
+			type = Material.IRON_LEGGINGS;
+		} else if (r==2) {
+			type = Material.IRON_HELMET;
+		} else if (r==3) {
+			type = Material.IRON_BOOTS;
+		} else if (r==4) {
+			type = Material.DIAMOND_SWORD;
+		}
+		
+		if (type != null) {
+			Block b = block.getRelative(BlockFace.UP);
+			b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(type,1));
+		}		
 	}
 	
 }

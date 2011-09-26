@@ -1,5 +1,6 @@
 package com.nisovin.oldgods.godhandlers;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -19,6 +20,11 @@ public class HealingHandler {
 				p.sendMessage(OldGods.getDevoutMessage(God.HEALING));
 			}
 		}
+	}
+	
+	public static void pray(Player player, Block block, int amount) {
+		player.setHealth(20);
+		player.setFoodLevel(20);
 	}
 	
 }

@@ -6,6 +6,9 @@ import java.lang.reflect.Method;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.MobEffect;
 
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -13,6 +16,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
+import org.bukkit.inventory.ItemStack;
+
+import com.nisovin.oldgods.OldGods;
 
 public class ExplorationHandler {
 
@@ -61,4 +67,32 @@ public class ExplorationHandler {
 		}
 	}
 	
+	public static void pray(Player player, Block block, int amount) {
+		int chance = player.hasPermission("oldgods.disciple.exploration") ? 50 : 4;
+		if (OldGods.random() > chance) return;
+		
+		int quantity = 0;
+		Material type = null;
+		int r = OldGods.random(4);
+		if (r==0) {
+			type = Material.RAILS;
+			quantity = 8;
+		} else if (r==1) {
+			type = Material.POWERED_MINECART;
+			quantity = 4;
+		} else if (r==2) {
+			type = Material.MINECART;
+			quantity = 1;
+		} else if (r==3) {
+			type = Material.BOAT;
+			quantity = 1;
+		}
+		
+		if (quantity > 0 && type != null) {
+			Block b = block.getRelative(BlockFace.UP);
+			for (int i = 0; i < quantity; i++) {
+				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(type,1));
+			}
+		}
+	}
 }

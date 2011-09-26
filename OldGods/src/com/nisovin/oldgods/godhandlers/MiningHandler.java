@@ -2,6 +2,8 @@ package com.nisovin.oldgods.godhandlers;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -36,5 +38,34 @@ public class MiningHandler {
 				event.getPlayer().sendMessage(OldGods.getDevoutMessage(God.MINING));
 			}
 		}
+	}
+	
+	public static void pray(Player player, Block block, int amount) {
+		int chance = player.hasPermission("oldgods.disciple.mining") ? 20 : 2;
+		if (OldGods.random() > chance) return;
+		
+		int quantity = 0;
+		Material type = null;
+		int r = OldGods.random(4);
+		if (r==0) {
+			type = Material.IRON_INGOT;
+			quantity = 4;
+		} else if (r==1) {
+			type = Material.GOLD_INGOT;
+			quantity = 2;
+		} else if (r==2) {
+			type = Material.DIAMOND;
+			quantity = 1;
+		} else if (r==3) {
+			type = Material.DIAMOND_PICKAXE;
+			quantity = 1;
+		}
+		
+		if (quantity > 0 && type != null) {
+			Block b = block.getRelative(BlockFace.UP);
+			for (int i = 0; i < quantity; i++) {
+				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(type,1));
+			}
+		}		
 	}
 }

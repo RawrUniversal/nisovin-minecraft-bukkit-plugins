@@ -2,6 +2,8 @@ package com.nisovin.oldgods.godhandlers;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -29,6 +31,38 @@ public class FarmingHandler {
 				event.getPlayer().sendMessage(OldGods.getDevoutMessage(God.FARMING));
 			}
 		}
+	}
+	
+	public static void pray(Player player, Block block, int amount) {
+		int chance = player.hasPermission("oldgods.disciple.farming") ? 40 : 4;
+		if (OldGods.random() > chance) return;
+		
+		int quantity = 0;
+		Material type = null;
+		int r = OldGods.random(5);
+		if (r==0) {
+			type = Material.IRON_HOE;
+			quantity = 1;
+		} else if (r==1) {
+			type = Material.WHEAT;
+			quantity = 10;
+		} else if (r==2) {
+			type = Material.MELON;
+			quantity = 4;
+		} else if (r==3) {
+			type = Material.SEEDS;
+			quantity = 10;
+		} else if (r==4) {
+			type = Material.MELON_SEEDS;
+			quantity = 10;
+		}
+		
+		if (quantity > 0 && type != null) {
+			Block b = block.getRelative(BlockFace.UP);
+			for (int i = 0; i < quantity; i++) {
+				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(type,1));
+			}
+		}		
 	}
 
 }
