@@ -46,6 +46,9 @@ public class ChatManager {
 			if (RealRP.settings().csGlobalOOCEnabled) {
 				channels.add(Channel.GLOBAL_OOC);
 			}
+			if (RealRP.settings().csAdminEnabled && p.hasPermission("realrp.chat.admin")) {
+				channels.add(Channel.ADMIN);
+			}
 		}
 		
 		// load irc bot
@@ -156,13 +159,6 @@ public class ChatManager {
 	}
 	
 	private void removeOutOfRange(Player speaker, Set<Player> recipients, int range) {
-		/*Location loc = speaker.getLocation();
-		Iterator<Player> iter = recipients.iterator();
-		while (iter.hasNext()) {
-			if (loc.distanceSquared(iter.next().getLocation()) > range*range) {
-				iter.remove();
-			}
-		}*/
 		recipients.clear();
 		recipients.add(speaker);
 		List<Entity> entities = speaker.getNearbyEntities(range, range, range);
@@ -188,6 +184,9 @@ public class ChatManager {
 		} else if (channel.equalsIgnoreCase(settings.csGlobalOOCName)) {
 			channels.add(Channel.GLOBAL_OOC);
 			activeChannels.put(player, Channel.GLOBAL_OOC);
+		} else if (channel.equalsIgnoreCase(settings.csAdminName) && player.hasPermission("realrp.chat.admin")) {
+			channels.add(Channel.ADMIN);
+			activeChannels.put(player, Channel.ADMIN);
 		} else {
 			return false;
 		}
@@ -206,6 +205,8 @@ public class ChatManager {
 			channels.remove(Channel.LOCAL_OOC);
 		} else if (channel.equalsIgnoreCase(settings.csGlobalOOCName)) {
 			channels.remove(Channel.GLOBAL_OOC);
+		} else if (channel.equalsIgnoreCase(settings.csAdminName)) {
+			channels.remove(Channel.ADMIN);
 		} else {
 			return false;
 		}
