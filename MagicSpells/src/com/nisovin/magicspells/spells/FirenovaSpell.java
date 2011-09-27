@@ -111,11 +111,11 @@ public class FirenovaSpell extends InstantSpell {
 								if (under.getType() == Material.AIR) {
 									b = under;
 								}
-								b.setType(Material.FIRE);
+								b.setTypeIdAndData(Material.FIRE.getId(), (byte)15, false);
 								fireBlocks.add(b);
 							} else if (b.getRelative(BlockFace.UP).getType() == Material.AIR) {
 								b = b.getRelative(BlockFace.UP);
-								b.setType(Material.FIRE);
+								b.setTypeIdAndData(Material.FIRE.getId(), (byte)15, false);
 								fireBlocks.add(b);
 							}
 						}
