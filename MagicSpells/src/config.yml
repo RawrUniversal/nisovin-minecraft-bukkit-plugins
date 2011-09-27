@@ -424,16 +424,14 @@ spells:
         str-fade: Your gills disappear.
     haste:
         name: haste
-        description: Run faster for a time.
+        description: Sprint faster for a time.
         cast-item: 294
-        effect-strength: 4
-        duration: 120
+        effect-strength: 3
+        boost-duration: 300
+        duration: 60
         cost:
             - 331 3
-        use-cost:
-            - 331 1
-        use-cost-interval: 15
-        str-cost: 3 redstone, plus 1 every 15 seconds
+        str-cost: 3 redstone
         str-cast-self: You gain unnatural speed!
         str-cast-others: "%a gains unnatural speed!"
         str-fade: You lose your unnatural speed.

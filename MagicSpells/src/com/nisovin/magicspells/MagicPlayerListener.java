@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
@@ -191,6 +192,16 @@ public class MagicPlayerListener extends PlayerListener {
 		if (spells != null) {
 			for (Spell spell : spells) {
 				spell.onPlayerToggleSneak(event);
+			}
+		}
+	}
+	
+	@Override
+	public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
+		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_TOGGLE_SPRINT);
+		if (spells != null) {
+			for (Spell spell : spells) {
+				spell.onPlayerToggleSprint(event);
 			}
 		}
 	}
