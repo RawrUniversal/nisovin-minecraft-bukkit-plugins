@@ -74,7 +74,7 @@ public class IrcBot extends PircBot {
 				msg += "None.";
 			} else {
 				for (int i = 0; i < players.length; i++) {
-					msg += (i==0?" ":", ") + players[i].getName();
+					msg += (i==0?" ":", ") + ChatColor.stripColor(players[i].getDisplayName());
 				}
 			}
 			sendMessage(channel, msg);

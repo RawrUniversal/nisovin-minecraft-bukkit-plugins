@@ -2,6 +2,7 @@ package com.nisovin.realrp;
 
 import java.util.HashMap;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -45,6 +46,7 @@ public class RealRP extends JavaPlugin {
 		this.getCommand("rpemote").setExecutor(new CommandEmote(this));
 		this.getCommand("rpjoinchannel").setExecutor(new CommandJoin(this));
 		this.getCommand("rpcharacter").setExecutor(new CommandCharacter(this));
+		this.getCommand("rpplayernote").setExecutor(new CommandNote(this));
 		
 		PluginDescriptionFile pdf = getDescription();
 		getServer().getLogger().info(pdf.getName() + " v" + pdf.getVersion() + " enabled!");
@@ -54,7 +56,7 @@ public class RealRP extends JavaPlugin {
 		return plugin.settings;
 	}
 	
-	public static void sendMessage(Player player, String message) {
+	public static void sendMessage(CommandSender player, String message) {
 		sendMessage(player, message, (String[])null);
 	}
 	
@@ -62,7 +64,7 @@ public class RealRP extends JavaPlugin {
 		return message.replaceAll("&([0-9a-f])", "\u00A7$1");
 	}
 	
-	public static void sendMessage(Player player, String message, String... replacements) {
+	public static void sendMessage(CommandSender player, String message, String... replacements) {
 		if (replacements != null && replacements.length % 2 == 0) {
 			for (int i = 0; i < replacements.length; i+=2) {
 				message = message.replace(replacements[i], replacements[i+1]);

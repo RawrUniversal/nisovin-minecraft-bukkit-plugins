@@ -47,6 +47,10 @@ public class Settings {
 	public String ccDescriptionOk = "Description ok.";
 	public String ccDescriptionInvalid = "Description invalid.";
 	
+	// Player Control Section
+	
+	public boolean pcEnablePlayerNotes = true;
+	
 	// Emote System Section
 	
 	public boolean emEnableEmotes = true;
@@ -122,6 +126,7 @@ public class Settings {
 		HashMap<String,String> prefixes = new HashMap<String,String>();
 		prefixes.put("gs", "GeneralSettings");
 		prefixes.put("cc", "CharCreator");
+		prefixes.put("pc", "PlayerControl");
 		prefixes.put("em", "EmoteSystem");
 		prefixes.put("cs", "ChatSystem");
 		prefixes.put("ir", "InteractRequests");

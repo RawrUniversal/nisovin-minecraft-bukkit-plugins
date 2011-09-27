@@ -23,7 +23,7 @@ commands:
     rpplayernote:
         description: Read or add player notes
         usage: /<command> <list|read|new|write|save>
-        aliases: [playernote,charnote,pnote,cnote,note]
+        aliases: [playernote,charnote,pnote,cnote,note,notes]
     rpacceptrequest:
         description: Accept an interaction request
         usage: /<command> id
@@ -43,6 +43,9 @@ permissions:
         default: op
     realrp.char.last:
         description: Allow modify last name
+        default: op
+    realrp.notes:
+        description: Add and read character notes
         default: op
     realrp.chat.admin:
         description: Allow access to admin chat

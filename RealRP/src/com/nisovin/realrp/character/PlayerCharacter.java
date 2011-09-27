@@ -2,9 +2,11 @@ package com.nisovin.realrp.character;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
 import org.bukkit.util.config.ConfigurationNode;
@@ -59,6 +61,30 @@ public class PlayerCharacter implements GameCharacter {
 		}
 	}
 	
+	public static PlayerCharacter match(String name) {
+		if (characters == null) {
+			characters = new HashMap<Player,PlayerCharacter>();
+		}
+		
+		Player p = Bukkit.getServer().getPlayerExact(name);
+		if (p != null) {
+			return get(p);
+		}
+		
+		name = name.toLowerCase();
+		ArrayList<PlayerCharacter> results = new ArrayList<PlayerCharacter>();
+		for (PlayerCharacter pc : characters.values()) {
+			if (pc.getInGameName().toLowerCase().contains(name) || pc.getChatName().toLowerCase().contains(name)) {
+				results.add(pc);
+			}
+		}
+		if (results.size() == 1) {
+			return results.get(0);
+		} else {
+			return null;
+		}
+	}
+	
 	public PlayerCharacter(Player player) {
 		this(player, new File(RealRP.getPlugin().getDataFolder(), "players" + File.separator + player.getName().toLowerCase() + ".yml"));
 	}
@@ -97,6 +123,7 @@ public class PlayerCharacter implements GameCharacter {
 				notes.add(note);
 			}
 		}
+		Collections.sort(notes);
 		
 		newNotes = new HashMap<Player,CharacterNote>();
 		
@@ -171,6 +198,10 @@ public class PlayerCharacter implements GameCharacter {
 		return name.trim();
 	}
 
+	public String getInGameName() {
+		return player.getName();
+	}
+	
 	@Override
 	public String getChatName() {
 		return chatName;
@@ -234,10 +265,18 @@ public class PlayerCharacter implements GameCharacter {
 			return false;
 		}
 		
-		notes.add(note);
+		notes.add(0, note);
 		newNotes.remove(note);
 		save();
 		return true;
+	}
+	
+	public void discardNote(Player by) {
+		newNotes.remove(by);
+	}
+	
+	public ArrayList<CharacterNote> getNotes() {
+		return notes;
 	}
 	
 	public static void delete(Player player) {
@@ -274,9 +313,28 @@ public class PlayerCharacter implements GameCharacter {
 			config.setProperty("notes." + time + ".note", note);
 		}
 		
+		public String getBrief() {
+			String s = note;
+			if (s.length() > 20) {
+				s = s.substring(0, 20);
+			}
+			
+			int hours = (int) ((System.currentTimeMillis() - time) / 1000 / 60 / 60);
+			int days = hours / 24;
+			
+			return by + " - " + s + " - " + (days>1 ? days+" days" : hours+" hours") + " ago";
+		}
+		
+		public String getNote() {
+			int hours = (int) ((System.currentTimeMillis() - time) / 1000 / 60 / 60);
+			int days = hours / 24;
+			
+			return "Note by " + by + " (" + (days>1 ? days+" days" : hours+" hours") + " ago):\n" + note;
+		}
+		
 		@Override
 		public int compareTo(CharacterNote n) {
-			return this.time.compareTo(n.time);
+			return -this.time.compareTo(n.time);
 		}
 	}
 	
