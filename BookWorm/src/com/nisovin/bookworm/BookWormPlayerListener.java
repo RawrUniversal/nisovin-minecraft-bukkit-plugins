@@ -92,12 +92,14 @@ public class BookWormPlayerListener extends PlayerListener {
 							player.setItemInHand(new ItemStack(Material.BOOK, 1, copyId));
 						}
 						player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COPIED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
+						event.setCancelled(true);
 					} else if (player.isSneaking() && plugin.perms.canRemoveBook(player, book) && inHand.getType() == Material.AIR) {
 						// remove book if allowed
 						player.setItemInHand(new ItemStack(Material.BOOK, 1, bookId));
 						plugin.bookshelves.remove(locStr);
 						plugin.saveAll();
 						player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_REMOVED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
+						event.setCancelled(true);
 					}					
 				}
 				
@@ -136,6 +138,7 @@ public class BookWormPlayerListener extends PlayerListener {
 					// remove book in hand
 					player.setItemInHand(null);
 					
+					event.setCancelled(true);
 				}
 			}
 		} else if (event.useItemInHand() != Result.DENY && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && inHand.getType() == Material.BOOK && inHand.getDurability() != 0) {
