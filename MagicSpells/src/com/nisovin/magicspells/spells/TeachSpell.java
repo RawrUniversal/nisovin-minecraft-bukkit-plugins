@@ -2,6 +2,7 @@ package com.nisovin.magicspells.spells;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
@@ -10,6 +11,8 @@ import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.events.SpellLearnEvent;
+import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 
 public class TeachSpell extends CommandSpell {
 
@@ -69,11 +72,18 @@ public class TeachSpell extends CommandSpell {
 								// fail: target already knows spell
 								sendMessage(player, strAlreadyKnown);
 							} else {
-								targetSpellbook.addSpell(spell);
-								targetSpellbook.save();
-								sendMessage(players.get(0), formatMessage(strCastTarget, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
-								sendMessage(player, formatMessage(strCastSelf, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
-								return PostCastAction.NO_MESSAGES;
+								// call event
+								boolean cancelled = callEvent(spell, players.get(0), player);
+								if (cancelled) {
+									// fail: plugin cancelled it
+									sendMessage(player, strCantLearn);
+								} else {									
+									targetSpellbook.addSpell(spell);
+									targetSpellbook.save();
+									sendMessage(players.get(0), formatMessage(strCastTarget, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+									sendMessage(player, formatMessage(strCastSelf, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+									return PostCastAction.NO_MESSAGES;
+								}
 							}
 						}
 					}
@@ -109,15 +119,28 @@ public class TeachSpell extends CommandSpell {
 						// fail: target already knows spell
 						sender.sendMessage(strAlreadyKnown);
 					} else {
-						targetSpellbook.addSpell(spell);
-						targetSpellbook.save();
-						sendMessage(players.get(0), formatMessage(strCastTarget, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
-						sender.sendMessage(formatMessage(strCastSelf, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+						// call event
+						boolean cancelled = callEvent(spell, players.get(0), sender);
+						if (cancelled) {
+							// fail: cancelled by plugin
+							sender.sendMessage(strCantLearn);
+						} else {
+							targetSpellbook.addSpell(spell);
+							targetSpellbook.save();
+							sendMessage(players.get(0), formatMessage(strCastTarget, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+							sender.sendMessage(formatMessage(strCastSelf, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+						}
 					}
 				}
 			}
 		}
 		return true;
+	}
+	
+	private boolean callEvent(Spell spell, Player learner, Object teacher) {
+		SpellLearnEvent event = new SpellLearnEvent(spell, learner, LearnSource.TEACH, teacher);
+		Bukkit.getServer().getPluginManager().callEvent(event);
+		return event.isCancelled();
 	}
 
 }

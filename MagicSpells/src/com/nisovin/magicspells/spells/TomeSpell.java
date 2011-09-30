@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.spells;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
@@ -8,6 +9,8 @@ import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.events.SpellLearnEvent;
+import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.bookworm.Book;
 import com.nisovin.bookworm.BookWorm;
 import com.nisovin.bookworm.event.BookReadEvent;
@@ -128,20 +131,28 @@ public class TomeSpell extends CommandSpell {
 						// fail -- can't learn
 						sendMessage(event.getPlayer(), formatMessage(strCantLearn, "%s", spell.getName()));
 					} else {
-						// give spell
-						spellbook.addSpell(spell);
-						sendMessage(event.getPlayer(), formatMessage(strLearned, "%s", spell.getName()));
-						if (cancelReadOnLearn) {
-							event.setCancelled(true);
-						}
-						// remove use
-						if (uses > 0) {
-							uses--;
+						// call event
+						SpellLearnEvent learnEvent = new SpellLearnEvent(spell, event.getPlayer(), LearnSource.TOME, event.getPlayer().getItemInHand());
+						Bukkit.getPluginManager().callEvent(learnEvent);
+						if (learnEvent.isCancelled()) {
+							// fail -- plugin cancelled
+							sendMessage(event.getPlayer(), formatMessage(strCantLearn, "%s", spell.getName()));
+						} else {
+							// give spell
+							spellbook.addSpell(spell);
+							sendMessage(event.getPlayer(), formatMessage(strLearned, "%s", spell.getName()));
+							if (cancelReadOnLearn) {
+								event.setCancelled(true);
+							}
+							// remove use
 							if (uses > 0) {
-								event.getBook().addHiddenData("MagicSpell", data[0] + "," + uses);
-							} else {
-								event.getBook().removeHiddenData("MagicSpell");
-							}							
+								uses--;
+								if (uses > 0) {
+									event.getBook().addHiddenData("MagicSpell", data[0] + "," + uses);
+								} else {
+									event.getBook().removeHiddenData("MagicSpell");
+								}							
+							}
 						}
 					}
 				}

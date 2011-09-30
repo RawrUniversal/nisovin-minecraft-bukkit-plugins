@@ -15,6 +15,8 @@ public class SpellListener extends CustomEventListener {
 			onSpellTarget((SpellTargetEvent)event);
 		} else if (event instanceof SpellCastEvent) {
 			onSpellCast((SpellCastEvent)event);
+		} else if (event instanceof SpellLearnEvent) {
+			onSpellLearn((SpellLearnEvent)event);
 		}
 	}
 	
@@ -31,6 +33,14 @@ public class SpellListener extends CustomEventListener {
 	 * @param event relevant event details
 	 */
 	public void onSpellCast(SpellCastEvent event) {
+		
+	}
+	
+	/**
+	 * Called when a spell is learned.
+	 * @param event relevant event details
+	 */
+	public void onSpellLearn(SpellLearnEvent event) {
 		
 	}
 	

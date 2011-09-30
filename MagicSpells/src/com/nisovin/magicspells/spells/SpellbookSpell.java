@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -20,6 +21,8 @@ import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.events.SpellLearnEvent;
+import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.util.MagicLocation;
 
 public class SpellbookSpell extends CommandSpell {
@@ -150,22 +153,30 @@ public class SpellbookSpell extends CommandSpell {
 					// fail: already known
 					sendMessage(player, formatMessage(strAlreadyKnown, "%s", spell.getName()));
 				} else {
-					// teach the spell
-					spellbook.addSpell(spell);
-					spellbook.save();
-					sendMessage(player, formatMessage(strLearned, "%s", spell.getName()));
-					int uses = bookUses.get(i);
-					if (uses > 0) {
-						uses--;
-						if (uses == 0) {
-							// remove the spellbook
-							if (destroyBookcase) {
-								bookLocations.get(i).getLocation().getBlock().setType(Material.AIR);
+					// call learn event
+					SpellLearnEvent learnEvent = new SpellLearnEvent(spell, player, LearnSource.SPELLBOOK, event.getClickedBlock());
+					Bukkit.getPluginManager().callEvent(learnEvent);
+					if (learnEvent.isCancelled()) {
+						// fail: plugin cancelled it
+						sendMessage(player, formatMessage(strCantLearn, "%s", spell.getName()));
+					} else {
+						// teach the spell
+						spellbook.addSpell(spell);
+						spellbook.save();
+						sendMessage(player, formatMessage(strLearned, "%s", spell.getName()));
+						int uses = bookUses.get(i);
+						if (uses > 0) {
+							uses--;
+							if (uses == 0) {
+								// remove the spellbook
+								if (destroyBookcase) {
+									bookLocations.get(i).getLocation().getBlock().setType(Material.AIR);
+								}
+								removeSpellbook(i);
+							} else {
+								bookUses.set(i, uses);
 							}
-							removeSpellbook(i);
-						} else {
-							bookUses.set(i, uses);
-						}
+						}						
 					}
 				}
 			}

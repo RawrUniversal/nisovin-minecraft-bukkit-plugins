@@ -31,6 +31,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.events.MagicEventType;
+import com.nisovin.magicspells.events.SpellLearnEvent;
+import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spells.*;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -717,9 +719,16 @@ public class MagicSpells extends JavaPlugin {
 		if (spellbook == null || spellbook.hasSpell(spell) || !spellbook.canLearn(spell)) {
 			return false;
 		} else {
-			spellbook.addSpell(spell);
-			spellbook.save();
-			return true;
+			// call event
+			SpellLearnEvent event = new SpellLearnEvent(spell, player, LearnSource.OTHER, null);
+			plugin.getServer().getPluginManager().callEvent(event);
+			if (event.isCancelled()) {
+				return false;
+			} else {
+				spellbook.addSpell(spell);
+				spellbook.save();
+				return true;
+			}
 		}
 	}
 	
