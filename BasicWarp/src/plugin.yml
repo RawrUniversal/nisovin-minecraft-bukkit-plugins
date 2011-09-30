@@ -1,0 +1,40 @@
+name: BasicWarp
+version: 1.0
+main: com.nisovin.basicwarp.BasicWarp
+commands:
+    warp:
+        description: Teleport to a warp point
+        usage: "Usage: /<command> <warpname>"
+    setwarp:
+        description: Create a warp point
+        usage: "Usage: /<command> <warpname>"
+        aliases: [addwarp,createwarp,warpset]
+    listwarps:
+        description: List all warp points
+        usage: "Usage: /<command> [page]"
+        aliases: [listwarp,warplist,warps]
+    removewarp:
+        description: Removes a warp point
+        usage: "Usage: /<command> <warpname>"
+        aliases: [deletewarp]
+permissions:
+    basicwarp.*:
+        description: Allow all warp commands
+        default: op
+        children:
+            basicwarp.warp.*: true
+            basicwarp.setwarp: true
+            basicwarp.listwarps: true
+            basicwarp.removewarp: true
+    basicwarp.warp.*:
+        description: Allow warping to any warp point
+        default: op
+    basicwarp.setwarp:
+        description: Allow creating warp points
+        default: op
+    basicwarp.listwarps:
+        description: Allow listing warp points
+        default: op
+    basicwarp.removewarp:
+        description: Allow removing warp points
+        default: op
