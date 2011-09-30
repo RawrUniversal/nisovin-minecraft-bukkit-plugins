@@ -23,7 +23,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.material.MaterialData;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
@@ -64,7 +64,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static int manaBarToolSlot;
 	protected static int manaPotionCooldown;
 	protected static String strManaPotionOnCooldown;
-	protected static HashMap<MaterialData,Integer> manaPotions;
+	protected static HashMap<ItemStack,Integer> manaPotions;
 	
 	protected static String strCastUsage;
 	protected static String strUnknownSpell;
@@ -175,17 +175,17 @@ public class MagicSpells extends JavaPlugin {
 		// load mana potions
 		List<String> manaPots = config.getStringList("general.mana.mana-potions", null);
 		if (manaPots != null && manaPots.size() > 0) {
-			manaPotions = new HashMap<MaterialData,Integer>();
+			manaPotions = new HashMap<ItemStack,Integer>();
 			for (int i = 0; i < manaPots.size(); i++) {
 				String[] data = manaPots.get(i).split(" ");
-				MaterialData mat;
+				ItemStack item;
 				if (data[0].contains(":")) {
 					String[] data2 = data[0].split(":");
-					mat = new MaterialData(Integer.parseInt(data2[0]), Byte.parseByte(data2[1]));
+					item = new ItemStack(Integer.parseInt(data2[0]), 1, Short.parseShort(data2[1]));
 				} else {
-					mat = new MaterialData(Integer.parseInt(data[0]));					
+					item = new ItemStack(Integer.parseInt(data[0]), 1);					
 				}
-				manaPotions.put(mat, Integer.parseInt(data[1]));
+				manaPotions.put(item, Integer.parseInt(data[1]));
 			}
 			manaPotionCooldowns = new HashMap<Player,Long>();
 		}

@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 
 public class MagicPlayerListener extends PlayerListener {
 
@@ -114,11 +113,9 @@ public class MagicPlayerListener extends PlayerListener {
 			
 			// check for mana pots
 			if (MagicSpells.enableManaBars && MagicSpells.manaPotions != null) {
-				MaterialData mat = inHand.getData();
-				if (mat == null) {
-					mat = new MaterialData(inHand.getType());
-				}
-				if (MagicSpells.manaPotions.containsKey(mat)) {
+				ItemStack item = inHand.clone();
+				item.setAmount(1);
+				if (MagicSpells.manaPotions.containsKey(item)) {
 					// check cooldown
 					if (MagicSpells.manaPotionCooldown > 0) {
 						Long c = MagicSpells.manaPotionCooldowns.get(player);
@@ -128,7 +125,7 @@ public class MagicPlayerListener extends PlayerListener {
 						}
 					}
 					// add mana
-					int amt = MagicSpells.manaPotions.get(mat);
+					int amt = MagicSpells.manaPotions.get(item);
 					boolean added = MagicSpells.mana.addMana(player, amt);
 					if (added) {
 						// set cooldown
