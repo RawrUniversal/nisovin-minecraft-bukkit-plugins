@@ -3,6 +3,7 @@ package com.nisovin.realrp.character;
 import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.realrp.RealRP;
 import com.nisovin.realrp.character.GameCharacter.Sex;
@@ -41,11 +42,29 @@ public class CharacterCreator {
 			PlayerCharacter pc = new PlayerCharacter(player, firstName, lastName, age, sex, description);
 			pc.save();
 			RealRP.getPlugin().finishCharacterCreator(player);
-			// send login message
-			//String joinMsg = pc.fillInNames(RealRP.settings().gsJoinMessageFormat);
-			//for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			//	p.sendMessage(joinMsg);
-			//}
+			// give items
+			String sItems = RealRP.settings().ccItemsGranted;
+			if (sItems != null && !sItems.isEmpty()) {
+				String[] items = sItems.split(";");
+				for (String s : items) {
+					String[] itemAndQuantity = s.trim().split(" ");
+					int quantity = 1;
+					if (itemAndQuantity.length == 2) {
+						quantity = Integer.parseInt(itemAndQuantity[1]);
+					}
+					int type, data;
+					if (itemAndQuantity[0].contains(":")) {
+						String[] typeData = itemAndQuantity[0].split(":");
+						type = Integer.parseInt(typeData[0]);
+						data = Integer.parseInt(typeData[1]);
+					} else {
+						type = Integer.parseInt(itemAndQuantity[0]);
+						data = 0;
+					}
+					ItemStack item = new ItemStack(type, quantity, (short)data);
+					player.getInventory().addItem(item);
+				}
+			}
 		} else {
 			state = stateOrder.get(i);
 			askForInformation();

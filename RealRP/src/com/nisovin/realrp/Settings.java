@@ -47,6 +47,8 @@ public class Settings {
 	public String ccDescriptionOk = "Description ok.";
 	public String ccDescriptionInvalid = "Description invalid.";
 	
+	public String ccItemsGranted = "";
+	
 	// Player Control Section
 	
 	public boolean pcEnablePlayerNotes = true;
