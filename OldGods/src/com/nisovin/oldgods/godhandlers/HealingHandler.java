@@ -23,6 +23,9 @@ public class HealingHandler {
 	}
 	
 	public static void pray(Player player, Block block, int amount) {
+		OldGods.removeMobEffect(player, 17);
+		OldGods.removeMobEffect(player, 19);
+		
 		player.setHealth(20);
 		player.setFoodLevel(20);
 	}

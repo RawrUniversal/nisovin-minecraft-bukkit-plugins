@@ -40,35 +40,39 @@ public class AltarManager {
 		saveAll();
 	}
 	
-	public void pray(Player player, Block block) {
+	public boolean pray(Player player, Block block) {
 		String s = block.getWorld().getName() + "," + block.getX() + "," + block.getY() + "," + block.getZ();
 		Altar altar = altars.get(s);
 		if (altar != null) {
-			plugin.addPrayer(player, altar.god, altar.amount);
-			if (altar.god == God.COOKING) {
-				CookingHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.DEATH) {
-				DeathHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.EXPLORATION) {
-				ExplorationHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.FARMING) {
-				FarmingHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.HEALING) {
-				HealingHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.HUNT) {
-				HuntHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.LOVE) {
-				LoveHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.MINING) {
-				MiningHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.OCEAN) {
-				OceanHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.WAR) {
-				WarHandler.pray(player, block, altar.amount);
-			} else if (altar.god == God.WISDOM) {
-				WisdomHandler.pray(player, block, altar.amount);
+			boolean success = plugin.addPrayer(player, altar.god, altar.amount);
+			if (success) {
+				if (altar.god == God.COOKING) {
+					CookingHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.DEATH) {
+					DeathHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.EXPLORATION) {
+					ExplorationHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.FARMING) {
+					FarmingHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.HEALING) {
+					HealingHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.HUNT) {
+					HuntHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.LOVE) {
+					LoveHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.MINING) {
+					MiningHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.OCEAN) {
+					OceanHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.WAR) {
+					WarHandler.pray(player, block, altar.amount);
+				} else if (altar.god == God.WISDOM) {
+					WisdomHandler.pray(player, block, altar.amount);
+				}
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	private void saveAll() {

@@ -33,7 +33,10 @@ public class PListener extends PlayerListener {
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().isSneaking() && event.getPlayer().getItemInHand().getType() == Material.AIR) {
-			plugin.altars().pray(event.getPlayer(), event.getClickedBlock());
+			boolean prayed = plugin.altars().pray(event.getPlayer(), event.getClickedBlock());
+			if (prayed) {
+				event.setCancelled(true);
+			}
 		}
 	}
 	

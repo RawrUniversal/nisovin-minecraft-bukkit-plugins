@@ -1,13 +1,20 @@
 package com.nisovin.oldgods;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Random;
+
+import net.minecraft.server.EntityLiving;
+import net.minecraft.server.MobEffect;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
@@ -191,10 +198,10 @@ public class OldGods extends JavaPlugin {
 		}
 	}
 	
-	public void addPrayer(Player player, God god, int amount) {
+	public boolean addPrayer(Player player, God god, int amount) {
 		if (prayerCooldowns.containsKey(player) && prayerCooldowns.get(player) > System.currentTimeMillis()) {
 			player.sendMessage("You must wait to pray again.");
-			return;
+			return false;
 		}
 		int index = -1;
 		for (int i = 0; i < gods.length; i++) {
@@ -212,6 +219,7 @@ public class OldGods extends JavaPlugin {
 		// set cooldown
 		prayerCooldowns.put(player, System.currentTimeMillis() + PRAYER_COOLDOWN);
 		player.sendMessage("You pray at the altar.");
+		return true;
 	}
 	
 
@@ -287,6 +295,25 @@ public class OldGods extends JavaPlugin {
 		public void run() {
 			taskId = -1;
 			newGod();
+		}
+	}
+	
+	public static void setMobEffect(LivingEntity entity, int type, int duration, int amplifier) {		
+		((CraftLivingEntity)entity).getHandle().d(new MobEffect(type, duration, amplifier)); // changed from "d" to "addEffect" later
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static void removeMobEffect(LivingEntity entity, int type) {
+		try {
+			Method method = EntityLiving.class.getDeclaredMethod("c", MobEffect.class);
+			method.setAccessible(true);
+			method.invoke(((CraftLivingEntity)entity).getHandle(), new MobEffect(type, 0, 0));
+			Field field = EntityLiving.class.getDeclaredField("aF"); // changed from "aF" to "effects" later
+			field.setAccessible(true);
+			HashMap effects = (HashMap)field.get(((CraftLivingEntity)entity).getHandle());
+			effects.remove(type);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
