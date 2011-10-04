@@ -16,7 +16,9 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -450,6 +452,20 @@ public class BookWorm extends JavaPlugin {
 			return null;
 		} else {
 			return plugin.getBookById(item.getDurability());
+		}
+	}
+	
+	public static Book getBook(Block block) {
+		return getBook(block.getLocation());
+	}
+	
+	public static Book getBook(Location location) {
+		String locStr = location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
+		Short id = plugin.bookshelves.get(locStr);
+		if (id == null) {
+			return null;
+		} else {
+			return plugin.getBookById(id);
 		}
 	}
 	
