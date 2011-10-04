@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 import org.bukkit.util.config.Configuration;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class NoMagicZoneManager {
@@ -33,26 +34,31 @@ public class NoMagicZoneManager {
 				if (data[0].equalsIgnoreCase("worldguard") && worldGuard != null) {
 					World w = Bukkit.getServer().getWorld(worldName);
 					if (w != null) {
-						ProtectedRegion region = worldGuard.getRegionManager(w).getRegion(data[2]);
-						if (region != null) {
-							zones.add(new NoMagicZone(worldName, region));
+						RegionManager rm = worldGuard.getRegionManager(w);
+						if (rm != null) {
+							ProtectedRegion region = rm.getRegion(data[2]);
+							if (region != null) {
+								zones.add(new NoMagicZone(worldName, region));
+							} else {
+								Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone WorldGuard region: " + data[2]);
+							}
 						} else {
-							Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone WorldGuard region: " + data[2]);
+							Bukkit.getServer().getLogger().severe("MagicSpells: Failed to get WorldGuard region manager for world: " + data[1]);
 						}
 					} else {
 						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone world: " + data[1]);						
 					}
 				} else if (data[0].equalsIgnoreCase("cuboid")) {
-					String[] p1 = data[2].split(",");
-					String[] p2 = data[3].split(",");
 					try {
+						String[] p1 = data[2].split(",");
+						String[] p2 = data[3].split(",");
 						Vector point1 = new Vector(Integer.parseInt(p1[0]), Integer.parseInt(p1[1]), Integer.parseInt(p1[2]));
 						Vector point2 = new Vector(Integer.parseInt(p2[0]), Integer.parseInt(p2[1]), Integer.parseInt(p2[2]));
 						zones.add(new NoMagicZone(worldName, point1, point2));
 					} catch (NumberFormatException e) {
-						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone defined cuboid: " + data[1]+":"+data[2]);							
+						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone defined cuboid: " + s);							
 					} catch (ArrayIndexOutOfBoundsException e) {
-						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone defined cuboid: " + data[1]+":"+data[2]);							
+						Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone defined cuboid: " + s);							
 					}
 				}
 			}
