@@ -74,6 +74,9 @@ spells:
         str-doesnt-know: That person does not know that spell.
         str-cast-self: You made %t forget the %s spell.
         str-cast-target: "%a has made you forget the %s spell."
+        str-cast-self-target: "You have forgotten the %s spell."
+        str-reset-target: "You have reset %t's spellbook."
+        str-reset-self: "You have forgotten all of your spells."
     spellbook:
         name: spellbook
         description: Create a spellbook that teaches a spell.
