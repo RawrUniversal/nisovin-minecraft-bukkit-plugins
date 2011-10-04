@@ -44,7 +44,7 @@ public class CrippleSpell extends InstantSpell {
 	}
 	
 	public void setMobEffect(LivingEntity entity, int type, int duration, int amplifier) {		
-		((CraftLivingEntity)entity).getHandle().d(new MobEffect(type, duration, amplifier));
+		((CraftLivingEntity)entity).getHandle().addEffect(new MobEffect(type, duration, amplifier));
 	}
 
 }
