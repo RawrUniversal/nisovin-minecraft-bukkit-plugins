@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.bukkit.ChatColor;
@@ -117,6 +119,7 @@ public class BookWorm extends JavaPlugin {
 	protected BookUnloader unloader;
 	protected WorldGuardPlugin worldGuard;
 	protected HashSet<BookWormListener> listeners;
+	protected ArrayList<Short> extraBookIds;
 	
 	@Override
 	public void onEnable() {
@@ -136,8 +139,9 @@ public class BookWorm extends JavaPlugin {
 		chatModed = new HashSet<String>();
 		
 		// load up stuff
-		loadBooks();
 		loadConfig();
+		loadBookshelves();
+		loadExtraBookIds();
 		
 		// register listeners
 		new BookWormPlayerListener(this);
@@ -216,8 +220,10 @@ public class BookWorm extends JavaPlugin {
 			books.clear();
 			bookshelves.clear();
 			bookmarks.clear();
-			loadBooks();
+			extraBookIds.clear();
 			loadConfig();
+			loadBookshelves();
+			loadExtraBookIds();
 			sender.sendMessage("BookWorm data reloaded.");
 		} else if (sender.hasPermission("bookworm.list") && args.length >= 1 && args[0].equalsIgnoreCase("-list")) {
 			ArrayList<Book> bookList = new ArrayList<Book>();
@@ -258,6 +264,48 @@ public class BookWorm extends JavaPlugin {
 					if (book.getTitle().toLowerCase().contains(title)) {
 						results.add(book);
 					}
+				}
+			}
+		} else if (sender.hasPermission("bookworm.delete") && args.length == 2 && args[0].equalsIgnoreCase("-delete")) {
+			short id = Short.parseShort(args[1]);
+			Book book = getBookById(id);
+			if (book == null) {
+				// fail - book doesn't exist
+				sender.sendMessage("Book id does not exist.");
+			} else {
+				// delete book
+				boolean success = book.delete();
+				if (!success) {
+					sender.sendMessage("Failed to delete book.");
+				} else {
+					// remove book from list
+					books.remove(id);
+					// remove bookmarks
+					Iterator<Map.Entry<String,Bookmark>> bookmarkIter = bookmarks.entrySet().iterator();
+					while (bookmarkIter.hasNext()) {
+						Map.Entry<String, Bookmark> entry = bookmarkIter.next();
+						if (entry.getValue().book.getId() == id) {
+							bookmarkIter.remove();
+						}
+					}
+					// remove from bookshelves
+					boolean removedShelves = false;
+					Iterator<Map.Entry<String,Short>> bookshelfIter = bookshelves.entrySet().iterator();
+					while (bookshelfIter.hasNext()) {
+						Map.Entry<String,Short> entry = bookshelfIter.next();
+						if (entry.getValue().equals(id)) {
+							bookshelfIter.remove();
+							removedShelves = true;
+						}
+					}
+					if (removedShelves) {
+						saveBookshelves();
+					}
+					// add to extra book ids
+					extraBookIds.add(id);
+					saveExtraBookIds();
+					// send message
+					sender.sendMessage("Book " + id + " deleted.");
 				}
 			}
 		} else if (sender instanceof Player) {
@@ -448,7 +496,7 @@ public class BookWorm extends JavaPlugin {
 	}
 	
 	public static Book getBook(ItemStack item) {
-		if (item == null || item.getType() != Material.BOOK || item.getAmount() != 1 || item.getDurability() == 0) {
+		if (item == null || item.getType() != Material.BOOK || item.getDurability() == 0) {
 			return null;
 		} else {
 			return plugin.getBookById(item.getDurability());
@@ -520,12 +568,24 @@ public class BookWorm extends JavaPlugin {
 		return plugin.perms;
 	}
 	
-	private void loadBooks() {
+	private void loadBookshelves() {
 		try {
 			Scanner scanner = new Scanner(new File(getDataFolder(), "bookshelves.txt"));
 			while (scanner.hasNext()) {
 				String[] line = scanner.nextLine().split(":");
 				bookshelves.put(line[0], Short.parseShort(line[1]));
+			}
+			scanner.close();
+		} catch (FileNotFoundException e) {
+		}
+	}
+	
+	private void loadExtraBookIds() {
+		extraBookIds = new ArrayList<Short>();
+		try {
+			Scanner scanner = new Scanner(new File(getDataFolder(), "extrabookids.txt"));
+			while (scanner.hasNext()) {
+				extraBookIds.add(Short.parseShort(scanner.nextLine()));
 			}
 			scanner.close();
 		} catch (FileNotFoundException e) {
@@ -606,10 +666,9 @@ public class BookWorm extends JavaPlugin {
 		config.save();
 	}
 	
-	protected void saveAll() {
+	protected void saveBookshelves() {
 		PrintWriter writer = null;
 		try {
-			// append entry to book list
 			writer = new PrintWriter(new FileWriter(new File(BookWorm.plugin.getDataFolder(), "bookshelves.txt"), false));
 			for (String s : bookshelves.keySet()) {
 				writer.println(s + ":" + bookshelves.get(s));
@@ -623,8 +682,38 @@ public class BookWorm extends JavaPlugin {
 		}
 	}
 	
+	protected void saveExtraBookIds() {
+		File file = new File(BookWorm.plugin.getDataFolder(), "extrabookids.txt");
+		if (extraBookIds.size() == 0) {
+			if (file.exists()) file.delete();
+		} else {
+			PrintWriter writer = null;
+			try {
+				writer = new PrintWriter(new FileWriter(file, false));
+				for (Short s : extraBookIds) {
+					writer.println(s);
+				}
+			} catch (IOException e) {
+				getServer().getLogger().severe("BookWorm: Error writing extra book id list");
+			} finally {
+				if (writer != null) {
+					writer.close();
+				}
+			}
+		}
+	}
+	
 	protected short getNextBookId() {
+		// check in extra book id list
+		if (extraBookIds != null && extraBookIds.size() > 0) {
+			short id = extraBookIds.remove(0);
+			saveExtraBookIds();
+			return id;
+		}
+		
+		// get next book id
 		short id = (short) (getCurrentBookId() + 1);
+		// save current book id to file
 		if (id > 0) {
 			File file = new File(getDataFolder(), "bookid.txt");
 			PrintWriter writer = null;

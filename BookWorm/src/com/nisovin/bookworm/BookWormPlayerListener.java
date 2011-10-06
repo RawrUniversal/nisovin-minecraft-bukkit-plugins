@@ -97,7 +97,7 @@ public class BookWormPlayerListener extends PlayerListener {
 						// remove book if allowed
 						player.setItemInHand(new ItemStack(Material.BOOK, 1, bookId));
 						plugin.bookshelves.remove(locStr);
-						plugin.saveAll();
+						plugin.saveBookshelves();
 						player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_REMOVED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 						event.setCancelled(true);
 					}					
@@ -132,7 +132,7 @@ public class BookWormPlayerListener extends PlayerListener {
 					// put book into bookshelf
 					if (!book.isSaved()) book.save();
 					plugin.bookshelves.put(locStr, bookId);
-					plugin.saveAll(); // TODO: append instead of save all
+					plugin.saveBookshelves(); // TODO: append instead of save all
 					player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_PLACED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 
 					// remove book in hand
@@ -155,6 +155,9 @@ public class BookWormPlayerListener extends PlayerListener {
 			// get book
 			Book book = plugin.getBookById(inHand.getDurability());
 			if (book == null) {
+				// book doesn't exist - set the book in hand to durability 0
+				inHand.setDurability((short)0);
+				player.setItemInHand(inHand);
 				return;
 			}
 			

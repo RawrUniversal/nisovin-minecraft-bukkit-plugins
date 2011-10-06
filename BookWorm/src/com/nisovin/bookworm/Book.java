@@ -288,6 +288,10 @@ public class Book {
 		try {
 			// get correct file
 			File bookFile = getFile();
+			if (bookFile == null || !bookFile.exists()) {
+				System.out.println("Failed to load book (file not found): " + id);
+				return false;
+			}
 			
 			BufferedReader reader = new BufferedReader(new FileReader(bookFile));
 			reader.readLine();
@@ -322,10 +326,28 @@ public class Book {
 		}
 	}
 	
+	public boolean delete() {
+		try {
+			unload();
+			File file = getFile();
+			File dir = new File(BookWorm.plugin.getDataFolder(), "deleted");
+			if (!dir.exists()) dir.mkdir();
+			File moved = new File(dir, file.getName());
+			int c = 0;
+			while (moved.exists()) {
+				moved = new File(dir, file.getName() + c++);
+			}
+			return file.renameTo(moved);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
 	private File getFile() {
 		File bookDir = BookWorm.plugin.getDataFolder();
 		File bookFile = new File(bookDir, id + ".txt");
 		if (!bookFile.exists()) {
+			bookFile = null;
 			for (File file : bookDir.listFiles()) {
 				if (file.getName().startsWith(id+"_")) {
 					bookFile = file;

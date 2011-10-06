@@ -1,6 +1,6 @@
 name: BookWorm
 main: com.nisovin.bookworm.BookWorm
-version: 1.7
+version: 1.8
 softdepend: [Spout]
 commands:
     bookworm:
@@ -13,6 +13,7 @@ permissions:
         children:
             bookworm.reload: true
             bookworm.list: true
+            bookworm.delete: true
             bookworm.create: true
             bookworm.write.own: true
             bookworm.write.others: true
@@ -29,6 +30,9 @@ permissions:
         default: op
     bookworm.list:
         description: List all books
+        default: op
+    bookworm.delete:
+        description: Delete a book by its book id
         default: op
     bookworm.create:
         description: Create a new book

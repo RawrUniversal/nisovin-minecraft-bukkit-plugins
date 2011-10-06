@@ -32,7 +32,7 @@ public class BookWormBlockListener extends BlockListener {
 				} else if (plugin.perms.canDestroyBook(player, book)) {
 					// remove book from bookshelf list
 					plugin.bookshelves.remove(locStr);
-					plugin.saveAll();
+					plugin.saveBookshelves();
 					// drop book
 					l.getWorld().dropItemNaturally(l, new ItemStack(Material.BOOK, 1, book.getId()));
 				} else {
