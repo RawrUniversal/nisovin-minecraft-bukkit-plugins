@@ -7,7 +7,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerListener;
@@ -27,7 +26,6 @@ public class BookWormPlayerListener extends PlayerListener {
 		if (BookWorm.SHOW_TITLE_ON_HELD_CHANGE) {
 			plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this, Event.Priority.Monitor, plugin);
 		}
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_DROP_ITEM, this, Event.Priority.Monitor, plugin);
 	}
 	
 	@Override
@@ -187,14 +185,6 @@ public class BookWormPlayerListener extends PlayerListener {
 			if (book != null) {
 				event.getPlayer().sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 			}
-		}
-	}
-	
-	@Override
-	@SuppressWarnings("deprecation")
-	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if (!event.isCancelled() && event.getItemDrop().getItemStack().getType() == Material.BOOK) {
-			event.getPlayer().updateInventory();
 		}
 	}
 
