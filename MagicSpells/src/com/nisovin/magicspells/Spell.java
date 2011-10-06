@@ -502,9 +502,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param message the message to send
 	 */
 	protected void sendMessage(Player player, String message) {
-		if (!player.hasPermission("magicspells.silent")) {
-			MagicSpells.sendMessage(player, message);
-		}
+		MagicSpells.sendMessage(player, message);
 	}
 	
 	/**
