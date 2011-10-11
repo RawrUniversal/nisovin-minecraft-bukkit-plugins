@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ForgetSpell extends CommandSpell {
 
@@ -23,7 +23,7 @@ public class ForgetSpell extends CommandSpell {
 	private String strResetTarget;
 	private String strResetSelf;
 	
-	public ForgetSpell(Configuration config, String spellName) {
+	public ForgetSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		allowSelfForget = getConfigBoolean("allow-self-forget", true);

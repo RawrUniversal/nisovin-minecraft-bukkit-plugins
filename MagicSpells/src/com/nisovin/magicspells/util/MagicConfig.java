@@ -3,26 +3,29 @@ package com.nisovin.magicspells.util;
 import java.io.File;
 import java.util.List;
 
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 
-public class MagicConfig extends Configuration {
+public class MagicConfig extends YamlConfiguration {
 
-	private Configuration altConfig;
+	private YamlConfiguration altConfig;
 	
 	public MagicConfig(File file) {
-		super(file);
-		this.load();
-		String s = this.getString("general.alt-config", null);
-		if (s != null && !s.trim().equals("")) {
-			s = s.trim();
-			File f = new File(MagicSpells.plugin.getDataFolder(), s);
-			if (f.exists()) {
-				altConfig = new Configuration(f);
-				altConfig.load();
+		try {
+			this.load(file);
+			String s = this.getString("general.alt-config", null);
+			if (s != null && !s.trim().equals("")) {
+				s = s.trim();
+				File f = new File(MagicSpells.plugin.getDataFolder(), s);
+				if (f.exists()) {
+					altConfig = new YamlConfiguration();
+					altConfig.load(f);
+				}
 			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 	
@@ -30,7 +33,7 @@ public class MagicConfig extends Configuration {
 	public int getInt(String path, int def) {
 		Object o = null;
 		if (altConfig != null) {
-			o = altConfig.getProperty(path);
+			o = altConfig.get(path);
 		}
 		if (o != null && o instanceof Integer) {
 			return (Integer)o;
@@ -43,7 +46,7 @@ public class MagicConfig extends Configuration {
 	public boolean getBoolean(String path, boolean def) {
 		Object o = null;
 		if (altConfig != null) {
-			o = altConfig.getProperty(path);
+			o = altConfig.get(path);
 		}
 		if (o != null && o instanceof Boolean) {
 			return (Boolean)o;
@@ -65,42 +68,42 @@ public class MagicConfig extends Configuration {
 		}
 	}
 	
-	@Override
+	@SuppressWarnings("unchecked")
 	public List<Integer> getIntList(String path, List<Integer> def) {
 		List<Integer> l = null;
 		if (altConfig != null) {
-			l = altConfig.getIntList(path, null);
+			l = (List<Integer>)altConfig.getList(path, null);
 		}
 		if (l != null) {
 			return l;
 		} else {
-			return super.getIntList(path, def);
+			return super.getList(path, def);
 		}		
 	}
 	
-	@Override
+	@SuppressWarnings("unchecked")
 	public List<Boolean> getBooleanList(String path, List<Boolean> def) {
 		List<Boolean> l = null;
 		if (altConfig != null) {
-			l = altConfig.getBooleanList(path, null);
+			l = (List<Boolean>)altConfig.getList(path, null);
 		}
 		if (l != null) {
 			return l;
 		} else {
-			return super.getBooleanList(path, def);
+			return (List<Boolean>)super.getList(path, def);
 		}		
 	}
 	
-	@Override
+	@SuppressWarnings("unchecked")
 	public List<String> getStringList(String path, List<String> def) {
 		List<String> l = null;
 		if (altConfig != null) {
-			l = altConfig.getStringList(path, null);
+			l = (List<String>)altConfig.getList(path, null);
 		}
 		if (l != null) {
 			return l;
 		} else {
-			return super.getStringList(path, def);
+			return (List<String>)super.getList(path, def);
 		}		
 	}
 	

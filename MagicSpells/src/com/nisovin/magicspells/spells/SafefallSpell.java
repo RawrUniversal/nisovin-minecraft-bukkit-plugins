@@ -6,15 +6,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class SafefallSpell extends BuffSpell {
 
 	private HashSet<String> safefallers;
 	
-	public SafefallSpell(Configuration config, String spellName) {
+	public SafefallSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		addListener(Event.Type.ENTITY_DAMAGE);
 		

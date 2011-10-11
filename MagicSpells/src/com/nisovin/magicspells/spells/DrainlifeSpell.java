@@ -13,10 +13,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class DrainlifeSpell extends InstantSpell {
 	
@@ -28,7 +27,7 @@ public class DrainlifeSpell extends InstantSpell {
 	private boolean checkPlugins;
 	private String strNoTarget;
 	
-	public DrainlifeSpell(Configuration config, String spellName) {
+	public DrainlifeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		damage = getConfigInt("damage", 2);

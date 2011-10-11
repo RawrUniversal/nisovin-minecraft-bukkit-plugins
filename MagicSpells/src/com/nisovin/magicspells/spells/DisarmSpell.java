@@ -9,9 +9,8 @@ import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class DisarmSpell extends InstantSpell {
 
@@ -23,7 +22,7 @@ public class DisarmSpell extends InstantSpell {
 	private String strInvalidItem;
 	private String strCastTarget;
 	
-	public DisarmSpell(Configuration config, String spellName) {
+	public DisarmSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		disarmable = new ArrayList<Integer>();

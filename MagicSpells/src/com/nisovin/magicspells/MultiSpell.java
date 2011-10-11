@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
+
+import com.nisovin.magicspells.util.MagicConfig;
 
 public final class MultiSpell extends Spell {
 
@@ -15,7 +16,7 @@ public final class MultiSpell extends Spell {
 	
 	private ArrayList<Spell> spells;
 	
-	public MultiSpell(Configuration config, String spellName) {
+	public MultiSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		castWithItem = getConfigBoolean("can-cast-with-item", true);

@@ -9,9 +9,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class GillsSpell extends BuffSpell {
 
@@ -20,7 +20,7 @@ public class GillsSpell extends BuffSpell {
 	private HashSet<String> fishes;
 	private HashMap<Player,ItemStack> helmets;
 	
-	public GillsSpell(Configuration config, String spellName) {
+	public GillsSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		addListener(Event.Type.ENTITY_DAMAGE);
 		

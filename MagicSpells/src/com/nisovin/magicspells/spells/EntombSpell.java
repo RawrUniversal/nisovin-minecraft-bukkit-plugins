@@ -7,10 +7,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class EntombSpell extends InstantSpell {
 
@@ -21,7 +20,7 @@ public class EntombSpell extends InstantSpell {
 	private boolean closeTopAndBottom;
 	private String strNoTarget;
 	
-	public EntombSpell(Configuration config, String spellName) {
+	public EntombSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);

@@ -5,7 +5,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
@@ -13,6 +12,7 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class TeachSpell extends CommandSpell {
 
@@ -25,7 +25,7 @@ public class TeachSpell extends CommandSpell {
 	private String strAlreadyKnown;
 	private String strCastTarget;
 	
-	public TeachSpell(Configuration config, String spellName) {
+	public TeachSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		requireKnownSpell = getConfigBoolean("require-known-spell", true);

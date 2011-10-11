@@ -9,15 +9,15 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class LightwalkSpell extends BuffSpell {
 	
 	private HashMap<String,Block> lightwalkers;
 
-	public LightwalkSpell(Configuration config, String spellName) {
+	public LightwalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		addListener(Event.Type.PLAYER_MOVE);

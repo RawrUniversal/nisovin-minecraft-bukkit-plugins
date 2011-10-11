@@ -15,10 +15,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class FireballSpell extends InstantSpell {
 	
@@ -33,7 +32,7 @@ public class FireballSpell extends InstantSpell {
 	
 	private HashMap<Fireball,Float> fireballs;
 	
-	public FireballSpell(Configuration config, String spellName) {
+	public FireballSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		requireEntityTarget = getConfigBoolean("require-entity-target", false);

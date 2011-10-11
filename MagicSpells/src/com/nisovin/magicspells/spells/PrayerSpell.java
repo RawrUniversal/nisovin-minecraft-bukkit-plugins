@@ -1,16 +1,16 @@
 package com.nisovin.magicspells.spells;
 
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class PrayerSpell extends InstantSpell {
 	
 	private int amountHealed;
 	private String strAtFullHealth;
 
-	public PrayerSpell(Configuration config, String spellName) {
+	public PrayerSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		amountHealed = config.getInt("spells." + spellName + ".amount-healed", 10);

@@ -1,16 +1,16 @@
 package com.nisovin.magicspells.spells;
 
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ManaSpell extends InstantSpell {
 
 	private int mana;
 	
-	public ManaSpell(Configuration config, String spellName) {
+	public ManaSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		mana = getConfigInt("mana", 25);

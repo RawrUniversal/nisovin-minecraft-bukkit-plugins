@@ -20,9 +20,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class MinionSpell extends BuffSpell {
 	
@@ -35,7 +35,7 @@ public class MinionSpell extends BuffSpell {
 	private HashMap<String,LivingEntity> targets;
 	Random random;
 	
-	public MinionSpell(Configuration config, String spellName) {
+	public MinionSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		List<String> c = config.getStringList("spells." + spellName + ".mob-chances", null);

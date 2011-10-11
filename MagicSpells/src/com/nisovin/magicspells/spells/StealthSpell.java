@@ -5,15 +5,15 @@ import java.util.HashSet;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class StealthSpell extends BuffSpell {
 	
 	private HashSet<String> stealthy;
 	
-	public StealthSpell(Configuration config, String spellName) {
+	public StealthSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		addListener(Event.Type.ENTITY_TARGET);

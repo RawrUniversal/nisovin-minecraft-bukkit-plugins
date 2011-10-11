@@ -8,16 +8,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class RepairSpell extends InstantSpell {
 
 	private String[] toRepair;
 	private String strNothingToRepair;
 	
-	public RepairSpell(Configuration config, String spellName) {
+	public RepairSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		List<String> toRepairList = getConfigStringList("to-repair", null);

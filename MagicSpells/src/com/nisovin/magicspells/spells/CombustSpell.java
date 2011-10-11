@@ -5,9 +5,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class CombustSpell extends InstantSpell {
 	
@@ -17,7 +16,7 @@ public class CombustSpell extends InstantSpell {
 	private boolean checkPlugins;
 	private String strNoTarget;
 	
-	public CombustSpell(Configuration config, String spellName) {
+	public CombustSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);

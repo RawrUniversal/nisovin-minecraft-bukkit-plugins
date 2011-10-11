@@ -9,10 +9,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class FlamewalkSpell extends BuffSpell {
 	
@@ -25,7 +25,7 @@ public class FlamewalkSpell extends BuffSpell {
 	private HashMap<String,Float> flamewalkers;
 	private Burner burner;
 	
-	public FlamewalkSpell(Configuration config, String spellName) {
+	public FlamewalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		range = config.getInt("spells." + spellName + ".range", 8);

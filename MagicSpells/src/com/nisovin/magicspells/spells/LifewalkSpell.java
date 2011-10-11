@@ -8,10 +8,10 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class LifewalkSpell extends BuffSpell {
 	
@@ -26,7 +26,7 @@ public class LifewalkSpell extends BuffSpell {
 	private int tallgrassChance;
 	private int fernChance;
 	
-	public LifewalkSpell(Configuration config, String spellName) {
+	public LifewalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		lifewalkers = new HashSet<String>();

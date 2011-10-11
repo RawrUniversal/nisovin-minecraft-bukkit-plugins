@@ -11,9 +11,9 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.ChanneledSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class SummonSpell extends ChanneledSpell {
 
@@ -30,7 +30,7 @@ public class SummonSpell extends ChanneledSpell {
 	private HashMap<Player,Location> pendingSummons;
 	private HashMap<Player,Long> pendingTimes;
 	
-	public SummonSpell(Configuration config, String spellName) {
+	public SummonSpell(MagicConfig config, String spellName) {
 		super(config, spellName);		
 		
 		requireExactName = getConfigBoolean("require-exact-name", false);

@@ -28,7 +28,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellLearnEvent;
@@ -48,6 +47,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static boolean defaultAllPermsFalse;
 	
 	protected static boolean allowCycleToNoSpell;
+	protected static boolean onlyCycleToCastableSpells;
 	protected static boolean ignoreDefaultBindings;
 	protected static boolean showStrCostOnMissingReagents;
 	protected static List<Integer> losTransparentBlocks;
@@ -116,11 +116,12 @@ public class MagicSpells extends JavaPlugin {
 		
 		// load config
 		loadConfigFromJar();
-		Configuration config = new MagicConfig(new File(this.getDataFolder(), "config.yml"));
+		MagicConfig config = new MagicConfig(new File(this.getDataFolder(), "config.yml"));
 		debug = config.getBoolean("general.debug", false);
 		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		allowCycleToNoSpell = config.getBoolean("general.allow-cycle-to-no-spell", false);
+		onlyCycleToCastableSpells = config.getBoolean("general.only-cycle-to-castable-spells", true);
 		opsHaveAllSpells = config.getBoolean("general.ops-have-all-spells", true);
 		defaultAllPermsFalse = config.getBoolean("general.default-all-perms-false", false);
 		showStrCostOnMissingReagents = config.getBoolean("general.show-str-cost-on-missing-reagents", true);
@@ -240,7 +241,7 @@ public class MagicSpells extends JavaPlugin {
 		
 	}
 	
-	private void loadNormalSpells(Configuration config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
+	private void loadNormalSpells(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
 		// create list of spells
 		ArrayList<Class<? extends Spell>> spellClasses = new ArrayList<Class<? extends Spell>>();
 		spellClasses.add(BindSpell.class);
@@ -297,6 +298,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(VolleySpell.class);
 		spellClasses.add(WalkwaySpell.class);
 		spellClasses.add(WallSpell.class);
+		//spellClasses.add(WindwalkSpell.class);
 		spellClasses.add(ZapSpell.class);
 		// load the spells
 		for (Class<? extends Spell> c : spellClasses) {
@@ -315,7 +317,7 @@ public class MagicSpells extends JavaPlugin {
 				// check enabled
 				if (config.getBoolean("spells." + spellName + ".enabled", true)) {
 					// initialize spell
-					Constructor<? extends Spell> constructor = c.getConstructor(Configuration.class, String.class);
+					Constructor<? extends Spell> constructor = c.getConstructor(MagicConfig.class, String.class);
 					Spell spell = constructor.newInstance(config, spellName);
 					spells.put(spellName, spell);
 					// add permissions
@@ -338,7 +340,7 @@ public class MagicSpells extends JavaPlugin {
 		
 	}
 	
-	private void loadCustomSpells(Configuration config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
+	private void loadCustomSpells(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
 		// load spells from plugin folder
 		final List<File> jarList = new ArrayList<File>();
 		File[] classFiles = getDataFolder().listFiles(new FilenameFilter() {
@@ -393,7 +395,7 @@ public class MagicSpells extends JavaPlugin {
 					// load the spell
 					if (config.getBoolean("spells." + spellName + ".enabled", true)) {
 						// initialize spell
-						Spell spell = c.getConstructor(Configuration.class, String.class).newInstance(config, spellName);
+						Spell spell = c.getConstructor(MagicConfig.class, String.class).newInstance(config, spellName);
 						spells.put(spellName, spell);
 						// add permissions
 						addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
@@ -418,7 +420,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	private void loadSpellCopies(Configuration config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
+	private void loadSpellCopies(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
 		// load spell copies
 		List<String> copies = config.getStringList("spellcopies", new ArrayList<String>());
 		List<String> moreCopies = config.getStringList("spells.spellcopies", null);
@@ -435,7 +437,7 @@ public class MagicSpells extends JavaPlugin {
 						// check enabled
 						if (config.getBoolean("spells." + spellName + ".enabled", true)) {
 							// initialize spell
-							Spell spellCopy = spell.getClass().getConstructor(Configuration.class, String.class).newInstance(config, spellName);
+							Spell spellCopy = spell.getClass().getConstructor(MagicConfig.class, String.class).newInstance(config, spellName);
 							spells.put(spellName, spellCopy);
 							// add permissions
 							addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
@@ -457,7 +459,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	private void loadMultiSpells(Configuration config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
+	private void loadMultiSpells(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
 		// load multi-spells
 		List<String> multiSpells = config.getStringList("multispells", null);
 		if (multiSpells != null) {

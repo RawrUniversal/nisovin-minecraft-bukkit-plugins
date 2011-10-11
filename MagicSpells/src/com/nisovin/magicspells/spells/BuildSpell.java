@@ -9,9 +9,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class BuildSpell extends InstantSpell {
 	
@@ -23,7 +22,7 @@ public class BuildSpell extends InstantSpell {
 	private String strInvalidBlock;
 	private String strCantBuild;
 	
-	public BuildSpell(Configuration config, String spellName) {
+	public BuildSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		slot = config.getInt("spells." + spellName + ".slot", 0);

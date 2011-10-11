@@ -3,11 +3,10 @@ package com.nisovin.magicspells.spells;
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class EmpowerSpell extends BuffSpell {
 
@@ -15,7 +14,7 @@ public class EmpowerSpell extends BuffSpell {
 	
 	private HashMap<Player,Float> empowered;
 	
-	public EmpowerSpell(Configuration config, String spellName) {
+	public EmpowerSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		extraPower = getConfigFloat("power-multiplier", 1.5F);

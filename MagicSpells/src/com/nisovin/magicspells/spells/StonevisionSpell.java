@@ -10,9 +10,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class StonevisionSpell extends BuffSpell {
 	
@@ -21,7 +21,7 @@ public class StonevisionSpell extends BuffSpell {
 	
 	private HashMap<String,TransparentBlockSet> seers;
 
-	public StonevisionSpell(Configuration config, String spellName) {
+	public StonevisionSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		addListener(Event.Type.PLAYER_MOVE);

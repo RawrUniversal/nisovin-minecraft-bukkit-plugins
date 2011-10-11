@@ -15,6 +15,7 @@ general:
     text-color: 3
     broadcast-range: 20
     allow-cycle-to-no-spell: false
+    only-cycle-to-castable-spells: true
     ops-have-all-spells: true
     default-all-perms-false: false
     ignore-default-bindings: false

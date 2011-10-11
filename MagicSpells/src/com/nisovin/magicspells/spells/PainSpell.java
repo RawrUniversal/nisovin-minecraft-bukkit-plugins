@@ -5,9 +5,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class PainSpell extends InstantSpell {
 
@@ -17,7 +17,7 @@ public class PainSpell extends InstantSpell {
 	private boolean checkPlugins;
 	private String strNoTarget;
 	
-	public PainSpell(Configuration config, String spellName) {
+	public PainSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		damage = getConfigInt("damage", 4);

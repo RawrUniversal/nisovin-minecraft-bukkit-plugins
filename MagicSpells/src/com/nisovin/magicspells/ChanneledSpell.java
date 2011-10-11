@@ -10,7 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.util.config.Configuration;
+
+import com.nisovin.magicspells.util.MagicConfig;
 
 public abstract class ChanneledSpell extends Spell {
 
@@ -30,7 +31,7 @@ public abstract class ChanneledSpell extends Spell {
 	private HashMap<String,Location> locations;
 	private static HashSet<Player> allChannelers;
 	
-	public ChanneledSpell(Configuration config, String spellName) {
+	public ChanneledSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		addListener(Event.Type.PLAYER_MOVE);

@@ -5,9 +5,8 @@ import net.minecraft.server.MobEffect;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class CrippleSpell extends InstantSpell {
 
@@ -17,7 +16,7 @@ public class CrippleSpell extends InstantSpell {
 	private boolean obeyLos;
 	private String strNoTarget;
 	
-	public CrippleSpell(Configuration config, String spellName) {
+	public CrippleSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		strength = getConfigInt("effect-strength", 5);

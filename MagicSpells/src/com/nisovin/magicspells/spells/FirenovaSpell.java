@@ -12,10 +12,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class FirenovaSpell extends InstantSpell {
 
@@ -24,7 +23,7 @@ public class FirenovaSpell extends InstantSpell {
 	
 	private HashSet<Player> fireImmunity;
 	
-	public FirenovaSpell(Configuration config, String spellName) {
+	public FirenovaSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		addListener(Event.Type.ENTITY_DAMAGE);
 		

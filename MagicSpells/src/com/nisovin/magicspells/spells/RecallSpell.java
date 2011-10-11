@@ -2,9 +2,9 @@ package com.nisovin.magicspells.spells;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class RecallSpell extends InstantSpell {
 	
@@ -14,7 +14,7 @@ public class RecallSpell extends InstantSpell {
 	private String strOtherWorld;
 	private String strTooFar;
 
-	public RecallSpell(Configuration config, String spellName) {
+	public RecallSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		allowCrossWorld = config.getBoolean("spells." + spellName + ".allow-cross-world", true);

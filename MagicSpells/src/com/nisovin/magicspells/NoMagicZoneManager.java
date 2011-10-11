@@ -8,8 +8,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.Configuration;
 
+import com.nisovin.magicspells.util.MagicConfig;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -18,7 +18,7 @@ public class NoMagicZoneManager {
 	
 	private HashSet<NoMagicZone> zones;
 
-	public NoMagicZoneManager(Configuration config) {
+	public NoMagicZoneManager(MagicConfig config) {
 		zones = new HashSet<NoMagicZone>();
 		
 		WorldGuardPlugin worldGuard = null;

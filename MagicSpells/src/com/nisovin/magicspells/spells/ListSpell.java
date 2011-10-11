@@ -5,12 +5,12 @@ import java.util.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ListSpell extends CommandSpell {
 	
@@ -20,7 +20,7 @@ public class ListSpell extends CommandSpell {
 	private String strNoSpells;
 	private String strPrefix;
 
-	public ListSpell(Configuration config, String spellName) {
+	public ListSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		onlyShowCastableSpells = getConfigBoolean("only-show-castable-spells", false);

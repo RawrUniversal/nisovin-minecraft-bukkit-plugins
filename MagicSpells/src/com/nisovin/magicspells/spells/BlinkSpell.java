@@ -8,16 +8,15 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.*;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class BlinkSpell extends InstantSpell {
 	
 	private boolean smokeTrail;
 	private String strCantBlink = null;
 	
-	public BlinkSpell(Configuration config, String spellName) {
+	public BlinkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		smokeTrail = config.getBoolean("spells." + spellName + ".smoke-trail", true);

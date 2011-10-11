@@ -7,9 +7,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class LeapSpell extends InstantSpell {
 	
@@ -19,7 +19,7 @@ public class LeapSpell extends InstantSpell {
 	
 	private HashSet<Player> jumping;
 
-	public LeapSpell(Configuration config, String spellName) {
+	public LeapSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		forwardVelocity = getConfigInt("forward-velocity", 40) / 10D;

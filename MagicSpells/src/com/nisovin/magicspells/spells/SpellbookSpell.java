@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
@@ -23,6 +22,7 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
+import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MagicLocation;
 
 public class SpellbookSpell extends CommandSpell {
@@ -48,7 +48,7 @@ public class SpellbookSpell extends CommandSpell {
 	private ArrayList<String> bookSpells;
 	private ArrayList<Integer> bookUses;
 	
-	public SpellbookSpell(Configuration config, String spellName) {
+	public SpellbookSpell(MagicConfig config, String spellName) {
 		super(config,spellName);
 		
 		defaultUses = config.getInt("spells." + spellName + ".default-uses", -1);

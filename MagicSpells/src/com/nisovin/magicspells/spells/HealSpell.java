@@ -1,9 +1,9 @@
 package com.nisovin.magicspells.spells;
 
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class HealSpell extends InstantSpell {
 	
@@ -13,7 +13,7 @@ public class HealSpell extends InstantSpell {
 	private String strMaxHealth;
 	private String strCastTarget;
 
-	public HealSpell(Configuration config, String spellName) {
+	public HealSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		healAmount = config.getInt("spells." + spellName + ".heal-amount", 10);

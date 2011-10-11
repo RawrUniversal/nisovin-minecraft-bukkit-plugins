@@ -6,9 +6,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ForcepushSpell extends InstantSpell {
 	
@@ -17,7 +17,7 @@ public class ForcepushSpell extends InstantSpell {
 	private int yForce;
 	private int maxYForce;
 	
-	public ForcepushSpell(Configuration config, String spellName) {
+	public ForcepushSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);

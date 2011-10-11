@@ -12,10 +12,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.util.BlockPlatform;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class CarpetSpell extends BuffSpell {
 	
@@ -27,7 +26,7 @@ public class CarpetSpell extends BuffSpell {
 	private HashMap<String,BlockPlatform> windwalkers;
 	private HashSet<Player> falling;
 
-	public CarpetSpell(Configuration config, String spellName) {
+	public CarpetSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		platformBlock = Material.getMaterial(config.getInt("spells." + spellName + ".platform-block", Material.GLASS.getId()));

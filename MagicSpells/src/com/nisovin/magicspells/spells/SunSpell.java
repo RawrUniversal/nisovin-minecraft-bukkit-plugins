@@ -3,16 +3,16 @@ package com.nisovin.magicspells.spells;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.ChanneledSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class SunSpell extends ChanneledSpell {
 
 	private int timeToSet;
 	private String strAnnounce;
 		
-	public SunSpell(Configuration config, String spellName) {
+	public SunSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		timeToSet = getConfigInt("time-to-set", 0);

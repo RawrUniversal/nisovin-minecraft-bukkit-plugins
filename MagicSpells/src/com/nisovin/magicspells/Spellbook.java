@@ -134,18 +134,24 @@ public class Spellbook {
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
 			if (spells.size() > 1 || i.equals(-1) || MagicSpells.allowCycleToNoSpell) {
-				i++;
-				if (i >= spells.size()) {
-					if (MagicSpells.allowCycleToNoSpell) {
-						activeSpells.put(castItem, -1);
-						MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
-						return null;
-					} else {
-						i = 0;
+				int count = 0;
+				while (count++ < spells.size()) {
+					i++;
+					if (i >= spells.size()) {
+						if (MagicSpells.allowCycleToNoSpell) {
+							activeSpells.put(castItem, -1);
+							MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
+							return null;
+						} else {
+							i = 0;
+						}
+					}
+					if (!MagicSpells.onlyCycleToCastableSpells || canCast(spells.get(i))) {
+						activeSpells.put(castItem, i);
+						return spells.get(i);
 					}
 				}
-				activeSpells.put(castItem, i);
-				return spells.get(i);
+				return null;
 			} else {
 				return null;
 			}
@@ -159,18 +165,24 @@ public class Spellbook {
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
 			if (spells.size() > 1 || i.equals(-1) || MagicSpells.allowCycleToNoSpell) {
-				i--;
-				if (i < 0) {
-					if (MagicSpells.allowCycleToNoSpell) {
-						activeSpells.put(castItem, -1);
-						MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
-						return null;
-					} else {
-						i = spells.size() - 1;
+				int count = 0;
+				while (count++ < spells.size()) {
+					i--;
+					if (i < 0) {
+						if (MagicSpells.allowCycleToNoSpell) {
+							activeSpells.put(castItem, -1);
+							MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
+							return null;
+						} else {
+							i = spells.size() - 1;
+						}
+					}
+					if (!MagicSpells.onlyCycleToCastableSpells || canCast(spells.get(i))) {
+						activeSpells.put(castItem, i);
+						return spells.get(i);
 					}
 				}
-				activeSpells.put(castItem, i);
-				return spells.get(i);
+				return null;
 			} else {
 				return null;
 			}

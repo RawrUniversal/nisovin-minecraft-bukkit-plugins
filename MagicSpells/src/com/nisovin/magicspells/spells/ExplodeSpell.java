@@ -14,9 +14,8 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ExplodeSpell extends InstantSpell {
 	
@@ -25,7 +24,7 @@ public class ExplodeSpell extends InstantSpell {
 	private int backfireChance;
 	private String strNoTarget;
 	
-	public ExplodeSpell(Configuration config, String spellName) {
+	public ExplodeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);

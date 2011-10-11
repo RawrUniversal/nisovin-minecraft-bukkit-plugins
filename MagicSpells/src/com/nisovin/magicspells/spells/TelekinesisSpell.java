@@ -6,9 +6,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class TelekinesisSpell extends InstantSpell {
 
@@ -16,7 +16,7 @@ public class TelekinesisSpell extends InstantSpell {
 	
 	private HashSet<Byte> transparent;
 	
-	public TelekinesisSpell(Configuration config, String spellName) {
+	public TelekinesisSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You must target a switch or button.");

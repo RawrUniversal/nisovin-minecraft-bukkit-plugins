@@ -3,17 +3,17 @@ package com.nisovin.magicspells.spells;
 import java.util.HashSet;
 
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ReflectSpell extends BuffSpell {
 
 	private HashSet<Player> reflectors;
 	
-	public ReflectSpell(Configuration config, String spellName) {
+	public ReflectSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		reflectors = new HashSet<Player>();

@@ -5,9 +5,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.TemporaryBlockSet;
 
 public class WallSpell extends InstantSpell {
@@ -18,7 +18,7 @@ public class WallSpell extends InstantSpell {
 	private int wallDuration;
 	private String strNoTarget;
 	
-	public WallSpell(Configuration config, String spellName) {
+	public WallSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		wallWidth = config.getInt("spells." + spellName + ".wall-width", 5);

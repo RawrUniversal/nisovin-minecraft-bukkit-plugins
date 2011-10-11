@@ -1,24 +1,26 @@
 package com.nisovin.magicspells.spells;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ScrollSpell extends CommandSpell {
 
@@ -47,7 +49,7 @@ public class ScrollSpell extends CommandSpell {
 	private HashMap<Short,Integer> scrollUses;
 	private boolean dirtyData;
 	
-	public ScrollSpell(Configuration config, String spellName) {
+	public ScrollSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		castForFree = getConfigBoolean("cast-for-free", true);
@@ -362,14 +364,18 @@ public class ScrollSpell extends CommandSpell {
 			if (file.exists()) {
 				file.delete();
 			}
-			Configuration c = new Configuration(file);
+			YamlConfiguration c = new YamlConfiguration();
 			String data;
 			for (short i : scrollSpells.keySet()) {
 				data = scrollSpells.get(i).getInternalName() + "|" + scrollUses.get(i);
 				MagicSpells.debug("    " + i + " : " + data);
-				c.setProperty(i+"", data);
+				c.set(i+"", data);
 			}
-			c.save();
+			try {
+				c.save(file);
+			} catch (IOException e) {
+				System.out.println("MagicSpells: Error: Failed to save scrolls");
+			}
 		}
 	}
 	
@@ -377,9 +383,14 @@ public class ScrollSpell extends CommandSpell {
 		File file = new File(MagicSpells.plugin.getDataFolder(), "scrolls.txt");
 		if (file.exists()) {
 			MagicSpells.debug("Loading scrolls...");
-			Configuration c = new Configuration(file);
-			c.load();
-			List<String> keys = c.getKeys();
+			YamlConfiguration c = new YamlConfiguration();
+			try {
+				c.load(file);
+			} catch (Exception e) {
+				System.out.println("MagicSpells: Error: Failed to load scrolls");
+				return;
+			}
+			Set<String> keys = c.getKeys(false);
 			for (String s : keys) {
 				short id = Short.parseShort(s);
 				String[] data = c.getString(s).split("\\|");

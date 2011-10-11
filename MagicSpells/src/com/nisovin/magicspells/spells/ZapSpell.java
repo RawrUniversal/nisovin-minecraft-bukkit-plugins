@@ -8,10 +8,10 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ZapSpell extends InstantSpell {
 	
@@ -20,7 +20,7 @@ public class ZapSpell extends InstantSpell {
 	private int[] disallowedBlockTypes;
 	private boolean dropBlock;
 	
-	public ZapSpell(Configuration config, String spellName) {
+	public ZapSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		strCantZap = config.getString("spells." + spellName + ".str-cant-zap", "");

@@ -5,13 +5,12 @@ import java.util.List;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ConfusionSpell extends InstantSpell {
 
-	public ConfusionSpell(Configuration config, String spellName) {
+	public ConfusionSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 	}
 

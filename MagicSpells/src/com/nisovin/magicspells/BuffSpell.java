@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
+
+import com.nisovin.magicspells.util.MagicConfig;
 
 public abstract class BuffSpell extends Spell {
 	
@@ -24,7 +25,7 @@ public abstract class BuffSpell extends Spell {
 	private HashMap<String,Integer> useCounter;
 	private HashMap<String,Long> durationStartTime;
 	
-	public BuffSpell(Configuration config, String spellName) {
+	public BuffSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		List<String> costList = config.getStringList("spells." + spellName + ".use-cost", null);

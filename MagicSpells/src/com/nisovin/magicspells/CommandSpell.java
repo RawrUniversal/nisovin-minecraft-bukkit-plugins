@@ -1,11 +1,12 @@
 package com.nisovin.magicspells;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.util.config.Configuration;
+
+import com.nisovin.magicspells.util.MagicConfig;
 
 public abstract class CommandSpell extends Spell {
 
-	public CommandSpell(Configuration config, String spellName) {
+	public CommandSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 	}
 	

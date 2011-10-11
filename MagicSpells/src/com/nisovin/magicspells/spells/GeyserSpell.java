@@ -13,9 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellAnimation;
 
 public class GeyserSpell extends InstantSpell {
@@ -30,7 +30,7 @@ public class GeyserSpell extends InstantSpell {
 	private boolean checkPlugins;
 	private String strNoTarget;
 
-	public GeyserSpell(Configuration config, String spellName) {
+	public GeyserSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		damage = getConfigInt("damage", 0);

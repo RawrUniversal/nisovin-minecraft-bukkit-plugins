@@ -9,10 +9,10 @@ import java.util.Scanner;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MagicLocation;
 
 public class MarkSpell extends InstantSpell {
@@ -21,7 +21,7 @@ public class MarkSpell extends InstantSpell {
 	
 	public static HashMap<String,MagicLocation> marks;
 
-	public MarkSpell(Configuration config, String spellName) {
+	public MarkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		permanentMarks = config.getBoolean("spells." + spellName + ".permanent-marks", true);

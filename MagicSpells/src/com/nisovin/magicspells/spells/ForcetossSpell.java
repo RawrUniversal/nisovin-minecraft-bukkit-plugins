@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ForcetossSpell extends InstantSpell {
 
@@ -20,7 +20,7 @@ public class ForcetossSpell extends InstantSpell {
 	private boolean checkPlugins;
 	private String strNoTarget;
 	
-	public ForcetossSpell(Configuration config, String spellName) {
+	public ForcetossSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		damage = getConfigInt("damage", 0);

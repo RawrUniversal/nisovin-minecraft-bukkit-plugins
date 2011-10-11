@@ -13,9 +13,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class WalkwaySpell extends BuffSpell {
 
@@ -26,7 +26,7 @@ public class WalkwaySpell extends BuffSpell {
 	
 	private HashMap<Player,Platform> platforms;
 	
-	public WalkwaySpell(Configuration config, String spellName) {
+	public WalkwaySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		material = Material.getMaterial(getConfigInt("platform-type", Material.WOOD.getId()));

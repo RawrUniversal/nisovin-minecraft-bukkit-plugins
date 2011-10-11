@@ -6,9 +6,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class VolleySpell extends InstantSpell {
 
@@ -17,7 +17,7 @@ public class VolleySpell extends InstantSpell {
 	private int spread;
 	private String strNoTarget;
 	
-	public VolleySpell(Configuration config, String spellName) {
+	public VolleySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		arrows = config.getInt("spells." + spellName + ".arrows", 10);

@@ -26,16 +26,16 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
 
 public abstract class Spell implements Comparable<Spell> {
 
-	private Configuration config;
+	private MagicConfig config;
 	protected String internalName;
 	protected String name;
 	protected String[] aliases;
@@ -54,7 +54,7 @@ public abstract class Spell implements Comparable<Spell> {
 	
 	private HashMap<String, Long> lastCast;
 	
-	public Spell(Configuration config, String spellName) {
+	public Spell(MagicConfig config, String spellName) {
 		this.config = config;
 		this.internalName = spellName;
 		this.name = config.getString("spells." + spellName + ".name", spellName);

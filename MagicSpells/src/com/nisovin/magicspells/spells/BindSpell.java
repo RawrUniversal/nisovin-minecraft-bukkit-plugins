@@ -2,12 +2,12 @@ package com.nisovin.magicspells.spells;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class BindSpell extends CommandSpell {
 	
@@ -15,7 +15,7 @@ public class BindSpell extends CommandSpell {
 	private String strNoSpell;
 	private String strCantBind;
 
-	public BindSpell(Configuration config, String spellName) {
+	public BindSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		strUsage = config.getString("spells." + spellName + ".str-usage", "You must specify a spell name and hold an item in your hand.");

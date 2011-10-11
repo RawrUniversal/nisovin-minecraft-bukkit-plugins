@@ -6,10 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.util.config.Configuration;
-
 import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ExternalCommandSpell extends InstantSpell {
 	
@@ -28,7 +27,7 @@ public class ExternalCommandSpell extends InstantSpell {
 	private String strCantUseCommand;
 	private String strNoTarget;
 
-	public ExternalCommandSpell(Configuration config, String spellName) {
+	public ExternalCommandSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		addListener(Event.Type.PLAYER_COMMAND_PREPROCESS);

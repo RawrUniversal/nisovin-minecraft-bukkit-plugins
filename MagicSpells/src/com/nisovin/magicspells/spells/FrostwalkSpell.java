@@ -10,10 +10,10 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.util.BlockPlatform;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class FrostwalkSpell extends BuffSpell {
 	
@@ -22,7 +22,7 @@ public class FrostwalkSpell extends BuffSpell {
 	
 	private HashMap<String,BlockPlatform> frostwalkers;
 
-	public FrostwalkSpell(Configuration config, String spellName) {
+	public FrostwalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		size = config.getInt("spells." + spellName + ".size", 2);

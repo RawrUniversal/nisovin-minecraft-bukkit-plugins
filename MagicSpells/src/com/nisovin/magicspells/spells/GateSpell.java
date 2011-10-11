@@ -8,10 +8,10 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class GateSpell extends InstantSpell {
 	
@@ -20,7 +20,7 @@ public class GateSpell extends InstantSpell {
 	private boolean useSpellEffect;
 	private String strGateFailed;
 
-	public GateSpell(Configuration config, String spellName) {
+	public GateSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		world = config.getString("spells." + spellName + ".world", "CURRENT");

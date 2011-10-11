@@ -14,9 +14,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class HasteSpell extends BuffSpell {
 
@@ -25,7 +25,7 @@ public class HasteSpell extends BuffSpell {
 	
 	private HashMap<Player,Integer> hasted;
 	
-	public HasteSpell(Configuration config, String spellName) {
+	public HasteSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		strength = getConfigInt("effect-strength", 3);

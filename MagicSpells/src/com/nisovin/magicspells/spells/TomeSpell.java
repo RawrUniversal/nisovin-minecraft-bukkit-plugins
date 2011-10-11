@@ -3,7 +3,6 @@ package com.nisovin.magicspells.spells;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
@@ -11,6 +10,7 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
+import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.bookworm.Book;
 import com.nisovin.bookworm.BookWorm;
 import com.nisovin.bookworm.event.BookReadEvent;
@@ -34,7 +34,7 @@ public class TomeSpell extends CommandSpell {
 	
 	private BookWormListener listener;
 	
-	public TomeSpell(Configuration config, String spellName) {
+	public TomeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		listener = new BookListener();
 		BookWorm.registerListener(listener);

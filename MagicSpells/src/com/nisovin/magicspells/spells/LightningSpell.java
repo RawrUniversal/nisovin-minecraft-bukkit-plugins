@@ -6,9 +6,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class LightningSpell extends InstantSpell {
 	
@@ -21,7 +21,7 @@ public class LightningSpell extends InstantSpell {
 	private String strCastFail;
 	private String strNoTarget;
 	
-	public LightningSpell(Configuration config, String spellName) {
+	public LightningSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		requireEntityTarget = config.getBoolean("spells." + spellName + ".require-entity-target", false);

@@ -10,9 +10,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.config.Configuration;
 
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public abstract class InstantSpell extends Spell {
 	
@@ -20,7 +20,7 @@ public abstract class InstantSpell extends Spell {
 	private boolean castWithItem;
 	private boolean castByCommand;
 	
-	public InstantSpell(Configuration config, String spellName) {
+	public InstantSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		range = config.getInt("spells." + spellName + ".range", -1);
