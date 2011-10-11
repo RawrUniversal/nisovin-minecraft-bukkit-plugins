@@ -28,7 +28,7 @@ public class CommandNote implements CommandExecutor {
 		} else if (args.length == 0) {
 			// show usage
 		} else if (args[0].toLowerCase().startsWith("l")) {
-			list(sender, args);
+			list(sender, label, args);
 		} else if (args[0].toLowerCase().startsWith("r")) {
 			read(sender, args);
 		} else if (args[0].toLowerCase().startsWith("n")) {
@@ -40,16 +40,16 @@ public class CommandNote implements CommandExecutor {
 		} else if (args[0].toLowerCase().startsWith("d")) {
 			discard(sender, args);
 		} else {
-			// show usage
+			return false;
 		}
 		
 		return true;
 	}
 	
-	public void list(CommandSender sender, String[] args) {
+	public void list(CommandSender sender, String label, String[] args) {
 		if (args.length < 2) {
 			// usage
-			sender.sendMessage("Invalid");
+			sender.sendMessage("/" + label + " list <player> [page]");
 		} else {
 			PlayerCharacter pc = PlayerCharacter.match(args[1]);
 			if (pc == null) {

@@ -42,11 +42,17 @@ public class RealRP extends JavaPlugin {
 		
 		new RPPlayerListener(this);
 		
+		// register commands
 		this.getCommand("rpnpc").setExecutor(new CommandSpawnNpc(this));
 		this.getCommand("rpemote").setExecutor(new CommandEmote(this));
 		this.getCommand("rpjoinchannel").setExecutor(new CommandJoin(this));
 		this.getCommand("rpcharacter").setExecutor(new CommandCharacter(this));
 		this.getCommand("rpplayernote").setExecutor(new CommandNote(this));
+		
+		// load online players
+		for (Player p : getServer().getOnlinePlayers()) {
+			PlayerCharacter.get(p);
+		}
 		
 		PluginDescriptionFile pdf = getDescription();
 		getServer().getLogger().info(pdf.getName() + " v" + pdf.getVersion() + " enabled!");

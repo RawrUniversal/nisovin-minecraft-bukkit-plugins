@@ -21,11 +21,27 @@ public class CommandCharacter implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length == 0) {
 			// show usage
+		} else if (args[0].equalsIgnoreCase("whois")) {
+			whois(sender, args);
 		} else if (args[0].equalsIgnoreCase("delete")) {
 			delete(sender, args);
 		}
 		
 		return true;
+	}
+	
+	private void whois(CommandSender sender, String[] args) {
+		if (args.length != 2) {
+			// show usage
+			sender.sendMessage("Usage: /char whois <name>");
+		} else {
+			PlayerCharacter pc = PlayerCharacter.match(args[1]);
+			if (pc == null) {
+				sender.sendMessage("No player found.");
+			} else {
+				sender.sendMessage(pc.getChatName() + " is " + pc.getInGameName());
+			}
+		}
 	}
 	
 	private void delete(CommandSender sender, String[] args) {
