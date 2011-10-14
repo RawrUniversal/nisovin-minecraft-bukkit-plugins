@@ -1,7 +1,8 @@
 package com.nisovin.magicspells.spells.buff;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -81,7 +82,7 @@ public class StonevisionSpell extends BuffSpell {
 		Block center;
 		int range;
 		int type;
-		HashSet<Block> blocks;
+		List<Block> blocks;
 		
 		public TransparentBlockSet(Player player, int range, int type) {
 			this.player = player;
@@ -89,13 +90,13 @@ public class StonevisionSpell extends BuffSpell {
 			this.range = range;
 			this.type = type;
 			
-			blocks = new HashSet<Block>();
+			blocks = new ArrayList<Block>();
 			
 			setTransparency();
 		}
 		
 		public void setTransparency() {
-			HashSet<Block> newBlocks = new HashSet<Block>();
+			List<Block> newBlocks = new ArrayList<Block>();
 			
 			// get blocks to set to transparent
 			int px = center.getX();

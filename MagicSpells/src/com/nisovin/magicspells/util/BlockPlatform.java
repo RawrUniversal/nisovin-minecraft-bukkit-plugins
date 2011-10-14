@@ -1,7 +1,7 @@
 package com.nisovin.magicspells.util;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,7 +15,7 @@ public class BlockPlatform {
 	private int size;
 	private boolean moving;
 	private String type;
-	private Set<Block> blocks;
+	private List<Block> blocks;
 		
 	public BlockPlatform(Material platformType, Material replaceType, Block center, int size, boolean moving, String type) {
 		this.platformType = platformType;
@@ -26,14 +26,14 @@ public class BlockPlatform {
 		this.type = type;
 		
 		if (moving) {
-			blocks = new HashSet<Block>();
+			blocks = new ArrayList<Block>();
 		}
 		
 		createPlatform();
 	}
 	
 	public void createPlatform() {
-		Set<Block> platform = new HashSet<Block>();
+		List<Block> platform = new ArrayList<Block>();
 		
 		// get platform blocks
 		if (type.equals("square")) {

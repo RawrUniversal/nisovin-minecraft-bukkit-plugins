@@ -1,8 +1,9 @@
 package com.nisovin.magicspells.spells.buff;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -118,7 +119,7 @@ public class WalkwaySpell extends BuffSpell {
 		private Player player;
 		private Material material;
 		private int size;
-		private HashSet<Block> platform;
+		private List<Block> platform;
 		
 		private int prevX;
 		private int prevZ;
@@ -130,7 +131,7 @@ public class WalkwaySpell extends BuffSpell {
 			this.player = player;
 			this.material = material;
 			this.size = size;
-			this.platform = new HashSet<Block>();
+			this.platform = new ArrayList<Block>();
 			
 			move();
 		}
@@ -260,7 +261,7 @@ public class WalkwaySpell extends BuffSpell {
 			}
 			
 			// get platform blocks
-			HashSet<Block> blocks = new HashSet<Block>();
+			List<Block> blocks = new ArrayList<Block>();
 			blocks.add(origin); // add standing block
 			for (int i = 1; i < size; i++) { // add blocks ahead
 				Block b = origin.getRelative(dirX*i, dirY*i, dirZ*i);
