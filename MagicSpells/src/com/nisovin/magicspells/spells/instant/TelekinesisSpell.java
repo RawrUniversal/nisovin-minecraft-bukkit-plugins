@@ -29,7 +29,7 @@ public class TelekinesisSpell extends InstantSpell {
 		transparent.add((byte)Material.TORCH.getId());
 	}
 	
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = player.getTargetBlock(transparent, range>0?range:100);
 			if (target == null) {

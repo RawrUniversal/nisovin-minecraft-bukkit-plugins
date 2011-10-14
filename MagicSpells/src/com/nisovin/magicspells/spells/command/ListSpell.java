@@ -30,7 +30,7 @@ public class ListSpell extends CommandSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			String extra = "";

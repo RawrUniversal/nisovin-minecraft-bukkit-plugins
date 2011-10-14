@@ -43,7 +43,7 @@ public class EntombSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target != null) {
@@ -112,7 +112,7 @@ public class EntombSpell extends InstantSpell {
 				
 				if (tombDuration > 0 && tombBlocks.size() > 0) {
 					blocks.addAll(tombBlocks);
-					MagicSpells.plugin.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new TombRemover(tombBlocks), tombDuration*20);
+					MagicSpells.plugin.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new TombRemover(tombBlocks), Math.round(tombDuration*20*power));
 				}
 			} else {
 				sendMessage(player, strNoTarget);

@@ -55,7 +55,7 @@ public class TomeSpell extends CommandSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Spell spell;
 			if (args == null || args.length == 0) {

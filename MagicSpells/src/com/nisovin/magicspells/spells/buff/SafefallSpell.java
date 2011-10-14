@@ -22,7 +22,7 @@ public class SafefallSpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (safefallers.contains(player.getName())) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;

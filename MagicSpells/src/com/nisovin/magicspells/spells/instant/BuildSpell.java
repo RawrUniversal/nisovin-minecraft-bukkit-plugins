@@ -38,7 +38,7 @@ public class BuildSpell extends InstantSpell {
 		strCantBuild = config.getString("spells." + spellName + "str-cant-build", "You can't build there.");
 	}
 	
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
+	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get mat
 			ItemStack item = player.getInventory().getItem(slot);

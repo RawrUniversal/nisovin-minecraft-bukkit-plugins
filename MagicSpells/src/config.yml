@@ -849,7 +849,7 @@ spells:
         description: Instantly destroys a block.
         cast-item: 294
         cooldown: 0
-        disallowed-blocks: 0,7
+        disallowed-block-types: 0,7
         range: 15
         cost:
             - 331 1

@@ -236,17 +236,6 @@ public abstract class Spell implements Comparable<Spell> {
 		
 		return new SpellCastResult(state, action);
 	}
-	
-	/**
-	 * This method is called when a player casts a spell, either by command, with a wand item, or otherwise.
-	 * @param player the player casting the spell
-	 * @param state the state of the spell cast (normal, on cooldown, missing reagents, etc)
-	 * @param args the spell arguments, if cast by command
-	 * @return the action to take after the spell is processed
-	 */
-	protected PostCastAction castSpell(Player player, SpellCastState state, String[] args) {
-		return PostCastAction.ALREADY_HANDLED;
-	}
 
 	/**
 	 * This method is called when a player casts a spell, either by command, with a wand item, or otherwise.
@@ -256,9 +245,7 @@ public abstract class Spell implements Comparable<Spell> {
 	 * @param args the spell arguments, if cast by command
 	 * @return the action to take after the spell is processed
 	 */
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		return castSpell(player, state, args);
-	}
+	protected abstract PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args);
 	
 	/**
 	 * This method is called when the spell is cast from the console.
