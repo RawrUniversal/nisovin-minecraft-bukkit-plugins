@@ -33,6 +33,10 @@ import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spells.*;
+import com.nisovin.magicspells.spells.buff.*;
+import com.nisovin.magicspells.spells.channeled.*;
+import com.nisovin.magicspells.spells.command.*;
+import com.nisovin.magicspells.spells.instant.*;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class MagicSpells extends JavaPlugin {
