@@ -30,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
 
@@ -40,7 +41,7 @@ public abstract class Spell implements Comparable<Spell> {
 	protected String name;
 	protected String[] aliases;
 	protected String description;
-	protected int castItem;
+	protected CastItem castItem;
 	protected ItemStack[] cost;
 	protected int healthCost = 0;
 	protected int manaCost = 0;
@@ -64,7 +65,7 @@ public abstract class Spell implements Comparable<Spell> {
 			aliases = temp.toArray(aliases);
 		}
 		this.description = config.getString("spells." + spellName + ".description", "");
-		this.castItem = config.getInt("spells." + spellName + ".cast-item", 280);
+		this.castItem = new CastItem(config.getString("spells." + spellName + ".cast-item", "280"));
 		List<String> costList = config.getStringList("spells." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
 			cost = new ItemStack [costList.size()];
@@ -539,7 +540,7 @@ public abstract class Spell implements Comparable<Spell> {
 		return this.aliases;
 	}
 	
-	public int getCastItem() {
+	public CastItem getCastItem() {
 		return this.castItem;
 	}
 	

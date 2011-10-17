@@ -11,6 +11,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import com.nisovin.magicspells.util.CastItem;
 
 public class Spellbook {
 
@@ -20,9 +23,9 @@ public class Spellbook {
 	private String playerName;
 	
 	private TreeSet<Spell> allSpells = new TreeSet<Spell>();
-	private HashMap<Integer,ArrayList<Spell>> itemSpells = new HashMap<Integer,ArrayList<Spell>>();
-	private HashMap<Integer,Integer> activeSpells = new HashMap<Integer,Integer>();
-	private HashMap<Spell,Integer> customBindings = new HashMap<Spell,Integer>();
+	private HashMap<CastItem,ArrayList<Spell>> itemSpells = new HashMap<CastItem,ArrayList<Spell>>();
+	private HashMap<CastItem,Integer> activeSpells = new HashMap<CastItem,Integer>();
+	private HashMap<Spell,CastItem> customBindings = new HashMap<Spell,CastItem>();
 	
 	public Spellbook(Player player, MagicSpells plugin) {
 		MagicSpells.debug("Loading player spell list: " + player.getName());
@@ -47,7 +50,7 @@ public class Spellbook {
 		addGrantedSpells();
 		
 		// sort spells or pre-select if just one
-		for (Integer i : itemSpells.keySet()) {
+		for (CastItem i : itemSpells.keySet()) {
 			ArrayList<Spell> spells = itemSpells.get(i);
 			if (spells.size() == 1 && !MagicSpells.allowCycleToNoSpell) {
 				activeSpells.put(i, 0);
@@ -103,10 +106,10 @@ public class Spellbook {
 							addSpell(spell);
 						}
 					} else {
-						String[] data = line.split(":");
+						String[] data = line.split(":",2);
 						Spell spell = MagicSpells.spells.get(data[0]);
-						if (spell != null && data[1].matches("^-?[0-9]+$")) {
-							addSpell(spell, Integer.parseInt(data[1]));
+						if (spell != null && data[1].matches("^-?[0-9:]+$")) {
+							addSpell(spell, new CastItem(data[1]));
 						}
 					}
 				}
@@ -129,7 +132,8 @@ public class Spellbook {
 		return this.allSpells;
 	}
 	
-	protected Spell nextSpell(int castItem) {
+	protected Spell nextSpell(ItemStack item) {
+		CastItem castItem = new CastItem(item);
 		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
@@ -160,7 +164,8 @@ public class Spellbook {
 		}
 	}
 	
-	protected Spell prevSpell(int castItem) {
+	protected Spell prevSpell(ItemStack item) {
+		CastItem castItem = new CastItem(item);
 		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
@@ -191,7 +196,8 @@ public class Spellbook {
 		}		
 	}
 	
-	public Spell getActiveSpell(int castItem) {
+	public Spell getActiveSpell(ItemStack item) {
+		CastItem castItem = new CastItem(item);
 		Integer i = activeSpells.get(castItem);
 		if (i != null && i != -1) {
 			return itemSpells.get(castItem).get(i);
@@ -219,21 +225,21 @@ public class Spellbook {
 	}
 	
 	public void addSpell(Spell spell) {
-		addSpell(spell, 0);
+		addSpell(spell, null);
 	}
 	
-	public void addSpell(Spell spell, int castItem) {
+	public void addSpell(Spell spell, CastItem castItem) {
 		MagicSpells.debug("    Added spell: " + spell.getInternalName());
 		allSpells.add(spell);
 		if (spell.canCastWithItem()) {
-			int item = spell.getCastItem();
-			if (castItem != 0) {
+			CastItem item = spell.getCastItem();
+			if (castItem != null) {
 				item = castItem;
 				customBindings.put(spell, castItem);
 			} else if (MagicSpells.ignoreDefaultBindings) {
 				return; // no cast item provided and ignoring default, so just stop here
 			}
-			MagicSpells.debug("        Cast item: " + item + (castItem!=0?" (custom)":" (default)"));
+			MagicSpells.debug("        Cast item: " + item + (castItem!=null?" (custom)":" (default)"));
 			ArrayList<Spell> temp = itemSpells.get(item);
 			if (temp != null) {
 				temp.add(spell);
@@ -247,7 +253,7 @@ public class Spellbook {
 	}
 	
 	public void removeSpell(Spell spell) {
-		int item = spell.getCastItem();
+		CastItem item = spell.getCastItem();
 		if (customBindings.containsKey(spell)) {
 			item = customBindings.remove(spell);
 		}

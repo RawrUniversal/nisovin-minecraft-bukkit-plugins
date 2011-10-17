@@ -90,8 +90,8 @@ public class MagicPlayerListener extends PlayerListener {
 			ItemStack inHand = event.getPlayer().getItemInHand();
 			Spell spell = null;
 			try {
-				spell = MagicSpells.getSpellbook(event.getPlayer()).getActiveSpell(inHand.getTypeId());
-			} catch (NullPointerException e) {				
+				spell = MagicSpells.getSpellbook(event.getPlayer()).getActiveSpell(inHand);
+			} catch (NullPointerException e) {
 			}
 			if (spell != null && spell.canCastWithItem()) {
 				spell.cast(event.getPlayer());
@@ -104,9 +104,9 @@ public class MagicPlayerListener extends PlayerListener {
 			// cycle spell
 			Spell spell = null;
 			if (!player.isSneaking()) {
-				spell = MagicSpells.getSpellbook(player).nextSpell(inHand.getTypeId());
+				spell = MagicSpells.getSpellbook(player).nextSpell(inHand);
 			} else {
-				spell = MagicSpells.getSpellbook(player).prevSpell(inHand.getTypeId());
+				spell = MagicSpells.getSpellbook(player).prevSpell(inHand);
 			}
 			if (spell != null) {
 				MagicSpells.sendMessage(player, MagicSpells.strSpellChange, "%s", spell.getName());

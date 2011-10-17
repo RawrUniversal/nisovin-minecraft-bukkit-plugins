@@ -7,6 +7,7 @@ import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class BindSpell extends CommandSpell {
@@ -44,9 +45,9 @@ public class BindSpell extends CommandSpell {
 					int typeId = player.getItemInHand()==null?-1:player.getItemInHand().getTypeId();
 					spellbook.removeSpell(spell);
 					if (typeId <= 0) {
-						spellbook.addSpell(spell, -1);
+						spellbook.addSpell(spell, new CastItem(-1));
 					} else {
-						spellbook.addSpell(spell, player.getItemInHand().getTypeId());
+						spellbook.addSpell(spell, new CastItem(player.getItemInHand()));
 					}
 					spellbook.save();
 					sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
