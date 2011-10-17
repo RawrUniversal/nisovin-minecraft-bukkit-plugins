@@ -182,7 +182,7 @@ public abstract class Spell implements Comparable<Spell> {
 		SpellCastState state;
 		if (!MagicSpells.getSpellbook(player).canCast(this)) {
 			state = SpellCastState.CANT_CAST;
-		} else if (MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.inNoMagicZone(player)) {
+		} else if (MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.willFizzle(player, this)) {
 			state = SpellCastState.NO_MAGIC_ZONE;
 		} else if (onCooldown(player)) {
 			state = SpellCastState.ON_COOLDOWN;
@@ -231,7 +231,7 @@ public abstract class Spell implements Comparable<Spell> {
 			} else if (state == SpellCastState.CANT_CAST) {
 				MagicSpells.sendMessage(player, MagicSpells.strCantCast);
 			} else if (state == SpellCastState.NO_MAGIC_ZONE) {
-				MagicSpells.sendMessage(player, MagicSpells.strNoMagicZone);
+				MagicSpells.noMagicZones.sendNoMagicMessage(player, this);
 			}
 		}
 		

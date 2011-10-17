@@ -1,5 +1,7 @@
 package com.nisovin.magicspells;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -13,13 +15,17 @@ public class NoMagicZone {
 	private ProtectedRegion region = null;
 	private Vector point1 = null;
 	private Vector point2 = null;
+	private String message;
+	private List<String> allowedSpells;
 	
-	public NoMagicZone(String worldName, ProtectedRegion region) {
+	public NoMagicZone(String worldName, ProtectedRegion region, String message, List<String> allowedSpells) {
 		this.worldName = worldName;
 		this.region = region;
+		this.message = message;
+		this.allowedSpells = allowedSpells;
 	}
 	
-	public NoMagicZone(String worldName, Vector v1, Vector v2) {
+	public NoMagicZone(String worldName, Vector v1, Vector v2, String message, List<String> allowedSpells) {
 		this.worldName = worldName;
 		int minx, miny, minz, maxx, maxy, maxz;
 		if (v1.getX() < v2.getX()) {
@@ -45,14 +51,18 @@ public class NoMagicZone {
 		}
 		point1 = new Vector(minx, miny, minz);
 		point2 = new Vector(maxx, maxy, maxz);
+		this.message = message;
+		this.allowedSpells = allowedSpells;
 	}
 	
-	public boolean inZone(Player player) {
-		return inZone(player.getLocation());
+	public boolean willFizzle(Player player, Spell spell) {
+		return willFizzle(player.getLocation(), spell);
 	}
 	
-	public boolean inZone(Location location) {
-		if (!worldName.equalsIgnoreCase(location.getWorld().getName())) {
+	public boolean willFizzle(Location location, Spell spell) {
+		if (allowedSpells != null && allowedSpells.contains(spell.getInternalName())) {
+			return false;
+		} else if (!worldName.equalsIgnoreCase(location.getWorld().getName())) {
 			return false;
 		} else if (region != null) {
 			com.sk89q.worldedit.Vector v = new com.sk89q.worldedit.Vector(location.getX(), location.getY(), location.getZ());
@@ -72,6 +82,10 @@ public class NoMagicZone {
 			Bukkit.getServer().getLogger().severe("MagicSpells: Invalid no-magic zone!");
 			return false;
 		}
+	}
+	
+	public String getMessage() {
+		return message;
 	}
 	
 }
