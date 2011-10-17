@@ -67,6 +67,10 @@ public class Gate {
 		return entrance.getWorld().getName() + "," + entrance.getBlockX() + "," + entrance.getBlockY() + "," + entrance.getBlockZ();
 	}
 	
+	public boolean consumeKey() {
+		return consume;
+	}
+	
 	public void setEntrance(Location loc) {
 		this.entrance = loc;
 	}

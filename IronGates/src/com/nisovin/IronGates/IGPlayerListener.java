@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class IGPlayerListener extends PlayerListener {
 
@@ -35,7 +36,16 @@ public class IGPlayerListener extends PlayerListener {
 		
 		Gate gate = plugin.gates.get(s);
 		if (gate != null && !p.hasPermission("irongates.deny." + gate.getName())) {
-			if (gate.key == -1 || p.getItemInHand().getTypeId() == gate.key) {
+			ItemStack inHand = p.getItemInHand();
+			if (gate.key == -1 || inHand.getTypeId() == gate.key) {
+				if (gate.consumeKey() && gate.key > 0) {
+					if (inHand.getAmount() == 1) {
+						p.setItemInHand(null);
+					} else {
+						inHand.setAmount(inHand.getAmount()-1);
+						p.setItemInHand(inHand);
+					}
+				}
 				final Location loc = gate.getExit();
 				event.setTo(loc);
 				plugin.immunity.put(p.getName(), System.currentTimeMillis() + 5000);
