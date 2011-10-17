@@ -849,8 +849,12 @@ spells:
         name: zap
         description: Instantly destroys a block.
         cast-item: 294
-        cooldown: 0
+        cooldown: 1
+        allowed-block-types: ""
         disallowed-block-types: 0,7
+        drop-block: false
+        drop-normal: true
+        check-plugins: true
         range: 15
         cost:
             - 331 1
