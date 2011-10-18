@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
@@ -57,12 +58,13 @@ public class BuildSpell extends InstantSpell {
 			} else {
 				// check plugins
 				Block b = lastBlocks.get(0);
+				BlockState blockState = b.getState();
 				b.setTypeIdAndData(item.getTypeId(), (byte)item.getDurability(), true);
 				if (checkPlugins) {
-					BlockPlaceEvent event = new BlockPlaceEvent(b, b.getState(), lastBlocks.get(1), player.getItemInHand(), player, true);
+					BlockPlaceEvent event = new BlockPlaceEvent(b, blockState, lastBlocks.get(1), player.getItemInHand(), player, true);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled() && b.getType() == item.getType()) {
-						b.setType(Material.AIR);
+						blockState.update(true);
 						sendMessage(player, strCantBuild);
 						return PostCastAction.ALREADY_HANDLED;
 					}

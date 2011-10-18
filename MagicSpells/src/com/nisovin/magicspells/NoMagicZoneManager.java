@@ -31,7 +31,7 @@ public class NoMagicZoneManager {
 		Set<String> zoneNodes = config.getKeys("no-magic-zones");
 		if (zoneNodes != null) {
 			for (String node : zoneNodes) {
-				ConfigurationSection zoneConfig = config.getSection(node);
+				ConfigurationSection zoneConfig = config.getSection("no-magic-zones." + node);
 				String worldName = zoneConfig.getString("world", Bukkit.getServer().getWorlds().get(0).getName());
 				String type = zoneConfig.getString("type", "cuboid");
 				String message = zoneConfig.getString("message", "You are in a no-magic zone.");
