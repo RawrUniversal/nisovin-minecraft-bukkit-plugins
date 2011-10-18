@@ -39,11 +39,15 @@ public class ZapSpell extends InstantSpell {
 		}
 		allowedBlockTypes = new ArrayList<Integer>();
 		for (String s : allowed) {
-			allowedBlockTypes.add(Integer.parseInt(s));
+			if (!s.isEmpty()) {
+				allowedBlockTypes.add(Integer.parseInt(s));
+			}
 		}
 		disallowedBlockTypes = new ArrayList<Integer>();
 		for (String s : disallowed) {
-			disallowedBlockTypes.add(Integer.parseInt(s));
+			if (!s.isEmpty()) {
+				disallowedBlockTypes.add(Integer.parseInt(s));
+			}
 		}
 		dropBlock = config.getBoolean("spells." + spellName + ".drop-block", false);
 		dropNormal = getConfigBoolean("drop-normal", true);

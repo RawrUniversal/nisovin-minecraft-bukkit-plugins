@@ -84,7 +84,7 @@ public class MagicConfig {
 	}
 	
 	public Set<String> getKeys(String path) {
-		if (altConfig.contains(path)) {
+		if (altConfig != null && altConfig.contains(path)) {
 			return altConfig.getConfigurationSection(path).getKeys(false);
 		} else if (mainConfig.contains(path)) {
 			return mainConfig.getConfigurationSection(path).getKeys(false);
@@ -94,7 +94,7 @@ public class MagicConfig {
 	}
 	
 	public ConfigurationSection getSection(String path) {
-		if (altConfig.contains(path)) {
+		if (altConfig != null && altConfig.contains(path)) {
 			return altConfig.getConfigurationSection(path);
 		} else if (mainConfig.contains(path)) {
 			return mainConfig.getConfigurationSection(path);
