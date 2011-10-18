@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 
@@ -207,6 +208,12 @@ public class MagicSpells extends JavaPlugin {
 		
 		// load permissions
 		PluginManager pm = getServer().getPluginManager();
+		Set<Permission> perms = pm.getPermissions();
+		if (perms != null && perms.size() > 0) {
+			//for (Permission perm : perms) {
+				//pm.removePermission(perm);
+			//}
+		}
 		HashMap<String, Boolean> permGrantChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permLearnChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permCastChildren = new HashMap<String,Boolean>();
@@ -256,6 +263,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(CarpetSpell.class);
 		spellClasses.add(CombustSpell.class);
 		spellClasses.add(ConfusionSpell.class);
+		spellClasses.add(ConjureSpell.class);
 		spellClasses.add(CrippleSpell.class);
 		spellClasses.add(DisarmSpell.class);
 		spellClasses.add(DrainlifeSpell.class);
@@ -305,7 +313,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(VolleySpell.class);
 		spellClasses.add(WalkwaySpell.class);
 		spellClasses.add(WallSpell.class);
-		//spellClasses.add(WindwalkSpell.class);
+		spellClasses.add(WindwalkSpell.class);
 		spellClasses.add(ZapSpell.class);
 		// load the spells
 		for (Class<? extends Spell> c : spellClasses) {

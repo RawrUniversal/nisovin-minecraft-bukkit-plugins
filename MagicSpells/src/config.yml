@@ -175,6 +175,18 @@ spells:
         str-cost: 4 redstone dust
         str-cast-self: You cause nearby monsters to become confused and attack each other.
         str-cast-others: "%a causes nearby monsters to attack each other."
+    conjure:
+        name: conjure
+        description: Conjure some magical reagents.
+        cast-item: 280
+        cooldown: 600
+        items:
+            - 331 5-7
+            - 265 1-2 10%
+            - 351:4 1 10%
+        add-to-inventory: false
+        str-cost: free
+        str-cast-self: You have conjured some magical reagents!
     cripple:
         name: cripple
         description: Slow down a targeted enemy.
@@ -622,6 +634,20 @@ spells:
         str-cost: 3 redstone dust
         str-cast-self: You purge all life around you.
         str-cast-others: "%a purges all nearby life."
+    reach:
+        name: reach
+        description: Place and destroy blocks from far away.
+        cast-item: 280
+        cooldown: 120
+        duration: 60
+        range: 15
+        consume-blocks: true
+        drop-blocks: true
+        cost:
+            - 331 3
+        str-cost: 3 redstone dust
+        str-cast-self: You gain the ability to manipulate the world around you.
+        str-fade: You can no longer manipulate the world around you.        
     recall:
         name: recall
         description: Teleports you to your marked location.
@@ -845,6 +871,22 @@ spells:
             - 1 2
         str-cost: 2 redstone dust and 2 stone
         str-no-target: Unable to create a wall.
+    windwalk:
+        name: windwalk
+        description: Fly through the air.
+        cast-item: 280
+        cancel-on-land: true
+        duration: 120
+        cost:
+            - 331 3
+            - 288 1
+        use-cost:
+            - 288 1
+        use-cost-interval: 15
+        str-cost: 3 redstone, 2 feathers, plus 1 feather every 15 seconds
+        str-cast-self: You can now walk on the wind!
+        str-cast-others: "%a is now walking on the wind!"
+        str-fade: You are no longer walking on the wind.
     zap:
         name: zap
         description: Instantly destroys a block.
