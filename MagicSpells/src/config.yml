@@ -109,6 +109,7 @@ spells:
         cast-item: 280
         cooldown: 8
         range: 25
+        pass-through-ceiling: false
         smoke-trail: true
         cost:
             - 331 2
@@ -612,6 +613,17 @@ spells:
             - health 1
         str-cost: 1 redstone dust and a half heart
         str-no-target: No target found.
+    phase:
+        name: phase
+        description: Phase through solid matter.
+        cast-item: 280
+        cooldown: 10
+        range: 5
+        max-distance: 15
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cant-phase: Unable to find place to phase to.
     prayer:
         name: prayer
         description: Heals yourself for five hearts.

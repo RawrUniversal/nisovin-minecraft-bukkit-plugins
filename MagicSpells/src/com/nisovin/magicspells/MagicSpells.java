@@ -294,6 +294,7 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(MarkSpell.class);
 		spellClasses.add(MinionSpell.class);
 		spellClasses.add(PainSpell.class);
+		spellClasses.add(PhaseSpell.class);
 		spellClasses.add(PrayerSpell.class);
 		spellClasses.add(PurgeSpell.class);
 		spellClasses.add(ReachSpell.class);
