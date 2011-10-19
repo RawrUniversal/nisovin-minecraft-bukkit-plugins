@@ -13,12 +13,14 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class BlinkSpell extends InstantSpell {
 	
+	private boolean passThroughCeiling;
 	private boolean smokeTrail;
 	private String strCantBlink = null;
 	
 	public BlinkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		passThroughCeiling = getConfigBoolean("pass-through-ceiling", false);
 		smokeTrail = config.getBoolean("spells." + spellName + ".smoke-trail", true);
 		strCantBlink = config.getString("spells." + spellName + ".str-cant-blink", "You can't blink there.");
 	}
@@ -53,10 +55,17 @@ public class BlinkSpell extends InstantSpell {
 			if (found != null) {
 				Location loc = null;
 				if (range > 0 && !inRange(found.getLocation(), player.getLocation(), range)) {
+				} else if (!passThroughCeiling && found.getRelative(0,-1,0).equals(prev)) {
+					// trying to move upward
+					if (prev.getType() == Material.AIR && prev.getRelative(0,-1,0).getType() == Material.AIR) {
+						loc = prev.getRelative(0,-1,0).getLocation();
+					}
 				} else if (found.getRelative(0,1,0).getType() == Material.AIR && found.getRelative(0,2,0).getType() == Material.AIR) {
+					// try to stand on top
 					loc = found.getLocation();
 					loc.setY(loc.getY() + 1);
 				} else if (prev != null && prev.getType() == Material.AIR && prev.getRelative(0,1,0).getType() == Material.AIR) {
+					// no space on top, put adjacent instead
 					loc = prev.getLocation();
 				}
 				if (loc != null) {
