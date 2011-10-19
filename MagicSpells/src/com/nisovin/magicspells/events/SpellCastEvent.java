@@ -9,16 +9,26 @@ import com.nisovin.magicspells.util.SpellReagents;
 @SuppressWarnings("serial")
 public class SpellCastEvent extends SpellEvent implements Cancellable {
 
+	private String[] args;
 	private float power;
 	private int cooldown;
 	private SpellReagents reagents;
 	private boolean cancelled = false;
 	
-	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, int cooldown, SpellReagents reagents) {
+	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, String[] args, int cooldown, SpellReagents reagents) {
 		super("SpellCast", spell, caster);
 		this.cooldown = cooldown;
 		this.reagents = reagents;
 		this.power = power;
+		this.args = args;
+	}
+	
+	/**
+	 * Gets the arguments passed to the spell if the spell was cast by command.
+	 * @return the args, or null if there were none
+	 */
+	public String[] getSpellArgs() {
+		return args;
 	}
 	
 	/**

@@ -65,8 +65,10 @@ public class MagicConfig {
 	public String getString(String path, String def) {
 		if (altConfig != null && altConfig.contains(path)) {
 			return altConfig.get(path).toString();
+		} else if (mainConfig.contains(path)) {
+			return mainConfig.get(path).toString();
 		} else {
-			return mainConfig.get(path, def).toString();
+			return def;
 		}
 	}
 	

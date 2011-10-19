@@ -196,7 +196,7 @@ public abstract class Spell implements Comparable<Spell> {
 		float power = 1.0F;
 		int cooldown = this.cooldown;
 		SpellReagents reagents = new SpellReagents(cost, manaCost, healthCost, hungerCost);
-		SpellCastEvent event = new SpellCastEvent(this, player, state, power, cooldown, reagents);
+		SpellCastEvent event = new SpellCastEvent(this, player, state, power, args, cooldown, reagents);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
 			return new SpellCastResult(SpellCastState.CANT_CAST, PostCastAction.HANDLE_NORMALLY);
