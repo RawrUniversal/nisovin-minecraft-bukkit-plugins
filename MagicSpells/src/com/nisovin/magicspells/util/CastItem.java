@@ -46,13 +46,16 @@ public class CastItem {
 		return (i.type == this.type && i.data == this.data);
 	}
 	
+	public boolean equals(ItemStack i) {
+		return (i.getTypeId() == type && i.getDurability() == data);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof CastItem) {
 			return equals((CastItem)o);
 		} else if (o instanceof ItemStack) {
-			ItemStack i = (ItemStack)o;
-			return (i.getTypeId() == type && i.getDurability() == data);
+			return equals((ItemStack)o);
 		} else {
 			return false;
 		}

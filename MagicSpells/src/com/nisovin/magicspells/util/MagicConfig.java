@@ -8,7 +8,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.Spell;
 
 public class MagicConfig {
 
@@ -42,8 +41,14 @@ public class MagicConfig {
 	}
 	
 	public double getDouble(String path, double def) {
-		if (altConfig != null && altConfig.contains(path) && altConfig.isDouble(path)) {
-			return altConfig.getDouble(path);
+		if (altConfig != null && altConfig.contains(path) && (altConfig.isDouble(path) || altConfig.isInt(path))) {
+			if (altConfig.isDouble(path)) {
+				return altConfig.getDouble(path);
+			} else {
+				return altConfig.getInt(path);
+			}
+		} else if (mainConfig.contains(path) && mainConfig.isInt(path)) {
+			return mainConfig.getInt(path);
 		} else {
 			return mainConfig.getDouble(path, def);
 		}
@@ -58,10 +63,10 @@ public class MagicConfig {
 	}
 	
 	public String getString(String path, String def) {
-		if (altConfig != null && altConfig.contains(path) && altConfig.isString(path)) {
-			return altConfig.getString(path);
+		if (altConfig != null && altConfig.contains(path)) {
+			return altConfig.get(path).toString();
 		} else {
-			return mainConfig.getString(path, def);
+			return mainConfig.get(path, def).toString();
 		}
 	}
 	
@@ -101,26 +106,6 @@ public class MagicConfig {
 		} else {
 			return null;
 		}
-	}
-	
-	public int getInt(Spell spell, String key, int def) {
-		return getInt("spells." + spell.getInternalName() + "." + key, def);
-	}
-	
-	public boolean getBoolean(Spell spell, String key, boolean def) {
-		return getBoolean("spells." + spell.getInternalName() + "." + key, def);
-	}
-	
-	public String getString(Spell spell, String key, String def) {
-		return getString("spells." + spell.getInternalName() + "." + key, def);
-	}
-	
-	public List<Integer> getIntList(Spell spell, String key, List<Integer> def) {
-		return getIntList("spells." + spell.getInternalName() + "." + key, def);
-	}
-	
-	public List<String> getStringList(Spell spell, String key, List<String> def) {
-		return getStringList("spells." + spell.getInternalName() + "." + key, def);
 	}
 	
 }
