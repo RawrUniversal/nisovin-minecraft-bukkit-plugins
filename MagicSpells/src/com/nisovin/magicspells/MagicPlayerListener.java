@@ -1,11 +1,13 @@
 package com.nisovin.magicspells;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -22,12 +24,16 @@ public class MagicPlayerListener extends PlayerListener {
 
 	private MagicSpells plugin;
 	
+	private HashSet<Player> noCast = new HashSet<Player>();
+	private HashMap<Player,Long> lastCast = new HashMap<Player, Long>();
+	
 	public MagicPlayerListener(MagicSpells plugin) {
 		this.plugin = plugin;
 		
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Monitor, plugin);
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TELEPORT, this, Event.Priority.Monitor, plugin);
@@ -85,17 +91,9 @@ public class MagicPlayerListener extends PlayerListener {
 		}
 		if (noInteract) {
 			// special block -- don't do normal interactions
+			noCast.add(event.getPlayer());
 		} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			// left click -- cast spell
-			ItemStack inHand = event.getPlayer().getItemInHand();
-			Spell spell = null;
-			try {
-				spell = MagicSpells.getSpellbook(event.getPlayer()).getActiveSpell(inHand);
-			} catch (NullPointerException e) {
-			}
-			if (spell != null && spell.canCastWithItem()) {
-				spell.cast(event.getPlayer());
-			}			
+			// cast: moved back to player animation
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			// right click -- cycle spell and/or process mana pots
 			Player player = event.getPlayer();
@@ -154,6 +152,34 @@ public class MagicPlayerListener extends PlayerListener {
 		}
 	}
 	
+	@Override
+	public void onPlayerAnimation(PlayerAnimationEvent event) {
+		Player p = event.getPlayer();
+		if (noCast.contains(p)) {
+			noCast.remove(p);
+			lastCast.put(p, System.currentTimeMillis());
+		} else {
+			// left click -- cast spell
+			ItemStack inHand = event.getPlayer().getItemInHand();
+			Spell spell = null;
+			try {
+				spell = MagicSpells.getSpellbook(event.getPlayer()).getActiveSpell(inHand);
+			} catch (NullPointerException e) {
+			}
+			if (spell != null && spell.canCastWithItem()) {
+				// first check global cooldown
+				Long lastCastTime = lastCast.get(p);
+				if (lastCastTime != null && lastCastTime + 500 > System.currentTimeMillis()) {
+					return;
+				} else {
+					lastCast.put(p, System.currentTimeMillis());
+				}
+				// cast spell
+				spell.cast(p);
+			}
+		}
+	}
+
 	@Override
 	public void onItemHeldChange(PlayerItemHeldEvent event) {
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_ITEM_HELD);
