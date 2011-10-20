@@ -16,7 +16,7 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 	private boolean cancelled = false;
 	
 	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, String[] args, int cooldown, SpellReagents reagents) {
-		super("SpellCast", spell, caster);
+		super("MAGIC_SPELLS_SPELL_CAST", spell, caster);
 		this.cooldown = cooldown;
 		this.reagents = reagents;
 		this.power = power;

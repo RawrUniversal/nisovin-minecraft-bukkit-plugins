@@ -13,7 +13,7 @@ public class SpellTargetEvent extends SpellEvent implements Cancellable {
 	private boolean cancelled = false;
 	
 	public SpellTargetEvent(Spell spell, Player caster, LivingEntity target) {
-		super("SpellTarget", spell, caster);
+		super("MAGIC_SPELLS_SPELL_TARGET", spell, caster);
 		this.target = target;
 	}
 	

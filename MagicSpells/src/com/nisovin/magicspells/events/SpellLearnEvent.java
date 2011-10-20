@@ -16,7 +16,7 @@ public class SpellLearnEvent extends Event implements Cancellable {
 	private boolean cancelled;
 	
 	public SpellLearnEvent(Spell spell, Player learner, LearnSource source, Object teacher) {
-		super("SpellLearn");
+		super("MAGIC_SPELLS_SPELL_LEARN");
 		
 		this.spell = spell;
 		this.learner = learner;

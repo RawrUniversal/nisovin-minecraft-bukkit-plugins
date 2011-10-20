@@ -38,12 +38,7 @@ public class ManaBarManager {
 		} else {
 			boolean r = manaBars.get(player.getName()).remove(amount);
 			if (r) {
-				if (MagicSpells.showManaOnUse) {
-					showMana(player);
-				}
-				if (MagicSpells.showManaOnWoodTool) {
-					showManaOnTool(player);
-				}
+				showMana(player);
 			}
 			return r;
 		}
@@ -55,12 +50,7 @@ public class ManaBarManager {
 		} else {
 			boolean r = manaBars.get(player.getName()).add(amount);
 			if (r) {
-				if (MagicSpells.showManaOnUse) {
-					showMana(player);
-				}
-				if (MagicSpells.showManaOnWoodTool) {
-					showManaOnTool(player);
-				}
+				showMana(player);
 			}
 			return r;
 		}		
@@ -69,19 +59,18 @@ public class ManaBarManager {
 	public void showMana(Player player) {
 		ManaBar bar = manaBars.get(player.getName());
 		if (bar != null) {
-			bar.show(player);
+			if (MagicSpells.showManaOnUse) {
+				bar.showInChat(player);
+			}
+			if (MagicSpells.showManaOnWoodTool) {
+				bar.showOnTool(player);
+			}
+			// send event
+			bar.callManaChangeEvent(player);
 		}
 	}
 	
-	public void showManaOnTool(Player player) {
-		ManaBar bar = manaBars.get(player.getName());
-		if (bar != null) {
-			bar.showOnTool(player);
-		}		
-	}
-	
 	public void startRegenerator() {
-		//taskId = Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(MagicSpells.plugin, new ManaBarRegenerator(), MagicSpells.manaRegenTickRate, MagicSpells.manaRegenTickRate);
 		if (timer != null) {
 			stopRegenerator();
 		}
@@ -91,7 +80,6 @@ public class ManaBarManager {
 	}
 	
 	public void stopRegenerator() {
-		//Bukkit.getServer().getScheduler().cancelTask(taskId);
 		if (timer != null) {
 			timer.cancel();
 			timer = null;
@@ -105,13 +93,8 @@ public class ManaBarManager {
 				boolean regenerated = bar.regenerate(MagicSpells.manaRegenPercent);
 				if (regenerated && (MagicSpells.showManaOnRegen || MagicSpells.showManaOnWoodTool)) {
 					Player player = Bukkit.getServer().getPlayer(p);
-					if (player != null) {
-						if (MagicSpells.showManaOnRegen) {
-							showMana(player);
-						}
-						if (MagicSpells.showManaOnWoodTool) {
-							showManaOnTool(player);
-						}						
+					if (player != null && player.isOnline()) {
+						showMana(player);
 					}
 				}
 			}

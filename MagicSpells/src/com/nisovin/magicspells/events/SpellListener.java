@@ -17,6 +17,8 @@ public class SpellListener extends CustomEventListener {
 			onSpellCast((SpellCastEvent)event);
 		} else if (event instanceof SpellLearnEvent) {
 			onSpellLearn((SpellLearnEvent)event);
+		} else if (event instanceof ManaChangeEvent) {
+			onManaChange((ManaChangeEvent)event);
 		}
 	}
 	
@@ -41,6 +43,14 @@ public class SpellListener extends CustomEventListener {
 	 * @param event relevant event details
 	 */
 	public void onSpellLearn(SpellLearnEvent event) {
+		
+	}
+	
+	/**
+	 * Called when a player's mana level changes for any reason
+	 * @param event relevant event details
+	 */
+	public void onManaChange(ManaChangeEvent event) {
 		
 	}
 	

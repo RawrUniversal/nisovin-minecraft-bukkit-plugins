@@ -1,8 +1,11 @@
 package com.nisovin.magicspells;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import com.nisovin.magicspells.events.ManaChangeEvent;
 
 public class ManaBar {
 	private int mana;
@@ -37,7 +40,7 @@ public class ManaBar {
 		return true;
 	}
 	
-	public void show(Player player) {
+	public void showInChat(Player player) {
 		int segments = (int)(((double)mana/(double)maxMana) * MagicSpells.manaBarSize);
 		String text = MagicSpells.textColor + MagicSpells.manaBarPrefix + " {" + MagicSpells.manaBarColorFull;
 		int i = 0;
@@ -65,6 +68,11 @@ public class ManaBar {
 			item.setDurability((short)dur);
 			player.getInventory().setItem(MagicSpells.manaBarToolSlot, item);
 		}
+	}
+	
+	public void callManaChangeEvent(Player player) {
+		ManaChangeEvent event = new ManaChangeEvent(player, mana, maxMana);
+		Bukkit.getPluginManager().callEvent(event);
 	}
 	
 	public boolean regenerate(int percent) {

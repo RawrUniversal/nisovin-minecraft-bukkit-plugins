@@ -7,6 +7,8 @@ package com.nisovin.magicspells.events;
 public enum MagicEventType {
 
 	SPELL_CAST,
-	SPELL_TARGET
+	SPELL_TARGET,
+	SPELL_LEARN,
+	MANA_CHANGE
 	
 }
