@@ -30,6 +30,7 @@ public class BookWormPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerChat(PlayerChatEvent event) {
+		if (event.isCancelled()) return;
 		Player player = event.getPlayer();
 		if (plugin.chatModed.contains(player.getName()) && player.getItemInHand().getType() == Material.BOOK) {
 			Book book = BookWorm.getBook(player);
