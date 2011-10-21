@@ -44,7 +44,6 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean CHECK_WORLDGUARD = true;
 	protected static boolean USE_FULL_FILENAMES = true;
 	protected static boolean AUTO_CHAT_MODE = true;
-	protected static boolean BOOK_INFO_ACHIEVEMENT = true;
 	protected static boolean DROP_BOOKSHELF = false;
 	protected static boolean KEEP_ALL_BOOKS_LOADED = false;
 	protected static boolean USE_SPOUT_FEATURES = true;
@@ -323,7 +322,6 @@ public class BookWorm extends JavaPlugin {
 		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
 		MAKE_REAL_COPY = config.getBoolean("general.make-real-copy", MAKE_REAL_COPY);
 		AUTO_CHAT_MODE = config.getBoolean("general.auto-chat-mode", AUTO_CHAT_MODE);
-		BOOK_INFO_ACHIEVEMENT = config.getBoolean("general.book-info-achievement", BOOK_INFO_ACHIEVEMENT);
 		DROP_BOOKSHELF = config.getBoolean("general.drop-bookshelf-on-break", DROP_BOOKSHELF);
 		KEEP_ALL_BOOKS_LOADED = config.getBoolean("general.keep-all-books-loaded", KEEP_ALL_BOOKS_LOADED);
 		USE_SPOUT_FEATURES = config.getBoolean("general.use-spout-features", USE_SPOUT_FEATURES);
