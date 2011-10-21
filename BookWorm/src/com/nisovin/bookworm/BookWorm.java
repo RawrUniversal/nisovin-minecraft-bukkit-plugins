@@ -47,6 +47,7 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean BOOK_INFO_ACHIEVEMENT = true;
 	protected static boolean DROP_BOOKSHELF = false;
 	protected static boolean KEEP_ALL_BOOKS_LOADED = false;
+	protected static boolean USE_SPOUT_FEATURES = true;
 	protected static boolean SPOUT_ENABLED = false;
 	
 	protected static int CLEAN_INTERVAL = 600;
@@ -146,14 +147,16 @@ public class BookWorm extends JavaPlugin {
 		new BookWormWorldListener(this);
 		
 		// check for spout
-		Plugin spout = getServer().getPluginManager().getPlugin("Spout");
-		if (spout != null) {
-			SPOUT_ENABLED = true;
-			new BookWormSpoutInventoryListener(this);
-			//new BookWormSpoutScreenListener(this);
-			getServer().getLogger().info("BookWorm 'Spout' support enabled.");
-		} else {
-			SPOUT_ENABLED = false;
+		if (USE_SPOUT_FEATURES) {
+			Plugin spout = getServer().getPluginManager().getPlugin("Spout");
+			if (spout != null) {
+				SPOUT_ENABLED = true;
+				new BookWormSpoutInventoryListener(this);
+				new BookWormSpoutScreenListener(this);
+				getServer().getLogger().info("BookWorm 'Spout' support enabled.");
+			} else {
+				SPOUT_ENABLED = false;
+			}
 		}
 		
 		// start memory cleaner
@@ -323,6 +326,7 @@ public class BookWorm extends JavaPlugin {
 		BOOK_INFO_ACHIEVEMENT = config.getBoolean("general.book-info-achievement", BOOK_INFO_ACHIEVEMENT);
 		DROP_BOOKSHELF = config.getBoolean("general.drop-bookshelf-on-break", DROP_BOOKSHELF);
 		KEEP_ALL_BOOKS_LOADED = config.getBoolean("general.keep-all-books-loaded", KEEP_ALL_BOOKS_LOADED);
+		USE_SPOUT_FEATURES = config.getBoolean("general.use-spout-features", USE_SPOUT_FEATURES);
 
 		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
 		USE_FULL_FILENAMES = config.getBoolean("general.use-full-filenames", USE_FULL_FILENAMES);

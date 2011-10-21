@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.event.screen.ScreenListener;
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class BookWormSpoutScreenListener extends ScreenListener {
 
@@ -23,6 +24,10 @@ public class BookWormSpoutScreenListener extends ScreenListener {
 			Player player = event.getPlayer();
 			if (btnText.equals("-->")) {
 				bookmark.nextPage(player);
+			} else if (btnText.equals("<--")) {
+				bookmark.previousPage(player);
+			} else if (btnText.equals("x")) {
+				((SpoutPlayer)player).closeActiveWindow();
 			}
 		}
 	}

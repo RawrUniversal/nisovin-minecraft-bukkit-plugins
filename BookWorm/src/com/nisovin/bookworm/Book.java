@@ -236,6 +236,13 @@ public class Book {
 		if (!loaded) {
 			load();
 		}
+		if (unsaved) {
+			save();
+		}
+		
+		if (!loaded) {
+			return null;
+		}
 		
 		if (page < 0 || page > pages) {
 			return null;
