@@ -112,7 +112,6 @@ public class BookWorm extends JavaPlugin {
 	protected HashSet<String> chatModed;
 	protected BookUnloader unloader;
 	protected WorldGuardPlugin worldGuard;
-	protected HashSet<BookWormListener> listeners;
 	protected ArrayList<Short> extraBookIds;
 	
 	@Override
@@ -126,7 +125,6 @@ public class BookWorm extends JavaPlugin {
 		
 		// setup storage
 		perms = new PermissionManager();
-		listeners = new HashSet<BookWormListener>();
 		books = new HashMap<Short,Book>();
 		bookshelves = new HashMap<String,Short>();
 		bookmarks = new HashMap<String,Bookmark>();
@@ -261,24 +259,8 @@ public class BookWorm extends JavaPlugin {
 		return copy;
 	}
 	
-	public static void registerListener(BookWormListener listener) {
-		plugin.listeners.add(listener);
-	}
-	
-	public static void unregisterListener(BookWormListener listener) {
-		plugin.listeners.remove(listener);
-	}
-	
 	protected void callEvent(BookEvent event) {
-		if (event instanceof BookReadEvent) {
-			for (BookWormListener listener : listeners) {
-				listener.onBookRead((BookReadEvent)event);
-			}
-		} else if (event instanceof BookPlaceEvent) {
-			for (BookWormListener listener : listeners) {
-				listener.onBookPlace((BookPlaceEvent)event);
-			}			
-		}
+		getServer().getPluginManager().callEvent(event);
 	}
 	
 	public static PermissionManager getPermissions() {

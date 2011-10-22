@@ -11,8 +11,8 @@ public class BookPlaceEvent extends BookEvent {
 	private Player player;
 	private Location location;
 	
-	public BookPlaceEvent(String name, Player player, Book book, Location location) {
-		super(name, book);
+	public BookPlaceEvent(Player player, Book book, Location location) {
+		super("BOOK_WORM_PLACE", book);
 		
 		this.player = player;
 		this.location = location;

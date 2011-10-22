@@ -68,7 +68,7 @@ public class BookWormPlayerListener extends PlayerListener {
 					}					
 
 					// check listeners
-					BookReadEvent evt = new BookReadEvent("BOOK_READ", book, player, bookmark.page);
+					BookReadEvent evt = new BookReadEvent(book, player, bookmark.page);
 					plugin.callEvent(evt);
 					if (!evt.isCancelled()) {
 						
@@ -118,7 +118,7 @@ public class BookWormPlayerListener extends PlayerListener {
 				}
 				
 				// check listeners
-				BookPlaceEvent evt = new BookPlaceEvent("BOOK_PLACE", player, book, l);
+				BookPlaceEvent evt = new BookPlaceEvent(player, book, l);
 				plugin.callEvent(evt);
 				if (!evt.isCancelled()) {
 					
@@ -168,7 +168,7 @@ public class BookWormPlayerListener extends PlayerListener {
 			}				
 
 			// check listeners
-			BookReadEvent evt = new BookReadEvent("BOOK_READ", book, player, bookmark.page);
+			BookReadEvent evt = new BookReadEvent(book, player, bookmark.page);
 			plugin.callEvent(evt);
 			if (!evt.isCancelled()) {			
 				// set bookmark and read

@@ -9,8 +9,8 @@ public class BookReadEvent extends BookEvent {
 	private Player player;
 	private int page;
 	
-	public BookReadEvent(String name, Book book, Player player, int page) {
-		super(name, book);
+	public BookReadEvent(Book book, Player player, int page) {
+		super("BOOK_WORM_READ", book);
 		this.player = player;
 		this.page = page;
 	}
