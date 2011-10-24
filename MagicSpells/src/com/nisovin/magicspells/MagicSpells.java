@@ -57,6 +57,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static boolean showStrCostOnMissingReagents;
 	protected static List<Integer> losTransparentBlocks;
 	public static List<Integer> ignoreCastItemDurability;
+	protected static int globalCooldown;
 	
 	protected static boolean enableManaBars;
 	protected static int maxMana;
@@ -159,6 +160,7 @@ public class MagicSpells extends JavaPlugin {
 			losTransparentBlocks.add(Material.DIODE_BLOCK_OFF.getId());
 		}
 		ignoreCastItemDurability = config.getIntList("general.ignore-cast-item-durability", new ArrayList<Integer>());
+		globalCooldown = config.getInt("general.global-cooldown", 500);
 		enableManaBars = config.getBoolean("general.mana.enable-mana-bars", true);
 		maxMana = config.getInt("general.mana.max-mana", 100);
 		manaBarPrefix = config.getString("general.mana.mana-bar-prefix", "Mana:");

@@ -168,11 +168,13 @@ public class MagicPlayerListener extends PlayerListener {
 			}
 			if (spell != null && spell.canCastWithItem()) {
 				// first check global cooldown
-				Long lastCastTime = lastCast.get(p);
-				if (lastCastTime != null && lastCastTime + 500 > System.currentTimeMillis()) {
-					return;
-				} else {
-					lastCast.put(p, System.currentTimeMillis());
+				if (MagicSpells.globalCooldown > 0 && !spell.ignoreGlobalCooldown) {
+					Long lastCastTime = lastCast.get(p);
+					if (lastCastTime != null && lastCastTime + MagicSpells.globalCooldown > System.currentTimeMillis()) {
+						return;
+					} else {
+						lastCast.put(p, System.currentTimeMillis());
+					}
 				}
 				// cast spell
 				spell.cast(p);

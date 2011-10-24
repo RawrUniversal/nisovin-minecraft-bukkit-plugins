@@ -48,6 +48,7 @@ public abstract class Spell implements Comparable<Spell> {
 	protected int hungerCost = 0;
 	protected int cooldown;
 	protected HashMap<Spell, Integer> sharedCooldowns;
+	protected boolean ignoreGlobalCooldown;
 	protected int broadcastRange;
 	protected String strCost;
 	protected String strCastSelf;
@@ -105,6 +106,7 @@ public abstract class Spell implements Comparable<Spell> {
 				}
 			}
 		}
+		this.ignoreGlobalCooldown = config.getBoolean("spells." + spellName + ".ignore-global-cooldown", false);
 		this.broadcastRange = config.getInt("spells." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 		this.strCost = config.getString("spells." + spellName + ".str-cost", null);
 		this.strCastSelf = config.getString("spells." + spellName + ".str-cast-self", null);
