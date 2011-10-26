@@ -7,6 +7,9 @@ commands:
         description: Stuff
         usage: /<command>
         aliases: [gods]
+    pray:
+        description: Pray to a god
+        usage: "Usage: /<command> <god>"
 permissions:
     oldgods.admin.*:
         description: All admin permissions
@@ -60,4 +63,41 @@ permissions:
     oldgods.disciple.war:
         default: false
     oldgods.disciple.wisdom:
+        default: false
+    oldgods.pray.*:
+        description: Give access to pray to all gods
+        children:
+            oldgods.pray.cooking: true
+            oldgods.pray.death: true
+            oldgods.pray.exploration: true
+            oldgods.pray.farming: true
+            oldgods.pray.healing: true
+            oldgods.pray.hunt: true
+            oldgods.pray.love: true
+            oldgods.pray.mining: true
+            oldgods.pray.ocean: true
+            oldgods.pray.war: true
+            oldgods.pray.wisdom: true
+        default: op
+    oldgods.pray.cooking:
+        default: false
+    oldgods.pray.death:
+        default: false
+    oldgods.pray.exploration:
+        default: false
+    oldgods.pray.farming:
+        default: false
+    oldgods.pray.healing:
+        default: false
+    oldgods.pray.hunt:
+        default: false
+    oldgods.pray.love:
+        default: false
+    oldgods.pray.mining:
+        default: false
+    oldgods.pray.ocean:
+        default: false
+    oldgods.pray.war:
+        default: false
+    oldgods.pray.wisdom:
         default: false

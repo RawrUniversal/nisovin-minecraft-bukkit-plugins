@@ -2,9 +2,8 @@ package com.nisovin.oldgods.godhandlers;
 
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Cow;
@@ -81,15 +80,14 @@ public class HuntHandler {
 		}		
 	}
 	
-	public static void pray(Player player, Block block, int amount) {
+	public static void pray(Player player, Location location, int amount) {
 		int chance = player.hasPermission("oldgods.disciple.hunt") ? 40 : 4;
 		if (OldGods.random() > chance) return;
 		
 		int quantity = OldGods.random(5) + 5;
 		
-		Block b = block.getRelative(BlockFace.UP);
 		for (int i = 0; i < quantity; i++) {
-			b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.ARROW, 1));
+			location.getWorld().dropItemNaturally(location, new ItemStack(Material.ARROW, 1));
 		}
 	}
 	

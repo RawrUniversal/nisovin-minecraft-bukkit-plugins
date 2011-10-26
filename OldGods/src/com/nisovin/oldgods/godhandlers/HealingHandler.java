@@ -1,6 +1,6 @@
 package com.nisovin.oldgods.godhandlers;
 
-import org.bukkit.block.Block;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -22,7 +22,7 @@ public class HealingHandler {
 		}
 	}
 	
-	public static void pray(Player player, Block block, int amount) {
+	public static void pray(Player player, Location location, int amount) {
 		OldGods.removeMobEffect(player, 17);
 		OldGods.removeMobEffect(player, 19);
 		

@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.util.config.Configuration;
-
-import com.nisovin.oldgods.godhandlers.*;
 
 public class AltarManager {
 
@@ -44,31 +44,18 @@ public class AltarManager {
 		String s = block.getWorld().getName() + "," + block.getX() + "," + block.getY() + "," + block.getZ();
 		Altar altar = altars.get(s);
 		if (altar != null) {
-			boolean success = plugin.addPrayer(player, altar.god, altar.amount);
+			boolean success = plugin.addPrayer(player, altar.god, block.getRelative(BlockFace.UP).getLocation(), altar.amount);
 			if (success) {
-				if (altar.god == God.COOKING) {
-					CookingHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.DEATH) {
-					DeathHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.EXPLORATION) {
-					ExplorationHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.FARMING) {
-					FarmingHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.HEALING) {
-					HealingHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.HUNT) {
-					HuntHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.LOVE) {
-					LoveHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.MINING) {
-					MiningHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.OCEAN) {
-					OceanHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.WAR) {
-					WarHandler.pray(player, block, altar.amount);
-				} else if (altar.god == God.WISDOM) {
-					WisdomHandler.pray(player, block, altar.amount);
+				player.sendMessage("You pray at the altar.");
+				
+				if (altar.amount >= 25) {
+					// it's a temple altar, grant pray permission
+					String godName = altar.god.name().toLowerCase();
+					if (player.hasPermission("oldgods.disciple." + godName) && !player.hasPermission("oldgods.pray." + godName)) {
+						Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "perms player setperm " + player.getName() + " oldgods.pray." + godName + " true");
+					}
 				}
+				
 				return true;
 			}
 		}

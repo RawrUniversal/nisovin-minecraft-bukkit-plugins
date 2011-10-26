@@ -1,8 +1,7 @@
 package com.nisovin.oldgods.godhandlers;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
@@ -18,14 +17,13 @@ public class LoveHandler {
 		}
 	}
 	
-	public static void pray(Player player, Block block, int amount) {
+	public static void pray(Player player, Location location, int amount) {
 		int chance = player.hasPermission("oldgods.disciple.love") ? 40 : 4;
 		if (OldGods.random() > chance) return;
 		
-		Block b = block.getRelative(BlockFace.UP);
 		for (int i = 0; i < 3; i++) {
-			b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.RED_ROSE,1));
-			b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.YELLOW_FLOWER,1));
+			location.getWorld().dropItemNaturally(location, new ItemStack(Material.RED_ROSE,1));
+			location.getWorld().dropItemNaturally(location, new ItemStack(Material.YELLOW_FLOWER,1));
 		}
 	}
 	

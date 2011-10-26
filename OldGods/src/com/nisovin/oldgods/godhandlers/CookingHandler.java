@@ -2,9 +2,9 @@ package com.nisovin.oldgods.godhandlers;
 
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -50,7 +50,7 @@ public class CookingHandler {
 		}
 	}
 	
-	public static void pray(Player player, Block block, int amount) {
+	public static void pray(Player player, Location location, int amount) {
 		int chance = player.hasPermission("oldgods.disciple.cooking") ? 40 : 4;
 		if (OldGods.random() > chance) return;
 		
@@ -69,9 +69,8 @@ public class CookingHandler {
 		}
 		
 		if (quantity > 0 && type != null) {
-			Block b = block.getRelative(BlockFace.UP);
 			for (int i = 0; i < quantity; i++) {
-				b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(type,1));
+				location.getWorld().dropItemNaturally(location, new ItemStack(type,1));
 			}
 		}
 	}

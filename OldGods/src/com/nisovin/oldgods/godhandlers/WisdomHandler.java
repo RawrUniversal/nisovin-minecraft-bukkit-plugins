@@ -2,7 +2,7 @@ package com.nisovin.oldgods.godhandlers;
 
 import java.util.HashSet;
 
-import org.bukkit.block.Block;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,7 +24,7 @@ public class WisdomHandler {
 		}
 	}
 	
-	public static void pray(Player player, Block block, int amount) {
+	public static void pray(Player player, Location location, int amount) {
 		MagicSpells.mana.addMana(player, 100);
 	}
 	

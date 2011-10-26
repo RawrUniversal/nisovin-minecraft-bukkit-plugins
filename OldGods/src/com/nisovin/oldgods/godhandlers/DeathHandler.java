@@ -1,6 +1,6 @@
 package com.nisovin.oldgods.godhandlers;
 
-import org.bukkit.block.Block;
+import org.bukkit.Location;
 import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -30,7 +30,7 @@ public class DeathHandler {
 		}		
 	}
 	
-	public static void pray(Player player, Block block, int amount) {
+	public static void pray(Player player, Location location, int amount) {
 		
 	}
 }
