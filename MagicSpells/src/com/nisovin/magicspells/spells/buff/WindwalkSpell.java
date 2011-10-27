@@ -12,6 +12,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -34,6 +35,7 @@ public class WindwalkSpell extends BuffSpell {
 		
 		addListener(Event.Type.BLOCK_BREAK);
 		addListener(Event.Type.BLOCK_PLACE);
+		addListener(Event.Type.PLAYER_DROP_ITEM);
 		addListener(Event.Type.ENTITY_DAMAGE);
 		if (cancelOnLand) {
 			addListener(Event.Type.PLAYER_TOGGLE_SNEAK);
@@ -98,7 +100,14 @@ public class WindwalkSpell extends BuffSpell {
 		if (!event.isCancelled() && flyers.containsKey(event.getPlayer())) {
 			event.setCancelled(true);
 		}
-	}	
+	}
+
+	@Override
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
+		if (!event.isCancelled() && flyers.containsKey(event.getPlayer())) {
+			event.setCancelled(true);
+		}
+	}
 
 	@Override
 	public void onEntityDamage(EntityDamageEvent event) {

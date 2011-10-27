@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -621,6 +622,7 @@ public abstract class Spell implements Comparable<Spell> {
 	public void onItemHeldChange(PlayerItemHeldEvent event) {}
 	public void onPlayerMove(PlayerMoveEvent event) {}
 	public void onPlayerTeleport(PlayerTeleportEvent event) {}
+	public void onPlayerDropItem(PlayerDropItemEvent event) {}
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {}
 	public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {}
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {}

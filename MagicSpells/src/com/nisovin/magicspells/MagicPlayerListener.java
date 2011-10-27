@@ -9,6 +9,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -37,9 +38,10 @@ public class MagicPlayerListener extends PlayerListener {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TELEPORT, this, Event.Priority.Monitor, plugin);
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_DROP_ITEM, this, Event.Priority.Normal, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TOGGLE_SNEAK, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TOGGLE_SPRINT, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Monitor, plugin);
+		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Normal, plugin);
 	}
 	
 	@Override
@@ -208,6 +210,16 @@ public class MagicPlayerListener extends PlayerListener {
 		if (spells != null) {
 			for (Spell spell : spells) {
 				spell.onPlayerTeleport(event);
+			}
+		}
+	}
+	
+	@Override
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
+		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_DROP_ITEM);
+		if (spells != null) {
+			for (Spell spell : spells) {
+				spell.onPlayerDropItem(event);
 			}
 		}
 	}
