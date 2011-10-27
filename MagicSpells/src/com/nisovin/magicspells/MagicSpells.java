@@ -615,7 +615,7 @@ public class MagicSpells extends JavaPlugin {
 		} else if (command.getName().equalsIgnoreCase("magicspellmana")) {
 			if (enableManaBars && sender instanceof Player) {
 				Player player = (Player)sender;
-				mana.showMana(player);
+				mana.showMana(player, true);
 			}
 			return true;
 		}

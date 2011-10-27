@@ -57,6 +57,10 @@ public class ManaBarManager {
 	}
 	
 	public void showMana(Player player) {
+		showMana(player, false);
+	}
+	
+	public void showMana(Player player, boolean forceShowInChat) {
 		ManaBar bar = manaBars.get(player.getName());
 		if (bar != null) {
 			if (MagicSpells.showManaOnUse) {
