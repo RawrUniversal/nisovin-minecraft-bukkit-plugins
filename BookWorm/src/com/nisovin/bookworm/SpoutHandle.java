@@ -137,6 +137,8 @@ public class SpoutHandle {
 			next.setDirty(true);
 		}
 		
+		popup.setDirty(true);
+		
 		return true;
 	}
 }
