@@ -17,17 +17,19 @@ public class BookWormSpoutScreenListener extends ScreenListener {
 
 	@Override
 	public void onButtonClick(ButtonClickEvent event) {
-		String btnText = event.getButton().getText();
-		
-		Bookmark bookmark = plugin.bookmarks.get(event.getPlayer().getName());
-		if (bookmark != null) {
-			Player player = event.getPlayer();
-			if (btnText.equals("-->")) {
-				bookmark.nextPage(player);
-			} else if (btnText.equals("<--")) {
-				bookmark.previousPage(player);
-			} else if (btnText.equals("x")) {
-				((SpoutPlayer)player).closeActiveWindow();
+		if (event.getButton().getPlugin().equals(BookWorm.plugin)) { 
+			String btnText = event.getButton().getText();
+			
+			Bookmark bookmark = plugin.bookmarks.get(event.getPlayer().getName());
+			if (bookmark != null) {
+				Player player = event.getPlayer();
+				if (btnText.equals("-->")) {
+					bookmark.nextPage(player);
+				} else if (btnText.equals("<--")) {
+					bookmark.previousPage(player);
+				} else if (btnText.equals("x")) {
+					((SpoutPlayer)player).closeActiveWindow();
+				}
 			}
 		}
 	}
