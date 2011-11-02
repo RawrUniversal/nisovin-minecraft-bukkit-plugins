@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spells.command;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
@@ -37,7 +38,7 @@ public class TomeSpell extends CommandSpell {
 	public TomeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		listener = new BookListener();
-		BookWorm.registerListener(listener);
+		Bukkit.getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, listener, Event.Priority.Monitor, MagicSpells.plugin);
 		
 		cancelReadOnLearn = getConfigBoolean("cancel-read-on-learn", true);
 		allowOverwrite = getConfigBoolean("allow-overwrite", false);
@@ -102,13 +103,6 @@ public class TomeSpell extends CommandSpell {
 	@Override
 	public boolean castFromConsole(CommandSender sender, String[] args) {
 		return false;
-	}
-	
-	@Override
-	protected void turnOff() {
-		if (listener != null) {
-			BookWorm.unregisterListener(listener);
-		}
 	}
 	
 	private class BookListener extends BookWormListener {
