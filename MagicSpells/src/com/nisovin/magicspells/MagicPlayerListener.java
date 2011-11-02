@@ -34,7 +34,10 @@ public class MagicPlayerListener extends PlayerListener {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, this, Event.Priority.Monitor, plugin);
+		if (MagicSpells.castOnAnimate) {
+			plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, this, Event.Priority.Monitor, plugin);
+		}
+		
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this, Event.Priority.Monitor, plugin);
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TELEPORT, this, Event.Priority.Monitor, plugin);
@@ -95,7 +98,10 @@ public class MagicPlayerListener extends PlayerListener {
 			// special block -- don't do normal interactions
 			noCast.add(event.getPlayer());
 		} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			// cast: moved back to player animation
+			// left click - cast
+			if (!MagicSpells.castOnAnimate) {
+				castSpell(event.getPlayer());
+			}
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			// right click -- cycle spell and/or process mana pots
 			Player player = event.getPlayer();
@@ -162,26 +168,30 @@ public class MagicPlayerListener extends PlayerListener {
 			lastCast.put(p, System.currentTimeMillis());
 		} else {
 			// left click -- cast spell
-			ItemStack inHand = event.getPlayer().getItemInHand();
-			Spell spell = null;
-			try {
-				spell = MagicSpells.getSpellbook(event.getPlayer()).getActiveSpell(inHand);
-			} catch (NullPointerException e) {
-			}
-			if (spell != null && spell.canCastWithItem()) {
-				// first check global cooldown
-				if (MagicSpells.globalCooldown > 0 && !spell.ignoreGlobalCooldown) {
-					Long lastCastTime = lastCast.get(p);
-					if (lastCastTime != null && lastCastTime + MagicSpells.globalCooldown > System.currentTimeMillis()) {
-						return;
-					} else {
-						lastCast.put(p, System.currentTimeMillis());
-					}
-				}
-				// cast spell
-				spell.cast(p);
-			}
+			castSpell(p);
 		}
+	}
+	
+	private void castSpell(Player player) {
+		ItemStack inHand = player.getItemInHand();
+		Spell spell = null;
+		try {
+			spell = MagicSpells.getSpellbook(player).getActiveSpell(inHand);
+		} catch (NullPointerException e) {
+		}
+		if (spell != null && spell.canCastWithItem()) {
+			// first check global cooldown
+			if (MagicSpells.globalCooldown > 0 && !spell.ignoreGlobalCooldown) {
+				Long lastCastTime = lastCast.get(player);
+				if (lastCastTime != null && lastCastTime + MagicSpells.globalCooldown > System.currentTimeMillis()) {
+					return;
+				} else {
+					lastCast.put(player, System.currentTimeMillis());
+				}
+			}
+			// cast spell
+			spell.cast(player);
+		}		
 	}
 
 	@Override

@@ -58,6 +58,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static List<Integer> losTransparentBlocks;
 	public static List<Integer> ignoreCastItemDurability;
 	protected static int globalCooldown;
+	protected static boolean castOnAnimate;
 	
 	protected static boolean enableManaBars;
 	protected static int maxMana;
@@ -127,21 +128,15 @@ public class MagicSpells extends JavaPlugin {
 		debug = config.getBoolean("general.debug", false);
 		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
-		allowCycleToNoSpell = config.getBoolean("general.allow-cycle-to-no-spell", false);
-		onlyCycleToCastableSpells = config.getBoolean("general.only-cycle-to-castable-spells", true);
+		
+		
 		opsHaveAllSpells = config.getBoolean("general.ops-have-all-spells", true);
 		defaultAllPermsFalse = config.getBoolean("general.default-all-perms-false", false);
-		showStrCostOnMissingReagents = config.getBoolean("general.show-str-cost-on-missing-reagents", true);
-		strCastUsage = config.getString("general.str-cast-usage", "Usage: /cast <spell>. Use /cast list to see a list of spells.");
-		strUnknownSpell = config.getString("general.str-unknown-spell", "You do not know a spell with that name.");
-		strSpellChange = config.getString("general.str-spell-change", "You are now using the %s spell.");
-		strSpellChangeEmpty = config.getString("general.str-spell-change-empty", "You are no longer using a spell.");
-		strOnCooldown = config.getString("general.str-on-cooldown", "That spell is on cooldown.");
-		strMissingReagents = config.getString("general.str-missing-reagents", "You do not have the reagents for that spell.");
-		strCantCast = config.getString("general.str-cant-cast", "You can't cast that spell right now.");
-		strNoMagicZone = config.getString("general.str-no-magic-zone", "An anti-magic aura makes your spell fizzle.");
-		strConsoleName = config.getString("general.console-name", "Admin");
+
+		allowCycleToNoSpell = config.getBoolean("general.allow-cycle-to-no-spell", false);
+		onlyCycleToCastableSpells = config.getBoolean("general.only-cycle-to-castable-spells", true);
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
+		showStrCostOnMissingReagents = config.getBoolean("general.show-str-cost-on-missing-reagents", true);
 		losTransparentBlocks = config.getIntList("general.los-transparent-blocks", null);
 		if (losTransparentBlocks == null || losTransparentBlocks.size() == 0) {
 			losTransparentBlocks = new ArrayList<Integer>();
@@ -161,6 +156,18 @@ public class MagicSpells extends JavaPlugin {
 		}
 		ignoreCastItemDurability = config.getIntList("general.ignore-cast-item-durability", new ArrayList<Integer>());
 		globalCooldown = config.getInt("general.global-cooldown", 500);
+		castOnAnimate = config.getBoolean("general.cast-on-animate", true);
+		
+		strCastUsage = config.getString("general.str-cast-usage", "Usage: /cast <spell>. Use /cast list to see a list of spells.");
+		strUnknownSpell = config.getString("general.str-unknown-spell", "You do not know a spell with that name.");
+		strSpellChange = config.getString("general.str-spell-change", "You are now using the %s spell.");
+		strSpellChangeEmpty = config.getString("general.str-spell-change-empty", "You are no longer using a spell.");
+		strOnCooldown = config.getString("general.str-on-cooldown", "That spell is on cooldown.");
+		strMissingReagents = config.getString("general.str-missing-reagents", "You do not have the reagents for that spell.");
+		strCantCast = config.getString("general.str-cant-cast", "You can't cast that spell right now.");
+		strNoMagicZone = config.getString("general.str-no-magic-zone", "An anti-magic aura makes your spell fizzle.");
+		strConsoleName = config.getString("general.console-name", "Admin");
+		
 		enableManaBars = config.getBoolean("general.mana.enable-mana-bars", true);
 		maxMana = config.getInt("general.mana.max-mana", 100);
 		manaBarPrefix = config.getString("general.mana.mana-bar-prefix", "Mana:");

@@ -21,6 +21,7 @@ general:
     ignore-default-bindings: false
     ignore-cast-item-durability: [ 268, 269, 270, 271, 283, 284, 285, 286, 290, 294, 314, 315, 316, 317 ]
     global-cooldown: 500
+    cast-on-animate: true
     mana:
         enable-mana-bars: true
         max-mana: 100
