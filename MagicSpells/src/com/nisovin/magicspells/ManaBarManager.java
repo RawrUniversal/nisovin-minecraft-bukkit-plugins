@@ -63,7 +63,7 @@ public class ManaBarManager {
 	public void showMana(Player player, boolean forceShowInChat) {
 		ManaBar bar = manaBars.get(player.getName());
 		if (bar != null) {
-			if (MagicSpells.showManaOnUse) {
+			if (forceShowInChat || MagicSpells.showManaOnUse) {
 				bar.showInChat(player);
 			}
 			if (MagicSpells.showManaOnWoodTool) {
@@ -98,7 +98,12 @@ public class ManaBarManager {
 				if (regenerated && (MagicSpells.showManaOnRegen || MagicSpells.showManaOnWoodTool)) {
 					Player player = Bukkit.getServer().getPlayer(p);
 					if (player != null && player.isOnline()) {
-						showMana(player);
+						if (MagicSpells.showManaOnRegen) {
+							bar.showInChat(player);
+						}
+						if (MagicSpells.showManaOnWoodTool) {
+							bar.showOnTool(player);
+						}
 					}
 				}
 			}
