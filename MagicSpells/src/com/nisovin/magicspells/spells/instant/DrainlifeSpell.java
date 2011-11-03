@@ -48,15 +48,17 @@ public class DrainlifeSpell extends InstantSpell {
 				sendMessage(player, strNoTarget);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
+				int dam = Math.round(damage*power);
 				if (target instanceof Player && checkPlugins) {
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, damage);
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
 						return PostCastAction.ALREADY_HANDLED;
 					}
+					dam = event.getDamage();
 				}
-				target.damage((int) Math.round(damage*power), player);
+				target.damage(dam, player);
 				int h = player.getHealth()+Math.round(heal*power);
 				if (h>20) h=20;
 				player.setHealth(h);

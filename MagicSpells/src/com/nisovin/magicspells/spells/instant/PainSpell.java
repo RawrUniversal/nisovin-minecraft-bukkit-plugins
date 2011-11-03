@@ -36,16 +36,18 @@ public class PainSpell extends InstantSpell {
 				sendMessage(player, strNoTarget);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
+				int dam = Math.round(damage*power);
 				if (target instanceof Player && checkPlugins) {
 					// handle the event myself so I can detect cancellation properly
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, damage);
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
 						return PostCastAction.ALREADY_HANDLED;
 					}
+					dam = event.getDamage();
 				}
-				target.damage(Math.round(damage*power));
+				target.damage(dam);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

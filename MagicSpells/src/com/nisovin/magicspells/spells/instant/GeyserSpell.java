@@ -59,19 +59,22 @@ public class GeyserSpell extends InstantSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
+			int dam = Math.round(damage*power);
+			
 			// check plugins
 			if (target instanceof Player && checkPlugins) {
-				EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.CUSTOM, damage);
+				EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.CUSTOM, dam);
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled()) {
 					sendMessage(player, strNoTarget);
 					return PostCastAction.ALREADY_HANDLED;
-				}				
+				}
+				dam = event.getDamage();
 			}
 			
 			// do damage and launch target
 			if (damage > 0) {
-				target.damage(Math.round(damage*power), player);				
+				target.damage(dam, player);				
 			}
 			if (velocity > 0) {
 				target.setVelocity(new Vector(0, velocity*power, 0));
