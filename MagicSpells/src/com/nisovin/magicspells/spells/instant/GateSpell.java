@@ -7,7 +7,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
@@ -18,7 +21,12 @@ public class GateSpell extends InstantSpell {
 	private String world;
 	private String coords;
 	private boolean useSpellEffect;
+	private int castTime;
 	private String strGateFailed;
+	private String strCastDone;
+	private String strCastInterrupted;
+	
+	private HashSet<String> casting;
 
 	public GateSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -26,7 +34,15 @@ public class GateSpell extends InstantSpell {
 		world = config.getString("spells." + spellName + ".world", "CURRENT");
 		coords = config.getString("spells." + spellName + ".coordinates", "SPAWN");
 		useSpellEffect = config.getBoolean("spells." + spellName + ".use-spell-effect", true);
+		castTime = getConfigInt("cast-time", 0);
 		strGateFailed = config.getString("spells." + spellName + ".str-gate-failed", "Unable to teleport.");
+		strCastDone = getConfigString("str-cast-done", "");
+		strCastInterrupted = getConfigString("str-cast-interrupted", "");
+		
+		if (castTime > 0) {
+			casting = new HashSet<String>();
+			addListener(Event.Type.ENTITY_DAMAGE);
+		}
 	}
 
 	@Override
@@ -103,9 +119,54 @@ public class GateSpell extends InstantSpell {
 			}
 			
 			// teleport caster
-			player.teleport(location);
+			if (castTime > 0) {
+				// wait a bit
+				casting.add(player.getName());
+				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Teleporter(player, location), castTime);
+			} else {
+				// go instantly
+				player.teleport(location);
+			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+
+	@Override
+	public void onEntityDamage(EntityDamageEvent event) {
+		if (event.isCancelled()) return;
+		Entity e = event.getEntity();
+		if (e instanceof Player) {
+			String name = ((Player)e).getName();
+			if (casting.contains(name)) {
+				casting.remove(name);
+				sendMessage((Player)e, strCastInterrupted);
+			}
+		}
+	}
+	
+	private class Teleporter implements Runnable {
+		private Player player;
+		private Location location;
+		private Location target;
+		
+		public Teleporter(Player player, Location target) {
+			this.player = player;
+			this.location = player.getLocation().clone();
+			this.target = target;
+		}
+		
+		public void run() {
+			if (casting.contains(player.getName())) {
+				casting.remove(player.getName());
+				Location loc = player.getLocation();
+				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
+					player.teleport(target);
+					sendMessage(player, strCastDone);
+				} else {
+					sendMessage(player, strCastInterrupted);
+				}
+			}
+		}
 	}
 
 }

@@ -401,6 +401,7 @@ spells:
         world: CURRENT
         coordinates: SPAWN
         use-spell-effect: true
+        cast-time: 0
         cost:
             - 331 1
             - 265 1
@@ -408,6 +409,8 @@ spells:
         str-cast-self: You have teleported to spawn.
         str-cast-others: "%a teleports!"
         str-gate-failed: Unable to teleport.
+        str-cast-done: ""
+        str-cast-interrupted: ""
     geyser:
         name: geyser
         description: Create a geyser of water at your enemy's feet.
@@ -667,6 +670,7 @@ spells:
         description: Teleports you to your marked location.
         cooldown: 300
         max-range: -1
+        cast-time: 0
         allow-cross-world: true
         cost:
             - 331 1
@@ -677,6 +681,8 @@ spells:
         str-other-world: You cannot recall to another world.
         str-too-far: Your marked location is too far away.
         str-cast-others: "%a disappears!"
+        str-cast-done: ""
+        str-cast-interrupted: ""
     reflect:
         name: reflect
         description: Reflect spells cast at you.
