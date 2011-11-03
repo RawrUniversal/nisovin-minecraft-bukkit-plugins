@@ -1,0 +1,13 @@
+name: MagicSpellsMemory
+version: 1.0
+main: com.nisovin.magicspells.memory.MagicSpellsMemory
+depend: [ MagicSpells ]
+commands:
+    magicspellsmemory:
+        description: Check your memory usage
+        usage: /<command>
+        aliases: [ memory ]
+permissions:
+    magicspells.memory.checkothers:
+        description: Check someone else's memory usage
+        default: op

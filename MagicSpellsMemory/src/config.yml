@@ -1,0 +1,57 @@
+str-out-of-memory: "You don't have enough memory to learn the %spell spell."
+str-memory-usage: "You have used %memory memory out of %total."
+max-memory-default: 10
+max-memory-perms:
+    admin: 1000
+    master: 20
+    adept: 10
+    novice: 5
+memory-requirements:
+    blink: 2
+    build: 2
+    carpet: 4
+    combust: 1
+    conjure: 1
+    confusion: 3
+    cripple: 1
+    disarm: 2
+    drainlife: 1
+    empower: 3
+    entomb: 1
+    explode: 3
+    fireball: 2
+    firenova: 2
+    flamewalk: 2
+    forcepush: 2
+    forcetoss: 1
+    frostwalk: 2
+    gate: 1
+    geyser: 1
+    gills: 2
+    haste: 2
+    heal: 1
+    invulnerability: 3
+    leap: 1
+    lifewalk: 1
+    lightning: 2
+    lightwalk: 2
+    mark: 1
+    minion: 2
+    pain: 1
+    prayer: 1
+    purge: 3
+    reach: 3
+    recall: 2
+    reflect: 2
+    repair: 2
+    safefall: 1
+    stealth: 2
+    stonevision: 3
+    summon: 2
+    sun: 2
+    telekinesis: 1
+    volley: 1
+    wall: 1
+    walkway: 3
+    windwalk: 4
+    zap: 2
