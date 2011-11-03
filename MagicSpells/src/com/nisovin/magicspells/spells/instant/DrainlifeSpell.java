@@ -36,6 +36,7 @@ public class DrainlifeSpell extends InstantSpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
+		strNoTarget = getConfigString("str-no-target", "");
 	}
 	
 	@Override
