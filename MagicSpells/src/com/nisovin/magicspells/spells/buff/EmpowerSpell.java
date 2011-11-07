@@ -48,6 +48,7 @@ public class EmpowerSpell extends BuffSpell {
 	@Override
 	protected void turnOff(Player player) {
 		if (empowered.containsKey(player)) {
+			super.turnOff(player);
 			empowered.remove(player);
 			sendMessage(player, strFade);
 		}

@@ -21,6 +21,7 @@ public class FrostwalkSpell extends BuffSpell {
 	private boolean leaveFrozen;
 	
 	private HashMap<String,BlockPlatform> frostwalkers;
+	private boolean listening;
 
 	public FrostwalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -29,10 +30,9 @@ public class FrostwalkSpell extends BuffSpell {
 		leaveFrozen = config.getBoolean("spells." + spellName + ".leave-frozen", false);
 		
 		frostwalkers = new HashMap<String,BlockPlatform>();
+		listening = false;
 		
-		addListener(Event.Type.PLAYER_MOVE);
 		addListener(Event.Type.PLAYER_QUIT);
-		addListener(Event.Type.BLOCK_BREAK);
 	}
 
 	@Override
@@ -43,8 +43,25 @@ public class FrostwalkSpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			frostwalkers.put(player.getName(), new BlockPlatform(Material.ICE, Material.STATIONARY_WATER, player.getLocation().getBlock().getRelative(0,-1,0), size, !leaveFrozen, "square"));
 			startSpellDuration(player);
+			addListeners();
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private void addListeners() {
+		if (!listening) {
+			addListener(Event.Type.PLAYER_MOVE);
+			addListener(Event.Type.BLOCK_BREAK);
+			listening = true;
+		}
+	}
+	
+	private void removeListeners() {
+		if (listening && frostwalkers.size() == 0) {
+			removeListener(Event.Type.PLAYER_MOVE);
+			removeListener(Event.Type.BLOCK_BREAK);
+			listening = false;
+		}
 	}
 
 	@Override
@@ -97,9 +114,11 @@ public class FrostwalkSpell extends BuffSpell {
 	protected void turnOff(Player player) {
 		BlockPlatform platform = frostwalkers.get(player.getName());
 		if (platform != null) {
+			super.turnOff(player);
 			platform.destroyPlatform();
 			frostwalkers.remove(player.getName());
 			sendMessage(player, strFade);
+			removeListeners();
 		}
 	}
 	
@@ -109,6 +128,7 @@ public class FrostwalkSpell extends BuffSpell {
 			platform.destroyPlatform();
 		}
 		frostwalkers.clear();
+		removeListeners();
 	}
 
 }

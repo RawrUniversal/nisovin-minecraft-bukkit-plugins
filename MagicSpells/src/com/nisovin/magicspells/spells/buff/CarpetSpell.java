@@ -25,6 +25,7 @@ public class CarpetSpell extends BuffSpell {
 	
 	private HashMap<String,BlockPlatform> windwalkers;
 	private HashSet<Player> falling;
+	private boolean listening;
 
 	public CarpetSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -36,10 +37,8 @@ public class CarpetSpell extends BuffSpell {
 		
 		windwalkers = new HashMap<String,BlockPlatform>();
 		falling = new HashSet<Player>();
+		listening = false;
 		
-		addListener(Event.Type.PLAYER_MOVE);
-		addListener(Event.Type.PLAYER_TOGGLE_SNEAK);
-		addListener(Event.Type.BLOCK_BREAK);
 		if (cancelOnLogout) {
 			addListener(Event.Type.PLAYER_QUIT);
 		}
@@ -56,8 +55,27 @@ public class CarpetSpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			windwalkers.put(player.getName(), new BlockPlatform(platformBlock, Material.AIR, player.getLocation().getBlock().getRelative(0,-1,0), size, true, "square"));
 			startSpellDuration(player);
+			addListeners();
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private void addListeners() {
+		if (!listening) {
+			addListener(Event.Type.PLAYER_MOVE);
+			addListener(Event.Type.PLAYER_TOGGLE_SNEAK);
+			addListener(Event.Type.BLOCK_BREAK);
+			listening = true;
+		}
+	}
+	
+	private void removeListeners() {
+		if (listening && windwalkers.size() == 0) {
+			removeListener(Event.Type.PLAYER_MOVE);
+			removeListener(Event.Type.PLAYER_TOGGLE_SNEAK);
+			removeListener(Event.Type.BLOCK_BREAK);
+			listening = false;
+		}
 	}
 
 	@Override
@@ -136,9 +154,11 @@ public class CarpetSpell extends BuffSpell {
 	protected void turnOff(Player player) {
 		BlockPlatform platform = windwalkers.get(player.getName());
 		if (platform != null) {
+			super.turnOff(player);
 			platform.destroyPlatform();
 			windwalkers.remove(player.getName());
 			sendMessage(player, strFade);
+			removeListeners();
 		}
 	}
 	
@@ -148,6 +168,7 @@ public class CarpetSpell extends BuffSpell {
 			platform.destroyPlatform();
 		}
 		windwalkers.clear();
+		removeListeners();
 	}
 
 }

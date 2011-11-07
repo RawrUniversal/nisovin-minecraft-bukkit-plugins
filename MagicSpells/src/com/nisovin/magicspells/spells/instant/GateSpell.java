@@ -1,6 +1,6 @@
 package com.nisovin.magicspells.spells.instant;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -94,7 +94,7 @@ public class GateSpell extends InstantSpell {
 			
 			// spell effect
 			if (useSpellEffect) {
-				final HashSet<Block> portals = new HashSet<Block>();
+				final ArrayList<Block> portals = new ArrayList<Block>();
 				portals.add(b);
 				portals.add(b.getRelative(0,1,0));
 				b = player.getLocation().getBlock();
@@ -114,7 +114,7 @@ public class GateSpell extends InstantSpell {
 								block.setType(Material.AIR);
 							}
 						}
-					}					
+					}
 				}, 10);
 			}
 			
