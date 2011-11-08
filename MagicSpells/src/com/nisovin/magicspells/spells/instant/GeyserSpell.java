@@ -73,7 +73,7 @@ public class GeyserSpell extends InstantSpell {
 			}
 			
 			// do damage and launch target
-			if (damage > 0) {
+			if (dam > 0) {
 				target.damage(dam, player);				
 			}
 			if (velocity > 0) {

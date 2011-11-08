@@ -93,7 +93,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static HashMap<Event.Type,HashSet<Spell>> listeners;
 	protected static HashMap<MagicEventType, HashSet<Spell>> customListeners;
 	
-	public static ManaBarManager mana;
+	protected static ManaBarManager mana;
 	protected static HashMap<Player,Long> manaPotionCooldowns;
 	protected static NoMagicZoneManager noMagicZones;
 	
@@ -672,6 +672,10 @@ public class MagicSpells extends JavaPlugin {
 			spellbooks.put(player.getName(), spellbook);
 		}
 		return spellbook;
+	}
+	
+	public static ManaBarManager getManaManager() {
+		return mana;
 	}
 	
 	/**

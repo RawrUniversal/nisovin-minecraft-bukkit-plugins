@@ -20,7 +20,7 @@ public class ManaSpell extends InstantSpell {
 	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			int amount = Math.round(mana*power);
-			boolean added = MagicSpells.mana.addMana(player, amount);
+			boolean added = MagicSpells.getManaManager().addMana(player, amount);
 			if (!added) {
 				return PostCastAction.ALREADY_HANDLED;
 			}

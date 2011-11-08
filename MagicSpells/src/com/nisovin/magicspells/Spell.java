@@ -38,19 +38,24 @@ import com.nisovin.magicspells.util.SpellReagents;
 public abstract class Spell implements Comparable<Spell> {
 
 	private MagicConfig config;
+	
 	protected String internalName;
 	protected String name;
 	protected String[] aliases;
+	
 	protected String description;
 	protected CastItem castItem;
+	protected int broadcastRange;
+	
 	protected ItemStack[] cost;
 	protected int healthCost = 0;
 	protected int manaCost = 0;
 	protected int hungerCost = 0;
+	
 	protected int cooldown;
 	protected HashMap<Spell, Integer> sharedCooldowns;
 	protected boolean ignoreGlobalCooldown;
-	protected int broadcastRange;
+	
 	protected String strCost;
 	protected String strCastSelf;
 	protected String strCastOthers;
@@ -59,6 +64,7 @@ public abstract class Spell implements Comparable<Spell> {
 	
 	public Spell(MagicConfig config, String spellName) {
 		this.config = config;
+		
 		this.internalName = spellName;
 		this.name = config.getString("spells." + spellName + ".name", spellName);
 		List<String> temp = config.getStringList("spells." + spellName + ".aliases", null);
@@ -66,8 +72,11 @@ public abstract class Spell implements Comparable<Spell> {
 			aliases = new String[temp.size()];
 			aliases = temp.toArray(aliases);
 		}
+		
 		this.description = config.getString("spells." + spellName + ".description", "");
 		this.castItem = new CastItem(config.getString("spells." + spellName + ".cast-item", "280"));
+		this.broadcastRange = config.getInt("spells." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
+		
 		List<String> costList = config.getStringList("spells." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
 			cost = new ItemStack [costList.size()];
@@ -94,6 +103,7 @@ public abstract class Spell implements Comparable<Spell> {
 		} else {
 			cost = null;
 		}
+		
 		this.cooldown = config.getInt("spells." + spellName + ".cooldown", 0);
 		List<String> cooldowns = config.getStringList("spells." + spellName + ".shared-cooldowns", null);
 		if (cooldowns != null) {
@@ -108,7 +118,7 @@ public abstract class Spell implements Comparable<Spell> {
 			}
 		}
 		this.ignoreGlobalCooldown = config.getBoolean("spells." + spellName + ".ignore-global-cooldown", false);
-		this.broadcastRange = config.getInt("spells." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
+		
 		this.strCost = config.getString("spells." + spellName + ".str-cost", null);
 		this.strCastSelf = config.getString("spells." + spellName + ".str-cast-self", null);
 		this.strCastOthers = config.getString("spells." + spellName + ".str-cast-others", null);

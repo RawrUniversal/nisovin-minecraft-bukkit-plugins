@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.spells.instant;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

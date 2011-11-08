@@ -72,6 +72,7 @@ spells:
     forget:
         name: forget
         description: Make a player forget a spell.
+        allow-self-forget: true
         str-usage: "Usage: /cast forget <target> <spell>"
         str-no-target: No such player.
         str-no-spell: You do not know a spell by that name.

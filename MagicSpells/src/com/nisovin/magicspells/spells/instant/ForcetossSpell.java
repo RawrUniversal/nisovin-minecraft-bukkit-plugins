@@ -52,6 +52,7 @@ public class ForcetossSpell extends InstantSpell {
 						sendMessage(player, strNoTarget);
 						return PostCastAction.ALREADY_HANDLED;
 					}
+					damage = event.getDamage();
 				}
 				target.damage(damage);
 			}
