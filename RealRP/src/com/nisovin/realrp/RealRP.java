@@ -51,7 +51,7 @@ public class RealRP extends JavaPlugin {
 		
 		// load online players
 		for (Player p : getServer().getOnlinePlayers()) {
-			PlayerCharacter.get(p);
+			PlayerCharacter.get(p, true);
 		}
 		
 		PluginDescriptionFile pdf = getDescription();
