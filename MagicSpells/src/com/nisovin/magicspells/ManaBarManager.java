@@ -1,6 +1,8 @@
 package com.nisovin.magicspells;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -9,12 +11,12 @@ import org.bukkit.entity.Player;
 
 public class ManaBarManager {
 
-	private HashMap<String,ManaBar> manaBars;
+	private Map<String,ManaBar> manaBars;
 	//private int taskId;
 	private Timer timer;
 	
 	public ManaBarManager() {
-		manaBars = new HashMap<String,ManaBar>();
+		manaBars = Collections.synchronizedMap(new HashMap<String,ManaBar>());
 		startRegenerator();
 	}
 	
@@ -88,6 +90,12 @@ public class ManaBarManager {
 			timer.cancel();
 			timer = null;
 		}
+	}
+	
+	public void turnOff() {
+		stopRegenerator();
+		manaBars.clear();
+		manaBars = null;
 	}
 	
 	private class ManaBarRegenerator extends TimerTask {

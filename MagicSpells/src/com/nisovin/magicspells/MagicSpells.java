@@ -797,7 +797,8 @@ public class MagicSpells extends JavaPlugin {
 		spellbooks = null;
 		listeners = null;
 		if (mana != null) {
-			mana.stopRegenerator();
+			mana.turnOff();
+			mana = null;
 		}
 	}
 	
