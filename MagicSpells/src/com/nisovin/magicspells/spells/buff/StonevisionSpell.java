@@ -21,16 +21,16 @@ public class StonevisionSpell extends BuffSpell {
 	private int transparentType;
 	
 	private HashMap<String,TransparentBlockSet> seers;
+	private boolean listening;
 
 	public StonevisionSpell(MagicConfig config, String spellName) {
-		super(config, spellName);
-		
-		addListener(Event.Type.PLAYER_MOVE);
+		super(config, spellName);		
 		
 		range = config.getInt("spells." + spellName + ".range", 4);
 		transparentType = config.getInt("spells." + spellName + ".transparent-type", Material.STONE.getId());
 		
 		seers = new HashMap<String, TransparentBlockSet>();
+		listening = false;
 	}
 
 	@Override
@@ -41,6 +41,10 @@ public class StonevisionSpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			seers.put(player.getName(), new TransparentBlockSet(player, range, transparentType));
 			startSpellDuration(player);
+			if (!listening) {
+				addListener(Event.Type.PLAYER_MOVE);
+				listening = true;
+			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -67,6 +71,10 @@ public class StonevisionSpell extends BuffSpell {
 		seers.get(player.getName()).removeTransparency();
 		seers.remove(player.getName());
 		sendMessage(player, strFade);
+		if (listening && seers.size() == 0) {
+			removeListener(Event.Type.PLAYER_MOVE);
+			listening = false;
+		}
 	}
 
 	@Override

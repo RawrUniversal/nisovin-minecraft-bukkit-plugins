@@ -26,6 +26,7 @@ public class WalkwaySpell extends BuffSpell {
 	private boolean cancelOnTeleport;
 	
 	private HashMap<Player,Platform> platforms;
+	private boolean listening;
 	
 	public WalkwaySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -35,8 +36,6 @@ public class WalkwaySpell extends BuffSpell {
 		cancelOnLogout = getConfigBoolean("cancel-on-logout", true);
 		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
 		
-		addListener(Event.Type.PLAYER_MOVE);
-		addListener(Event.Type.BLOCK_BREAK);
 		if (cancelOnLogout) {
 			addListener(Event.Type.PLAYER_QUIT);
 		}
@@ -45,6 +44,7 @@ public class WalkwaySpell extends BuffSpell {
 		}
 		
 		platforms = new HashMap<Player,Platform>();
+		listening = false;
 		
 	}
 
@@ -56,8 +56,25 @@ public class WalkwaySpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			platforms.put(player, new Platform(player, material, size));
 			startSpellDuration(player);
+			addListeners();
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private void addListeners() {
+		if (!listening) {
+			addListener(Event.Type.PLAYER_MOVE);
+			addListener(Event.Type.BLOCK_BREAK);
+			listening = true;
+		}
+	}
+	
+	private void removeListeners() {
+		if (listening && platforms.size() == 0) {
+			removeListener(Event.Type.PLAYER_MOVE);
+			removeListener(Event.Type.BLOCK_BREAK);
+			listening = false;
+		}
 	}
 	
 	@Override
@@ -103,6 +120,7 @@ public class WalkwaySpell extends BuffSpell {
 			platform.remove();
 			platforms.remove(player);
 			sendMessage(player, strFade);
+			removeListeners();
 		}
 	}
 
@@ -112,6 +130,7 @@ public class WalkwaySpell extends BuffSpell {
 			platform.remove();
 		}
 		platforms.clear();
+		removeListeners();
 	}
 	
 	private class Platform {

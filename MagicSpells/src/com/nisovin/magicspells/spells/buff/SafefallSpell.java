@@ -13,12 +13,13 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class SafefallSpell extends BuffSpell {
 
 	private HashSet<String> safefallers;
+	private boolean listening;
 	
 	public SafefallSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
-		addListener(Event.Type.ENTITY_DAMAGE);
 		
 		safefallers = new HashSet<String>();
+		listening = false;
 	}
 
 	@Override
@@ -29,6 +30,10 @@ public class SafefallSpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			safefallers.add(player.getName());
 			startSpellDuration(player);
+			if (!listening) {
+				addListener(Event.Type.ENTITY_DAMAGE);
+				listening = true;
+			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -56,6 +61,10 @@ public class SafefallSpell extends BuffSpell {
 		super.turnOff(player);
 		safefallers.remove(player.getName());
 		sendMessage(player, strFade);
+		if (listening && safefallers.size() == 0) {
+			removeListener(Event.Type.ENTITY_DAMAGE);
+			listening = false;
+		}
 	}
 	
 	@Override

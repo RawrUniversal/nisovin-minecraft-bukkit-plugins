@@ -33,7 +33,8 @@ public class MinionSpell extends BuffSpell {
 	
 	private HashMap<String,LivingEntity> minions;
 	private HashMap<String,LivingEntity> targets;
-	Random random;
+	private Random random;
+	private boolean listening;
 	
 	public MinionSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -66,12 +67,7 @@ public class MinionSpell extends BuffSpell {
 		minions = new HashMap<String,LivingEntity>();
 		targets = new HashMap<String,LivingEntity>();
 		random = new Random();
-		
-		addListener(Event.Type.ENTITY_TARGET);
-		addListener(Event.Type.ENTITY_DAMAGE);
-		if (preventCombust) {
-			addListener(Event.Type.ENTITY_COMBUST);			
-		}
+		listening = false;
 	}
 	
 	@Override
@@ -106,12 +102,34 @@ public class MinionSpell extends BuffSpell {
 				minions.put(player.getName(), minion);
 				targets.put(player.getName(), null);
 				startSpellDuration(player);
+				
+				addListeners();
 			} else {
 				// fail -- no creature found
 				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private void addListeners() {
+		if (!listening) {			
+			addListener(Event.Type.ENTITY_TARGET);
+			addListener(Event.Type.ENTITY_DAMAGE);
+			if (preventCombust) {
+				addListener(Event.Type.ENTITY_COMBUST);			
+			}
+			listening = true;
+		}
+	}
+	
+	private void removeListeners() {
+		if (listening && minions.size() == 0) {
+			removeListener(Event.Type.ENTITY_TARGET);
+			removeListener(Event.Type.ENTITY_DAMAGE);
+			removeListener(Event.Type.ENTITY_COMBUST);
+			listening = false;
+		}
 	}
 	
 	@Override
@@ -201,6 +219,7 @@ public class MinionSpell extends BuffSpell {
 		}
 		minions.remove(player.getName());
 		targets.remove(player.getName());
+		removeListeners();
 	}
 	
 	@Override
@@ -210,6 +229,7 @@ public class MinionSpell extends BuffSpell {
 		}
 		minions.clear();
 		targets.clear();
+		removeListeners();
 	}
 	
 }

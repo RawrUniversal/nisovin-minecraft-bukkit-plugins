@@ -19,10 +19,10 @@ public class GillsSpell extends BuffSpell {
 	
 	private HashSet<String> fishes;
 	private HashMap<Player,ItemStack> helmets;
+	private boolean listening = false;
 	
 	public GillsSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
-		addListener(Event.Type.ENTITY_DAMAGE);
 		
 		glassHeadEffect = config.getBoolean("spells." + spellName + ".glass-head-effect", true);
 		
@@ -30,6 +30,7 @@ public class GillsSpell extends BuffSpell {
 		if (glassHeadEffect) {
 			helmets = new HashMap<Player,ItemStack>();
 		}
+		listening = false;
 	}
 
 	@Override
@@ -47,6 +48,10 @@ public class GillsSpell extends BuffSpell {
 				player.getInventory().setHelmet(new ItemStack(Material.GLASS, 1));
 			}
 			startSpellDuration(player);
+			if (!listening) {
+				addListener(Event.Type.ENTITY_DAMAGE);
+				listening = true;
+			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -83,6 +88,10 @@ public class GillsSpell extends BuffSpell {
 			}
 		}
 		sendMessage(player, strFade);
+		if (listening && fishes.size() == 0) {
+			removeListener(Event.Type.ENTITY_DAMAGE);
+			listening = false;
+		}
 	}
 	
 	@Override

@@ -27,24 +27,18 @@ public class WindwalkSpell extends BuffSpell {
 	
 	private HashMap<Player, SavedInventory> flyers;
 	private HashMap<Player, Integer> tasks;
+	private boolean listening;
 	
 	public WindwalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		cancelOnLand = getConfigBoolean("cancel-on-land", true);
-		
-		addListener(Event.Type.BLOCK_BREAK);
-		addListener(Event.Type.BLOCK_PLACE);
-		addListener(Event.Type.PLAYER_DROP_ITEM);
-		addListener(Event.Type.ENTITY_DAMAGE);
-		if (cancelOnLand) {
-			addListener(Event.Type.PLAYER_TOGGLE_SNEAK);
-		}
-		
+				
 		flyers = new HashMap<Player, SavedInventory>();
 		if (useCostInterval > 0) {
 			tasks = new HashMap<Player, Integer>();
 		}
+		listening = false;
 	}
 
 	@Override
@@ -75,8 +69,35 @@ public class WindwalkSpell extends BuffSpell {
 				}, useCostInterval*20, useCostInterval*20);
 				tasks.put(player, taskId);
 			}
+			addListeners();
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private void addListeners() {
+		if (!listening) {
+			addListener(Event.Type.BLOCK_BREAK);
+			addListener(Event.Type.BLOCK_PLACE);
+			addListener(Event.Type.PLAYER_DROP_ITEM);
+			addListener(Event.Type.ENTITY_DAMAGE);
+			if (cancelOnLand) {
+				addListener(Event.Type.PLAYER_TOGGLE_SNEAK);
+			}
+			listening = true;
+		}
+	}
+	
+	private void removeListeners() {
+		if (listening && flyers.size() == 0) {
+			removeListener(Event.Type.BLOCK_BREAK);
+			removeListener(Event.Type.BLOCK_PLACE);
+			removeListener(Event.Type.PLAYER_DROP_ITEM);
+			removeListener(Event.Type.ENTITY_DAMAGE);
+			if (cancelOnLand) {
+				removeListener(Event.Type.PLAYER_TOGGLE_SNEAK);
+			}
+			listening = false;
+		}
 	}
 	
 	@Override
@@ -133,6 +154,7 @@ public class WindwalkSpell extends BuffSpell {
 			int taskId = tasks.remove(player);
 			Bukkit.getScheduler().cancelTask(taskId);
 		}
+		removeListeners();
 	}
 	
 	@Override
@@ -142,6 +164,7 @@ public class WindwalkSpell extends BuffSpell {
 			turnOff(player);
 		}
 		this.flyers.clear();
+		removeListeners();
 	}
 	
 	private class SavedInventory {
