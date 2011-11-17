@@ -48,6 +48,7 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean KEEP_ALL_BOOKS_LOADED = false;
 	protected static boolean USE_SPOUT_FEATURES = true;
 	protected static boolean SPOUT_ENABLED = false;
+	protected static boolean USE_DENY_PERMS = false;
 	
 	protected static int CLEAN_INTERVAL = 600;
 	protected static int REMOVE_DELAY = 300;
@@ -307,6 +308,7 @@ public class BookWorm extends JavaPlugin {
 		DROP_BOOKSHELF = config.getBoolean("general.drop-bookshelf-on-break", DROP_BOOKSHELF);
 		KEEP_ALL_BOOKS_LOADED = config.getBoolean("general.keep-all-books-loaded", KEEP_ALL_BOOKS_LOADED);
 		USE_SPOUT_FEATURES = config.getBoolean("general.use-spout-features", USE_SPOUT_FEATURES);
+		USE_DENY_PERMS = config.getBoolean("general.use-deny-perms", USE_DENY_PERMS);
 
 		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
 		USE_FULL_FILENAMES = config.getBoolean("general.use-full-filenames", USE_FULL_FILENAMES);

@@ -9,7 +9,7 @@ public class PermissionManager {
 	}
 	
 	public boolean canModifyBook(Player player, Book book) {
-		if (hasPerm(player, "bookworm.write.deny." + book.getId())) {
+		if (BookWorm.USE_DENY_PERMS && hasPerm(player, "bookworm.write.deny." + book.getId())) {
 			return false;
 		} else if (!hasPerm(player, "bookworm.write.own")) {
 			return false;
@@ -23,7 +23,7 @@ public class PermissionManager {
 	}
 	
 	public boolean canCopyBook(Player player, Book book) {
-		if (hasPerm(player, "bookworm.copy.deny." + book.getId())) {
+		if (BookWorm.USE_DENY_PERMS && hasPerm(player, "bookworm.copy.deny." + book.getId())) {
 			return false;
 		} else if (!hasPerm(player, "bookworm.copy.own")) {
 			return false;
@@ -37,7 +37,7 @@ public class PermissionManager {
 	}
 	
 	public boolean canPlaceBook(Player player, Book book) {
-		if (hasPerm(player, "bookworm.place.deny." + book.getId())) {
+		if (BookWorm.USE_DENY_PERMS && hasPerm(player, "bookworm.place.deny." + book.getId())) {
 			return false;
 		} else if (!hasPerm(player, "bookworm.place.own")) {
 			return false;
@@ -51,7 +51,7 @@ public class PermissionManager {
 	}
 	
 	public boolean canRemoveBook(Player player, Book book) {
-		if (hasPerm(player, "bookworm.remove.deny." + book.getId())) {
+		if (BookWorm.USE_DENY_PERMS && hasPerm(player, "bookworm.remove.deny." + book.getId())) {
 			return false;
 		} else if (!hasPerm(player, "bookworm.remove.own")) {
 			return false;
@@ -65,7 +65,7 @@ public class PermissionManager {
 	}
 	
 	public boolean canDestroyBook(Player player, Book book) {
-		if (hasPerm(player, "bookworm.destroy.deny." + book.getId())) {
+		if (BookWorm.USE_DENY_PERMS && hasPerm(player, "bookworm.destroy.deny." + book.getId())) {
 			return false;
 		} else if (!hasPerm(player, "bookworm.destroy.own")) {
 			return false;
