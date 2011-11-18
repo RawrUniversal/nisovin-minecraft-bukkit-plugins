@@ -50,6 +50,8 @@ public class BookWormCommandExecutor implements CommandExecutor {
 				// get book affected
 				Book book = plugin.getBookById(inHand.getDurability());
 				if (book == null) {
+					// book doesn't exist - start a new book
+					newBook(player, inHand, args);
 					return true;
 				}
 				if (args[0].startsWith("-")) {
@@ -268,6 +270,7 @@ public class BookWormCommandExecutor implements CommandExecutor {
 			Book book = new Book(bookId, title.trim(), player.getName());
 			plugin.books.put(bookId, book);
 			inHand.setDurability(bookId);
+			player.setItemInHand(inHand);
 			
 			// send messages
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NEW_BOOK_CREATED.replace("%t", BookWorm.TEXT_COLOR_2 + book.getTitle()));
