@@ -65,6 +65,8 @@ public class BookWorm extends JavaPlugin {
 	protected static String S_CANNOT_DESTROY = "You can't destroy someone else's bookshelf!";
 	
 	protected static String S_COMM_HELP = "help";
+	protected static String S_COMM_GET = "get";
+	protected static String S_COMM_ID = "id";
 	protected static String S_COMM_READ = "read";
 	protected static String S_COMM_TITLE = "title";
 	protected static String S_COMM_UNDO = "undo";
@@ -81,6 +83,10 @@ public class BookWorm extends JavaPlugin {
 			"   /%c -replace <old text> -> <new text> -- replace text\n" +
 			"   /%c -title <new title> -- change the book's title\n" +
 			"   /%c -eraseall -- erase the entire book";	
+	protected static String S_COMM_GET_DONE = "Got book: ";
+	protected static String S_COMM_GET_FAIL = "Unable to get book.";
+	protected static String S_COMM_ID_DONE = "Book id: ";
+	protected static String S_COMM_ID_FAIL = "You are not holding a book.";
 	protected static String S_COMM_UNDO_DONE = "Undo successful.";
 	protected static String S_COMM_UNDO_FAIL = "Unable to undo.";
 	protected static String S_COMM_ERASE_DONE = "Text erased.";
@@ -331,6 +337,8 @@ public class BookWorm extends JavaPlugin {
 		S_CANNOT_DESTROY = config.getString("strings.cannot-destroy", S_CANNOT_DESTROY);
 		
 		S_COMM_HELP = config.getString("strings.command-help", S_COMM_HELP);
+		S_COMM_GET = config.getString("strings.command-get", S_COMM_GET);
+		S_COMM_ID = config.getString("strings.command-id", S_COMM_ID);
 		S_COMM_READ = config.getString("strings.command-read", S_COMM_READ);
 		S_COMM_TITLE = config.getString("strings.command-title", S_COMM_TITLE);
 		S_COMM_UNDO = config.getString("strings.command-undo", S_COMM_UNDO);
@@ -340,6 +348,10 @@ public class BookWorm extends JavaPlugin {
 		S_COMM_CHATMODE = config.getString("strings.command-chatmode", S_COMM_CHATMODE);
 		
 		S_COMM_HELP_TEXT = config.getString("strings.command-help-text", S_COMM_HELP_TEXT);
+		S_COMM_GET_DONE = config.getString("strings.command-get-done", S_COMM_GET_DONE);
+		S_COMM_GET_FAIL = config.getString("strings.command-get-fail", S_COMM_GET_FAIL);
+		S_COMM_ID_DONE = config.getString("strings.command-id-done", S_COMM_ID_DONE);
+		S_COMM_ID_FAIL = config.getString("strings.command-id-fail", S_COMM_ID_FAIL);
 		S_COMM_UNDO_DONE = config.getString("strings.command-undo-done", S_COMM_UNDO_DONE);
 		S_COMM_UNDO_FAIL = config.getString("strings.command-undo-fail", S_COMM_UNDO_FAIL);
 		S_COMM_ERASE_DONE = config.getString("strings.command-erase-done", S_COMM_ERASE_DONE);

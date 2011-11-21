@@ -25,6 +25,8 @@ permissions:
             bookworm.remove.others: true
             bookworm.destroy.own: true
             bookworm.destroy.others: true
+            bookworm.get.own: true
+            bookworm.get.others: true
     bookworm.reload:
         description: Reload the config and book files
         default: op
@@ -33,6 +35,9 @@ permissions:
         default: op
     bookworm.delete:
         description: Delete a book by its book id
+        default: op
+    bookworm.getid:
+        description: Get the id number of the held book
         default: op
     bookworm.create:
         description: Create a new book
@@ -66,4 +71,10 @@ permissions:
         default: true
     bookworm.destroy.others:
         description: Destroy another player's bookshelf
+        default: op
+    bookworm.get.own:
+        description: Get your book by its id number
+        default: op
+    bookworm.get.others:
+        description: Get another player's book by its id number
         default: op

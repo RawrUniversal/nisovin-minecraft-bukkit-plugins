@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -31,6 +32,10 @@ public class BookWormCommandExecutor implements CommandExecutor {
 			search(sender, args);
 		} else if (sender.hasPermission("bookworm.delete") && args.length >= 1 && args[0].equalsIgnoreCase("-delete")) {
 			delete(sender, label, args);
+		} else if (sender.hasPermission("bookworm.getid") && sender instanceof Player && args.length == 1 && args[0].equalsIgnoreCase("-" + BookWorm.S_COMM_ID)) {
+			id((Player)sender);
+		} else if (sender instanceof Player && args.length == 2 && args[0].equalsIgnoreCase("-" + BookWorm.S_COMM_GET)) {
+			get((Player)sender, args);
 		} else if (sender instanceof Player && args.length == 1 && args[0].equalsIgnoreCase("-" + BookWorm.S_COMM_HELP)) {
 			help((Player)sender, label);
 		} else if (sender instanceof Player) {
@@ -214,6 +219,16 @@ public class BookWormCommandExecutor implements CommandExecutor {
 		}
 	}
 	
+	private void id(Player player) {
+		ItemStack inHand = player.getItemInHand();
+		if (inHand.getType() == Material.BOOK) {
+			short id = inHand.getDurability();
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_ID_DONE + BookWorm.TEXT_COLOR_2 + id);
+		} else {
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_ID_FAIL);
+		}
+	}
+	
 	private void showUsage(Player player, ItemStack inHand, String label) {
 		if (inHand.getDurability() == 0) {
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_USAGE_START.replace("%c", label));
@@ -388,5 +403,44 @@ public class BookWormCommandExecutor implements CommandExecutor {
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_INVALID);							
 		}
 	}
-
+	
+	private void get(Player player, String[] args) {
+		// check for valid id
+		if (!args[1].matches("^[0-9]{1,5}$")) {
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_GET_FAIL);
+			return;
+		}
+		
+		// get book
+		short id = Short.parseShort(args[1]);
+		Book book = plugin.getBookById(id);
+		if (book == null) {
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_GET_FAIL);
+			return;
+		}
+		
+		// check perms
+		if (!plugin.perms.canSpawnBook(player, book)) {
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_GET_FAIL);
+			return;			
+		}
+		
+		// give book
+		ItemStack item = new ItemStack(Material.BOOK, 1, id);
+		if (player.getItemInHand() == null || player.getItemInHand().getType() == Material.AIR) {
+			// set in hand
+			player.setItemInHand(item);
+		} else {
+			int slot = player.getInventory().firstEmpty();
+			if (slot >= 0) {
+				// add to inventory
+				player.getInventory().addItem(new ItemStack(Material.BOOK, 1, id));
+			} else {
+				// drop in front
+				Item i = player.getWorld().dropItem(player.getLocation(), item);
+				i.setVelocity(player.getLocation().getDirection());
+			}
+		}
+		player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_GET_DONE + BookWorm.TEXT_COLOR_2 + book.getTitle());
+	}
 }

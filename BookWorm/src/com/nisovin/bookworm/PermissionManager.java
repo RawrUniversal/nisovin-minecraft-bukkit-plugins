@@ -78,6 +78,20 @@ public class PermissionManager {
 		}		
 	}
 	
+	public boolean canSpawnBook(Player player, Book book) {
+		if (BookWorm.USE_DENY_PERMS && hasPerm(player, "bookworm.get.deny." + book.getId())) {
+			return false;
+		} else if (!hasPerm(player, "bookworm.get.own")) {
+			return false;
+		} else if (book.getAuthor().equalsIgnoreCase(player.getName())) {
+			return true;
+		} else if (hasPerm(player, "bookworm.get.others")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	private boolean hasPerm(Player player, String permission) {
 		return player.hasPermission(permission);
 	}
