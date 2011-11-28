@@ -11,8 +11,10 @@ public class SpellReagents {
 	private int mana;
 	private int health;
 	private int hunger;
+	private int experience;
+	private int levels;
 	
-	public SpellReagents(ItemStack[] items, int mana, int health, int hunger) {
+	public SpellReagents(ItemStack[] items, int mana, int health, int hunger, int experience, int levels) {
 		this.items = new HashSet<ItemStack>();
 		if (items != null) {
 			for (ItemStack i : items) {
@@ -24,6 +26,8 @@ public class SpellReagents {
 		this.mana = mana;
 		this.health = health;
 		this.hunger = hunger;
+		this.experience = experience;
+		this.levels = levels;
 	}
 	
 	public HashSet<ItemStack> getItems() {
@@ -70,6 +74,22 @@ public class SpellReagents {
 	
 	public void setHunger(int hunger) {
 		this.hunger = hunger;
+	}
+	
+	public int getExperience() {
+		return experience;
+	}
+	
+	public void setExperience(int experience) {
+		this.experience = experience;
+	}
+	
+	public int getLevels() {
+		return levels;
+	}
+	
+	public void setLevels(int levels) {
+		this.levels = levels;
 	}
 	
 }

@@ -14,6 +14,8 @@ public abstract class BuffSpell extends Spell {
 	protected int healthCost = 0;
 	protected int manaCost = 0;
 	protected int hungerCost = 0;
+	protected int experienceCost = 0;
+	protected int levelsCost = 0;
 	protected int useCostInterval;
 	protected int numUses;
 	protected int duration;
@@ -40,6 +42,10 @@ public abstract class BuffSpell extends Spell {
 						manaCost = Integer.parseInt(data[1]);
 					} else if (data[0].equalsIgnoreCase("hunger")) {
 						hungerCost = Integer.parseInt(data[1]);
+					} else if (data[0].equalsIgnoreCase("experience")) {
+						experienceCost = Integer.parseInt(data[1]);
+					} else if (data[0].equalsIgnoreCase("levels")) {
+						levelsCost = Integer.parseInt(data[1]);
 					} else if (data[0].contains(":")) {
 						String [] subdata = data[0].split(":");
 						useCost[i] = new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1]));
@@ -144,8 +150,8 @@ public abstract class BuffSpell extends Spell {
 		if (useCost != null && useCostInterval > 0 && useCounter != null && useCounter.containsKey(player.getName())) {
 			int uses = useCounter.get(player.getName());
 			if (uses % useCostInterval == 0) {
-				if (hasReagents(player, useCost, healthCost, manaCost, hungerCost)) {
-					removeReagents(player, useCost, healthCost, manaCost, hungerCost);
+				if (hasReagents(player, useCost, healthCost, manaCost, hungerCost, experienceCost, levelsCost)) {
+					removeReagents(player, useCost, healthCost, manaCost, hungerCost, experienceCost, levelsCost);
 					return true;
 				} else {
 					turnOff(player);
