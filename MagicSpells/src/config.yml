@@ -234,8 +234,10 @@ spells:
         cast-item: 283
         cooldown: 5
         range: 15
-        damage: 2
-        heal: 2
+        take-type: health
+        take-amt: 2
+        give-type: health
+        give-amt: 2
         animation-speed: 2
         obey-los: true
         target-players: false

@@ -19,8 +19,10 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class DrainlifeSpell extends InstantSpell {
 	
-	private int damage;
-	private int heal;
+	private String takeType;
+	private int takeAmt;
+	private String giveType;
+	private int giveAmt;
 	private int animationSpeed;
 	private boolean obeyLos;
 	private boolean targetPlayers;
@@ -30,8 +32,10 @@ public class DrainlifeSpell extends InstantSpell {
 	public DrainlifeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		damage = getConfigInt("damage", 2);
-		heal = getConfigInt("heal", 2);
+		takeType = getConfigString("take-type", "health");
+		takeAmt = getConfigInt("take-amt", 2);
+		giveType = getConfigString("give-type", "health");
+		giveAmt = getConfigInt("give-amt", 2);
 		animationSpeed = getConfigInt("animation-speed", 2);
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
@@ -48,20 +52,67 @@ public class DrainlifeSpell extends InstantSpell {
 				sendMessage(player, strNoTarget);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
-				int dam = Math.round(damage*power);
-				if (target instanceof Player && checkPlugins) {
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
-					Bukkit.getServer().getPluginManager().callEvent(event);
-					if (event.isCancelled()) {
-						sendMessage(player, strNoTarget);
-						return PostCastAction.ALREADY_HANDLED;
+				int take = Math.round(takeAmt*power);
+				int give = Math.round(giveAmt*power);
+				
+				// drain from target
+				if (takeType.equals("health")) {
+					if (target instanceof Player && checkPlugins) {
+						EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, take);
+						Bukkit.getServer().getPluginManager().callEvent(event);
+						if (event.isCancelled()) {
+							sendMessage(player, strNoTarget);
+							return PostCastAction.ALREADY_HANDLED;
+						}
+						take = event.getDamage();
 					}
-					dam = event.getDamage();
+					target.damage(take, player);
+				} else if (takeType.equals("mana")) {
+					if (target instanceof Player) {
+						boolean removed = MagicSpells.getManaManager().removeMana((Player)target, take);
+						if (!removed) {
+							give = 0;
+						}
+					}
+				} else if (takeType.equals("hunger")) {
+					if (target instanceof Player) {
+						Player p = (Player)target;
+						int food = p.getFoodLevel();
+						if (give > food) give = food;
+						food -= take;
+						if (food < 0) food = 0;
+						p.setFoodLevel(food);
+					}
+				} else if (takeType.equals("experience")) {
+					if (target instanceof Player) {
+						Player p = (Player)target;
+						int exp = p.getExperience();
+						if (give > exp) give = exp;
+						exp -= take;
+						if (exp < 0) exp = 0;
+						p.setExperience(exp);
+					}
 				}
-				target.damage(dam, player);
-				int h = player.getHealth()+Math.round(heal*power);
-				if (h>20) h=20;
-				player.setHealth(h);
+				
+				// give to caster
+				if (giveType.equals("health")) {
+					int h = player.getHealth()+Math.round(give);
+					if (h>20) h=20;
+					player.setHealth(h);
+				} else if (giveType.equals("mana")) {
+					MagicSpells.getManaManager().addMana(player, give);
+				} else if (takeType.equals("hunger")) {
+					int food = player.getFoodLevel();
+					food += take;
+					if (food > 20) food = 20;
+					player.setFoodLevel(food);
+				} else if (takeType.equals("experience")) {
+					int exp = player.getExperience();
+					exp += take;
+					player.setExperience(exp);
+				}
+				
+				// show animation
 				new DrainlifeAnimation(player, target);
 			}
 		}
