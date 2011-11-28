@@ -597,6 +597,14 @@ public abstract class Spell implements Comparable<Spell> {
 		return this.hungerCost;
 	}
 	
+	public int getExperienceCost() {
+		return this.experienceCost;
+	}
+	
+	public int getLevelsCost() {
+		return this.levelsCost;
+	}
+	
 	/**
 	 * Makes this spell listen for the specified event
 	 * @param eventType the event to listen for

@@ -180,13 +180,15 @@ public class ScrollSpell extends CommandSpell {
 				int manaCost = spell.getManaCost() * uses;
 				int healthCost = spell.getHealthCost() * uses;
 				int hungerCost = spell.getHungerCost() * uses;
-				if (!hasReagents(player, reagents, healthCost, manaCost, hungerCost)) {
+				int experienceCost = spell.getExperienceCost() * uses;
+				int levelsCost = spell.getLevelsCost() * uses;
+				if (!hasReagents(player, reagents, healthCost, manaCost, hungerCost, experienceCost, levelsCost)) {
 					// missing reagents
 					sendMessage(player, MagicSpells.strMissingReagents);
 					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					// has reagents, so just remove them
-					removeReagents(player, reagents, healthCost, manaCost, hungerCost);
+					removeReagents(player, reagents, healthCost, manaCost, hungerCost, experienceCost, levelsCost);
 				}
 			}
 			
