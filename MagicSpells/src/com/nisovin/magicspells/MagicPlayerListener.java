@@ -120,8 +120,7 @@ public class MagicPlayerListener extends PlayerListener {
 			
 			// check for mana pots
 			if (MagicSpells.enableManaBars && MagicSpells.manaPotions != null) {
-				ItemStack item = inHand.clone();
-				item.setAmount(1);
+				ItemStack item = new ItemStack(inHand.getType(), 1, inHand.getDurability());
 				if (MagicSpells.manaPotions.containsKey(item)) {
 					// check cooldown
 					if (MagicSpells.manaPotionCooldown > 0) {
