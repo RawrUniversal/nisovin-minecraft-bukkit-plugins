@@ -34,6 +34,7 @@ public class ReflectSpell extends BuffSpell {
 
 	@Override
 	public void onSpellTarget(SpellTargetEvent event) {
+		if (event.isCancelled()) return;
 		if (event.getTarget() instanceof Player) {
 			Player target = (Player)event.getTarget();
 			if (reflectors.contains(target)) {

@@ -2,6 +2,8 @@ package com.nisovin.magicspells;
 
 import java.util.HashSet;
 
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import com.nisovin.magicspells.events.MagicEventType;
@@ -17,6 +19,14 @@ public class MagicSpellListener extends SpellListener {
 
 	@Override
 	public void onSpellTarget(SpellTargetEvent event) {
+		// check if target has notarget permission
+		LivingEntity target = event.getTarget();
+		if (target instanceof Player) {
+			if (((Player)target).hasPermission("magicspells.notarget")) {
+				event.setCancelled(true);
+			}
+		}
+		
 		HashSet<Spell> spells = MagicSpells.customListeners.get(MagicEventType.SPELL_TARGET);
 		if (spells != null) {
 			for (Spell spell : spells) {
