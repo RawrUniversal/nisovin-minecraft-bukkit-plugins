@@ -1,5 +1,6 @@
 general:
     debug: false
+    use-new-spell-loading: true
     alt-config: altConfig.yml
     str-cast-usage: |
         Usage: /cast <spell>. 
@@ -45,6 +46,7 @@ general:
 spells:
 
     list:
+        spell-class: ".command.ListSpell"
         name: list
         description: List all the spells you know.
         only-show-castable-spells: false
@@ -52,6 +54,7 @@ spells:
         str-prefix: "Known spells:"
         str-no-spells: You do not know any spells.
     help:
+        spell-class: ".command.HelpSpell"
         name: help
         description: Get information about a specified spell.
         str-usage: "Usage: /cast help <spell>"
@@ -59,6 +62,7 @@ spells:
         str-desc-line: "%s - %d"
         str-cost-line: "Cost: %c"
     teach:
+        spell-class: ".command.TeachSpell"
         name: teach
         description: Teach a spell to another player.
         require-known-spell: true
@@ -70,6 +74,7 @@ spells:
         str-cast-self: You have taught %t the %s spell.
         str-cast-target: "%a has taught you the %s spell."
     forget:
+        spell-class: ".command.ForgetSpell"
         name: forget
         description: Make a player forget a spell.
         allow-self-forget: true
@@ -83,6 +88,7 @@ spells:
         str-reset-target: "You have reset %t's spellbook."
         str-reset-self: "You have forgotten all of your spells."
     spellbook:
+        spell-class: ".command.SpellbookSpell"
         name: spellbook
         description: Create a spellbook that teaches a spell.
         default-uses: -1
@@ -98,6 +104,7 @@ spells:
         str-already-known: You already know the %s spell.
         str-learned: You have learned the %s spell!
     bind:
+        spell-class: ".command.BindSpell"
         name: bind
         enable: true
         description: Binds a spell to a wand item.
@@ -107,6 +114,7 @@ spells:
         str-cant-bind: That spell cannot be bound to an item.
 
     blink:
+        spell-class: ".instant.BlinkSpell"
         name: blink
         description: Teleport a short distance.
         cast-item: 280
@@ -121,6 +129,7 @@ spells:
         str-cast-others: "%a blinks away!"
         str-cant-blink: You cannot blink there.
     build:
+        spell-class: ".instant.BuildSpell"
         name: build
         description: Build blocks from far away.
         cast-item: 294
@@ -136,6 +145,7 @@ spells:
         str-invalid-block: You can't build that block.
         str-cant-build: You can't build there.
     carpet:
+        spell-class: ".buff.CarpetSpell"
         name: carpet
         description: Lets you walk on a platform of glass.
         cast-item: 317
@@ -154,6 +164,7 @@ spells:
         str-cast-others: "%a is now walking on air!"
         str-fade: You are no longer walking on air.
     combust:
+        spell-class: ".instant.CombustSpell"
         name: combust
         description: Set a target on fire.
         cast-item: 283
@@ -169,6 +180,7 @@ spells:
         str-cost: 1 redstone dust and 1 coal
         str-no-target: No target found.
     confusion:
+        spell-class: ".instant.ConfusionSpell"
         name: confusion
         description: Cause nearby monsters to attack each other.
         cast-item: 283
@@ -180,6 +192,7 @@ spells:
         str-cast-self: You cause nearby monsters to become confused and attack each other.
         str-cast-others: "%a causes nearby monsters to attack each other."
     conjure:
+        spell-class: ".instant.ConjureSpell"
         name: conjure
         description: Conjure some magical reagents.
         cast-item: 280
@@ -192,6 +205,7 @@ spells:
         str-cost: free
         str-cast-self: You have conjured some magical reagents!
     cripple:
+        spell-class: ".instant.CrippleSpell"
         name: cripple
         description: Slow down a targeted enemy.
         cast-item: 280
@@ -207,6 +221,7 @@ spells:
         str-cast-self: You have crippled your enemy.
         str-no-target: No target found.
     disarm:
+        spell-class: ".instant.DisarmSpell"
         name: disarm
         description: Disarm your opponent.
         cast-item: 283
@@ -229,6 +244,7 @@ spells:
         str-cast-self: You have disarmed %t.
         str-cast-target: "%a has disarmed you."
     drainlife:
+        spell-class: ".instant.DrainlifeSpell"
         name: drainlife
         description: Drain life from your enemy and give it to you.
         cast-item: 283
@@ -248,6 +264,7 @@ spells:
         str-cast-self: You drain life from your enemy.
         str-no-target: No target found.
     empower:
+        spell-class: ".buff.EmpowerSpell"
         name: empower
         description: Makes your spells more powerful.
         cast-item: 280
@@ -265,6 +282,7 @@ spells:
         str-cast-others: "%a begins to glow with magical energy."
         str-fade: You are no longer glowing with magical energy.
     entomb:
+        spell-class: ".instant.EntombSpell"
         name: entomb
         description: Encase an enemy in glass.
         cast-item: 280
@@ -280,6 +298,7 @@ spells:
         str-cost: 3 redstone dust and 1 glass
         str-no-target: No target found.
     explode:
+        spell-class: ".instant.ExplodeSpell"
         name: explode
         description: Create an explosion.
         cast-item: 283
@@ -296,6 +315,7 @@ spells:
         str-cast-self: Boom!
         str-cast-others: Boom!
     fireball:
+        spell-class: ".instant.FireballSpell"
         name: fireball
         description: Throw a fiery ball of destruction.
         cast-item: 283
@@ -316,6 +336,7 @@ spells:
         str-cast-self: You throw a fiery ball of destruction!
         str-cast-others: "%a throws a fiery ball of destruction!"
     firenova:
+        spell-class: ".instant.FirenovaSpell"
         name: firenova
         description: Summon an expanding ring of fire.
         cast-item: 283
@@ -330,6 +351,7 @@ spells:
         str-cast-self: You summon an expanding ring of fire.
         str-cast-others: "%a summons an expanding ring of fire."
     flamewalk:
+        spell-class: ".buff.FlamewalkSpell"
         name: flamewalk
         description: Burn your enemies around you as you walk.
         cast-item: 317
@@ -349,6 +371,7 @@ spells:
         str-cast-self: You begin to burn your enemies around you.
         str-fade: You are no longer burning your enemies.
     forcepush:
+        spell-class: ".instant.ForcepushSpell"
         name: forcepush
         description: Push back your enemies.
         cast-item: 280
@@ -364,6 +387,7 @@ spells:
         str-cast-self: You push back your enemies!
         str-cast-others: "%a pushes back his enemies."
     forcetoss:
+        spell-class: ".instant.ForcetossSpell"
         name: forcetoss
         description: Magically throw an enemy into the air.
         cast-item: 283
@@ -382,6 +406,7 @@ spells:
         str-cast-self: You push back your enemy!
         str-cast-others: "%a pushes back his enemy."
     frostwalk:
+        spell-class: ".buff.FrostwalkSpell"
         name: frostwalk
         description: Lets you walk on water.
         cast-item: 317
@@ -398,6 +423,7 @@ spells:
         str-cast-others: "%a can now walk on water!"
         str-fade: You can no longer walk on water.
     gate:
+        spell-class: ".instant.GateSpell"
         name: gate
         description: Teleport to spawn.
         can-cast-with-item: false
@@ -415,6 +441,7 @@ spells:
         str-cast-done: ""
         str-cast-interrupted: ""
     geyser:
+        spell-class: ".instant.GeyserSpell"
         name: geyser
         description: Create a geyser of water at your enemy's feet.
         cast-item: 283
@@ -433,6 +460,7 @@ spells:
         str-cast-self: You create a geyser at your enemy's feet.
         str-no-target: No target found.
     gills:
+        spell-class: ".buff.GillsSpell"
         name: gills
         description: Allows you to breath underwater.
         cast-item: 294
@@ -449,6 +477,7 @@ spells:
         str-cast-self: You form gills on your neck!
         str-fade: Your gills disappear.
     haste:
+        spell-class: ".buff.HasteSpell"
         name: haste
         description: Sprint faster for a time.
         cast-item: 294
@@ -462,6 +491,7 @@ spells:
         str-cast-others: "%a gains unnatural speed!"
         str-fade: You lose your unnatural speed.
     heal:
+        spell-class: ".instant.HealSpell"
         name: heal
         description: Heals a target player.
         cast-item: 280
@@ -477,6 +507,7 @@ spells:
         str-no-target: No target to heal.
         str-max-health: "%t is already at max health."
     invulnerability:
+        spell-class: ".buff.InvulnerabilitySpell"
         name: invulnerability
         description: Makes you invulnerable to damage.
         cast-item: 280
@@ -505,6 +536,7 @@ spells:
         str-cast-others: "%a's skin hardens."
         str-fade: You feel your skin return to normal.
     leap:
+        spell-class: ".instant.LeapSpell"
         name: leap
         description: Leap forward.
         cast-item: 280
@@ -518,6 +550,7 @@ spells:
         str-cast-self: You leap forward.
         str-cast-others: "%a leaps forward."
     lifewalk:
+        spell-class: ".buff.LifewalkSpell"
         name: lifewalk
         description: Flowers grow in your footsteps!
         cast-item: 317
@@ -538,6 +571,7 @@ spells:
         str-cast-others: Flowers grow in %a's footsteps!
         str-fade: Flowers no longer grow in your footsteps.
     lightning:
+        spell-class: ".instant.LightningSpell"
         name: lightning
         description: Call down lightning.
         cast-item: 283
@@ -556,6 +590,7 @@ spells:
         str-cast-others: "%a calls down lightning."
         str-no-target: Unable to find target.
     lightwalk:
+        spell-class: ".buff.LightwalkSpell"
         name: lightwalk
         description: Light your path.
         cast-item: 317
@@ -569,6 +604,7 @@ spells:
         str-cast-self: Light appears at your feet.
         str-fade: The light at your feet goes out.
     mana:
+        spell-class: ".instant.ManaSpell"
         name: lifetap
         description: Restores mana at the cost of life.
         cooldown: 3
@@ -579,6 +615,7 @@ spells:
         str-cost: 2 hearts
         str-cast-self: You restore 25 mana.
     mark:
+        spell-class: ".instant.MarkSpell"
         name: mark
         description: Marks your location for later recall.
         cooldown: 43200
@@ -589,6 +626,7 @@ spells:
         str-cost: 5 redstone dust and 5 iron bars
         str-cast-self: You have marked your location.
     minion:
+        spell-class: ".buff.MinionSpell"
         name: minion
         description: Summons an undead minion to aid you.
         cast-item: 280
@@ -607,6 +645,7 @@ spells:
         str-cast-others: "%a has summoned an undead minion."
         str-fade: Your undead minion dies.
     pain:
+        spell-class: ".instant.PainSpell"
         name: pain
         description: Cause your enemy pain.
         cast-item: 283
@@ -622,6 +661,7 @@ spells:
         str-cost: 1 redstone dust and a half heart
         str-no-target: No target found.
     phase:
+        spell-class: ".instant.PhaseSpell"
         name: phase
         description: Phase through solid matter.
         cast-item: 280
@@ -633,6 +673,7 @@ spells:
         str-cost: 2 redstone dust
         str-cant-phase: Unable to find place to phase to.
     prayer:
+        spell-class: ".instant.PrayerSpell"
         name: prayer
         description: Heals yourself for five hearts.
         cast-item: 38
@@ -644,6 +685,7 @@ spells:
         str-cast-self: You have healed yourself.
         str-at-full-health: You are already at full health.
     purge:
+        spell-class: ".instant.PurgeSpell"
         name: purge
         description: Kill all monsters and animals around you.
         cast-item: 283
@@ -655,6 +697,7 @@ spells:
         str-cast-self: You purge all life around you.
         str-cast-others: "%a purges all nearby life."
     reach:
+        spell-class: ".buff.ReachSpell"
         name: reach
         description: Place and destroy blocks from far away.
         cast-item: 280
@@ -669,6 +712,7 @@ spells:
         str-cast-self: You gain the ability to manipulate the world around you.
         str-fade: You can no longer manipulate the world around you.        
     recall:
+        spell-class: ".instant.RecallSpell"
         name: recall
         description: Teleports you to your marked location.
         cooldown: 300
@@ -687,6 +731,7 @@ spells:
         str-cast-done: ""
         str-cast-interrupted: ""
     reflect:
+        spell-class: ".buff.ReflectSpell"
         name: reflect
         description: Reflect spells cast at you.
         cooldown: 30
@@ -701,6 +746,7 @@ spells:
         str-cast-others: A magical barrier surrounds %a.
         str-fade: Your magical barrier fades.
     repair:
+        spell-class: ".instant.RepairSpell"
         name: repair
         description: Repairs your gear.
         cooldown: 120
@@ -719,6 +765,7 @@ spells:
         str-cast-self: You've repaired your gear!
         str-nothing-to-repair: You have nothing to repair.
     safefall:
+        spell-class: ".buff.SafefallSpell"
         name: safefall
         description: Allows you to fall without taking damage.
         cast-item: 294
@@ -734,6 +781,7 @@ spells:
         str-cast-self: You feel lighter.
         str-fade: Your normal weight returns.
     scroll:
+        spell-class: ".command.ScrollSpell"
         name: scroll
         description: Create a limited use spell scroll.
         cast-for-free: true
@@ -747,7 +795,7 @@ spells:
         charge-reagents-for-spell-per-charge: false
         require-teach-perm: true
         require-scroll-cast-perm-on-use: true
-        stack-by-data-var: bs
+        stack-by-data-var: bQ
         str-scroll-over: "Spell Scroll: %s (%u uses remaining)"
         str-usage: |
             You must hold a single blank paper 
@@ -759,6 +807,7 @@ spells:
         str-on-use: "Spell Scroll: %s used. %u uses remaining."
         str-use-fail: Unable to use this scroll right now.
     stealth:
+        spell-class: ".buff.StealthSpell"
         name: stealth
         description: Become invisible to monsters.
         cast-item: 280
@@ -770,6 +819,7 @@ spells:
         str-cast-self: You become invisble to monsters.
         str-fade: You are no longer invisible to monsters.
     stonevision:
+        spell-class: ".buff.StonevisionSpell"
         name: stonevision
         description: See through stone.
         cast-item: 317
@@ -785,6 +835,7 @@ spells:
         str-cast-self: You can see through stone!
         str-fade: You can no longer see through stone.
     summon:
+        spell-class: ".channeled.SummonSpell"
         name: summon
         description: Summon another player to your position.
         channel-time: 30
@@ -807,6 +858,7 @@ spells:
         str-summon-accepted: You have been summoned.
         str-summon-expired: The summon has expired.
     sun:
+        spell-class: ".channeled.SunSpell"
         name: sun
         description: Changes the time to morning.
         channel-time: 30
@@ -820,6 +872,7 @@ spells:
         str-spell-success: You have successfully called the sun.
         str-announce: The sun has suddenly appeared in the sky!        
     telekinesis:
+        spell-class: ".instant.TelekinesisSpell"
         name: telekinesis
         description: Manipulate switches and buttons remotely.
         cast-item: 280
@@ -830,6 +883,7 @@ spells:
         str-cost: 1 redstone dust
         str-no-target: You must target a switch or button.
     tome:
+        spell-class: ".command.TomeSpell"
         name: tome
         enabled: false
         description: Create a tome that teaches a spell.
@@ -848,6 +902,7 @@ spells:
         str-learned: You have learned the %s spell.
         str-cast-self: You have created a spell tome.
     volley:
+        spell-class: ".instant.VolleySpell"
         name: volley
         description: Send a volley of arrows at your targeted location.
         cast-item: 283
@@ -864,6 +919,7 @@ spells:
         str-cast-others: "%a fires a volley of arrows."
         str-no-target: No target found.
     walkway:
+        spell-class: ".buff.WalkwaySpell"
         name: walkway
         description: Summon a moving magical walkway to take you places.
         cast-item: 280
@@ -881,6 +937,7 @@ spells:
         str-cast-self: You summon a magical walkway.
         str-fade: Your magical walkway disappears.
     wall:
+        spell-class: ".instant.WallSpell"
         name: wall
         description: Creates a temporary wall to block your enemies.
         cast-item: 280
@@ -896,6 +953,7 @@ spells:
         str-cost: 2 redstone dust and 2 stone
         str-no-target: Unable to create a wall.
     windwalk:
+        spell-class: ".buff.WindwalkSpell"
         name: windwalk
         description: Fly through the air.
         cast-item: 280
@@ -912,6 +970,7 @@ spells:
         str-cast-others: "%a is now walking on the wind!"
         str-fade: You are no longer walking on the wind.
     zap:
+        spell-class: ".instant.ZapSpell"
         name: zap
         description: Instantly destroys a block.
         cast-item: 294
@@ -929,6 +988,7 @@ spells:
         str-cant-zap: You can't zap that.
         
     external:
+        spell-class: ".ExternalCommandSpell"
         name: gianttree
         enabled: false
         description: Create a giant tree!

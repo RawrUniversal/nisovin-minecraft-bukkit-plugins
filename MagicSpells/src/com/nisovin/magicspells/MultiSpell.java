@@ -19,12 +19,12 @@ public final class MultiSpell extends Spell {
 	public MultiSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		castWithItem = getConfigBoolean("can-cast-with-item", true);
-		castByCommand = getConfigBoolean("can-cast-by-command", true);
-		checkIndividualCooldowns = getConfigBoolean("check-individual-cooldowns", false);
+		castWithItem = config.getBoolean("multispells." + spellName + ".can-cast-with-item", true);
+		castByCommand = config.getBoolean("multispells." + spellName + ".can-cast-by-command", true);
+		checkIndividualCooldowns = config.getBoolean("multispells." + spellName + ".check-individual-cooldowns", false);
 
 		spells = new ArrayList<Spell>();
-		List<String> spellList = getConfigStringList("spells", null);
+		List<String> spellList = config.getStringList("multispells." + spellName + ".spells", null);
 		if (spellList != null) {
 			for (String s : spellList) {
 				Spell spell = MagicSpells.getSpellByInternalName(s);
