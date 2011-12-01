@@ -86,11 +86,11 @@ public class DrainlifeSpell extends InstantSpell {
 				} else if (takeType.equals("experience")) {
 					if (target instanceof Player) {
 						Player p = (Player)target;
-						int exp = p.getExperience();
+						int exp = p.getTotalExperience();
 						if (give > exp) give = exp;
 						exp -= take;
 						if (exp < 0) exp = 0;
-						p.setExperience(exp);
+						p.setTotalExperience(exp);
 					}
 				}
 				
@@ -107,9 +107,9 @@ public class DrainlifeSpell extends InstantSpell {
 					if (food > 20) food = 20;
 					player.setFoodLevel(food);
 				} else if (takeType.equals("experience")) {
-					int exp = player.getExperience();
+					int exp = player.getTotalExperience();
 					exp += take;
-					player.setExperience(exp);
+					player.setTotalExperience(exp);
 				}
 				
 				// show animation

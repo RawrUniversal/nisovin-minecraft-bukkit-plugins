@@ -63,7 +63,7 @@ public class ScrollSpell extends CommandSpell {
 		chargeReagentsForSpellPerCharge = getConfigBoolean("charge-reagents-for-spell-per-charge", false);
 		requireTeachPerm = getConfigBoolean("require-teach-perm", true);
 		requireScrollCastPermOnUse = getConfigBoolean("require-scroll-cast-perm-on-use", true);
-		stackByDataVar = getConfigString("stack-by-data-var", "bs");
+		stackByDataVar = getConfigString("stack-by-data-var", "bQ");
 		maxScrolls = getConfigInt("max-scrolls", 500);
 		strScrollOver = getConfigString("str-scroll-over", "Spell Scroll: %s (%u uses remaining)");
 		strUsage = getConfigString("str-usage", "You must hold a single blank paper \nand type /cast scroll <spell> <uses>.");
@@ -351,6 +351,14 @@ public class ScrollSpell extends CommandSpell {
 			if (spell != null) {
 				sendMessage(event.getPlayer(), formatMessage(strScrollOver, "%s", spell.getName(), "%u", scrollUses.get(inHand.getDurability())+""));
 			}
+		}
+	}
+	
+	public Spell getSpellScrollById(short id) {
+		if (scrollSpells.containsKey(id)) {
+			return scrollSpells.get(id);
+		} else {
+			return null;
 		}
 	}
 	

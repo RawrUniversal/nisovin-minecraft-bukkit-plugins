@@ -32,6 +32,16 @@ public class MagicConfig {
 		}
 	}
 	
+	public boolean contains(String path) {
+		if (altConfig != null && altConfig.contains(path)) {
+			return true;
+		} else if (mainConfig.contains(path)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public int getInt(String path, int def) {
 		if (altConfig != null && altConfig.contains(path) && altConfig.isInt(path)) {
 			return altConfig.getInt(path);
@@ -108,6 +118,10 @@ public class MagicConfig {
 		} else {
 			return null;
 		}
+	}
+	
+	public ConfigurationSection getSpellSection() {
+		return mainConfig.getConfigurationSection("spells");
 	}
 	
 }
