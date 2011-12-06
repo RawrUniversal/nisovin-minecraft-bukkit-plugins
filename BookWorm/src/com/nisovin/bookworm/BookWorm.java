@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,7 +29,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 public class BookWorm extends JavaPlugin {
 
-	protected static String STACK_BY_DATA_VAR = "bs";
+	protected static String STACK_BY_DATA_FN = "a";
 	
 	protected static ChatColor TEXT_COLOR = ChatColor.GREEN;
 	protected static ChatColor TEXT_COLOR_2 = ChatColor.WHITE;
@@ -191,19 +192,19 @@ public class BookWorm extends JavaPlugin {
 			boolean ok = false;
 			try {
 				// attempt to make books with different data values stack separately
-				Field field1 = net.minecraft.server.Item.class.getDeclaredField(STACK_BY_DATA_VAR);
-				if (field1.getType() == boolean.class) {
-					field1.setAccessible(true);
-					field1.setBoolean(net.minecraft.server.Item.BOOK, true);
+				Method method = net.minecraft.server.Item.class.getDeclaredMethod(STACK_BY_DATA_FN, boolean.class);
+				if (method.getReturnType() == net.minecraft.server.Item.class) {
+					method.setAccessible(true);
+					method.invoke(net.minecraft.server.Item.BOOK, true);
 					ok = true;
-				} 
+				}
 			} catch (Exception e) {
 			}
 			if (!ok) {
 				// otherwise limit stack size to 1
-				Field field2 = net.minecraft.server.Item.class.getDeclaredField("maxStackSize");
-				field2.setAccessible(true);
-				field2.setInt(net.minecraft.server.Item.BOOK, 1);
+				Field field = net.minecraft.server.Item.class.getDeclaredField("maxStackSize");
+				field.setAccessible(true);
+				field.setInt(net.minecraft.server.Item.BOOK, 1);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -302,7 +303,7 @@ public class BookWorm extends JavaPlugin {
 		Configuration config = getConfiguration();
 		config.load();
 		
-		STACK_BY_DATA_VAR = config.getString("general.secret-amazing-code-do-not-change", STACK_BY_DATA_VAR);
+		STACK_BY_DATA_FN = config.getString("general.stack-by-data-fn", STACK_BY_DATA_FN);
 		
 		TEXT_COLOR = ChatColor.getByCode(config.getInt("general.text-color", TEXT_COLOR.getCode()));
 		TEXT_COLOR_2 = ChatColor.getByCode(config.getInt("general.text-color-2", TEXT_COLOR_2.getCode()));
