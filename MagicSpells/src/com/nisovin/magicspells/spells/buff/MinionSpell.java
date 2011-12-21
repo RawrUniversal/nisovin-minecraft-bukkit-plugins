@@ -113,7 +113,7 @@ public class MinionSpell extends BuffSpell {
 	}
 	
 	private void addListeners() {
-		if (!listening) {			
+		if (!listening) {
 			addListener(Event.Type.ENTITY_TARGET);
 			addListener(Event.Type.ENTITY_DAMAGE);
 			if (preventCombust) {

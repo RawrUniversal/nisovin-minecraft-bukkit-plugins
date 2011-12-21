@@ -107,46 +107,50 @@ public class MagicPlayerListener extends PlayerListener {
 			Player player = event.getPlayer();
 			ItemStack inHand = player.getItemInHand();
 			
-			// cycle spell
-			Spell spell = null;
-			if (!player.isSneaking()) {
-				spell = MagicSpells.getSpellbook(player).nextSpell(inHand);
-			} else {
-				spell = MagicSpells.getSpellbook(player).prevSpell(inHand);
-			}
-			if (spell != null) {
-				MagicSpells.sendMessage(player, MagicSpells.strSpellChange, "%s", spell.getName());
-			}
+			if (inHand != null && inHand.getType() != Material.AIR) {
 			
-			// check for mana pots
-			if (MagicSpells.enableManaBars && MagicSpells.manaPotions != null) {
-				ItemStack item = new ItemStack(inHand.getType(), 1, inHand.getDurability());
-				if (MagicSpells.manaPotions.containsKey(item)) {
-					// check cooldown
-					if (MagicSpells.manaPotionCooldown > 0) {
-						Long c = MagicSpells.manaPotionCooldowns.get(player);
-						if (c != null && c > System.currentTimeMillis()) {
-							MagicSpells.sendMessage(player, MagicSpells.strManaPotionOnCooldown.replace("%c", ""+(int)((c-System.currentTimeMillis())/1000)));
-							return;
-						}
-					}
-					// add mana
-					int amt = MagicSpells.manaPotions.get(item);
-					boolean added = MagicSpells.mana.addMana(player, amt);
-					if (added) {
-						// set cooldown
+				// cycle spell
+				Spell spell = null;
+				if (!player.isSneaking()) {
+					spell = MagicSpells.getSpellbook(player).nextSpell(inHand);
+				} else {
+					spell = MagicSpells.getSpellbook(player).prevSpell(inHand);
+				}
+				if (spell != null) {
+					MagicSpells.sendMessage(player, MagicSpells.strSpellChange, "%s", spell.getName());
+				}
+				
+				// check for mana pots
+				if (MagicSpells.enableManaBars && MagicSpells.manaPotions != null) {
+					ItemStack item = new ItemStack(inHand.getType(), 1, inHand.getDurability());
+					if (MagicSpells.manaPotions.containsKey(item)) {
+						// check cooldown
 						if (MagicSpells.manaPotionCooldown > 0) {
-							MagicSpells.manaPotionCooldowns.put(player, System.currentTimeMillis() + MagicSpells.manaPotionCooldown*1000);
+							Long c = MagicSpells.manaPotionCooldowns.get(player);
+							if (c != null && c > System.currentTimeMillis()) {
+								MagicSpells.sendMessage(player, MagicSpells.strManaPotionOnCooldown.replace("%c", ""+(int)((c-System.currentTimeMillis())/1000)));
+								return;
+							}
 						}
-						// remove item
-						if (inHand.getAmount() == 1) {
-							inHand = null;
-						} else {
-							inHand.setAmount(inHand.getAmount()-1);
+						// add mana
+						int amt = MagicSpells.manaPotions.get(item);
+						boolean added = MagicSpells.mana.addMana(player, amt);
+						if (added) {
+							// set cooldown
+							if (MagicSpells.manaPotionCooldown > 0) {
+								MagicSpells.manaPotionCooldowns.put(player, System.currentTimeMillis() + MagicSpells.manaPotionCooldown*1000);
+							}
+							// remove item
+							if (inHand.getAmount() == 1) {
+								inHand = null;
+							} else {
+								inHand.setAmount(inHand.getAmount()-1);
+							}
+							player.setItemInHand(inHand);
 						}
-						player.setItemInHand(inHand);
 					}
 				}
+				
 			}
 		}
 		

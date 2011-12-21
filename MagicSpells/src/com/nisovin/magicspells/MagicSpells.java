@@ -26,6 +26,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -88,6 +89,8 @@ public class MagicSpells extends JavaPlugin {
 	protected static String strNoMagicZone;
 	public static String strConsoleName;
 	
+	protected HashSet<Listener> listenerObjects;
+	
 	protected static HashMap<String,Spell> spells; // map internal names to spells
 	protected static HashMap<String,Spell> spellNames; // map configured names to spells
 	protected static HashMap<String,Spellbook> spellbooks; // player spellbooks
@@ -104,10 +107,11 @@ public class MagicSpells extends JavaPlugin {
 		load();
 		
 		// load listeners
-		new MagicPlayerListener(this);
-		new MagicEntityListener(this);
-		new MagicBlockListener(this);
-		new MagicSpellListener(this);
+		listenerObjects = new HashSet<Listener>();
+		listenerObjects.add(new MagicPlayerListener(this));
+		listenerObjects.add(new MagicEntityListener(this));
+		listenerObjects.add(new MagicBlockListener(this));
+		listenerObjects.add(new MagicSpellListener(this));
 	}
 	
 	private void load() {
@@ -330,6 +334,7 @@ public class MagicSpells extends JavaPlugin {
 					getServer().getLogger().severe("MagicSpells: Unable to load spell " + spellName + " (malformed class)");
 				} catch (Exception e) {
 					getServer().getLogger().severe("MagicSpells: Unable to load spell " + spellName + " (unknown error)");
+					e.printStackTrace();
 				}
 			}
 		}
@@ -868,10 +873,18 @@ public class MagicSpells extends JavaPlugin {
 		for (Spell spell : spells.values()) {
 			spell.turnOff();
 		}
+		spells.clear();
 		spells = null;
+		spellNames.clear();
 		spellNames = null;
+		spellbooks.clear();
 		spellbooks = null;
+		listeners.clear();
 		listeners = null;
+		customListeners.clear();
+		customListeners = null;
+		listenerObjects.clear();
+		listenerObjects = null;
 		if (mana != null) {
 			mana.turnOff();
 			mana = null;

@@ -2,7 +2,6 @@ package com.nisovin.magicspells.spells.buff;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -10,6 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
@@ -82,13 +82,7 @@ public class ReachSpell extends BuffSpell {
 						targetBlock.setType(Material.AIR);
 						// drop item
 						if (dropBlocks && player.getGameMode() == GameMode.SURVIVAL) {
-							Random rand = new Random();
-							byte data = state.getRawData();
-							int type = net.minecraft.server.Block.byId[state.getTypeId()].a(data, rand);
-							int amt = net.minecraft.server.Block.byId[state.getTypeId()].a(rand);
-							if (amt > 0) {
-								targetBlock.getWorld().dropItemNaturally(targetBlock.getLocation(), new ItemStack(type, amt, data));
-							}
+							net.minecraft.server.Block.byId[state.getTypeId()].dropNaturally(((CraftWorld)targetBlock.getWorld()).getHandle(), targetBlock.getX(), targetBlock.getY(), targetBlock.getZ(), targetBlock.getData(), 1.0F, 0);
 						}
 						addUseAndChargeCost(player);
 					}

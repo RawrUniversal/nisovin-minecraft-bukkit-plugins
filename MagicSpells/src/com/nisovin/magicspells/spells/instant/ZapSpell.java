@@ -80,7 +80,7 @@ public class ZapSpell extends InstantSpell {
 				// drop block
 				if (dropBlock) {
 					if (dropNormal) {
-						net.minecraft.server.Block.byId[target.getTypeId()].dropNaturally(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ(), target.getData(), 1.0F);
+						net.minecraft.server.Block.byId[target.getTypeId()].dropNaturally(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ(), target.getData(), 1.0F, 0);
 					} else {
 						target.getWorld().dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1, target.getData()));
 					}
