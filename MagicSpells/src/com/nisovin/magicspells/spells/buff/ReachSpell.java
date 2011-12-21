@@ -71,7 +71,7 @@ public class ReachSpell extends BuffSpell {
 			if (targets.size() == 2) {
 				airBlock = targets.get(0);
 				targetBlock = targets.get(1);
-				if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+				if ((action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) && targetBlock.getType() != Material.AIR) {
 					// break
 					BlockBreakEvent evt = new BlockBreakEvent(targetBlock, player);
 					Bukkit.getPluginManager().callEvent(evt);

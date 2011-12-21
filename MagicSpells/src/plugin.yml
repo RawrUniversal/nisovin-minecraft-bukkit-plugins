@@ -1,8 +1,8 @@
 name: MagicSpells
 main: com.nisovin.magicspells.MagicSpells
-version: 1.4
+version: 2.0
 author: nisovin
-softdepend: [BookWorm,WorldGuard,Spout]
+softdepend: [BookWorm,WorldGuard]
 commands:
     magicspellcast:
         description: Cast a spell

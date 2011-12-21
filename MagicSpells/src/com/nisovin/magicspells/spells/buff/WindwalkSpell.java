@@ -185,22 +185,15 @@ public class WindwalkSpell extends BuffSpell {
 					contents[i] = invContents[i].clone();
 				}
 			}
-			head = inv.getHelmet().clone();
-			chest = inv.getChestplate().clone();
-			legs = inv.getLeggings().clone();
-			feet = inv.getBoots().clone();
-			if (head.getType() == Material.AIR) {
-				head = null;
-			}
-			if (chest.getType() == Material.AIR) {
-				chest = null;
-			}
-			if (legs.getType() == Material.AIR) {
-				legs = null;
-			}
-			if (feet.getType() == Material.AIR) {
-				feet = null;
-			}
+			ItemStack temp;
+			temp = inv.getHelmet();
+			if (temp != null && temp.getType() != Material.AIR) head = temp.clone();
+			temp = inv.getChestplate();
+			if (temp != null && temp.getType() != Material.AIR) chest = temp.clone();
+			temp = inv.getLeggings();
+			if (temp != null && temp.getType() != Material.AIR) legs = temp.clone();
+			temp = inv.getBoots();
+			if (temp != null && temp.getType() != Material.AIR) feet = temp.clone();
 		}
 		
 		@SuppressWarnings("deprecation")
