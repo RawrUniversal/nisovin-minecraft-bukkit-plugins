@@ -61,6 +61,9 @@ public abstract class Spell implements Comparable<Spell> {
 	protected String strCost;
 	protected String strCastSelf;
 	protected String strCastOthers;
+	protected String strOnCooldown;
+	protected String strMissingReagents;
+	protected String strCantCast;
 	
 	private HashMap<String, Long> lastCast;
 	
@@ -128,6 +131,9 @@ public abstract class Spell implements Comparable<Spell> {
 		this.strCost = config.getString("spells." + spellName + ".str-cost", null);
 		this.strCastSelf = config.getString("spells." + spellName + ".str-cast-self", null);
 		this.strCastOthers = config.getString("spells." + spellName + ".str-cast-others", null);
+		this.strOnCooldown = config.getString("spells." + spellName + ".str-on-cooldown", MagicSpells.strOnCooldown);
+		this.strMissingReagents = config.getString("spells." + spellName + ".str-missing-reagents", MagicSpells.strMissingReagents);
+		this.strCantCast = config.getString("spells." + spellName + ".str-cant-cast", MagicSpells.strCantCast);
 		
 		if (cooldown > 0) {
 			lastCast = new HashMap<String, Long>();
@@ -241,14 +247,14 @@ public abstract class Spell implements Comparable<Spell> {
 					sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getDisplayName()));
 				}
 			} else if (state == SpellCastState.ON_COOLDOWN) {
-				MagicSpells.sendMessage(player, formatMessage(MagicSpells.strOnCooldown, "%c", getCooldown(player)+""));
+				MagicSpells.sendMessage(player, formatMessage(strOnCooldown, "%c", getCooldown(player)+""));
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
-				MagicSpells.sendMessage(player, MagicSpells.strMissingReagents);
+				MagicSpells.sendMessage(player, strMissingReagents);
 				if (MagicSpells.showStrCostOnMissingReagents && strCost != null && !strCost.isEmpty()) {
 					MagicSpells.sendMessage(player, "    (" + strCost + ")");
 				}
 			} else if (state == SpellCastState.CANT_CAST) {
-				MagicSpells.sendMessage(player, MagicSpells.strCantCast);
+				MagicSpells.sendMessage(player, strCantCast);
 			} else if (state == SpellCastState.NO_MAGIC_ZONE) {
 				MagicSpells.noMagicZones.sendNoMagicMessage(player, this);
 			}
