@@ -1044,7 +1044,7 @@ spells:
         str-cast-self: You zapped a block.
         str-cant-zap: You can't zap that.
         
-    external:
+    gianttree:
         spell-class: ".ExternalCommandSpell"
         name: gianttree
         enabled: false
@@ -1068,3 +1068,20 @@ spells:
         str-cost: 10 redstone dust and 5 saplings
         str-cast-self: You grow a tree!
         str-cant-use-command: "&4You don't have permission to do that."
+        
+    torcharrow:
+        spell-class: ".PermissionSpell"
+        name: torcharrow
+        enabled: false
+        description: Shoot a torch arrow.
+        cooldown: 10
+        can-cast-by-command: true
+        can-cast-with-item: true
+        permission-nodes:
+            - "torcharrow.tArrow"
+        duration: 600
+        cost:
+            - 331 2
+            - 50 1
+        str-cost: 2 redstone dust and 1 torch
+        str-cast-self: You can now fire torch arrows.
