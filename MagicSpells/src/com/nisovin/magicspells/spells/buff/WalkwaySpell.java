@@ -69,13 +69,13 @@ public class WalkwaySpell extends BuffSpell {
 		}
 	}
 	
-	private void removeListeners() {
+	/*private void removeListeners() {
 		if (listening && platforms.size() == 0) {
 			removeListener(Event.Type.PLAYER_MOVE);
 			removeListener(Event.Type.BLOCK_BREAK);
 			listening = false;
 		}
-	}
+	}*/
 	
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
@@ -120,7 +120,7 @@ public class WalkwaySpell extends BuffSpell {
 			platform.remove();
 			platforms.remove(player);
 			sendMessage(player, strFade);
-			removeListeners();
+			//removeListeners();
 		}
 	}
 
@@ -130,7 +130,7 @@ public class WalkwaySpell extends BuffSpell {
 			platform.remove();
 		}
 		platforms.clear();
-		removeListeners();
+		//removeListeners();
 	}
 	
 	private class Platform {

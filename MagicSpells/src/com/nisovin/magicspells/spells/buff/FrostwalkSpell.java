@@ -56,13 +56,13 @@ public class FrostwalkSpell extends BuffSpell {
 		}
 	}
 	
-	private void removeListeners() {
+	/*private void removeListeners() {
 		if (listening && frostwalkers.size() == 0) {
 			removeListener(Event.Type.PLAYER_MOVE);
 			removeListener(Event.Type.BLOCK_BREAK);
 			listening = false;
 		}
-	}
+	}*/
 
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
@@ -118,7 +118,7 @@ public class FrostwalkSpell extends BuffSpell {
 			platform.destroyPlatform();
 			frostwalkers.remove(player.getName());
 			sendMessage(player, strFade);
-			removeListeners();
+			//removeListeners();
 		}
 	}
 	
@@ -128,7 +128,7 @@ public class FrostwalkSpell extends BuffSpell {
 			platform.destroyPlatform();
 		}
 		frostwalkers.clear();
-		removeListeners();
+		//removeListeners();
 	}
 
 }

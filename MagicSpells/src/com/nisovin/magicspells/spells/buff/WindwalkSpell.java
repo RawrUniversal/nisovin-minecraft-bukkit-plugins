@@ -87,7 +87,7 @@ public class WindwalkSpell extends BuffSpell {
 		}
 	}
 	
-	private void removeListeners() {
+	/*private void removeListeners() {
 		if (listening && flyers.size() == 0) {
 			removeListener(Event.Type.BLOCK_BREAK);
 			removeListener(Event.Type.BLOCK_PLACE);
@@ -98,7 +98,7 @@ public class WindwalkSpell extends BuffSpell {
 			}
 			listening = false;
 		}
-	}
+	}*/
 	
 	@Override
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
@@ -154,7 +154,7 @@ public class WindwalkSpell extends BuffSpell {
 			int taskId = tasks.remove(player);
 			Bukkit.getScheduler().cancelTask(taskId);
 		}
-		removeListeners();
+		//removeListeners();
 	}
 	
 	@Override
@@ -164,7 +164,7 @@ public class WindwalkSpell extends BuffSpell {
 			turnOff(player);
 		}
 		this.flyers.clear();
-		removeListeners();
+		//removeListeners();
 	}
 	
 	private class SavedInventory {

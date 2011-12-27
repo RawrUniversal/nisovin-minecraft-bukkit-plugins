@@ -91,10 +91,10 @@ public class LightwalkSpell extends BuffSpell {
 			lightwalkers.remove(player.getName());
 		}
 		sendMessage(player, strFade);
-		if (listening && lightwalkers.size() == 0) {
-			removeListener(Event.Type.PLAYER_MOVE);
-			listening = false;
-		}
+		//if (listening && lightwalkers.size() == 0) {
+		//	removeListener(Event.Type.PLAYER_MOVE);
+		//	listening = false;
+		//}
 	}
 
 	@Override

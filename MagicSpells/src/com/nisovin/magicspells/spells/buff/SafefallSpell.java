@@ -61,10 +61,10 @@ public class SafefallSpell extends BuffSpell {
 		super.turnOff(player);
 		safefallers.remove(player.getName());
 		sendMessage(player, strFade);
-		if (listening && safefallers.size() == 0) {
-			removeListener(Event.Type.ENTITY_DAMAGE);
-			listening = false;
-		}
+		//if (listening && safefallers.size() == 0) {
+		//	removeListener(Event.Type.ENTITY_DAMAGE);
+		//	listening = false;
+		//}
 	}
 	
 	@Override

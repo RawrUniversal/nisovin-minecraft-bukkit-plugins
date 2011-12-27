@@ -69,14 +69,14 @@ public class CarpetSpell extends BuffSpell {
 		}
 	}
 	
-	private void removeListeners() {
+	/*private void removeListeners() {
 		if (listening && windwalkers.size() == 0) {
 			removeListener(Event.Type.PLAYER_MOVE);
 			removeListener(Event.Type.PLAYER_TOGGLE_SNEAK);
 			removeListener(Event.Type.BLOCK_BREAK);
 			listening = false;
 		}
-	}
+	}*/
 
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
@@ -158,7 +158,7 @@ public class CarpetSpell extends BuffSpell {
 			platform.destroyPlatform();
 			windwalkers.remove(player.getName());
 			sendMessage(player, strFade);
-			removeListeners();
+			//removeListeners();
 		}
 	}
 	
@@ -168,7 +168,7 @@ public class CarpetSpell extends BuffSpell {
 			platform.destroyPlatform();
 		}
 		windwalkers.clear();
-		removeListeners();
+		//removeListeners();
 	}
 
 }

@@ -88,10 +88,10 @@ public class GillsSpell extends BuffSpell {
 			}
 		}
 		sendMessage(player, strFade);
-		if (listening && fishes.size() == 0) {
-			removeListener(Event.Type.ENTITY_DAMAGE);
-			listening = false;
-		}
+		//if (listening && fishes.size() == 0) {
+			//removeListener(Event.Type.ENTITY_DAMAGE);
+			//listening = false;
+		//}
 	}
 	
 	@Override

@@ -123,14 +123,14 @@ public class MinionSpell extends BuffSpell {
 		}
 	}
 	
-	private void removeListeners() {
+	/*private void removeListeners() {
 		if (listening && minions.size() == 0) {
 			removeListener(Event.Type.ENTITY_TARGET);
 			removeListener(Event.Type.ENTITY_DAMAGE);
 			removeListener(Event.Type.ENTITY_COMBUST);
 			listening = false;
 		}
-	}
+	}*/
 	
 	@Override
 	public void onEntityTarget(EntityTargetEvent event) {
@@ -219,7 +219,7 @@ public class MinionSpell extends BuffSpell {
 		}
 		minions.remove(player.getName());
 		targets.remove(player.getName());
-		removeListeners();
+		//removeListeners();
 	}
 	
 	@Override
@@ -229,7 +229,7 @@ public class MinionSpell extends BuffSpell {
 		}
 		minions.clear();
 		targets.clear();
-		removeListeners();
+		//removeListeners();
 	}
 	
 }

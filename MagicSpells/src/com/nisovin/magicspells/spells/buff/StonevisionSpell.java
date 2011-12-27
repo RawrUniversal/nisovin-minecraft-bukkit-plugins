@@ -71,10 +71,10 @@ public class StonevisionSpell extends BuffSpell {
 		seers.get(player.getName()).removeTransparency();
 		seers.remove(player.getName());
 		sendMessage(player, strFade);
-		if (listening && seers.size() == 0) {
-			removeListener(Event.Type.PLAYER_MOVE);
-			listening = false;
-		}
+		//if (listening && seers.size() == 0) {
+		//	removeListener(Event.Type.PLAYER_MOVE);
+		//	listening = false;
+		//}
 	}
 
 	@Override
