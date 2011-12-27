@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public final class MultiSpell extends Spell {
@@ -18,6 +19,12 @@ public final class MultiSpell extends Spell {
 	
 	public MultiSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
+
+		// get these values from the multispells section instead of the spells section
+		this.name = config.getString("multispells." + spellName + ".name", spellName);
+		this.description = config.getString("multispells." + spellName + ".description", "");
+		this.castItem = new CastItem(config.getString("multispells." + spellName + ".cast-item", "280"));
+		this.broadcastRange = config.getInt("multispells." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 		
 		castWithItem = config.getBoolean("multispells." + spellName + ".can-cast-with-item", true);
 		castByCommand = config.getBoolean("multispells." + spellName + ".can-cast-by-command", true);
