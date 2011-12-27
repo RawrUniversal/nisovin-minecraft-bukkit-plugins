@@ -134,6 +134,7 @@ public class TomeSpell extends CommandSpell {
 						} else {
 							// give spell
 							spellbook.addSpell(spell);
+							spellbook.save();
 							sendMessage(event.getPlayer(), formatMessage(strLearned, "%s", spell.getName()));
 							if (cancelReadOnLearn) {
 								event.setCancelled(true);
