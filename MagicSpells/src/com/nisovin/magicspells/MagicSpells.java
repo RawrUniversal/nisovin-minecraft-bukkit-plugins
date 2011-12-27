@@ -380,7 +380,9 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(MarkSpell.class);
 		spellClasses.add(MinionSpell.class);
 		spellClasses.add(PainSpell.class);
+		spellClasses.add(PermissionSpell.class);
 		spellClasses.add(PhaseSpell.class);
+		spellClasses.add(PotionEffectSpell.class);
 		spellClasses.add(PrayerSpell.class);
 		spellClasses.add(PurgeSpell.class);
 		spellClasses.add(ReachSpell.class);
@@ -611,7 +613,7 @@ public class MagicSpells extends JavaPlugin {
 			spells = new HashSet<Spell>();
 			customListeners.put(eventType, spells);
 		}
-		spells.add(spell);		
+		spells.add(spell);
 	}
 	
 	protected static void removeSpellListener(Event.Type eventType, Spell spell) {
@@ -883,8 +885,8 @@ public class MagicSpells extends JavaPlugin {
 		listeners = null;
 		customListeners.clear();
 		customListeners = null;
-		listenerObjects.clear();
-		listenerObjects = null;
+		//listenerObjects.clear();
+		//listenerObjects = null;
 		if (mana != null) {
 			mana.turnOff();
 			mana = null;

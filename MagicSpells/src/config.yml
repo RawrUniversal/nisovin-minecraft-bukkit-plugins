@@ -709,6 +709,24 @@ spells:
             - 331 2
         str-cost: 2 redstone dust
         str-cant-phase: Unable to find place to phase to.
+    poison:
+        spell-class: ".instant.PotionEffectSpell"
+        name: poison
+        description: Poison your target.
+        cast-item: 280
+        cooldown: 15
+        range: 20
+        type: 19
+        strength: 0
+        duration: 100
+        targeted: true
+        target-players: true
+        obey-los: true
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cast-self: You have poisoned your target!
+        str-no-target: No target found.
     prayer:
         spell-class: ".instant.PrayerSpell"
         name: prayer
