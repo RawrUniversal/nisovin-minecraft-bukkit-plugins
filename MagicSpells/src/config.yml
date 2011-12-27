@@ -113,6 +113,25 @@ spells:
         str-no-spell: You do not know a spell by that name.
         str-cant-bind: That spell cannot be bound to an item.
 
+
+    blind:
+        spell-class: ".instant.PotionEffectSpell"
+        name: blind
+        description: Blind your target.
+        cast-item: 280
+        cooldown: 15
+        range: 20
+        type: 15
+        strength: 0
+        duration: 200
+        targeted: true
+        target-players: true
+        obey-los: true
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cast-self: You have blinded your target!
+        str-no-target: No target found.
     blink:
         spell-class: ".instant.BlinkSpell"
         name: blink
@@ -490,6 +509,24 @@ spells:
         str-cast-self: You gain unnatural speed!
         str-cast-others: "%a gains unnatural speed!"
         str-fade: You lose your unnatural speed.
+    haze:
+        spell-class: ".instant.PotionEffectSpell"
+        name: haze
+        description: Makes your target's vision hazey.
+        cast-item: 280
+        cooldown: 15
+        range: 20
+        type: 9
+        strength: 0
+        duration: 200
+        targeted: true
+        target-players: true
+        obey-los: true
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cast-self: You have confuzzled your target!
+        str-no-target: No target found.
     heal:
         spell-class: ".instant.HealSpell"
         name: heal
@@ -706,6 +743,8 @@ spells:
         range: 15
         consume-blocks: true
         drop-blocks: true
+        disallowed-break-blocks: [0,7]
+        disallowed-place-blocks: [0,7]
         cost:
             - 331 3
         str-cost: 3 redstone dust

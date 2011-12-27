@@ -26,6 +26,8 @@ public class ReachSpell extends BuffSpell {
 	private int range;
 	private boolean consumeBlocks;
 	private boolean dropBlocks;
+	private List<Integer> disallowedBreakBlocks;
+	private List<Integer> disallowedPlaceBlocks;
 	
 	private HashSet<Player> reaching;
 	
@@ -35,6 +37,8 @@ public class ReachSpell extends BuffSpell {
 		range = getConfigInt("range", 15);
 		consumeBlocks = getConfigBoolean("consume-blocks", true);
 		dropBlocks = getConfigBoolean("drop-blocks", true);
+		disallowedBreakBlocks = getConfigIntList("disallowed-break-blocks", null);
+		disallowedPlaceBlocks = getConfigIntList("disallowed-place-blocks", null);
 		
 		addListener(Event.Type.PLAYER_INTERACT);
 		
@@ -73,6 +77,12 @@ public class ReachSpell extends BuffSpell {
 				targetBlock = targets.get(1);
 				if ((action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) && targetBlock.getType() != Material.AIR) {
 					// break
+					
+					// check for disallowed
+					if (disallowedBreakBlocks != null && disallowedBreakBlocks.contains(targetBlock.getTypeId())) {
+						return;
+					}
+					// call break event
 					BlockBreakEvent evt = new BlockBreakEvent(targetBlock, player);
 					Bukkit.getPluginManager().callEvent(evt);
 					if (!evt.isCancelled()) {
@@ -88,6 +98,12 @@ public class ReachSpell extends BuffSpell {
 					}
 				} else if ((action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && targetBlock.getType() != Material.AIR) {
 					// place
+					
+					// check for disallowed
+					if (disallowedPlaceBlocks != null && disallowedPlaceBlocks.contains(targetBlock.getTypeId())) {
+						return;
+					}
+					// check for block in hand
 					ItemStack inHand = player.getItemInHand();
 					if (inHand != null && inHand.getType() != Material.AIR && inHand.getType().isBlock()) {
 						BlockState prevState = airBlock.getState();
@@ -97,6 +113,7 @@ public class ReachSpell extends BuffSpell {
 						}
 						// place block
 						airBlock.setTypeIdAndData(inHand.getTypeId(), data, true);
+						// call event
 						BlockPlaceEvent evt = new BlockPlaceEvent(airBlock, prevState, targetBlock, inHand, player, true);
 						Bukkit.getPluginManager().callEvent(evt);
 						if (evt.isCancelled()) {
