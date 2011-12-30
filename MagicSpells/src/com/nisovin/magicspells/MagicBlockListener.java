@@ -7,7 +7,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class MagicBlockListener extends BlockListener {
+import com.nisovin.magicspells.util.MagicListener;
+
+public class MagicBlockListener extends BlockListener implements MagicListener {
+	
+	private boolean disabled = false;
 	
 	public MagicBlockListener(MagicSpells plugin) {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.Normal, plugin);
@@ -15,6 +19,8 @@ public class MagicBlockListener extends BlockListener {
 	}
 	
 	public void onBlockBreak(BlockBreakEvent event) {
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.BLOCK_BREAK);
 		if (spells != null) {
 			for (Spell spell : spells) {
@@ -24,12 +30,19 @@ public class MagicBlockListener extends BlockListener {
 	}
 	
 	public void onBlockPlace(BlockPlaceEvent event) {
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.BLOCK_PLACE);
 		if (spells != null) {
 			for (Spell spell : spells) {
 				spell.onBlockPlace(event);
 			}
 		}
+	}
+
+	@Override
+	public void disable() {
+		disabled = true;
 	}	
 	
 }

@@ -10,8 +10,11 @@ import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellListener;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.util.MagicListener;
 
-public class MagicSpellListener extends SpellListener {
+public class MagicSpellListener extends SpellListener implements MagicListener {
+	
+	private boolean disabled = false;
 	
 	public MagicSpellListener(MagicSpells plugin) {
 		plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, this, Event.Priority.Normal, plugin);
@@ -19,6 +22,8 @@ public class MagicSpellListener extends SpellListener {
 
 	@Override
 	public void onSpellTarget(SpellTargetEvent event) {
+		if (disabled) return;
+		
 		// check if target has notarget permission
 		LivingEntity target = event.getTarget();
 		if (target instanceof Player) {
@@ -37,12 +42,19 @@ public class MagicSpellListener extends SpellListener {
 
 	@Override
 	public void onSpellCast(SpellCastEvent event) {	
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.customListeners.get(MagicEventType.SPELL_CAST);
 		if (spells != null) {
 			for (Spell spell : spells) {
 				spell.onSpellCast(event);
 			}
 		}
+	}
+
+	@Override
+	public void disable() {
+		disabled = true;
 	}	
 	
 }

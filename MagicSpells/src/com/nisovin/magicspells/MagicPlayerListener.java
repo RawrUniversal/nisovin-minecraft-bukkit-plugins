@@ -21,8 +21,12 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class MagicPlayerListener extends PlayerListener {
+import com.nisovin.magicspells.util.MagicListener;
 
+public class MagicPlayerListener extends PlayerListener implements MagicListener {
+
+	private boolean disabled = false;
+	
 	private MagicSpells plugin;
 	
 	private HashSet<Player> noCast = new HashSet<Player>();
@@ -49,6 +53,8 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (disabled) return;
+		
 		// set up spell book
 		Spellbook spellbook = new Spellbook(event.getPlayer(), plugin);
 		MagicSpells.spellbooks.put(event.getPlayer().getName(), spellbook);
@@ -68,6 +74,8 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		if (disabled) return;
+		
 		MagicSpells.spellbooks.remove(event.getPlayer().getName());
 		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_QUIT);
@@ -80,6 +88,8 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (disabled) return;
+		
 		// first check if player is interacting with a special block
 		boolean noInteract = false;
 		if (event.hasBlock()) {
@@ -165,6 +175,8 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
+		if (disabled) return;
+		
 		Player p = event.getPlayer();
 		if (noCast.contains(p)) {
 			noCast.remove(p);
@@ -199,6 +211,8 @@ public class MagicPlayerListener extends PlayerListener {
 
 	@Override
 	public void onItemHeldChange(PlayerItemHeldEvent event) {
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_ITEM_HELD);
 		if (spells != null) {
 			for (Spell spell : spells) {
@@ -209,6 +223,8 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerMove(PlayerMoveEvent event) {
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_MOVE);
 		if (spells != null) {
 			for (Spell spell : spells) {
@@ -219,6 +235,8 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_TELEPORT);
 		if (spells != null) {
 			for (Spell spell : spells) {
@@ -229,6 +247,8 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_DROP_ITEM);
 		if (spells != null) {
 			for (Spell spell : spells) {
@@ -239,6 +259,8 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_TOGGLE_SNEAK);
 		if (spells != null) {
 			for (Spell spell : spells) {
@@ -249,6 +271,8 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_TOGGLE_SPRINT);
 		if (spells != null) {
 			for (Spell spell : spells) {
@@ -259,12 +283,19 @@ public class MagicPlayerListener extends PlayerListener {
 	
 	@Override
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		if (disabled) return;
+		
 		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_COMMAND_PREPROCESS);
 		if (spells != null) {
 			for (Spell spell : spells) {
 				spell.onPlayerCommandPreprocess(event);
 			}
 		}
+	}
+
+	@Override
+	public void disable() {
+		disabled = true;
 	}
 	
 	

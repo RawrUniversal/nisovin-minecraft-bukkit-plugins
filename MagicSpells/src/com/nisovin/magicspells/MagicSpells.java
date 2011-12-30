@@ -26,7 +26,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -42,6 +41,7 @@ import com.nisovin.magicspells.spells.channeled.*;
 import com.nisovin.magicspells.spells.command.*;
 import com.nisovin.magicspells.spells.instant.*;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.MagicListener;
 
 public class MagicSpells extends JavaPlugin {
 
@@ -89,7 +89,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static String strNoMagicZone;
 	public static String strConsoleName;
 	
-	protected HashSet<Listener> listenerObjects;
+	protected HashSet<MagicListener> listenerObjects;
 	
 	protected static HashMap<String,Spell> spells; // map internal names to spells
 	protected static HashMap<String,Spell> spellNames; // map configured names to spells
@@ -107,7 +107,7 @@ public class MagicSpells extends JavaPlugin {
 		load();
 		
 		// load listeners
-		listenerObjects = new HashSet<Listener>();
+		listenerObjects = new HashSet<MagicListener>();
 		listenerObjects.add(new MagicPlayerListener(this));
 		listenerObjects.add(new MagicEntityListener(this));
 		listenerObjects.add(new MagicBlockListener(this));
@@ -647,7 +647,7 @@ public class MagicSpells extends JavaPlugin {
 				}
 			} else if (sender.isOp() && args[0].equals("reload")) {
 				if (args.length == 1) {
-					onDisable();
+					unload();
 					load();
 					sender.sendMessage(textColor + "MagicSpells config reloaded.");
 				} else {
@@ -870,8 +870,7 @@ public class MagicSpells extends JavaPlugin {
         }
 	}
 	
-	@Override
-	public void onDisable() {
+	public void unload() {
 		for (Spell spell : spells.values()) {
 			spell.turnOff();
 		}
@@ -885,12 +884,21 @@ public class MagicSpells extends JavaPlugin {
 		listeners = null;
 		customListeners.clear();
 		customListeners = null;
-		//listenerObjects.clear();
-		//listenerObjects = null;
 		if (mana != null) {
 			mana.turnOff();
 			mana = null;
+		}		
+	}
+	
+	@Override
+	public void onDisable() {
+		for (MagicListener listener : listenerObjects) {
+			listener.disable();
 		}
+		listenerObjects.clear();
+		listenerObjects = null;
+		
+		unload();
 	}
 	
 }
