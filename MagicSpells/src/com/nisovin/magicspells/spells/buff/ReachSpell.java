@@ -99,13 +99,15 @@ public class ReachSpell extends BuffSpell {
 				} else if ((action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && targetBlock.getType() != Material.AIR) {
 					// place
 					
-					// check for disallowed
-					if (disallowedPlaceBlocks != null && disallowedPlaceBlocks.contains(targetBlock.getTypeId())) {
-						return;
-					}
 					// check for block in hand
 					ItemStack inHand = player.getItemInHand();
 					if (inHand != null && inHand.getType() != Material.AIR && inHand.getType().isBlock()) {
+						
+						// check for disallowed
+						if (disallowedPlaceBlocks != null && disallowedPlaceBlocks.contains(inHand.getTypeId())) {
+							return;
+						}
+						
 						BlockState prevState = airBlock.getState();
 						byte data = 0;
 						if (inHand.getData() != null) {
