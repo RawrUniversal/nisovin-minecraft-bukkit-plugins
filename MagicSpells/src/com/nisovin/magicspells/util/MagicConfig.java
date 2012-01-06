@@ -101,9 +101,9 @@ public class MagicConfig {
 	}
 	
 	public Set<String> getKeys(String path) {
-		if (altConfig != null && altConfig.contains(path)) {
+		if (altConfig != null && altConfig.contains(path) && altConfig.isConfigurationSection(path)) {
 			return altConfig.getConfigurationSection(path).getKeys(false);
-		} else if (mainConfig.contains(path)) {
+		} else if (mainConfig.contains(path) && mainConfig.isConfigurationSection(path)) {
 			return mainConfig.getConfigurationSection(path).getKeys(false);
 		} else {
 			return null;

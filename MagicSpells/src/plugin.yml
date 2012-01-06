@@ -1,6 +1,6 @@
 name: MagicSpells
 main: com.nisovin.magicspells.MagicSpells
-version: 2.1
+version: 2.1.1
 author: nisovin
 softdepend: [BookWorm,WorldGuard]
 commands:
@@ -11,7 +11,7 @@ commands:
     magicspellmana:
         description: Show mana bar
         usage: /<command>
-        aliases: [mana,m]
+        aliases: [mana]
 permissions:
     magicspells.noreagents:
         description: Cast without needing reagents
