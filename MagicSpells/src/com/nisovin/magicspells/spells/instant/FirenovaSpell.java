@@ -90,7 +90,7 @@ public class FirenovaSpell extends InstantSpell {
 			// remove old fire blocks
 			for (Block block : fireBlocks) {
 				if (block.getType() == Material.FIRE) {
-					block.setType(Material.AIR);
+					block.setTypeIdAndData(0, (byte)0, false);
 				}
 			}
 			fireBlocks.clear();
