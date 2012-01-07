@@ -362,6 +362,7 @@ spells:
         cooldown: 10
         range: 5
         tick-speed: 10
+        burn-tall-grass: true
         check-plugins: true
         cost:
             - 331 2

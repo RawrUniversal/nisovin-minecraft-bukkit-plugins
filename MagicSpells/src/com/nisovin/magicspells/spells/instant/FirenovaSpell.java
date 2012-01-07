@@ -19,6 +19,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class FirenovaSpell extends InstantSpell {
 
 	private int tickSpeed;
+	private boolean burnTallGrass;
 	private boolean checkPlugins;
 	
 	private HashSet<Player> fireImmunity;
@@ -28,6 +29,7 @@ public class FirenovaSpell extends InstantSpell {
 		addListener(Event.Type.ENTITY_DAMAGE);
 		
 		tickSpeed = config.getInt("spells." + spellName + ".tick-speed", 5);
+		burnTallGrass = getConfigBoolean("burn-tall-grass", true);
 		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
 		
 		fireImmunity = new HashSet<Player>();
@@ -105,14 +107,14 @@ public class FirenovaSpell extends InstantSpell {
 					for (int z = bz - i; z <= bz + i; z++) {
 						if (Math.abs(x-bx) == i || Math.abs(z-bz) == i) {
 							Block b = center.getWorld().getBlockAt(x,y,z);
-							if (b.getType() == Material.AIR) {
+							if (b.getType() == Material.AIR || (burnTallGrass && b.getType() == Material.LONG_GRASS)) {
 								Block under = b.getRelative(BlockFace.DOWN);
-								if (under.getType() == Material.AIR) {
+								if (under.getType() == Material.AIR || (burnTallGrass && under.getType() == Material.LONG_GRASS)) {
 									b = under;
 								}
 								b.setTypeIdAndData(Material.FIRE.getId(), (byte)15, false);
 								fireBlocks.add(b);
-							} else if (b.getRelative(BlockFace.UP).getType() == Material.AIR) {
+							} else if (b.getRelative(BlockFace.UP).getType() == Material.AIR || (burnTallGrass && b.getRelative(BlockFace.UP).getType() == Material.LONG_GRASS)) {
 								b = b.getRelative(BlockFace.UP);
 								b.setTypeIdAndData(Material.FIRE.getId(), (byte)15, false);
 								fireBlocks.add(b);
