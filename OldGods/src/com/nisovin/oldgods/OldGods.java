@@ -170,9 +170,13 @@ public class OldGods extends JavaPlugin {
 			God god = null;
 			String godName = "a god";
 			for (int i = 0; i < gods.length; i++) {
-				if ((args[0].equalsIgnoreCase(gods[i].name()) || args[0].equalsIgnoreCase(godNames[i])) && player.hasPermission("oldgods.pray." + gods[i].name().toLowerCase())) {
-					god = gods[i];
-					godName = godNames[i];
+				if (args[0].equalsIgnoreCase(gods[i].name()) || args[0].equalsIgnoreCase(godNames[i])) {
+					if (player.hasPermission("oldgods.pray." + gods[i].name().toLowerCase())) {
+						god = gods[i];
+						godName = godNames[i];
+					} else {
+						player.sendMessage("You cannot pray to " + godNames[i] + ", you must go to an altar.");
+					}
 					break;
 				}
 			}
