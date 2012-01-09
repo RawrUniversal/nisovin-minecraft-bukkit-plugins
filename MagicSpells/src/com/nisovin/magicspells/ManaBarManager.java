@@ -103,7 +103,7 @@ public class ManaBarManager {
 			for (String p: manaBars.keySet()) {
 				ManaBar bar = manaBars.get(p);
 				boolean regenerated = bar.regenerate(MagicSpells.manaRegenPercent);
-				if (regenerated && (MagicSpells.showManaOnRegen || MagicSpells.showManaOnWoodTool)) {
+				if (regenerated) {
 					Player player = Bukkit.getServer().getPlayer(p);
 					if (player != null && player.isOnline()) {
 						if (MagicSpells.showManaOnRegen) {
@@ -113,6 +113,7 @@ public class ManaBarManager {
 							bar.showOnTool(player);
 						}
 					}
+					bar.callManaChangeEvent(player);
 				}
 			}
 		}
