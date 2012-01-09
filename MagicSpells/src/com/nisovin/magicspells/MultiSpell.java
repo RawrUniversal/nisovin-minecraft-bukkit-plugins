@@ -29,7 +29,7 @@ public final class MultiSpell extends Spell {
 		this.castItem = new CastItem(config.getString("multispells." + spellName + ".cast-item", "280"));
 		this.broadcastRange = config.getInt("multispells." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 
-		List<String> costList = config.getStringList("spells." + spellName + ".cost", null);
+		List<String> costList = config.getStringList("multispells." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
 			cost = new ItemStack [costList.size()];
 			String[] data, subdata;
