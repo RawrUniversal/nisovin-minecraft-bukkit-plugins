@@ -810,6 +810,15 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	/**
+	 * Writes an error message to the console.
+	 * @param level the error level
+	 * @param message the error message
+	 */
+	public static void error(Level level, String message) {
+		plugin.getServer().getLogger().log(level, "MagicSpells: " + message);
+	}
+	
+	/**
 	 * Teaches a player a spell (adds it to their spellbook)
 	 * @param player the player to teach
 	 * @param spellName the spell name, either the in-game name or the internal name

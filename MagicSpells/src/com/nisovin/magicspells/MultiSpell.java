@@ -3,6 +3,7 @@ package com.nisovin.magicspells;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -27,32 +28,37 @@ public final class MultiSpell extends Spell {
 		this.description = config.getString("multispells." + spellName + ".description", "");
 		this.castItem = new CastItem(config.getString("multispells." + spellName + ".cast-item", "280"));
 		this.broadcastRange = config.getInt("multispells." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
-		
-		List<String> costList = config.getStringList("multispells." + spellName + ".cost", null);
+
+		List<String> costList = config.getStringList("spells." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
 			cost = new ItemStack [costList.size()];
 			String[] data, subdata;
 			for (int i = 0; i < costList.size(); i++) {
-				if (costList.get(i).contains(" ")) {
-					data = costList.get(i).split(" ");
-					if (data[0].equalsIgnoreCase("health")) {
-						healthCost = Integer.parseInt(data[1]);
-					} else if (data[0].equalsIgnoreCase("mana")) {
-						manaCost = Integer.parseInt(data[1]);
-					} else if (data[0].equalsIgnoreCase("hunger")) {
-						hungerCost = Integer.parseInt(data[1]);
-					} else if (data[0].equalsIgnoreCase("experience")) {
-						experienceCost = Integer.parseInt(data[1]);
-					} else if (data[0].equalsIgnoreCase("levels")) {
-						levelsCost = Integer.parseInt(data[1]);
-					} else if (data[0].contains(":")) {
-						subdata = data[0].split(":");
-						cost[i] = new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1]));
-					} else {
-						cost[i] = new ItemStack(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
-					}
+				String costVal = costList.get(i);
+				
+				// validate cost data
+				if (!costVal.matches("^([1-9][0-9]*(:[1-9][0-9]*)?|mana|health|hunger|experience|levels) [1-9][0-9]*$")) {
+					MagicSpells.error(Level.WARNING, "Failed to process cost value for " + spellName + " spell: " + costVal);
+					continue;
+				}
+				
+				// parse cost data
+				data = costVal.split(" ");
+				if (data[0].equalsIgnoreCase("health")) {
+					healthCost = Integer.parseInt(data[1]);
+				} else if (data[0].equalsIgnoreCase("mana")) {
+					manaCost = Integer.parseInt(data[1]);
+				} else if (data[0].equalsIgnoreCase("hunger")) {
+					hungerCost = Integer.parseInt(data[1]);
+				} else if (data[0].equalsIgnoreCase("experience")) {
+					experienceCost = Integer.parseInt(data[1]);
+				} else if (data[0].equalsIgnoreCase("levels")) {
+					levelsCost = Integer.parseInt(data[1]);
+				} else if (data[0].contains(":")) {
+					subdata = data[0].split(":");
+					cost[i] = new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1]));
 				} else {
-					cost[i] = new ItemStack(Integer.parseInt(costList.get(i)));
+					cost[i] = new ItemStack(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
 				}
 			}
 		} else {
