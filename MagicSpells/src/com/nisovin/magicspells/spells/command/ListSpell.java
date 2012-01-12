@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.spells.command;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -17,6 +18,7 @@ public class ListSpell extends CommandSpell {
 	private int lineLength = 60;
 	private boolean onlyShowCastableSpells;
 	private boolean reloadGrantedSpells;
+	private List<String> spellsToHide;
 	private String strNoSpells;
 	private String strPrefix;
 
@@ -24,9 +26,10 @@ public class ListSpell extends CommandSpell {
 		super(config, spellName);
 		
 		onlyShowCastableSpells = getConfigBoolean("only-show-castable-spells", false);
-		reloadGrantedSpells = config.getBoolean("spells." + spellName + ".reload-granted-spells", false);
-		strNoSpells = config.getString("spells." + spellName + ".str-no-spells", "You do not know any spells.");
-		strPrefix = config.getString("spells." + spellName + ".str-prefix", "Known spells:");
+		reloadGrantedSpells = getConfigBoolean("reload-granted-spells", false);
+		spellsToHide = getConfigStringList("spells-to-hide", null);
+		strNoSpells = getConfigString("str-no-spells", "You do not know any spells.");
+		strPrefix = getConfigString("str-prefix", "Known spells:");
 	}
 
 	@Override
@@ -50,7 +53,7 @@ public class ListSpell extends CommandSpell {
 			} else {
 				String s = "";
 				for (Spell spell : spellbook.getSpells()) {
-					if (!onlyShowCastableSpells || spellbook.canCast(spell)) {
+					if ((!onlyShowCastableSpells || spellbook.canCast(spell)) && !(spellsToHide != null && spellsToHide.contains(spell.getInternalName()))) {
 						if (s.equals("")) {
 							s = spell.getName();
 						} else {

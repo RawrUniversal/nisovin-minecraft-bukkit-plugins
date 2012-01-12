@@ -51,6 +51,7 @@ spells:
         description: List all the spells you know.
         only-show-castable-spells: false
         reload-granted-spells: false
+        spells-to-hide: []
         str-prefix: "Known spells:"
         str-no-spells: You do not know any spells.
     help:
