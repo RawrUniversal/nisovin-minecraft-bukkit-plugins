@@ -72,18 +72,23 @@ public abstract class Spell implements Comparable<Spell> {
 		this.config = config;
 		
 		this.internalName = spellName;
-		this.name = config.getString("spells." + spellName + ".name", spellName);
-		List<String> temp = config.getStringList("spells." + spellName + ".aliases", null);
+		loadConfigData(config, spellName, "spells");
+		
+	}
+	
+	protected void loadConfigData(MagicConfig config, String spellName, String section) {
+		this.name = config.getString(section + "." + spellName + ".name", spellName);
+		List<String> temp = config.getStringList(section + "." + spellName + ".aliases", null);
 		if (temp != null) {
 			aliases = new String[temp.size()];
 			aliases = temp.toArray(aliases);
 		}
 		
-		this.description = config.getString("spells." + spellName + ".description", "");
-		this.castItem = new CastItem(config.getString("spells." + spellName + ".cast-item", "280"));
-		this.broadcastRange = config.getInt("spells." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
+		this.description = config.getString(section + "." + spellName + ".description", "");
+		this.castItem = new CastItem(config.getString(section + "." + spellName + ".cast-item", "280"));
+		this.broadcastRange = config.getInt(section + "." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 		
-		List<String> costList = config.getStringList("spells." + spellName + ".cost", null);
+		List<String> costList = config.getStringList(section + "." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
 			cost = new ItemStack [costList.size()];
 			String[] data, subdata;
@@ -119,8 +124,8 @@ public abstract class Spell implements Comparable<Spell> {
 			cost = null;
 		}
 		
-		this.cooldown = config.getInt("spells." + spellName + ".cooldown", 0);
-		List<String> cooldowns = config.getStringList("spells." + spellName + ".shared-cooldowns", null);
+		this.cooldown = config.getInt(section + "." + spellName + ".cooldown", 0);
+		List<String> cooldowns = config.getStringList(section + "." + spellName + ".shared-cooldowns", null);
 		if (cooldowns != null) {
 			this.sharedCooldowns = new HashMap<Spell,Integer>();
 			for (String s : cooldowns) {
@@ -132,18 +137,18 @@ public abstract class Spell implements Comparable<Spell> {
 				}
 			}
 		}
-		this.ignoreGlobalCooldown = config.getBoolean("spells." + spellName + ".ignore-global-cooldown", false);
-		
-		this.strCost = config.getString("spells." + spellName + ".str-cost", null);
-		this.strCastSelf = config.getString("spells." + spellName + ".str-cast-self", null);
-		this.strCastOthers = config.getString("spells." + spellName + ".str-cast-others", null);
-		this.strOnCooldown = config.getString("spells." + spellName + ".str-on-cooldown", MagicSpells.strOnCooldown);
-		this.strMissingReagents = config.getString("spells." + spellName + ".str-missing-reagents", MagicSpells.strMissingReagents);
-		this.strCantCast = config.getString("spells." + spellName + ".str-cant-cast", MagicSpells.strCantCast);
-		
+		this.ignoreGlobalCooldown = config.getBoolean(section + "." + spellName + ".ignore-global-cooldown", false);
 		if (cooldown > 0) {
 			lastCast = new HashMap<String, Long>();
 		}
+		
+		this.strCost = config.getString(section + "." + spellName + ".str-cost", null);
+		this.strCastSelf = config.getString(section + "." + spellName + ".str-cast-self", null);
+		this.strCastOthers = config.getString(section + "." + spellName + ".str-cast-others", null);
+		this.strOnCooldown = config.getString(section + "." + spellName + ".str-on-cooldown", MagicSpells.strOnCooldown);
+		this.strMissingReagents = config.getString(section + "." + spellName + ".str-missing-reagents", MagicSpells.strMissingReagents);
+		this.strCantCast = config.getString(section + "." + spellName + ".str-cant-cast", MagicSpells.strCantCast);
+			
 	}
 	
 	/**
@@ -222,6 +227,8 @@ public abstract class Spell implements Comparable<Spell> {
 		} else {
 			state = SpellCastState.NORMAL;
 		}
+		
+		MagicSpells.debug("    Spell cast state: " + state);
 		
 		// call events
 		float power = 1.0F;
