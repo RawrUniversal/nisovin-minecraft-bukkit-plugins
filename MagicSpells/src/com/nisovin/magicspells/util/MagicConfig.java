@@ -82,22 +82,28 @@ public class MagicConfig {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Integer> getIntList(String path, List<Integer> def) {
 		if (altConfig != null && altConfig.contains(path)) {
-			return altConfig.getList(path);
-		} else {
-			return mainConfig.getList(path, def);
+			return altConfig.getIntegerList(path);
+		} else if (mainConfig.contains(path)) {
+			List<Integer> l = mainConfig.getIntegerList(path);
+			if (l != null) {
+				return l;
+			}
 		}
+		return def;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<String> getStringList(String path, List<String> def) {
 		if (altConfig != null && altConfig.contains(path)) {
-			return altConfig.getList(path);
-		} else {
-			return mainConfig.getList(path, def);
+			return altConfig.getStringList(path);
+		} else if (mainConfig.contains(path)) {
+			List<String> l = mainConfig.getStringList(path);
+			if (l != null) {
+				return l;
+			}
 		}
+		return def;
 	}
 	
 	public Set<String> getKeys(String path) {
