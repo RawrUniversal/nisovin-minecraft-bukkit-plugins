@@ -253,6 +253,9 @@ public class Spellbook {
 	}
 	
 	public void removeSpell(Spell spell) {
+		if (spell instanceof BuffSpell) {
+			((BuffSpell)spell).turnOff(player);
+		}
 		CastItem item = spell.getCastItem();
 		if (customBindings.containsKey(spell)) {
 			item = customBindings.remove(spell);
@@ -271,6 +274,11 @@ public class Spellbook {
 	}
 	
 	public void removeAllSpells() {
+		for (Spell spell : allSpells) {
+			if (spell instanceof BuffSpell) {
+				((BuffSpell)spell).turnOff(player);
+			}
+		}
 		allSpells.clear();
 		itemSpells.clear();
 		activeSpells.clear();
