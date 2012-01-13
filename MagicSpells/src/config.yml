@@ -884,6 +884,7 @@ spells:
         cast-item: 317
         range: 4
         transparent-type: 1
+        unobfuscate: false
         cooldown: 60
         duration: 30
         cost: 

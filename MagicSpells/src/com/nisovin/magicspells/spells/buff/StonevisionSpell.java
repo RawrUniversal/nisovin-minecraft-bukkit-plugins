@@ -2,12 +2,18 @@ package com.nisovin.magicspells.spells.buff;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import net.minecraft.server.ChunkCoordIntPair;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -19,6 +25,7 @@ public class StonevisionSpell extends BuffSpell {
 	
 	private int range;
 	private int transparentType;
+	private boolean unobfuscate;
 	
 	private HashMap<String,TransparentBlockSet> seers;
 	private boolean listening;
@@ -28,6 +35,7 @@ public class StonevisionSpell extends BuffSpell {
 		
 		range = config.getInt("spells." + spellName + ".range", 4);
 		transparentType = config.getInt("spells." + spellName + ".transparent-type", Material.STONE.getId());
+		unobfuscate = getConfigBoolean("unobfuscate", false);
 		
 		seers = new HashMap<String, TransparentBlockSet>();
 		listening = false;
@@ -91,6 +99,7 @@ public class StonevisionSpell extends BuffSpell {
 		int range;
 		int type;
 		List<Block> blocks;
+		Set<ChunkCoordIntPair> chunks;
 		
 		public TransparentBlockSet(Player player, int range, int type) {
 			this.player = player;
@@ -99,6 +108,9 @@ public class StonevisionSpell extends BuffSpell {
 			this.type = type;
 			
 			blocks = new ArrayList<Block>();
+			if (unobfuscate) {
+				chunks = new HashSet<ChunkCoordIntPair>();
+			}
 			
 			setTransparency();
 		}
@@ -111,13 +123,39 @@ public class StonevisionSpell extends BuffSpell {
 			int py = center.getY();
 			int pz = center.getZ();
 			Block block;
-			for (int x = px - range; x <= px + range; x++) {
-				for (int y = py - range; y <= py + range; y++) {
-					for (int z = pz - range; z <= pz + range; z++) {
-						block = center.getWorld().getBlockAt(x,y,z);
-						if (block.getType() == Material.getMaterial(type)) {
-							player.sendBlockChange(block.getLocation(), Material.GLASS, (byte)0);
-							newBlocks.add(block);
+			if (!unobfuscate) {
+				// handle normally
+				for (int x = px - range; x <= px + range; x++) {
+					for (int y = py - range; y <= py + range; y++) {
+						for (int z = pz - range; z <= pz + range; z++) {
+							block = center.getWorld().getBlockAt(x,y,z);
+							if (block.getType() == Material.getMaterial(type)) {
+								player.sendBlockChange(block.getLocation(), Material.GLASS, (byte)0);
+								newBlocks.add(block);
+							}
+						}
+					}
+				}
+			} else {
+				// unobfuscate everything
+				int dx, dy, dz;
+				for (int x = px - range - 1; x <= px + range + 1; x++) {
+					for (int y = py - range - 1; y <= py + range + 1; y++) {
+						for (int z = pz - range - 1; z <= pz + range + 1; z++) {
+							dx = Math.abs(x - px);
+							dy = Math.abs(y - py);
+							dz = Math.abs(z - pz);
+							block = center.getWorld().getBlockAt(x,y,z);
+							if (block.getType() == Material.getMaterial(type) && dx <= range && dy <= range && dz <= range) {
+								player.sendBlockChange(block.getLocation(), Material.GLASS, (byte)0);
+								newBlocks.add(block);
+							} else {
+								player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
+							}
+							
+							// save chunk for resending after spell ends
+							Chunk c = block.getChunk();
+							chunks.add(new ChunkCoordIntPair(c.getX(), c.getZ()));
 						}
 					}
 				}
@@ -132,7 +170,6 @@ public class StonevisionSpell extends BuffSpell {
 			
 			// update block set
 			blocks = newBlocks;
-			
 		}
 		
 		public boolean moveTransparency() {
@@ -149,11 +186,19 @@ public class StonevisionSpell extends BuffSpell {
 			return false;
 		}
 		
+		@SuppressWarnings("unchecked")
 		public void removeTransparency() {
 			for (Block b : blocks) {
 				player.sendBlockChange(b.getLocation(), b.getType(), b.getData());
 			}
 			blocks = null;
+			
+			// queue up chunks for resending
+			if (unobfuscate) {
+				for (ChunkCoordIntPair chunk : chunks) {
+					((CraftPlayer)player).getHandle().chunkCoordIntPairQueue.add(chunk);
+				}
+			}
 		}
 	}
 
