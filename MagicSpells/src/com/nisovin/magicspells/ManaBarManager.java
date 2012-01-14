@@ -1,6 +1,5 @@
 package com.nisovin.magicspells;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -12,17 +11,18 @@ import org.bukkit.entity.Player;
 public class ManaBarManager {
 
 	private Map<String,ManaBar> manaBars;
-	//private int taskId;
 	private Timer timer;
 	
 	public ManaBarManager() {
-		manaBars = Collections.synchronizedMap(new HashMap<String,ManaBar>());
+		manaBars = new HashMap<String,ManaBar>();
 		startRegenerator();
 	}
 	
 	public void createManaBar(Player player) {
-		if (!manaBars.containsKey(player.getName())) {
-			manaBars.put(player.getName(), new ManaBar(MagicSpells.maxMana));
+		synchronized (manaBars) {
+			if (!manaBars.containsKey(player.getName())) {
+				manaBars.put(player.getName(), new ManaBar(MagicSpells.maxMana));
+			}
 		}
 	}
 	
@@ -93,27 +93,31 @@ public class ManaBarManager {
 	}
 	
 	public void turnOff() {
-		stopRegenerator();
-		manaBars.clear();
+		synchronized (manaBars) {
+			stopRegenerator();
+			manaBars.clear();
+		}
 		manaBars = null;
 	}
 	
 	private class ManaBarRegenerator extends TimerTask {
 		public void run() {
-			for (String p: manaBars.keySet()) {
-				ManaBar bar = manaBars.get(p);
-				boolean regenerated = bar.regenerate(MagicSpells.manaRegenPercent);
-				if (regenerated) {
-					Player player = Bukkit.getServer().getPlayer(p);
-					if (player != null && player.isOnline()) {
-						if (MagicSpells.showManaOnRegen) {
-							bar.showInChat(player);
+			synchronized (manaBars) {
+				for (String p: manaBars.keySet()) {
+					ManaBar bar = manaBars.get(p);
+					boolean regenerated = bar.regenerate(MagicSpells.manaRegenPercent);
+					if (regenerated) {
+						Player player = Bukkit.getServer().getPlayer(p);
+						if (player != null && player.isOnline()) {
+							if (MagicSpells.showManaOnRegen) {
+								bar.showInChat(player);
+							}
+							if (MagicSpells.showManaOnWoodTool) {
+								bar.showOnTool(player);
+							}
 						}
-						if (MagicSpells.showManaOnWoodTool) {
-							bar.showOnTool(player);
-						}
+						bar.callManaChangeEvent(player);
 					}
-					bar.callManaChangeEvent(player);
 				}
 			}
 		}
