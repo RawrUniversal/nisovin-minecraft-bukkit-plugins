@@ -113,28 +113,31 @@ public abstract class InstantSpell extends Spell {
 					if ((bx-.75 <= ex && ex <= bx+1.75) && (bz-.75 <= ez && ez <= bz+1.75) && (by-1 <= ey && ey <= by+2.5)) {
 						// entity is close enough, set target and stop
 						target = e;
-						break;
+						
+						// check for anti-magic-zone
+						if (target != null && MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.willFizzle(target.getLocation(), this)) {
+							target = null;
+							continue;
+						}
+						
+						// call event listeners
+						if (target != null) {
+							SpellTargetEvent event = new SpellTargetEvent(this, player, target);
+							Bukkit.getServer().getPluginManager().callEvent(event);
+							if (event.isCancelled()) {
+								target = null;
+								continue;
+							} else {
+								target = event.getTarget();
+							}
+						}
+						
+						return target;
 					}
 				}
 			}
 		}
 		
-		// check for anti-magic-zone
-		if (target != null && MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.willFizzle(target.getLocation(), this)) {
-			target = null;
-		}
-		
-		// call event listeners
-		if (target != null) {
-			SpellTargetEvent event = new SpellTargetEvent(this, player, target);
-			Bukkit.getServer().getPluginManager().callEvent(event);
-			if (event.isCancelled()) {
-				target = null;
-			} else {
-				target = event.getTarget();
-			}
-		}
-		
-		return target;
+		return null;
 	}
 }
