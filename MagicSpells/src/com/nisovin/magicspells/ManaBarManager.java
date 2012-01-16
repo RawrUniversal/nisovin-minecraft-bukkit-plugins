@@ -2,27 +2,52 @@ package com.nisovin.magicspells;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class ManaBarManager {
 
-	private Map<String,ManaBar> manaBars;
-	private Timer timer;
+	protected static String manaBarPrefix;
+	protected static int manaBarSize;
+	protected static ChatColor manaBarColorFull;
+	protected static ChatColor manaBarColorEmpty;
+	protected static int manaBarToolSlot;
 	
-	public ManaBarManager() {
+	private int maxMana;
+	private int manaRegenTickRate;
+	private int manaRegenAmount;
+	private boolean showManaOnUse;
+	private boolean showManaOnRegen;
+	private boolean showManaOnWoodTool;	
+	
+	private Map<String,ManaBar> manaBars;
+	private int taskId = -1;
+	
+	public ManaBarManager(MagicConfig config) {
+		manaBarPrefix = config.getString("general.mana.mana-bar-prefix", "Mana:");
+		manaBarSize = config.getInt("general.mana.mana-bar-size", 35);
+		manaBarColorFull = ChatColor.getByCode(config.getInt("general.mana.color-full", ChatColor.GREEN.getCode()));
+		manaBarColorEmpty = ChatColor.getByCode(config.getInt("general.mana.color-empty", ChatColor.BLACK.getCode()));
+		manaBarToolSlot = config.getInt("general.mana.tool-slot", 8);
+		
+		maxMana = config.getInt("general.mana.max-mana", 100);
+		manaRegenTickRate = config.getInt("general.mana.regen-tick-rate", 100);
+		manaRegenAmount = config.getInt("general.mana.regen-amount", 5);
+		showManaOnUse = config.getBoolean("general.mana.show-mana-on-use", false);
+		showManaOnRegen = config.getBoolean("general.mana.show-mana-on-regen", false);
+		showManaOnWoodTool = config.getBoolean("general.mana.show-mana-on-wood-tool", true);
+		
 		manaBars = new HashMap<String,ManaBar>();
 		startRegenerator();
 	}
 	
 	public void createManaBar(Player player) {
-		synchronized (manaBars) {
-			if (!manaBars.containsKey(player.getName())) {
-				manaBars.put(player.getName(), new ManaBar(MagicSpells.maxMana));
-			}
+		if (!manaBars.containsKey(player.getName())) {
+			manaBars.put(player.getName(), new ManaBar(maxMana));
 		}
 	}
 	
@@ -65,10 +90,10 @@ public class ManaBarManager {
 	public void showMana(Player player, boolean forceShowInChat) {
 		ManaBar bar = manaBars.get(player.getName());
 		if (bar != null) {
-			if (forceShowInChat || MagicSpells.showManaOnUse) {
+			if (forceShowInChat || showManaOnUse) {
 				bar.showInChat(player);
 			}
-			if (MagicSpells.showManaOnWoodTool) {
+			if (showManaOnWoodTool) {
 				bar.showOnTool(player);
 			}
 			// send event
@@ -77,47 +102,39 @@ public class ManaBarManager {
 	}
 	
 	public void startRegenerator() {
-		if (timer != null) {
-			stopRegenerator();
-		}
-		timer = new Timer();
-		TimerTask task = new ManaBarRegenerator();
-		timer.schedule(task, 0, MagicSpells.manaRegenTickRate);
+		stopRegenerator();
+		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, new ManaBarRegenerator(), manaRegenTickRate, manaRegenTickRate);
 	}
 	
 	public void stopRegenerator() {
-		if (timer != null) {
-			timer.cancel();
-			timer = null;
+		if (taskId != -1) {
+			Bukkit.getScheduler().cancelTask(taskId);
+			taskId = -1;
 		}
 	}
 	
 	public void turnOff() {
-		synchronized (manaBars) {
-			stopRegenerator();
-			manaBars.clear();
-		}
+		stopRegenerator();
+		manaBars.clear();
 		manaBars = null;
 	}
 	
-	private class ManaBarRegenerator extends TimerTask {
+	private class ManaBarRegenerator implements Runnable {
 		public void run() {
-			synchronized (manaBars) {
-				for (String p: manaBars.keySet()) {
-					ManaBar bar = manaBars.get(p);
-					boolean regenerated = bar.regenerate(MagicSpells.manaRegenPercent);
-					if (regenerated) {
-						Player player = Bukkit.getServer().getPlayer(p);
-						if (player != null && player.isOnline()) {
-							if (MagicSpells.showManaOnRegen) {
-								bar.showInChat(player);
-							}
-							if (MagicSpells.showManaOnWoodTool) {
-								bar.showOnTool(player);
-							}
+			for (String p: manaBars.keySet()) {
+				ManaBar bar = manaBars.get(p);
+				boolean regenerated = bar.add(manaRegenAmount);
+				if (regenerated) {
+					Player player = Bukkit.getServer().getPlayer(p);
+					if (player != null && player.isOnline()) {
+						if (showManaOnRegen) {
+							bar.showInChat(player);
 						}
-						bar.callManaChangeEvent(player);
+						if (showManaOnWoodTool) {
+							bar.showOnTool(player);
+						}
 					}
+					bar.callManaChangeEvent(player);
 				}
 			}
 		}

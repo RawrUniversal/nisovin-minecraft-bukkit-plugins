@@ -64,17 +64,6 @@ public class MagicSpells extends JavaPlugin {
 	protected static boolean castOnAnimate;
 	
 	protected static boolean enableManaBars;
-	protected static int maxMana;
-	protected static String manaBarPrefix;
-	protected static int manaBarSize;
-	protected static ChatColor manaBarColorFull;
-	protected static ChatColor manaBarColorEmpty;
-	protected static int manaRegenTickRate;
-	protected static int manaRegenPercent;
-	protected static boolean showManaOnUse;
-	protected static boolean showManaOnRegen;
-	protected static boolean showManaOnWoodTool;
-	protected static int manaBarToolSlot;
 	protected static int manaPotionCooldown;
 	protected static String strManaPotionOnCooldown;
 	protected static HashMap<ItemStack,Integer> manaPotions;
@@ -174,17 +163,6 @@ public class MagicSpells extends JavaPlugin {
 		strConsoleName = config.getString("general.console-name", "Admin");
 		
 		enableManaBars = config.getBoolean("general.mana.enable-mana-bars", true);
-		maxMana = config.getInt("general.mana.max-mana", 100);
-		manaBarPrefix = config.getString("general.mana.mana-bar-prefix", "Mana:");
-		manaBarSize = config.getInt("general.mana.mana-bar-size", 35);
-		manaBarColorFull = ChatColor.getByCode(config.getInt("general.mana.color-full", ChatColor.GREEN.getCode()));
-		manaBarColorEmpty = ChatColor.getByCode(config.getInt("general.mana.color-empty", ChatColor.BLACK.getCode()));
-		manaRegenTickRate = config.getInt("general.mana.regen-tick-seconds", 5) * 1000;
-		manaRegenPercent = config.getInt("general.mana.regen-percent", 5);
-		showManaOnUse = config.getBoolean("general.mana.show-mana-on-use", false);
-		showManaOnRegen = config.getBoolean("general.mana.show-mana-on-regen", false);
-		showManaOnWoodTool = config.getBoolean("general.mana.show-mana-on-wood-tool", true);
-		manaBarToolSlot = config.getInt("general.mana.tool-slot", 8);
 		manaPotionCooldown = config.getInt("general.mana.mana-potion-cooldown", 30);
 		strManaPotionOnCooldown = config.getString("general.mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
 		
@@ -192,7 +170,7 @@ public class MagicSpells extends JavaPlugin {
 		
 		// setup mana bar manager
 		if (enableManaBars) {
-			mana = new ManaBarManager();
+			mana = new ManaBarManager(config);
 			for (Player p : getServer().getOnlinePlayers()) {
 				mana.createManaBar(p);
 			}

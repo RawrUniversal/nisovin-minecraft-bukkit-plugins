@@ -30,8 +30,8 @@ general:
         mana-bar-size: 35
         color-full: 10
         color-empty: 0
-        regen-tick-seconds: 5
-        regen-percent: 5
+        regen-tick-rate: 100
+        regen-amount: 5
         show-mana-on-use: false
         show-mana-on-regen: false
         show-mana-on-wood-tool: true

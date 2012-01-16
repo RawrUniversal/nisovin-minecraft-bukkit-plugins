@@ -21,34 +21,39 @@ public class ManaBar {
 	}
 	
 	public boolean remove(int amount) {
-		if (amount > mana) {
-			return false;
-		} else {
-			mana -= amount;
-			return true;
-		}
+		return add(amount * -1);
 	}
 	
 	public boolean add(int amount) {
-		if (mana == maxMana) {
-			return false;
+		if (amount > 0) {
+			if (mana == maxMana) {
+				return false;
+			}
+			mana += amount;
+			if (mana > maxMana) {
+				mana = maxMana;
+			}
+			return true;
+		} else {
+			amount *= -1;
+			if (amount > mana) {
+				return false;
+			} else {
+				mana -= amount;
+				return true;
+			}
 		}
-		mana += amount;
-		if (mana > maxMana) {
-			mana = maxMana;
-		}
-		return true;
 	}
 	
 	public void showInChat(Player player) {
-		int segments = (int)(((double)mana/(double)maxMana) * MagicSpells.manaBarSize);
-		String text = MagicSpells.textColor + MagicSpells.manaBarPrefix + " {" + MagicSpells.manaBarColorFull;
+		int segments = (int)(((double)mana/(double)maxMana) * ManaBarManager.manaBarSize);
+		String text = MagicSpells.textColor + ManaBarManager.manaBarPrefix + " {" + ManaBarManager.manaBarColorFull;
 		int i = 0;
 		for (; i < segments; i++) {
 			text += "=";
 		}
-		text += MagicSpells.manaBarColorEmpty;
-		for (; i < MagicSpells.manaBarSize; i++) {
+		text += ManaBarManager.manaBarColorEmpty;
+		for (; i < ManaBarManager.manaBarSize; i++) {
 			text += "=";
 		}
 		text += MagicSpells.textColor + "} [" + mana + "/" + maxMana + "]";
@@ -56,7 +61,7 @@ public class ManaBar {
 	}
 	
 	public void showOnTool(Player player) {
-		ItemStack item = player.getInventory().getItem(MagicSpells.manaBarToolSlot);
+		ItemStack item = player.getInventory().getItem(ManaBarManager.manaBarToolSlot);
 		Material type = item.getType();
 		if (type == Material.WOOD_AXE || type == Material.WOOD_HOE || type == Material.WOOD_PICKAXE || type == Material.WOOD_SPADE || type == Material.WOOD_SWORD) {
 			int dur = 60 - (int)(((double)mana/(double)maxMana) * 60);
@@ -66,24 +71,12 @@ public class ManaBar {
 				dur = 1;
 			}
 			item.setDurability((short)dur);
-			player.getInventory().setItem(MagicSpells.manaBarToolSlot, item);
+			player.getInventory().setItem(ManaBarManager.manaBarToolSlot, item);
 		}
 	}
 	
 	public void callManaChangeEvent(Player player) {
 		ManaChangeEvent event = new ManaChangeEvent(player, mana, maxMana);
 		Bukkit.getPluginManager().callEvent(event);
-	}
-	
-	public boolean regenerate(int percent) {
-		if (mana < maxMana) {
-			mana += (maxMana*(percent/100.0));
-			if (mana > maxMana) {
-				mana = maxMana;
-			}
-			return true;
-		} else {
-			return false;
-		}
 	}
 }
