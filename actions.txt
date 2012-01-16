@@ -1,0 +1,13 @@
+[ACTION]
+
+SET 0,-5,0 50	Sets a block to a type		^SET -?[0-9]*,-?[0-9]*,-?[0-9]* [0-9]+(:[0-9]+)?$
+TP 30,50,100	Teleports player to loc		^TP -?[0-9]+,[0-9]+,-?[0-9]+$
+TPA x,y,z	Teleports players to loc	^TPA -?[0-9]+,[0-9]+,-?[0-9]+$
+CP x,y,z	Sets checkpoint			^CP -?[0-9]+,[0-9]+,-?[0-9]+$
+MOB Sk 2,5,5	Spawns a monster		^MOB (Cr|Sk|Sp|Gi|Zo|Sl|Gh|ZP|En|CS|Si|Bl|Bl,MC,ED,SG,Wo) -?[0-9]*,-?[0-9]*,-?[0-9]*$
+EXE x,y,z	Executes a sign			^EXE -?[0-9]*,-?[0-9]*,-?[0-9]*$
+EXED x,y,z d	Executes a sign after a delay	^EXE -?[0-9]*,-?[0-9]*,-?[0-9]* [0-9]+(T|S|M)?$
+SAY x,y,z	Sends text of sign to player	^SAY -?[0-9]+,[0-9]+,-?[0-9]+$
+SAYA x,y,z	Sends text of sign to players	^SAYA -?[0-9]+,[0-9]+,-?[0-9]+$
+WEA rain	Sets the weather		^WEA (rain|sun)$
+TIME 0		Sets the time			^TIME [0-9]+$
