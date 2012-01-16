@@ -58,6 +58,7 @@ spells:
         spell-class: ".command.HelpSpell"
         name: help
         description: Get information about a specified spell.
+        require-known-spell: true
         str-usage: "Usage: /cast help <spell>"
         str-no-spell: You do not know a spell by that name.
         str-desc-line: "%s - %d"
