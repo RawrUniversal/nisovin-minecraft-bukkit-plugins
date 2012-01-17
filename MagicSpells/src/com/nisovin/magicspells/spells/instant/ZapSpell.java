@@ -7,7 +7,6 @@ import java.util.List;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -80,7 +79,7 @@ public class ZapSpell extends InstantSpell {
 				// drop block
 				if (dropBlock) {
 					if (dropNormal) {
-						net.minecraft.server.Block.byId[target.getTypeId()].dropNaturally(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ(), target.getData(), 1.0F, 0);
+						target.breakNaturally();
 					} else {
 						target.getWorld().dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1, target.getData()));
 					}

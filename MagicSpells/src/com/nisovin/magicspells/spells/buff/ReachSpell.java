@@ -9,7 +9,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
@@ -89,11 +88,11 @@ public class ReachSpell extends BuffSpell {
 						// remove block
 						BlockState state = targetBlock.getState();
 						targetBlock.getWorld().playEffect(targetBlock.getLocation(), Effect.STEP_SOUND, targetBlock.getTypeId());
-						targetBlock.setType(Material.AIR);
 						// drop item
 						if (dropBlocks && player.getGameMode() == GameMode.SURVIVAL) {
-							net.minecraft.server.Block.byId[state.getTypeId()].dropNaturally(((CraftWorld)targetBlock.getWorld()).getHandle(), targetBlock.getX(), targetBlock.getY(), targetBlock.getZ(), targetBlock.getData(), 1.0F, 0);
+							targetBlock.breakNaturally();
 						}
+						targetBlock.setType(Material.AIR);
 						addUseAndChargeCost(player);
 					}
 				} else if ((action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && targetBlock.getType() != Material.AIR) {
