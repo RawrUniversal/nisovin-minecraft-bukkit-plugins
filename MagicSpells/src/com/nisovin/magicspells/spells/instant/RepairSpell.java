@@ -15,6 +15,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class RepairSpell extends InstantSpell {
 
 	private String[] toRepair;
+	private List<Integer> ignoreItems;
 	private String strNothingToRepair;
 	
 	public RepairSpell(MagicConfig config, String spellName) {
@@ -37,6 +38,7 @@ public class RepairSpell extends InstantSpell {
 		}
 		toRepair = new String[toRepairList.size()];
 		toRepair = toRepairList.toArray(toRepair);
+		ignoreItems = getConfigIntList("ignore-items", new ArrayList<Integer>());
 		
 		strNothingToRepair = getConfigString("str-nothing-to-repair", "Nothing to repair.");
 	}
@@ -111,8 +113,13 @@ public class RepairSpell extends InstantSpell {
 	}
 	
 	private boolean isRepairable(Material material) {
+		if (ignoreItems.contains(material.getId())) return false;
 		String s = material.name();
 		return 
+				material == Material.BOW ||
+				material == Material.FLINT_AND_STEEL ||
+				material == Material.SHEARS ||
+				material == Material.FISHING_ROD ||
 				s.endsWith("HELMET") ||
 				s.endsWith("CHESTPLATE") ||
 				s.endsWith("LEGGINGS") ||

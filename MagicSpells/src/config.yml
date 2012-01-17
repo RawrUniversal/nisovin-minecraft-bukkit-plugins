@@ -818,6 +818,9 @@ spells:
             - chestplate
             - leggings
             - boots
+        ignore-items:
+            - 259
+            - 346
         cost:
             - 331 3
             - 265 1
