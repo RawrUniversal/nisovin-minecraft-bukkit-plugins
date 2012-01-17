@@ -18,6 +18,7 @@ public class RecallSpell extends InstantSpell {
 	private boolean allowCrossWorld;
 	private int maxRange;
 	private int castTime;
+	private boolean useBedLocation;
 	private String strNoMark;
 	private String strOtherWorld;
 	private String strTooFar;
@@ -32,6 +33,7 @@ public class RecallSpell extends InstantSpell {
 		allowCrossWorld = config.getBoolean("spells." + spellName + ".allow-cross-world", true);
 		maxRange = config.getInt("spells." + spellName + ".max-range", 0);
 		castTime = getConfigInt("cast-time", 0);
+		useBedLocation = getConfigBoolean("use-bed-location", false);
 		strNoMark = config.getString("spells." + spellName + ".str-no-mark", "You have no mark to recall to.");
 		strOtherWorld = config.getString("spells." + spellName + ".str-other-world", "Your mark is in another world.");
 		strTooFar = config.getString("spells." + spellName + ".str-too-far", "You mark is too far away.");
@@ -52,7 +54,12 @@ public class RecallSpell extends InstantSpell {
 				sendMessage(player, strNoMark);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
-				Location mark = MarkSpell.marks.get(player.getName()).getLocation();
+				Location mark = null;
+				if (useBedLocation) {
+					player.getBedSpawnLocation();
+				} else {
+					mark = MarkSpell.marks.get(player.getName()).getLocation();
+				}
 				if (mark == null) {
 					sendMessage(player, strNoMark);
 					return PostCastAction.ALREADY_HANDLED;

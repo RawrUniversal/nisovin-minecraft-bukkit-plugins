@@ -779,6 +779,7 @@ spells:
         max-range: -1
         cast-time: 0
         allow-cross-world: true
+        use-bed-location: false
         cost:
             - 331 1
             - 265 1
