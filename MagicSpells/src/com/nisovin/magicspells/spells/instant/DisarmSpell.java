@@ -3,9 +3,6 @@ package com.nisovin.magicspells.spells.instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.server.EntityItem;
-
-import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -52,7 +49,7 @@ public class DisarmSpell extends InstantSpell {
 				// drop item
 				target.setItemInHand(null);
 				Item item = target.getWorld().dropItemNaturally(target.getLocation(), inHand.clone());
-				((EntityItem)((CraftItem)item).getHandle()).pickupDelay = disarmDuration;
+				item.setPickupDelay(disarmDuration);
 				// send messages
 				sendMessage(player, strCastSelf, "%t", target.getDisplayName());
 				sendMessage(target, strCastTarget, "%a", player.getDisplayName());

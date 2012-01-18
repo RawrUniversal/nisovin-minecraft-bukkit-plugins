@@ -1,9 +1,7 @@
 package com.nisovin.magicspells;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
@@ -85,12 +83,11 @@ public class MagicSpells extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		plugin = this;		
 		load();
 	}
 	
-	private void load() {
-		plugin = this;
-		
+	private void load() {		
 		// load listeners
 		PluginManager pm = plugin.getServer().getPluginManager();
 		pm.registerEvents(new MagicPlayerListener(this), this);
@@ -106,7 +103,7 @@ public class MagicSpells extends JavaPlugin {
 		new File(this.getDataFolder(), "spellbooks").mkdir();
 		
 		// load config
-		loadConfigFromJar();
+		saveDefaultConfig();
 		MagicConfig config = new MagicConfig(new File(this.getDataFolder(), "config.yml"));
 		debug = config.getBoolean("general.debug", false);
 		textColor = ChatColor.getByChar(config.getString("general.text-color", ChatColor.DARK_AQUA.getChar() + ""));
@@ -776,34 +773,6 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	private void loadConfigFromJar() {
-		File configFile = new File(this.getDataFolder(), "config.yml");
-        if (!configFile.exists()) {
-            InputStream fis = getClass().getResourceAsStream("/config.yml");
-            FileOutputStream fos = null;
-            try {
-            	fos = new FileOutputStream(configFile);
-                byte[] buf = new byte[1024];
-                int i = 0;
-                while ((i = fis.read(buf)) != -1) {
-                    fos.write(buf, 0, i);
-                }
-            } catch (Exception e) {
-            	getServer().getLogger().log(Level.SEVERE, "Failed to load config from JAR", e);
-            } finally {
-            	try {
-	                if (fis != null) {
-	                    fis.close();
-	                }
-	                if (fos != null) {
-	                    fos.close();
-	                }
-            	} catch (Exception e) {            		
-            	}
-            }
-        }
-	}
-	
 	public void unload() {
 		for (Spell spell : spells.values()) {
 			spell.turnOff();
@@ -814,11 +783,11 @@ public class MagicSpells extends JavaPlugin {
 		spellNames = null;
 		spellbooks.clear();
 		spellbooks = null;
-		HandlerList.unregisterAll(this);
 		if (mana != null) {
 			mana.turnOff();
 			mana = null;
-		}		
+		}
+		HandlerList.unregisterAll(this);	
 	}
 	
 	@Override
