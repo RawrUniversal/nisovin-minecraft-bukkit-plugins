@@ -52,9 +52,11 @@ public class StealthSpell extends BuffSpell {
 	
 	@Override
 	protected void turnOff(Player player) {
-		super.turnOff(player);
-		stealthy.remove(player.getName());
-		sendMessage(player, strFade);
+		if (stealthy.contains(player.getName())) {
+			super.turnOff(player);
+			stealthy.remove(player.getName());
+			sendMessage(player, strFade);
+		}
 	}
 	
 	@Override

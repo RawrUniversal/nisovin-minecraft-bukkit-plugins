@@ -71,9 +71,11 @@ public class StonevisionSpell extends BuffSpell {
 	@Override
 	protected void turnOff(Player player) {
 		super.turnOff(player);
-		seers.get(player.getName()).removeTransparency();
-		seers.remove(player.getName());
-		sendMessage(player, strFade);
+		if (seers.containsKey(player.getName())) {
+			seers.get(player.getName()).removeTransparency();
+			seers.remove(player.getName());
+			sendMessage(player, strFade);
+		}
 	}
 
 	@Override

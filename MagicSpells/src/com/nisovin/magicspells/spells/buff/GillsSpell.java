@@ -74,17 +74,19 @@ public class GillsSpell extends BuffSpell {
 
 	@Override
 	protected void turnOff(Player player) {
-		super.turnOff(player);
-		fishes.remove(player.getName());
-		if (glassHeadEffect) {
-			if (helmets.containsKey(player)) {
-				player.getInventory().setHelmet(helmets.get(player));
-				helmets.remove(player);
-			} else if (player.getInventory().getHelmet() != null && player.getInventory().getHelmet().getType() == Material.GLASS) {
-				player.getInventory().setHelmet(null);				
+		if (fishes.contains(player.getName())) {
+			super.turnOff(player);
+			fishes.remove(player.getName());
+			if (glassHeadEffect) {
+				if (helmets.containsKey(player)) {
+					player.getInventory().setHelmet(helmets.get(player));
+					helmets.remove(player);
+				} else if (player.getInventory().getHelmet() != null && player.getInventory().getHelmet().getType() == Material.GLASS) {
+					player.getInventory().setHelmet(null);				
+				}
 			}
+			sendMessage(player, strFade);
 		}
-		sendMessage(player, strFade);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.spells.buff;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -131,11 +132,10 @@ public class WindwalkSpell extends BuffSpell {
 	@Override
 	protected void turnOff() {
 		HashMap<Player,SavedInventory> flyers = new HashMap<Player,SavedInventory>(this.flyers);
-		for (Player player : flyers.keySet()) {
+		for (Player player : new HashSet<Player>(flyers.keySet())) {
 			turnOff(player);
 		}
 		this.flyers.clear();
-		//removeListeners();
 	}
 	
 	private class SavedInventory {

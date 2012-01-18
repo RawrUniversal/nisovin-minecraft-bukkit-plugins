@@ -196,7 +196,6 @@ public class MinionSpell extends BuffSpell {
 		}
 		minions.remove(player.getName());
 		targets.remove(player.getName());
-		//removeListeners();
 	}
 	
 	@Override

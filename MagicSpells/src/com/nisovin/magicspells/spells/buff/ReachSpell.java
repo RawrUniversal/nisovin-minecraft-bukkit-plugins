@@ -139,9 +139,11 @@ public class ReachSpell extends BuffSpell {
 
 	@Override
 	protected void turnOff(Player player) {
-		super.turnOff(player);
-		reaching.remove(player);
-		sendMessage(player, strFade);
+		if (reaching.contains(player)) {
+			super.turnOff(player);
+			reaching.remove(player);
+			sendMessage(player, strFade);
+		}
 	}
 	
 	@Override
