@@ -134,8 +134,14 @@ public class ForgetSpell extends CommandSpell {
 				// fail: no player match
 				sender.sendMessage(strNoTarget);
 			} else {
-				Spell spell = MagicSpells.getSpellByInGameName(args[1]);
-				if (spell == null) {
+				Spell spell = null;
+				boolean all = false;
+				if (args[1].equals("*")) {
+					all = true;
+				} else {
+					spell = MagicSpells.getSpellByInGameName(args[1]);
+				}
+				if (spell == null && !all) {
 					// fail: no spell match
 					sender.sendMessage(strNoSpell);
 				} else {
@@ -144,10 +150,17 @@ public class ForgetSpell extends CommandSpell {
 						// fail: no spellbook for some reason or can't learn the spell
 						sender.sendMessage(strDoesntKnow);
 					} else {
-						targetSpellbook.removeSpell(spell);
-						targetSpellbook.save();
-						sendMessage(players.get(0), formatMessage(strCastTarget, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
-						sender.sendMessage(formatMessage(strCastSelf, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+						if (!all) {
+							targetSpellbook.removeSpell(spell);
+							targetSpellbook.save();
+							sendMessage(players.get(0), formatMessage(strCastTarget, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+							sender.sendMessage(formatMessage(strCastSelf, "%a", MagicSpells.strConsoleName, "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+						} else {
+							targetSpellbook.removeAllSpells();
+							targetSpellbook.addGrantedSpells();
+							targetSpellbook.save();
+							sender.sendMessage(formatMessage(strResetTarget, "%t", players.get(0).getDisplayName()));
+						}
 					}
 				}
 			}
