@@ -6,7 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.nisovin.magicspells.InstantSpell;
@@ -42,7 +43,6 @@ public class RecallSpell extends InstantSpell {
 		
 		if (castTime > 0) {
 			casting = new HashSet<String>();
-			addListener(Event.Type.ENTITY_DAMAGE);
 		}
 	}
 
@@ -87,9 +87,11 @@ public class RecallSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@Override
+	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.isCancelled()) return;
+		if (castTime <= 0) return;
+		
 		Entity e = event.getEntity();
 		if (e instanceof Player) {
 			String name = ((Player)e).getName();

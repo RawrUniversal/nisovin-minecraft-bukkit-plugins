@@ -3,8 +3,10 @@ package com.nisovin.magicspells.spells.buff;
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+
 import com.nisovin.magicspells.BuffSpell;
-import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -20,8 +22,6 @@ public class EmpowerSpell extends BuffSpell {
 		extraPower = getConfigFloat("power-multiplier", 1.5F);
 		
 		empowered = new HashMap<Player,Float>();
-		
-		addListener(MagicEventType.SPELL_CAST);
 	}
 
 	@Override
@@ -35,8 +35,8 @@ public class EmpowerSpell extends BuffSpell {
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
-	
-	@Override
+
+	@EventHandler(event=SpellCastEvent.class, priority=EventPriority.MONITOR)
 	public void onSpellCast(SpellCastEvent event) {
 		Player player = event.getCaster();
 		if (empowered.containsKey(player)) {

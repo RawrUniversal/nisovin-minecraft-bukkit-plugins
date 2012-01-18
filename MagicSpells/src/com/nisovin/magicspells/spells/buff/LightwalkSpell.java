@@ -7,7 +7,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.nisovin.magicspells.BuffSpell;
@@ -16,13 +17,11 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class LightwalkSpell extends BuffSpell {
 	
 	private HashMap<String,Block> lightwalkers;
-	private boolean listening;
 
 	public LightwalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 				
 		lightwalkers = new HashMap<String,Block>();
-		listening = false;
 	}
 
 	@Override
@@ -33,15 +32,11 @@ public class LightwalkSpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			lightwalkers.put(player.getName(), null);
 			startSpellDuration(player);
-			if (!listening) {
-				addListener(Event.Type.PLAYER_MOVE);
-				listening = true;
-			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@Override
+	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if (lightwalkers.containsKey(event.getPlayer().getName())) {
 			Player p = event.getPlayer();
@@ -91,10 +86,6 @@ public class LightwalkSpell extends BuffSpell {
 			lightwalkers.remove(player.getName());
 		}
 		sendMessage(player, strFade);
-		//if (listening && lightwalkers.size() == 0) {
-		//	removeListener(Event.Type.PLAYER_MOVE);
-		//	listening = false;
-		//}
 	}
 
 	@Override

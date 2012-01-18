@@ -8,7 +8,8 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -26,7 +27,6 @@ public class WalkwaySpell extends BuffSpell {
 	private boolean cancelOnTeleport;
 	
 	private HashMap<Player,Platform> platforms;
-	private boolean listening;
 	
 	public WalkwaySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -36,15 +36,7 @@ public class WalkwaySpell extends BuffSpell {
 		cancelOnLogout = getConfigBoolean("cancel-on-logout", true);
 		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
 		
-		if (cancelOnLogout) {
-			addListener(Event.Type.PLAYER_QUIT);
-		}
-		if (cancelOnTeleport) {
-			addListener(Event.Type.PLAYER_TELEPORT);
-		}
-		
 		platforms = new HashMap<Player,Platform>();
-		listening = false;
 		
 	}
 
@@ -56,28 +48,11 @@ public class WalkwaySpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			platforms.put(player, new Platform(player, material, size));
 			startSpellDuration(player);
-			addListeners();
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	private void addListeners() {
-		if (!listening) {
-			addListener(Event.Type.PLAYER_MOVE);
-			addListener(Event.Type.BLOCK_BREAK);
-			listening = true;
-		}
-	}
-	
-	/*private void removeListeners() {
-		if (listening && platforms.size() == 0) {
-			removeListener(Event.Type.PLAYER_MOVE);
-			removeListener(Event.Type.BLOCK_BREAK);
-			listening = false;
-		}
-	}*/
-	
-	@Override
+	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Platform carpet = platforms.get(event.getPlayer());
 		if (carpet != null) {
@@ -87,23 +62,27 @@ public class WalkwaySpell extends BuffSpell {
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		turnOff(event.getPlayer());
+		if (cancelOnLogout) {
+			turnOff(event.getPlayer());
+		}
 	}
-	
-	@Override
+
+	@EventHandler(event=PlayerTeleportEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if (platforms.containsKey(event.getPlayer())) {
+		if (event.isCancelled()) return;
+		if (cancelOnTeleport && platforms.containsKey(event.getPlayer())) {
 			if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName()) || event.getFrom().toVector().distanceSquared(event.getTo().toVector()) > 50*50) {
 				turnOff(event.getPlayer());
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
 	public void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled()) return;
 		for (Platform platform : platforms.values()) {
 			if (platform.blockInPlatform(event.getBlock())) {
 				event.setCancelled(true);

@@ -14,7 +14,8 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -34,7 +35,6 @@ public class MinionSpell extends BuffSpell {
 	private HashMap<String,LivingEntity> minions;
 	private HashMap<String,LivingEntity> targets;
 	private Random random;
-	private boolean listening;
 	
 	public MinionSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -67,7 +67,6 @@ public class MinionSpell extends BuffSpell {
 		minions = new HashMap<String,LivingEntity>();
 		targets = new HashMap<String,LivingEntity>();
 		random = new Random();
-		listening = false;
 	}
 	
 	@Override
@@ -102,8 +101,6 @@ public class MinionSpell extends BuffSpell {
 				minions.put(player.getName(), minion);
 				targets.put(player.getName(), null);
 				startSpellDuration(player);
-				
-				addListeners();
 			} else {
 				// fail -- no creature found
 				return PostCastAction.ALREADY_HANDLED;
@@ -112,27 +109,7 @@ public class MinionSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	private void addListeners() {
-		if (!listening) {
-			addListener(Event.Type.ENTITY_TARGET);
-			addListener(Event.Type.ENTITY_DAMAGE);
-			if (preventCombust) {
-				addListener(Event.Type.ENTITY_COMBUST);			
-			}
-			listening = true;
-		}
-	}
-	
-	/*private void removeListeners() {
-		if (listening && minions.size() == 0) {
-			removeListener(Event.Type.ENTITY_TARGET);
-			removeListener(Event.Type.ENTITY_DAMAGE);
-			removeListener(Event.Type.ENTITY_COMBUST);
-			listening = false;
-		}
-	}*/
-	
-	@Override
+	@EventHandler(event=EntityTargetEvent.class, priority=EventPriority.NORMAL)
 	public void onEntityTarget(EntityTargetEvent event) {
 		if (!event.isCancelled() && minions.size() > 0 ) {	
 			if (event.getTarget() instanceof Player) {
@@ -180,8 +157,8 @@ public class MinionSpell extends BuffSpell {
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.NORMAL)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!event.isCancelled() && event instanceof EntityDamageByEntityEvent && event.getEntity() instanceof LivingEntity) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
@@ -201,10 +178,10 @@ public class MinionSpell extends BuffSpell {
 			}
 		}
 	}	
-	
-	@Override
+
+	@EventHandler(event=EntityCombustEvent.class, priority=EventPriority.NORMAL)
 	public void onEntityCombust(EntityCombustEvent event) {
-		if (!event.isCancelled() && minions.containsValue(event.getEntity())) {
+		if (preventCombust && !event.isCancelled() && minions.containsValue(event.getEntity())) {
 			event.setCancelled(true);
 		}
 	}
@@ -229,7 +206,6 @@ public class MinionSpell extends BuffSpell {
 		}
 		minions.clear();
 		targets.clear();
-		//removeListeners();
 	}
 	
 }

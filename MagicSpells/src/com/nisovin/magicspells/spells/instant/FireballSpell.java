@@ -10,7 +10,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
@@ -45,10 +46,6 @@ public class FireballSpell extends InstantSpell {
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You cannot throw a fireball there.");
 		
 		fireballs = new HashMap<Fireball,Float>();
-		addListener(Event.Type.EXPLOSION_PRIME);
-		if (additionalDamage > 0) {
-			addListener(Event.Type.ENTITY_DAMAGE);
-		}
 	}
 
 	@Override
@@ -96,7 +93,7 @@ public class FireballSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@Override
+	@EventHandler(event=ExplosionPrimeEvent.class, priority=EventPriority.HIGH)
 	public void onExplosionPrime(ExplosionPrimeEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -142,10 +139,10 @@ public class FireballSpell extends InstantSpell {
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.HIGH)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (!event.isCancelled() && event instanceof EntityDamageByEntityEvent) {
+		if (additionalDamage > 0 && !event.isCancelled() && event instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 			if (evt.getDamager() instanceof Fireball) {
 				Fireball fireball = (Fireball)evt.getDamager();

@@ -3,9 +3,11 @@ package com.nisovin.magicspells.spells.buff;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +21,6 @@ public class GillsSpell extends BuffSpell {
 	
 	private HashSet<String> fishes;
 	private HashMap<Player,ItemStack> helmets;
-	private boolean listening = false;
 	
 	public GillsSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -30,7 +31,6 @@ public class GillsSpell extends BuffSpell {
 		if (glassHeadEffect) {
 			helmets = new HashMap<Player,ItemStack>();
 		}
-		listening = false;
 	}
 
 	@Override
@@ -48,16 +48,13 @@ public class GillsSpell extends BuffSpell {
 				player.getInventory().setHelmet(new ItemStack(Material.GLASS, 1));
 			}
 			startSpellDuration(player);
-			if (!listening) {
-				addListener(Event.Type.ENTITY_DAMAGE);
-				listening = true;
-			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@Override
+	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.NORMAL)
 	public void onEntityDamage(EntityDamageEvent event) {
+		if (event.isCancelled()) return;
 		if (!event.isCancelled() && event.getEntity() instanceof Player && event.getCause() == DamageCause.DROWNING) {
 			Player player = (Player)event.getEntity();
 			if (fishes.contains(player.getName())) {
@@ -74,7 +71,7 @@ public class GillsSpell extends BuffSpell {
 			}
 		}
 	}
-	
+
 	@Override
 	protected void turnOff(Player player) {
 		super.turnOff(player);
@@ -83,20 +80,29 @@ public class GillsSpell extends BuffSpell {
 			if (helmets.containsKey(player)) {
 				player.getInventory().setHelmet(helmets.get(player));
 				helmets.remove(player);
-			} else {
+			} else if (player.getInventory().getHelmet() != null && player.getInventory().getHelmet().getType() == Material.GLASS) {
 				player.getInventory().setHelmet(null);				
 			}
 		}
 		sendMessage(player, strFade);
-		//if (listening && fishes.size() == 0) {
-			//removeListener(Event.Type.ENTITY_DAMAGE);
-			//listening = false;
-		//}
 	}
 	
 	@Override
 	protected void turnOff() {
-		
+		for (String name : fishes) {
+			if (glassHeadEffect) {
+				Player player = Bukkit.getPlayerExact(name);
+				if (player != null && player.isOnline()) {
+					if (helmets.containsKey(player)) {
+						player.getInventory().setHelmet(helmets.get(player));
+					} else if (player.getInventory().getHelmet() != null && player.getInventory().getHelmet().getType() == Material.GLASS) {
+						player.getInventory().setHelmet(null);
+					}
+				}
+			}
+		}
+		helmets.clear();
+		fishes.clear();
 	}
 
 }

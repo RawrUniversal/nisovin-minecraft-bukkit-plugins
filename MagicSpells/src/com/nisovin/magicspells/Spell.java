@@ -9,34 +9,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityCombustEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.event.player.PlayerToggleSprintEvent;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellCastEvent;
-import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
 
-public abstract class Spell implements Comparable<Spell> {
+public abstract class Spell implements Comparable<Spell>, Listener {
 
 	private MagicConfig config;
 	
@@ -625,38 +607,6 @@ public abstract class Spell implements Comparable<Spell> {
 	}
 	
 	/**
-	 * Makes this spell listen for the specified event
-	 * @param eventType the event to listen for
-	 */
-	protected void addListener(Event.Type eventType) {
-		MagicSpells.addSpellListener(eventType, this);
-	}
-	
-	/**
-	 * Makes this spell listen for the specified event
-	 * @param eventType the event to listen for
-	 */
-	protected void addListener(MagicEventType eventType) {
-		MagicSpells.addSpellListener(eventType, this);
-	}
-	
-	/**
-	 * Makes this spell stop listening for the specified event
-	 * @param eventType the event
-	 */
-	protected void removeListener(Event.Type eventType) {
-		MagicSpells.removeSpellListener(eventType, this);
-	}
-	
-	/**
-	 * Makes this spell stop listening for the specified event
-	 * @param eventType the event
-	 */
-	protected void removeListener(MagicEventType eventType) {
-		MagicSpells.removeSpellListener(eventType, this);
-	}
-	
-	/**
 	 * This method is called immediately after all spells have been loaded.
 	 */
 	protected void initialize() {
@@ -686,25 +636,6 @@ public abstract class Spell implements Comparable<Spell> {
 	public int hashCode() {
 		return internalName.hashCode();
 	}
-	
-	public void onPlayerJoin(PlayerJoinEvent event) {}
-	public void onPlayerQuit(PlayerQuitEvent event) {}
-	public void onPlayerInteract(PlayerInteractEvent event) {}
-	public void onItemHeldChange(PlayerItemHeldEvent event) {}
-	public void onPlayerMove(PlayerMoveEvent event) {}
-	public void onPlayerTeleport(PlayerTeleportEvent event) {}
-	public void onPlayerDropItem(PlayerDropItemEvent event) {}
-	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {}
-	public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {}
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {}
-	public void onBlockBreak(BlockBreakEvent event) {}
-	public void onBlockPlace(BlockPlaceEvent event) {}
-	public void onEntityDamage(EntityDamageEvent event) {}	
-	public void onEntityTarget(EntityTargetEvent event) {}	
-	public void onEntityCombust(EntityCombustEvent event) {}	
-	public void onExplosionPrime(ExplosionPrimeEvent event) {}
-	public void onSpellCast(SpellCastEvent event) {}
-	public void onSpellTarget(SpellTargetEvent event) {}
 	
 	public enum SpellCastState {
 		NORMAL,

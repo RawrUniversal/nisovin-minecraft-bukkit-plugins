@@ -829,11 +829,13 @@ spells:
         str-cast-self: You've repaired your gear!
         str-nothing-to-repair: You have nothing to repair.
     safefall:
-        spell-class: ".buff.SafefallSpell"
+        spell-class: ".buff.InvulnerabilitySpell"
         name: safefall
         description: Allows you to fall without taking damage.
         cast-item: 294
         cooldown: 60
+        damage-causes:
+            - fall
         duration: 300
         num-uses: 5
         cost:

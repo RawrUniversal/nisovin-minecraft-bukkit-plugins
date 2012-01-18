@@ -8,7 +8,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -26,7 +27,6 @@ public class FirenovaSpell extends InstantSpell {
 	
 	public FirenovaSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
-		addListener(Event.Type.ENTITY_DAMAGE);
 		
 		tickSpeed = config.getInt("spells." + spellName + ".tick-speed", 5);
 		burnTallGrass = getConfigBoolean("burn-tall-grass", true);
@@ -44,8 +44,9 @@ public class FirenovaSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@Override
+	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.NORMAL)
 	public void onEntityDamage(EntityDamageEvent event) {
+		if (event.isCancelled()) return;
 		if (event.getEntity() instanceof Player && (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK) && fireImmunity.size() > 0) {
 			Player player = (Player)event.getEntity();
 			if (fireImmunity.contains(player)) {

@@ -5,27 +5,17 @@ import java.util.HashSet;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.nisovin.magicspells.util.MagicListener;
-
-public class MagicPlayerListener extends PlayerListener implements MagicListener {
-
-	private boolean disabled = false;
+public class MagicPlayerListener implements Listener {
 	
 	private MagicSpells plugin;
 	
@@ -34,27 +24,10 @@ public class MagicPlayerListener extends PlayerListener implements MagicListener
 	
 	public MagicPlayerListener(MagicSpells plugin) {
 		this.plugin = plugin;
-		
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Monitor, plugin);
-		if (MagicSpells.castOnAnimate) {
-			plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ANIMATION, this, Event.Priority.Monitor, plugin);
-		}
-		
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_MOVE, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TELEPORT, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_DROP_ITEM, this, Event.Priority.Normal, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TOGGLE_SNEAK, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_TOGGLE_SPRINT, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, this, Event.Priority.Normal, plugin);
 	}
-	
-	@Override
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (disabled) return;
-		
+
+	@EventHandler(event=PlayerJoinEvent.class, priority=EventPriority.MONITOR)
+	public void onPlayerJoin(PlayerJoinEvent event) {		
 		// set up spell book
 		Spellbook spellbook = new Spellbook(event.getPlayer(), plugin);
 		MagicSpells.spellbooks.put(event.getPlayer().getName(), spellbook);
@@ -63,33 +36,15 @@ public class MagicPlayerListener extends PlayerListener implements MagicListener
 		if (MagicSpells.mana != null) {
 			MagicSpells.mana.createManaBar(event.getPlayer());
 		}
-		
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_JOIN);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onPlayerJoin(event);
-			}
-		}
 	}
-	
-	@Override
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		if (disabled) return;
-		
+
+	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
+	public void onPlayerQuit(PlayerQuitEvent event) {		
 		MagicSpells.spellbooks.remove(event.getPlayer().getName());
-		
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_QUIT);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onPlayerQuit(event);
-			}
-		}
 	}
-	
-	@Override
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (disabled) return;
-		
+
+	@EventHandler(event=PlayerInteractEvent.class, priority=EventPriority.MONITOR)
+	public void onPlayerInteract(PlayerInteractEvent event) {		
 		// first check if player is interacting with a special block
 		boolean noInteract = false;
 		if (event.hasBlock()) {
@@ -163,19 +118,11 @@ public class MagicPlayerListener extends PlayerListener implements MagicListener
 				
 			}
 		}
-		
-		// call spell listeners
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_INTERACT);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onPlayerInteract(event);
-			}
-		}
 	}
-	
-	@Override
-	public void onPlayerAnimation(PlayerAnimationEvent event) {
-		if (disabled) return;
+
+	@EventHandler(event=PlayerAnimationEvent.class, priority=EventPriority.MONITOR)
+	public void onPlayerAnimation(PlayerAnimationEvent event) {		
+		if (!MagicSpells.castOnAnimate) return;
 		
 		Player p = event.getPlayer();
 		if (noCast.contains(p)) {
@@ -208,96 +155,5 @@ public class MagicPlayerListener extends PlayerListener implements MagicListener
 			spell.cast(player);
 		}		
 	}
-
-	@Override
-	public void onItemHeldChange(PlayerItemHeldEvent event) {
-		if (disabled) return;
-		
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_ITEM_HELD);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onItemHeldChange(event);
-			}
-		}		
-	}
-	
-	@Override
-	public void onPlayerMove(PlayerMoveEvent event) {
-		if (disabled) return;
-		
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_MOVE);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onPlayerMove(event);
-			}
-		}
-	}
-	
-	@Override
-	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if (disabled) return;
-		
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_TELEPORT);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onPlayerTeleport(event);
-			}
-		}
-	}
-	
-	@Override
-	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if (disabled) return;
-		
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_DROP_ITEM);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onPlayerDropItem(event);
-			}
-		}
-	}
-	
-	@Override
-	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
-		if (disabled) return;
-		
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_TOGGLE_SNEAK);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onPlayerToggleSneak(event);
-			}
-		}
-	}
-	
-	@Override
-	public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
-		if (disabled) return;
-		
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_TOGGLE_SPRINT);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onPlayerToggleSprint(event);
-			}
-		}
-	}
-	
-	@Override
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (disabled) return;
-		
-		HashSet<Spell> spells = MagicSpells.listeners.get(Event.Type.PLAYER_COMMAND_PREPROCESS);
-		if (spells != null) {
-			for (Spell spell : spells) {
-				spell.onPlayerCommandPreprocess(event);
-			}
-		}
-	}
-
-	@Override
-	public void disable() {
-		disabled = true;
-	}
-	
-	
 	
 }

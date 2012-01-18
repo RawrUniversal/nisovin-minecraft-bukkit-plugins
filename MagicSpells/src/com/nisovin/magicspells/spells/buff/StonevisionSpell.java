@@ -15,7 +15,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.nisovin.magicspells.BuffSpell;
@@ -28,7 +29,6 @@ public class StonevisionSpell extends BuffSpell {
 	private boolean unobfuscate;
 	
 	private HashMap<String,TransparentBlockSet> seers;
-	private boolean listening;
 
 	public StonevisionSpell(MagicConfig config, String spellName) {
 		super(config, spellName);		
@@ -38,7 +38,6 @@ public class StonevisionSpell extends BuffSpell {
 		unobfuscate = getConfigBoolean("unobfuscate", false);
 		
 		seers = new HashMap<String, TransparentBlockSet>();
-		listening = false;
 	}
 
 	@Override
@@ -49,15 +48,11 @@ public class StonevisionSpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			seers.put(player.getName(), new TransparentBlockSet(player, range, transparentType));
 			startSpellDuration(player);
-			if (!listening) {
-				addListener(Event.Type.PLAYER_MOVE);
-				listening = true;
-			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@Override
+	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player p = event.getPlayer();
 		if (seers.containsKey(p.getName())) {
@@ -79,10 +74,6 @@ public class StonevisionSpell extends BuffSpell {
 		seers.get(player.getName()).removeTransparency();
 		seers.remove(player.getName());
 		sendMessage(player, strFade);
-		//if (listening && seers.size() == 0) {
-		//	removeListener(Event.Type.PLAYER_MOVE);
-		//	listening = false;
-		//}
 	}
 
 	@Override

@@ -30,8 +30,8 @@ public class ManaBarManager {
 	public ManaBarManager(MagicConfig config) {
 		manaBarPrefix = config.getString("general.mana.mana-bar-prefix", "Mana:");
 		manaBarSize = config.getInt("general.mana.mana-bar-size", 35);
-		manaBarColorFull = ChatColor.getByCode(config.getInt("general.mana.color-full", ChatColor.GREEN.getCode()));
-		manaBarColorEmpty = ChatColor.getByCode(config.getInt("general.mana.color-empty", ChatColor.BLACK.getCode()));
+		manaBarColorFull = ChatColor.getByChar(config.getString("general.mana.color-full", ChatColor.GREEN.getChar() + ""));
+		manaBarColorEmpty = ChatColor.getByChar(config.getString("general.mana.color-empty", ChatColor.BLACK.getChar() + ""));
 		manaBarToolSlot = config.getInt("general.mana.tool-slot", 8);
 		
 		maxMana = config.getInt("general.mana.max-mana", 100);

@@ -10,7 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -72,9 +73,6 @@ public class ScrollSpell extends CommandSpell {
 		strCantTeach = getConfigString("str-cant-teach", "You cannot create a scroll with that spell.");
 		strOnUse = getConfigString("str-on-use", "Spell Scroll: %s used. %u uses remaining.");
 		strUseFail = getConfigString("str-use-fail", "Unable to use this scroll right now.");
-		
-		addListener(Event.Type.PLAYER_INTERACT);
-		addListener(Event.Type.PLAYER_ITEM_HELD);
 		
 		scrollSpells = new HashMap<Short,Spell>();
 		scrollUses = new HashMap<Short,Integer>();
@@ -277,7 +275,7 @@ public class ScrollSpell extends CommandSpell {
 		return 0;
 	}
 	
-	@Override
+	@EventHandler(event=PlayerInteractEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if ((rightClickCast && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) ||
 			(leftClickCast && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))) {
@@ -342,8 +340,8 @@ public class ScrollSpell extends CommandSpell {
 			}		
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=PlayerItemHeldEvent.class, priority=EventPriority.MONITOR)
 	public void onItemHeldChange(PlayerItemHeldEvent event) {
 		ItemStack inHand = event.getPlayer().getInventory().getItem(event.getNewSlot());
 		if (inHand != null && inHand.getTypeId() == itemId && inHand.getDurability() != 0) {

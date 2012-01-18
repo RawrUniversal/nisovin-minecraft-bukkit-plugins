@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.InstantSpell;
@@ -30,8 +31,6 @@ public class MarkSpell extends InstantSpell {
 		
 		if (permanentMarks) {
 			loadMarks();
-		} else {
-			addListener(Event.Type.PLAYER_QUIT);
 		}
 	}
 
@@ -46,7 +45,7 @@ public class MarkSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;		
 	}
 	
-	@Override
+	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (!permanentMarks) {
 			marks.remove(event.getPlayer().getName());

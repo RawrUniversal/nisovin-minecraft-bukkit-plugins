@@ -3,7 +3,8 @@ package com.nisovin.magicspells.spells.buff;
 import java.util.HashSet;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.nisovin.magicspells.BuffSpell;
@@ -15,8 +16,6 @@ public class StealthSpell extends BuffSpell {
 	
 	public StealthSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
-		
-		addListener(Event.Type.ENTITY_TARGET);
 		
 		stealthy = new HashSet<String>();
 	}
@@ -33,7 +32,7 @@ public class StealthSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@Override
+	@EventHandler(event=EntityTargetEvent.class, priority=EventPriority.NORMAL)
 	public void onEntityTarget(EntityTargetEvent event) {
 		if (!event.isCancelled() && stealthy.size() > 0 && event.getTarget() instanceof Player) {
 			Player player = (Player)event.getTarget();

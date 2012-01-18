@@ -7,7 +7,8 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -27,7 +28,6 @@ public class WindwalkSpell extends BuffSpell {
 	
 	private HashMap<Player, SavedInventory> flyers;
 	private HashMap<Player, Integer> tasks;
-	private boolean listening;
 	
 	public WindwalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -38,7 +38,6 @@ public class WindwalkSpell extends BuffSpell {
 		if (useCostInterval > 0) {
 			tasks = new HashMap<Player, Integer>();
 		}
-		listening = false;
 	}
 
 	@Override
@@ -69,68 +68,41 @@ public class WindwalkSpell extends BuffSpell {
 				}, useCostInterval*20, useCostInterval*20);
 				tasks.put(player, taskId);
 			}
-			addListeners();
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	private void addListeners() {
-		if (!listening) {
-			addListener(Event.Type.BLOCK_BREAK);
-			addListener(Event.Type.BLOCK_PLACE);
-			addListener(Event.Type.PLAYER_DROP_ITEM);
-			addListener(Event.Type.ENTITY_DAMAGE);
-			if (cancelOnLand) {
-				addListener(Event.Type.PLAYER_TOGGLE_SNEAK);
-			}
-			listening = true;
-		}
-	}
-	
-	/*private void removeListeners() {
-		if (listening && flyers.size() == 0) {
-			removeListener(Event.Type.BLOCK_BREAK);
-			removeListener(Event.Type.BLOCK_PLACE);
-			removeListener(Event.Type.PLAYER_DROP_ITEM);
-			removeListener(Event.Type.ENTITY_DAMAGE);
-			if (cancelOnLand) {
-				removeListener(Event.Type.PLAYER_TOGGLE_SNEAK);
-			}
-			listening = false;
-		}
-	}*/
-	
-	@Override
+	@EventHandler(event=PlayerToggleSneakEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
-		if (flyers.containsKey(event.getPlayer())) {
+		if (cancelOnLand && flyers.containsKey(event.getPlayer())) {
 			if (event.getPlayer().getLocation().subtract(0,1,0).getBlock().getType() != Material.AIR) {
 				turnOff(event.getPlayer());
 			}
 		}
 	}
 
-	@Override
+	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (!event.isCancelled() && flyers.containsKey(event.getPlayer())) {
 			event.setCancelled(true);
 		}
 	}
 
-	@Override
+	@EventHandler(event=BlockPlaceEvent.class, priority=EventPriority.NORMAL)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (!event.isCancelled() && flyers.containsKey(event.getPlayer())) {
 			event.setCancelled(true);
 		}
 	}
 
-	@Override
+	@EventHandler(event=PlayerDropItemEvent.class, priority=EventPriority.NORMAL)
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		if (!event.isCancelled() && flyers.containsKey(event.getPlayer())) {
 			event.setCancelled(true);
 		}
 	}
 
-	@Override
+	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.NORMAL)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!event.isCancelled() && event instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
@@ -154,7 +126,6 @@ public class WindwalkSpell extends BuffSpell {
 			int taskId = tasks.remove(player);
 			Bukkit.getScheduler().cancelTask(taskId);
 		}
-		//removeListeners();
 	}
 	
 	@Override

@@ -9,7 +9,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import com.nisovin.magicspells.ChanneledSpell;
@@ -44,7 +45,6 @@ public class SummonSpell extends ChanneledSpell {
 		strSummonExpired = getConfigString("str-summon-expired", "The summon has expired.");
 
 		if (requireAcceptance) {
-			addListener(Event.Type.PLAYER_COMMAND_PREPROCESS);
 			pendingSummons = new HashMap<Player,Location>();
 			pendingTimes = new HashMap<Player,Long>();
 		}
@@ -118,9 +118,9 @@ public class SummonSpell extends ChanneledSpell {
 		}
 	}
 	
-	@Override
+	@EventHandler(event=PlayerCommandPreprocessEvent.class, priority=EventPriority.LOW)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().equalsIgnoreCase("/" + acceptCommand) && pendingSummons.containsKey(event.getPlayer())) {
+		if (requireAcceptance && event.getMessage().equalsIgnoreCase("/" + acceptCommand) && pendingSummons.containsKey(event.getPlayer())) {
 			Player player = event.getPlayer();
 			if (maxAcceptDelay > 0 && pendingTimes.get(player) + maxAcceptDelay*1000 < System.currentTimeMillis()) {
 				// waited too long

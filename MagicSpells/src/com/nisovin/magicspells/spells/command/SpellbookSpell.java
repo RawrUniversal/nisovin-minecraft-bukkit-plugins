@@ -12,7 +12,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -68,9 +69,6 @@ public class SpellbookSpell extends CommandSpell {
 		bookLocations = new ArrayList<MagicLocation>();
 		bookSpells = new ArrayList<String>();
 		bookUses = new ArrayList<Integer>();
-		
-		addListener(Event.Type.PLAYER_INTERACT);
-		addListener(Event.Type.BLOCK_BREAK);
 		
 		loadSpellbooks();
 	}
@@ -134,8 +132,9 @@ public class SpellbookSpell extends CommandSpell {
 		saveSpellbooks();
 	}
 	
-	@Override
+	@EventHandler(event=PlayerInteractEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (event.isCancelled()) return;
 		if (event.hasBlock() && event.getClickedBlock().getType() == spellbookBlock) {
 			MagicLocation loc = new MagicLocation(event.getClickedBlock().getLocation());
 			if (bookLocations.contains(loc)) {
@@ -182,9 +181,10 @@ public class SpellbookSpell extends CommandSpell {
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
 	public void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled()) return;
 		if (event.getBlock().getType() == spellbookBlock) {
 			MagicLocation loc = new MagicLocation(event.getBlock().getLocation());
 			if (bookLocations.contains(loc)) {

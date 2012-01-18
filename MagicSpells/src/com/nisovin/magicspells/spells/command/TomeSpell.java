@@ -3,7 +3,8 @@ package com.nisovin.magicspells.spells.command;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
@@ -15,7 +16,6 @@ import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.bookworm.Book;
 import com.nisovin.bookworm.BookWorm;
 import com.nisovin.bookworm.event.BookReadEvent;
-import com.nisovin.bookworm.event.BookWormListener;
 
 public class TomeSpell extends CommandSpell {
 
@@ -33,12 +33,8 @@ public class TomeSpell extends CommandSpell {
 	private String strCantLearn;
 	private String strLearned;
 	
-	private BookWormListener listener;
-	
 	public TomeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
-		listener = new BookListener();
-		Bukkit.getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, listener, Event.Priority.Monitor, MagicSpells.plugin);
 		
 		cancelReadOnLearn = getConfigBoolean("cancel-read-on-learn", true);
 		allowOverwrite = getConfigBoolean("allow-overwrite", false);
@@ -105,49 +101,47 @@ public class TomeSpell extends CommandSpell {
 		return false;
 	}
 	
-	private class BookListener extends BookWormListener {
-		@Override
-		public void onBookRead(BookReadEvent event) {
-			String spellData = event.getBook().getHiddenData("MagicSpell");
-			if (spellData != null && !spellData.equals("")) {
-				String[] data = spellData.split(",");
-				Spell spell = MagicSpells.getSpellByInternalName(data[0]);
-				int uses = -1;
-				if (data.length > 1) {
-					uses = Integer.parseInt(data[1]);
-				}
-				Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
-				if (spell != null && spellbook != null) {
-					if (spellbook.hasSpell(spell)) {
-						// fail -- already known
-						sendMessage(event.getPlayer(), formatMessage(strAlreadyKnown, "%s", spell.getName()));
-					} else if (!spellbook.canLearn(spell)) {
-						// fail -- can't learn
+	@EventHandler(event=BookReadEvent.class, priority=EventPriority.NORMAL)
+	public void onBookRead(BookReadEvent event) {
+		String spellData = event.getBook().getHiddenData("MagicSpell");
+		if (spellData != null && !spellData.equals("")) {
+			String[] data = spellData.split(",");
+			Spell spell = MagicSpells.getSpellByInternalName(data[0]);
+			int uses = -1;
+			if (data.length > 1) {
+				uses = Integer.parseInt(data[1]);
+			}
+			Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
+			if (spell != null && spellbook != null) {
+				if (spellbook.hasSpell(spell)) {
+					// fail -- already known
+					sendMessage(event.getPlayer(), formatMessage(strAlreadyKnown, "%s", spell.getName()));
+				} else if (!spellbook.canLearn(spell)) {
+					// fail -- can't learn
+					sendMessage(event.getPlayer(), formatMessage(strCantLearn, "%s", spell.getName()));
+				} else {
+					// call event
+					SpellLearnEvent learnEvent = new SpellLearnEvent(spell, event.getPlayer(), LearnSource.TOME, event.getPlayer().getItemInHand());
+					Bukkit.getPluginManager().callEvent(learnEvent);
+					if (learnEvent.isCancelled()) {
+						// fail -- plugin cancelled
 						sendMessage(event.getPlayer(), formatMessage(strCantLearn, "%s", spell.getName()));
 					} else {
-						// call event
-						SpellLearnEvent learnEvent = new SpellLearnEvent(spell, event.getPlayer(), LearnSource.TOME, event.getPlayer().getItemInHand());
-						Bukkit.getPluginManager().callEvent(learnEvent);
-						if (learnEvent.isCancelled()) {
-							// fail -- plugin cancelled
-							sendMessage(event.getPlayer(), formatMessage(strCantLearn, "%s", spell.getName()));
-						} else {
-							// give spell
-							spellbook.addSpell(spell);
-							spellbook.save();
-							sendMessage(event.getPlayer(), formatMessage(strLearned, "%s", spell.getName()));
-							if (cancelReadOnLearn) {
-								event.setCancelled(true);
-							}
-							// remove use
+						// give spell
+						spellbook.addSpell(spell);
+						spellbook.save();
+						sendMessage(event.getPlayer(), formatMessage(strLearned, "%s", spell.getName()));
+						if (cancelReadOnLearn) {
+							event.setCancelled(true);
+						}
+						// remove use
+						if (uses > 0) {
+							uses--;
 							if (uses > 0) {
-								uses--;
-								if (uses > 0) {
-									event.getBook().addHiddenData("MagicSpell", data[0] + "," + uses);
-								} else {
-									event.getBook().removeHiddenData("MagicSpell");
-								}							
-							}
+								event.getBook().addHiddenData("MagicSpell", data[0] + "," + uses);
+							} else {
+								event.getBook().removeHiddenData("MagicSpell");
+							}							
 						}
 					}
 				}

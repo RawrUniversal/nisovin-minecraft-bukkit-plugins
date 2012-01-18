@@ -6,7 +6,8 @@ import java.util.HashSet;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -25,7 +26,6 @@ public class CarpetSpell extends BuffSpell {
 	
 	private HashMap<String,BlockPlatform> windwalkers;
 	private HashSet<Player> falling;
-	private boolean listening;
 
 	public CarpetSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -37,14 +37,6 @@ public class CarpetSpell extends BuffSpell {
 		
 		windwalkers = new HashMap<String,BlockPlatform>();
 		falling = new HashSet<Player>();
-		listening = false;
-		
-		if (cancelOnLogout) {
-			addListener(Event.Type.PLAYER_QUIT);
-		}
-		if (cancelOnTeleport) {
-			addListener(Event.Type.PLAYER_TELEPORT);
-		}
 	}
 
 	@Override
@@ -55,30 +47,11 @@ public class CarpetSpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			windwalkers.put(player.getName(), new BlockPlatform(platformBlock, Material.AIR, player.getLocation().getBlock().getRelative(0,-1,0), size, true, "square"));
 			startSpellDuration(player);
-			addListeners();
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
-	
-	private void addListeners() {
-		if (!listening) {
-			addListener(Event.Type.PLAYER_MOVE);
-			addListener(Event.Type.PLAYER_TOGGLE_SNEAK);
-			addListener(Event.Type.BLOCK_BREAK);
-			listening = true;
-		}
-	}
-	
-	/*private void removeListeners() {
-		if (listening && windwalkers.size() == 0) {
-			removeListener(Event.Type.PLAYER_MOVE);
-			removeListener(Event.Type.PLAYER_TOGGLE_SNEAK);
-			removeListener(Event.Type.BLOCK_BREAK);
-			listening = false;
-		}
-	}*/
 
-	@Override
+	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		BlockPlatform platform = windwalkers.get(event.getPlayer().getName());
 		if (platform != null) {
@@ -105,8 +78,8 @@ public class CarpetSpell extends BuffSpell {
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=PlayerToggleSneakEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
 		if (windwalkers.containsKey(event.getPlayer().getName()) && event.isSneaking()) {
 			Player player = event.getPlayer();
@@ -123,9 +96,10 @@ public class CarpetSpell extends BuffSpell {
 			}			
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
 	public void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled()) return;
 		if (windwalkers.size() > 0 && event.getBlock().getType() == platformBlock) {
 			for (BlockPlatform platform : windwalkers.values()) {
 				if (platform.blockInPlatform(event.getBlock())) {
@@ -135,15 +109,18 @@ public class CarpetSpell extends BuffSpell {
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		turnOff(event.getPlayer());
+		if (cancelOnLogout) {
+			turnOff(event.getPlayer());
+		}
 	}
-	
-	@Override
+
+	@EventHandler(event=PlayerTeleportEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if (windwalkers.containsKey(event.getPlayer().getName())) {
+		if (event.isCancelled()) return;
+		if (cancelOnTeleport && windwalkers.containsKey(event.getPlayer().getName())) {
 			if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName()) || event.getFrom().toVector().distanceSquared(event.getTo().toVector()) > 50*50) {
 				turnOff(event.getPlayer());
 			}

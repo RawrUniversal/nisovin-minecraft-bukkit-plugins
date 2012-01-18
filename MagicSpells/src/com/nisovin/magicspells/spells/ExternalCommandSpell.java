@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
@@ -29,8 +30,6 @@ public class ExternalCommandSpell extends InstantSpell {
 
 	public ExternalCommandSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
-		
-		addListener(Event.Type.PLAYER_COMMAND_PREPROCESS);
 		
 		castWithItem = config.getBoolean("spells." + spellName + ".can-cast-with-item", true);
 		castByCommand = config.getBoolean("spells." + spellName + ".can-cast-by-command", true);
@@ -88,7 +87,7 @@ public class ExternalCommandSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@Override
+	@EventHandler(event=PlayerCommandPreprocessEvent.class, priority=EventPriority.NORMAL)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		if (!event.getPlayer().isOp() && commandToBlock != null && commandToBlock.size() > 0) {
 			String msg = event.getMessage();

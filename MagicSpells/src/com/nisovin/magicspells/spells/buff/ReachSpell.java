@@ -10,7 +10,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -39,8 +40,6 @@ public class ReachSpell extends BuffSpell {
 		disallowedBreakBlocks = getConfigIntList("disallowed-break-blocks", null);
 		disallowedPlaceBlocks = getConfigIntList("disallowed-place-blocks", null);
 		
-		addListener(Event.Type.PLAYER_INTERACT);
-		
 		reaching = new HashSet<Player>();
 	}
 
@@ -56,7 +55,7 @@ public class ReachSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@Override
+	@EventHandler(event=PlayerInteractEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (reaching.contains(event.getPlayer())) {
 			Player player = event.getPlayer();
@@ -86,13 +85,13 @@ public class ReachSpell extends BuffSpell {
 					Bukkit.getPluginManager().callEvent(evt);
 					if (!evt.isCancelled()) {
 						// remove block
-						BlockState state = targetBlock.getState();
 						targetBlock.getWorld().playEffect(targetBlock.getLocation(), Effect.STEP_SOUND, targetBlock.getTypeId());
 						// drop item
 						if (dropBlocks && player.getGameMode() == GameMode.SURVIVAL) {
 							targetBlock.breakNaturally();
+						} else {
+							targetBlock.setType(Material.AIR);
 						}
-						targetBlock.setType(Material.AIR);
 						addUseAndChargeCost(player);
 					}
 				} else if ((action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && targetBlock.getType() != Material.AIR) {

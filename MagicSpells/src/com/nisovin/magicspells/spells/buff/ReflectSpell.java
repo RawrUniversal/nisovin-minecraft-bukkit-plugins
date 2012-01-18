@@ -3,9 +3,10 @@ package com.nisovin.magicspells.spells.buff;
 import java.util.HashSet;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 
 import com.nisovin.magicspells.BuffSpell;
-import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -17,8 +18,6 @@ public class ReflectSpell extends BuffSpell {
 		super(config, spellName);
 		
 		reflectors = new HashSet<Player>();
-		
-		addListener(MagicEventType.SPELL_TARGET);
 	}
 	
 	@Override
@@ -32,7 +31,7 @@ public class ReflectSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@Override
+	@EventHandler(event=SpellTargetEvent.class, priority=EventPriority.NORMAL)
 	public void onSpellTarget(SpellTargetEvent event) {
 		if (event.isCancelled()) return;
 		if (event.getTarget() instanceof Player) {

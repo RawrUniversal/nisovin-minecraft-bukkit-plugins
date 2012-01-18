@@ -12,7 +12,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,14 +24,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.nisovin.magicspells.events.MagicEventType;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spells.*;
@@ -41,7 +39,6 @@ import com.nisovin.magicspells.spells.channeled.*;
 import com.nisovin.magicspells.spells.command.*;
 import com.nisovin.magicspells.spells.instant.*;
 import com.nisovin.magicspells.util.MagicConfig;
-import com.nisovin.magicspells.util.MagicListener;
 
 public class MagicSpells extends JavaPlugin {
 
@@ -78,14 +75,9 @@ public class MagicSpells extends JavaPlugin {
 	protected static String strNoMagicZone;
 	public static String strConsoleName;
 	
-	protected HashSet<MagicListener> listenerObjects;
-	
 	protected static HashMap<String,Spell> spells; // map internal names to spells
 	protected static HashMap<String,Spell> spellNames; // map configured names to spells
 	protected static HashMap<String,Spellbook> spellbooks; // player spellbooks
-	
-	protected static HashMap<Event.Type,HashSet<Spell>> listeners;
-	protected static HashMap<MagicEventType, HashSet<Spell>> customListeners;
 	
 	protected static ManaBarManager mana;
 	protected static HashMap<Player,Long> manaPotionCooldowns;
@@ -94,24 +86,20 @@ public class MagicSpells extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		load();
-		
-		// load listeners
-		listenerObjects = new HashSet<MagicListener>();
-		listenerObjects.add(new MagicPlayerListener(this));
-		listenerObjects.add(new MagicEntityListener(this));
-		listenerObjects.add(new MagicBlockListener(this));
-		listenerObjects.add(new MagicSpellListener(this));
 	}
 	
 	private void load() {
 		plugin = this;
 		
+		// load listeners
+		PluginManager pm = plugin.getServer().getPluginManager();
+		pm.registerEvents(new MagicPlayerListener(this), this);
+		pm.registerEvents(new MagicSpellListener(this), this);
+		
 		// create storage stuff
 		spells = new HashMap<String,Spell>();
 		spellNames = new HashMap<String,Spell>();
 		spellbooks = new HashMap<String,Spellbook>();
-		listeners = new HashMap<Event.Type,HashSet<Spell>>();
-		customListeners = new HashMap<MagicEventType, HashSet<Spell>>();
 		
 		// make sure directories are created
 		this.getDataFolder().mkdir();
@@ -121,8 +109,8 @@ public class MagicSpells extends JavaPlugin {
 		loadConfigFromJar();
 		MagicConfig config = new MagicConfig(new File(this.getDataFolder(), "config.yml"));
 		debug = config.getBoolean("general.debug", false);
-		textColor = ChatColor.getByCode(config.getInt("general.text-color", ChatColor.DARK_AQUA.getCode()));
-		broadcastRange = config.getInt("general.broadcast-range", 20);		
+		textColor = ChatColor.getByChar(config.getString("general.text-color", ChatColor.DARK_AQUA.getChar() + ""));
+		broadcastRange = config.getInt("general.broadcast-range", 20);
 		
 		opsHaveAllSpells = config.getBoolean("general.ops-have-all-spells", true);
 		defaultAllPermsFalse = config.getBoolean("general.default-all-perms-false", false);
@@ -201,7 +189,6 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// load permissions
-		PluginManager pm = getServer().getPluginManager();
 		Set<Permission> perms = pm.getPermissions();
 		if (perms != null && perms.size() > 0) {
 			//for (Permission perm : perms) {
@@ -241,14 +228,13 @@ public class MagicSpells extends JavaPlugin {
 				}
 			}
 			spell.initialize();
+			pm.registerEvents(spell, this);
 		}
 		
 		// load online player spellbooks
 		for (Player p : getServer().getOnlinePlayers()) {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
 		}
-		
-		getServer().getLogger().info("MagicSpells v" + this.getDescription().getVersion() + " loaded!");
 		
 	}
 	
@@ -367,7 +353,6 @@ public class MagicSpells extends JavaPlugin {
 		spellClasses.add(RecallSpell.class);
 		spellClasses.add(ReflectSpell.class);
 		spellClasses.add(RepairSpell.class);
-		spellClasses.add(SafefallSpell.class);
 		spellClasses.add(ScrollSpell.class);
 		spellClasses.add(SpellbookSpell.class);
 		spellClasses.add(StealthSpell.class);
@@ -573,44 +558,6 @@ public class MagicSpells extends JavaPlugin {
 	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault, Map<String,Boolean> children) {
 		if (pm.getPermission("magicspells." + perm) == null) {
 			pm.addPermission(new Permission("magicspells." + perm, permDefault, children));
-		}
-	}
-	
-	protected static void addSpellListener(Event.Type eventType, Spell spell) {
-		HashSet<Spell> spells = listeners.get(eventType);
-		if (spells == null) {
-			spells = new HashSet<Spell>();
-			listeners.put(eventType, spells);
-		}
-		spells.add(spell);
-	}
-	
-	protected static void addSpellListener(MagicEventType eventType, Spell spell) {
-		HashSet<Spell> spells = customListeners.get(eventType);
-		if (spells == null) {
-			spells = new HashSet<Spell>();
-			customListeners.put(eventType, spells);
-		}
-		spells.add(spell);
-	}
-	
-	protected static void removeSpellListener(Event.Type eventType, Spell spell) {
-		HashSet<Spell> spells = listeners.get(eventType);
-		if (spells != null) {
-			spells.remove(spell);
-			if (spells.size() == 0) {
-				listeners.remove(eventType);
-			}
-		}
-	}
-	
-	protected static void removeSpellListener(MagicEventType eventType, Spell spell) {
-		HashSet<Spell> spells = customListeners.get(eventType);
-		if (spells != null) {
-			spells.remove(spell);
-			if (spells.size() == 0) {
-				customListeners.remove(eventType);
-			}
 		}
 	}
 	
@@ -867,10 +814,7 @@ public class MagicSpells extends JavaPlugin {
 		spellNames = null;
 		spellbooks.clear();
 		spellbooks = null;
-		listeners.clear();
-		listeners = null;
-		customListeners.clear();
-		customListeners = null;
+		HandlerList.unregisterAll(this);
 		if (mana != null) {
 			mana.turnOff();
 			mana = null;
@@ -878,13 +822,7 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	@Override
-	public void onDisable() {
-		for (MagicListener listener : listenerObjects) {
-			listener.disable();
-		}
-		listenerObjects.clear();
-		listenerObjects = null;
-		
+	public void onDisable() {		
 		unload();
 	}
 	

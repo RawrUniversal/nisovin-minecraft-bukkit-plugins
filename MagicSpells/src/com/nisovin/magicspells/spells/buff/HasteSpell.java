@@ -12,7 +12,8 @@ import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 
 import com.nisovin.magicspells.BuffSpell;
@@ -32,8 +33,6 @@ public class HasteSpell extends BuffSpell {
 		boostDuration = getConfigInt("boost-duration", 300);
 		
 		hasted = new HashMap<Player,Integer>();
-		
-		addListener(Event.Type.PLAYER_TOGGLE_SPRINT);
 	}
 
 	@Override
@@ -45,8 +44,9 @@ public class HasteSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@Override
+	@EventHandler(event=PlayerToggleSprintEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
+		if (event.isCancelled()) return;
 		Player player = event.getPlayer();
 		if (hasted.containsKey(player)) {
 			if (isExpired(player)) {
@@ -73,6 +73,9 @@ public class HasteSpell extends BuffSpell {
 	
 	@Override
 	protected void turnOff() {
+		for (Player p : hasted.keySet()) {
+			removeMobEffect(p, 1);
+		}
 		hasted.clear();
 	}
 	

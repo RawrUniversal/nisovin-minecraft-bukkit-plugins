@@ -7,7 +7,8 @@ import java.util.Iterator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -33,9 +34,6 @@ public abstract class ChanneledSpell extends Spell {
 	
 	public ChanneledSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
-		
-		addListener(Event.Type.PLAYER_MOVE);
-		addListener(Event.Type.PLAYER_QUIT);
 		
 		channelTime = getConfigInt("channel-time", 30);
 		reqParticipants = getConfigInt("req-participants", 1);
@@ -169,7 +167,7 @@ public abstract class ChanneledSpell extends Spell {
 		allChannelers.remove(player);
 	}
 	
-	@Override
+	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
 	public final void onPlayerMove(PlayerMoveEvent event) {
 		if (allChannelers.contains(event.getPlayer())) {
 			Location from = event.getFrom();
@@ -180,8 +178,8 @@ public abstract class ChanneledSpell extends Spell {
 			}
 		}
 	}
-	
-	@Override
+
+	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
 	public final void onPlayerQuit(PlayerQuitEvent event) {
 		if (allChannelers.contains(event.getPlayer())) {
 			removeChanneler(event.getPlayer());
