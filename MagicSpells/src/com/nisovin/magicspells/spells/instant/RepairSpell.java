@@ -14,6 +14,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class RepairSpell extends InstantSpell {
 
+	private int repairAmt;
 	private String[] toRepair;
 	private List<Integer> ignoreItems;
 	private String strNothingToRepair;
@@ -21,6 +22,7 @@ public class RepairSpell extends InstantSpell {
 	public RepairSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		repairAmt = getConfigInt("repair-amount", 300);
 		List<String> toRepairList = getConfigStringList("to-repair", null);
 		if (toRepairList == null) {
 			toRepairList = new ArrayList<String>();
@@ -51,7 +53,7 @@ public class RepairSpell extends InstantSpell {
 				if (s.equals("held")) {
 					ItemStack item = player.getItemInHand();
 					if (item != null && isRepairable(item.getType()) && item.getDurability() > 0) {
-						item.setDurability((short)0);
+						item.setDurability(newDura(item));
 						player.setItemInHand(item);
 						repaired++;
 					}
@@ -68,7 +70,7 @@ public class RepairSpell extends InstantSpell {
 					for (int i = start; i < end; i++) {
 						ItemStack item = items[i];
 						if (item != null && isRepairable(item.getType()) && item.getDurability() > 0) {
-							item.setDurability((short)0);
+							item.setDurability(newDura(item));
 							items[i] = item;
 							repaired++;
 						}
@@ -77,28 +79,28 @@ public class RepairSpell extends InstantSpell {
 				} else if (s.equals("helmet")) {
 					ItemStack item = player.getInventory().getHelmet();
 					if (item != null && isRepairable(item.getType()) && item.getDurability() > 0) {
-						item.setDurability((short)0);
+						item.setDurability(newDura(item));
 						player.getInventory().setHelmet(item);
 						repaired++;
 					}
 				} else if (s.equals("chestplate")) {
 					ItemStack item = player.getInventory().getChestplate();
 					if (item != null && isRepairable(item.getType()) && item.getDurability() > 0) {
-						item.setDurability((short)0);
+						item.setDurability(newDura(item));
 						player.getInventory().setChestplate(item);
 						repaired++;
 					}
 				} else if (s.equals("leggings")) {
 					ItemStack item = player.getInventory().getLeggings();
 					if (item != null && isRepairable(item.getType()) && item.getDurability() > 0) {
-						item.setDurability((short)0);
+						item.setDurability(newDura(item));
 						player.getInventory().setLeggings(item);
 						repaired++;
 					}
 				} else if (s.equals("boots")) {
 					ItemStack item = player.getInventory().getBoots();
 					if (item != null && isRepairable(item.getType()) && item.getDurability() > 0) {
-						item.setDurability((short)0);
+						item.setDurability(newDura(item));
 						player.getInventory().setBoots(item);
 						repaired++;
 					}
@@ -110,6 +112,13 @@ public class RepairSpell extends InstantSpell {
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private short newDura(ItemStack item) {
+		short dura = item.getDurability();
+		dura -= repairAmt;
+		if (dura < 0) dura = 0;
+		return dura;
 	}
 	
 	private boolean isRepairable(Material material) {

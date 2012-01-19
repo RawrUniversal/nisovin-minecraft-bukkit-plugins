@@ -811,6 +811,7 @@ spells:
         name: repair
         description: Repairs your gear.
         cooldown: 120
+        repair-amount: 300
         to-repair:
             - held
             - hotbar
