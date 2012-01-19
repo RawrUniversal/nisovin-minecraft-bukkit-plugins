@@ -1,0 +1,6 @@
+first-line: [SPELL SHOP]
+require-known-spell: true
+require-teach-perm: true
+str-already-known: You already know that spell.
+str-cant-afford: You cannot afford that spell.
+str-purchased: You have purchased the %s spell.
