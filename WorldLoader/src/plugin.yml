@@ -1,0 +1,36 @@
+name: WorldLoader
+main: com.nisovin.worldloader.WorldLoader
+version: 1.0
+author: nisovin
+commands:
+    loadworld:
+        description: Loads an instance of a base world
+        usage: /<command> <worldname>
+    saveworld:
+        description: Overwrites the base world with the currently loaded world
+        usage: /<command>
+    newworld:
+        description: Creates a new base world
+        usage: /<command> <worldname> <seed> <short world description>
+    
+    minplayers:
+        usage: /<command> #
+    maxplayers:
+        usage: /<command> #
+    breakables:
+        usage: /<command> #,#,#...
+    placeables:
+        usage: /<command> #,#,#...
+    monsters:
+        usage: /<command> on|off
+    
+    party:
+        description: Shows your current party information
+        usage: /<command>
+    invite:
+        description: Invites a player to your party or instance
+        usage: /<command> <player>
+    leave:
+        description: Leave your party or instance
+        usage: /<command>
+        aliases: [quit]
