@@ -41,10 +41,12 @@ public class WorldLoader extends JavaPlugin {
 		worldBases = new HashMap<String,WorldBase>();
 		Configuration config = getConfig();
 		ConfigurationSection worldsSection = config.getConfigurationSection("worlds");
-		Set<String> worldNodes = worldsSection.getKeys(false);
-		if (worldNodes != null) {
-			for (String key : worldNodes) {
-				worldBases.put(key, new WorldBase(key, worldsSection.getConfigurationSection(key)));
+		if (worldsSection != null) {
+			Set<String> worldNodes = worldsSection.getKeys(false);
+			if (worldNodes != null) {
+				for (String key : worldNodes) {
+					worldBases.put(key, new WorldBase(key, worldsSection.getConfigurationSection(key)));
+				}
 			}
 		}
 		
@@ -55,12 +57,22 @@ public class WorldLoader extends JavaPlugin {
 		
 		// register commands and events
 		CommandExec exec = new CommandExec(this);
+		
 		getCommand("loadworld").setExecutor(exec);
 		getCommand("saveworld").setExecutor(exec);
 		getCommand("newworld").setExecutor(exec);
+		
+		getCommand("start").setExecutor(exec);
+		getCommand("minplayers").setExecutor(exec);
+		getCommand("maxplayers").setExecutor(exec);
+		getCommand("breakable").setExecutor(exec);
+		getCommand("placeable").setExecutor(exec);
+		getCommand("monsters").setExecutor(exec);
+		
 		getCommand("party").setExecutor(exec);
 		getCommand("invite").setExecutor(exec);
 		getCommand("leave").setExecutor(exec);
+		
 		getServer().getPluginManager().registerEvents(new EventListener(this), this);
 	}
 

@@ -80,6 +80,10 @@ public class WorldInstance {
 		respawn = location;
 	}
 	
+	public WorldBase getBase() {
+		return base;
+	}
+	
 	public Location getRespawn() {
 		if (respawn != null) {
 			return respawn;
@@ -140,7 +144,7 @@ public class WorldInstance {
 		if (!s.isEmpty()) {
 			try {
 				String[] coords = s.split(",");
-				start = new Location(world, Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), Double.parseDouble(coords[2]));
+				start = new Location(world, Double.parseDouble(coords[0]), Double.parseDouble(coords[1]), Double.parseDouble(coords[2]), Float.parseFloat(coords[3]), Float.parseFloat(coords[4]));
 			} catch (Exception e) {
 				start = world.getSpawnLocation();
 			}

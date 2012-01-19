@@ -12,22 +12,19 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 public class SignExecutor {
 	
 	public static void executeSign(Block block, Player player) {
-		System.out.println("Executing " + block);
-		
 		if (block.getType() != Material.WALL_SIGN && block.getType() != Material.SIGN_POST) {
 			return;
 		}
 		
 		Sign sign = (Sign)block.getState();
 		String[] lines = sign.getLines();
-		if (!lines[0].equals("[ACTION]")) {
+		if (!lines[0].equals("[SCRIPT]")) {
 			return;
 		}
 		
 		for (int i = 1; i < 4; i++) {
 			String line = lines[i];
 			if (line != null && !line.isEmpty()) {
-				System.out.println(line);
 				executeLine(line, block, player);
 			}
 		}
@@ -42,7 +39,11 @@ public class SignExecutor {
 			tpAll(line, block);
 		} else if (line.matches("^CP -?[0-9]+,[0-9]+,-?[0-9]+$")) {
 			checkpoint(line, block);
-		} else if (line.matches("^MOB (Cr|Sk|Sp|Gi|Zo|Sl|Gh|ZP|En|CS|Si|Bl|Bl,MC,ED,SG,Wo) -?[0-9]*,-?[0-9]*,-?[0-9]*$")) {
+		} else if (line.matches("^EXP [0-9]+$")) {
+			giveExp(line, player);
+		} else if (line.matches("^EXPA [0-9]+$")) {
+			giveExpAll(line, block);
+		} else if (line.matches("^MOB (Bl|Ca|Ch|Co|Cr|En|Gh|Gi|Ma|Mo|Pi|Sh|Si|Sk|Sl|Sn|Sp|Sq|Wo|Zo|ZP) -?[0-9]*,-?[0-9]*,-?[0-9]*$")) {
 			spawnMob(line, block);
 		} else if (line.matches("^EXE -?[0-9]*,-?[0-9]*,-?[0-9]*$")) {
 			exe(line, block, player);
@@ -58,6 +59,8 @@ public class SignExecutor {
 			weather(line, block);
 		} else if (line.matches("^TIME [0-9]+$")) {
 			time(line, block);
+		} else if (line.equals("END")) {
+			end(line, block);
 		}
 	}
 	
@@ -122,20 +125,70 @@ public class SignExecutor {
 		}
 	}
 	
+	private static void giveExp(String line, Player player) {
+		String[] args = line.split(" ");
+		int amt = Integer.parseInt(args[1]);
+		
+		player.giveExp(amt);
+	}
+	
+	private static void giveExpAll(String line, Block block) {
+		String[] args = line.split(" ");
+		int amt = Integer.parseInt(args[1]);
+		
+		for (Player player : block.getWorld().getPlayers()) {
+			player.giveExp(amt);
+		}
+	}
+	
 	private static void spawnMob(String line, Block block) {
 		String[] args = line.split(" ");
 		String[] coords = args[2].split(",", 3);
 		
 		String c = args[1];
 		CreatureType creature = null;
-		if (c.equals("Cr")) {
+		if (c.equals("Bl")) {
+			creature = CreatureType.BLAZE;
+		} else if (c.equals("Ca")) {
+			creature = CreatureType.CAVE_SPIDER;
+		} else if (c.equals("Ch")) {
+			creature = CreatureType.CHICKEN;
+		} else if (c.equals("Co")) {
+			creature = CreatureType.COW;
+		} else if (c.equals("Cr")) {
 			creature = CreatureType.CREEPER;
+		} else if (c.equals("En")) {
+			creature = CreatureType.ENDERMAN;
+		} else if (c.equals("Gh")) {
+			creature = CreatureType.GHAST;
+		} else if (c.equals("Gi")) {
+			creature = CreatureType.GIANT;
+		} else if (c.equals("Ma")) {
+			creature = CreatureType.MAGMA_CUBE;
+		} else if (c.equals("Mo")) {
+			creature = CreatureType.MUSHROOM_COW;
+		} else if (c.equals("Pi")) {
+			creature = CreatureType.PIG;
+		} else if (c.equals("Sh")) {
+			creature = CreatureType.SHEEP;
+		} else if (c.equals("Si")) {
+			creature = CreatureType.SILVERFISH;
 		} else if (c.equals("Sk")) {
 			creature = CreatureType.SKELETON;
+		} else if (c.equals("Sl")) {
+			creature = CreatureType.SLIME;
+		} else if (c.equals("Sn")) {
+			creature = CreatureType.SNOWMAN;
 		} else if (c.equals("Sp")) {
 			creature = CreatureType.SPIDER;
+		} else if (c.equals("Sq")) {
+			creature = CreatureType.SQUID;
+		} else if (c.equals("Wo")) {
+			creature = CreatureType.WOLF;
 		} else if (c.equals("Zo")) {
 			creature = CreatureType.ZOMBIE;
+		} else if (c.equals("ZP")) {
+			creature = CreatureType.PIG_ZOMBIE;
 		}
 		
 		int x = coords[0].isEmpty() ? 0 : Integer.parseInt(coords[0]);
@@ -248,7 +301,7 @@ public class SignExecutor {
 		text = text.trim();
 		
 		if (player != null) {
-			text = text.replace("%player%", player.getName());
+			text = text.replace("%p%", player.getName());
 		}
 		
 		Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), text);
@@ -269,6 +322,13 @@ public class SignExecutor {
 		
 		int time = Integer.parseInt(args[1]);
 		block.getWorld().setTime(time);
+	}
+	
+	private static void end(String line, Block block) {
+		WorldInstance instance = WorldLoader.plugin.getWorldInstance(block.getWorld());
+		if (instance != null) {
+			instance.unloadWorld(true);
+		}
 	}
 	
 }

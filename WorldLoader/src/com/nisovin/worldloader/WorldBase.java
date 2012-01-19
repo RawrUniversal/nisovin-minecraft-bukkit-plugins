@@ -77,4 +77,34 @@ public class WorldBase {
 		return this.start;
 	}
 	
+	public void setStartLocationString(String location) {
+		this.start = location;
+	}
+	
+	public void setMinPlayers(int min) {
+		this.minPlayers = min;
+	}
+	
+	public void setMaxPlayers(int max) {
+		this.maxPlayers = max;
+	}
+	
+	public void setMonstersEnabled(boolean enabled) {
+		this.monsters = enabled;
+	}
+	
+	public void setBreakable(int[] types) {
+		breakable.clear();
+		for (int type : types) {
+			breakable.add(type);
+		}
+	}
+	
+	public void setPlaceable(int[] types) {
+		placeable.clear();
+		for (int type : types) {
+			placeable.add(type);
+		}
+	}
+	
 }

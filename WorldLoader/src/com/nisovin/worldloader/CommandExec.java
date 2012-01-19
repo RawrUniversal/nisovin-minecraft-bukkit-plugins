@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,6 +31,18 @@ public class CommandExec implements CommandExecutor {
 			return saveWorld(sender, args);
 		} else if (comm.equals("newworld")) {
 			return newWorld(sender, args);
+		} else if (comm.equals("start")) {
+			return start(sender, args);
+		} else if (comm.equals("minplayers")) {
+			return setMin(sender, args);
+		} else if (comm.equals("maxplayers")) {
+			return setMax(sender, args);
+		} else if (comm.equals("breakable")) {
+			return setBreakables(sender, args);
+		} else if (comm.equals("placeable")) {
+			return setPlaceables(sender, args);
+		} else if (comm.equals("monsters")) {
+			return setMonsters(sender, args);
 		} else if (comm.equals("party")) {
 			return party(sender, args);
 		} else if (comm.equals("invite")) {
@@ -80,13 +93,18 @@ public class CommandExec implements CommandExecutor {
 		}
 		
 		String worldName = args[0];
+		if (!worldName.matches("^[A-Za-z0-9_]+$")) {
+			return false;
+		}
+		
 		String seed = args[1];
 		if (!seed.matches("[0-9]+")) {
 			return false;
 		}
-		String worldLongName = args[2];
+		
+		String worldDesc = args[2];
 		for (int i = 3; i < args.length; i++) {
-			worldLongName += " " + args[i];
+			worldDesc += " " + args[i];
 		}
 		
 		sender.sendMessage("Creating new world base...");
@@ -94,7 +112,7 @@ public class CommandExec implements CommandExecutor {
 		Configuration config = plugin.getConfig();
 		ConfigurationSection section = config.createSection("worlds." + worldName);
 		section.set("folder", worldName);
-		section.set("name", worldLongName);
+		section.set("description", worldDesc);
 		section.set("seed", Long.parseLong(seed));
 		plugin.saveConfig();
 		
@@ -111,24 +129,164 @@ public class CommandExec implements CommandExecutor {
 		return true;
 	}
 
+	private boolean start(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player)) {
+			return true;
+		}
+		Player player = (Player)sender;
+		
+		WorldInstance instance = plugin.getWorldInstance(player);
+		if (instance == null) {
+			player.sendMessage("You are not in an instance.");
+			return true;
+		}
+		
+		Location loc = player.getLocation();
+		String location = loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw() + "," + loc.getPitch();
+		instance.getBase().setStartLocationString(location);
+		setConfigValue(instance, "start", location);
+		return true;
+	}
+	
 	private boolean setMin(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player)) {
+			return true;
+		}
+		Player player = (Player)sender;
+		
+		if (args.length != 1 || !args[0].matches("^[0-9]+$")) {
+			return false;
+		}
+		
+		int min = Integer.parseInt(args[0]);
+		
+		WorldInstance instance = plugin.getWorldInstance(player);
+		if (instance == null) {
+			player.sendMessage("You are not in an instance.");
+			return true;
+		}
+		
+		instance.getBase().setMinPlayers(min);
+		setConfigValue(instance, "min-players", min);
+		
 		return true;
 	}
 	
 	private boolean setMax(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player)) {
+			return true;
+		}
+		Player player = (Player)sender;
+		
+		if (args.length != 1 || !args[0].matches("^[0-9]+$")) {
+			return false;
+		}
+		
+		int min = Integer.parseInt(args[0]);
+		
+		WorldInstance instance = plugin.getWorldInstance(player);
+		if (instance == null) {
+			player.sendMessage("You are not in an instance.");
+			return true;
+		}
+		
+		instance.getBase().setMaxPlayers(min);
+		setConfigValue(instance, "max-players", min);
+		
 		return true;
 	}
 	
 	private boolean setBreakables(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player)) {
+			return true;
+		}
+		Player player = (Player)sender;
+		
+		if (args.length != 1 || !args[0].matches("^[0-9]+(,[0-9]+)*$")) {
+			return false;
+		}
+		
+		String[] s = args[0].split(",");
+		int[] types = new int[s.length];
+		for (int i = 0; i < s.length; i++) {
+			types[i] = Integer.parseInt(s[i]);
+		}
+		
+		WorldInstance instance = plugin.getWorldInstance(player);
+		if (instance == null) {
+			player.sendMessage("You are not in an instance.");
+			return true;
+		}
+		
+		instance.getBase().setBreakable(types);
+		setConfigValue(instance, "breakable", types);
+		
 		return true;
 	}
 	
 	private boolean setPlaceables(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player)) {
+			return true;
+		}
+		Player player = (Player)sender;
+		
+		if (args.length != 1 || !args[0].matches("^[0-9]+(,[0-9]+)*$")) {
+			return false;
+		}
+		
+		String[] s = args[0].split(",");
+		int[] types = new int[s.length];
+		for (int i = 0; i < s.length; i++) {
+			types[i] = Integer.parseInt(s[i]);
+		}
+		
+		WorldInstance instance = plugin.getWorldInstance(player);
+		if (instance == null) {
+			player.sendMessage("You are not in an instance.");
+			return true;
+		}
+		
+		instance.getBase().setPlaceable(types);
+		setConfigValue(instance, "placeable", types);
+		
 		return true;
 	}
 	
 	private boolean setMonsters(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player)) {
+			return true;
+		}
+		Player player = (Player)sender;
+		
+		if (args.length != 1) {
+			return false;
+		}
+		
+		boolean val = false;
+		if (args[0].equalsIgnoreCase("on")) {
+			val = true;
+		} else if (args[0].equalsIgnoreCase("off")) {
+			val = false;
+		} else {
+			return false;
+		}
+		
+		WorldInstance instance = plugin.getWorldInstance(player);
+		if (instance == null) {
+			player.sendMessage("You are not in an instance.");
+			return true;
+		}
+		
+		instance.getBase().setMonstersEnabled(val);
+		setConfigValue(instance, "monsters", val);
+		
 		return true;
+	}
+	
+	private void setConfigValue(WorldInstance instance, String key, Object value) {
+		ConfigurationSection section = plugin.getConfig().getConfigurationSection("worlds." + instance.getBase().getName());
+		section.set(key, value);
+		plugin.saveConfig();
 	}
 	
 	// *** PARTY COMMANDS *** //
