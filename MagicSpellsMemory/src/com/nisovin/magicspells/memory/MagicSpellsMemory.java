@@ -59,7 +59,7 @@ public class MagicSpellsMemory extends JavaPlugin {
 		
 		saveConfig();
 		
-		new MemorySpellListener(this);
+		getServer().getPluginManager().registerEvents(new MemorySpellListener(this), this);
 	}
 	
 	@Override

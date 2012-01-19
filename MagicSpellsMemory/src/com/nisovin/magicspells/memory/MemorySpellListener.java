@@ -1,21 +1,21 @@
 package com.nisovin.magicspells.memory;
 
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellLearnEvent;
-import com.nisovin.magicspells.events.SpellListener;
 
-public class MemorySpellListener extends SpellListener {
+public class MemorySpellListener implements Listener {
 
 	private MagicSpellsMemory plugin;
 	
 	public MemorySpellListener(MagicSpellsMemory plugin) {
 		this.plugin = plugin;
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, this, Event.Priority.Normal, plugin);
 	}
 	
-	@Override
+	@EventHandler(event=SpellLearnEvent.class, priority=EventPriority.NORMAL)
 	public void onSpellLearn(SpellLearnEvent event) {
 		int req = plugin.getRequiredMemory(event.getSpell());
 		if (req > 0) {
