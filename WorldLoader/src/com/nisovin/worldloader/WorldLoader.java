@@ -4,12 +4,20 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Set;
 
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class WorldLoader extends JavaPlugin {
 
@@ -22,6 +30,9 @@ public class WorldLoader extends JavaPlugin {
 	protected HashMap<String,Party> parties;
 	protected HashMap<String,String> playerLocations;
 	protected HashMap<String,PendingAction> pendingActions;
+	protected HashMap<Item,String> loot;
+	
+	protected Economy economy;
 	
 	@Override
 	public void onEnable() {
@@ -54,6 +65,7 @@ public class WorldLoader extends JavaPlugin {
 		parties = new HashMap<String, Party>();
 		playerLocations = new HashMap<String, String>();
 		pendingActions = new HashMap<String, PendingAction>();
+		loot = new HashMap<Item, String>();
 		
 		// register commands and events
 		CommandExec exec = new CommandExec(this);
@@ -74,6 +86,14 @@ public class WorldLoader extends JavaPlugin {
 		getCommand("leave").setExecutor(exec);
 		
 		getServer().getPluginManager().registerEvents(new EventListener(this), this);
+		
+		// get economy hook
+		RegisteredServiceProvider<Economy> provider = getServer().getServicesManager().getRegistration(Economy.class);
+		if (provider != null) {
+			economy = provider.getProvider();
+		} else {		
+			getLogger().severe("Vault economy provider could not be found!");
+		}
 	}
 
 	public void addPendingAction(PendingAction action) {
@@ -180,6 +200,67 @@ public class WorldLoader extends JavaPlugin {
 	
 	public WorldInstance getWorldInstance(World world) {
 		return loadedWorlds.get(world.getName());
+	}
+	
+	public boolean addMoney(Player player, double amount) {
+		if (economy == null) {
+			return false;
+		}
+		
+		EconomyResponse response = economy.depositPlayer(player.getName(), amount);
+		return response.transactionSuccess();
+	}
+	
+	public void dropGold(Location location, int amount) {
+		World world = location.getWorld();
+		WorldInstance instance = getWorldInstance(world);
+		if (instance == null) {
+			return;
+		}
+		
+		int nuggets = 0, bars = 0, blocks = 0;
+		while (amount >= 100) {
+			blocks++;
+			amount -= 100;
+		}
+		while (amount >= 10) {
+			bars++;
+			amount -= 10;
+		}
+		nuggets = amount;
+		
+		for (Player p : world.getPlayers()) {
+			String name = p.getName().toLowerCase();
+			if (nuggets > 0) {
+				Item item = world.dropItemNaturally(location, new ItemStack(Material.GOLD_NUGGET, nuggets));
+				loot.put(item, name);
+			}
+			if (bars > 0) {
+				Item item = world.dropItemNaturally(location, new ItemStack(Material.GOLD_INGOT, bars));
+				loot.put(item, name);
+			}
+			if (blocks > 0) {
+				Item item = world.dropItemNaturally(location, new ItemStack(Material.GOLD_BLOCK, blocks));
+				loot.put(item, name);
+			}
+		}
+	}
+	
+	public void addLoot(Item item, Player player) {
+		loot.put(item, player.getName().toLowerCase());
+	}
+	
+	public boolean getLoot(Item item, Player player) {
+		if (!loot.containsKey(item)) {
+			return true;
+		}
+		
+		if (loot.get(item).equalsIgnoreCase(player.getName())) {
+			loot.remove(item);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

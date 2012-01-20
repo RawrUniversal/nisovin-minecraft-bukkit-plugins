@@ -3,21 +3,24 @@ package com.nisovin.worldloader;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -138,6 +141,108 @@ public class EventListener implements Listener {
 		WorldInstance world = plugin.getWorldInstance(event.getBlock().getWorld());
 		if (world != null && !world.canPlace(event.getBlock())) {
 			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler(event=PlayerPickupItemEvent.class, priority=EventPriority.NORMAL)
+	public void onItemPickup(PlayerPickupItemEvent event) {
+		if (event.isCancelled()) return;
+		
+		boolean pickup = plugin.getLoot(event.getItem(), event.getPlayer());
+		if (!pickup) {
+			event.setCancelled(true);
+			return;
+		}
+		
+		Material type = event.getItem().getItemStack().getType();
+		if (type == Material.GOLD_NUGGET || type == Material.GOLD_INGOT || type == Material.GOLD_BLOCK) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new GoldScanner(event.getPlayer()), 1);
+		}
+	}
+	
+	public void onEntityDeath(EntityDeathEvent event) {
+		if (!(event.getEntity() instanceof LivingEntity)) return;
+		LivingEntity entity = (LivingEntity)event.getEntity();
+		
+		if (entity.getKiller() == null) {
+			return;
+		}
+		
+		WorldInstance instance = plugin.getWorldInstance(entity.getWorld());
+		if (instance == null) {
+			return;
+		}
+		
+		// handle exp
+		int exp = event.getDroppedExp();
+		event.setDroppedExp(0);
+		for (Player p : entity.getWorld().getPlayers()) {
+			p.giveExp(exp);
+		}
+		
+		// handle drops
+		event.getDrops().clear();
+		Location location = entity.getLocation();
+		if (entity instanceof Zombie) {
+			plugin.dropGold(location, 5);
+		} else if (entity instanceof Skeleton) {
+			plugin.dropGold(location, 6);
+		} else if (entity instanceof Creeper) {
+			plugin.dropGold(location, 8);
+		} else if (entity instanceof Spider) {
+			plugin.dropGold(location, 5);
+		} else if (entity instanceof CaveSpider) {
+			plugin.dropGold(location, 7);
+		} else if (entity instanceof Ghast) {
+			plugin.dropGold(location, 20);
+		} else if (entity instanceof Blaze) {
+			plugin.dropGold(location, 10);
+		} else if (entity instanceof Enderman) {
+			plugin.dropGold(location, 15);
+		} else if (entity instanceof PigZombie) {
+			plugin.dropGold(location, 10);
+		} else if (entity instanceof Wolf) {
+			plugin.dropGold(location, 6);
+		} else if (entity instanceof Silverfish) {
+			plugin.dropGold(location, 2);
+		}
+	}
+	
+	private class GoldScanner implements Runnable {
+		
+		Player player;
+		
+		public GoldScanner(Player player) {
+			this.player = player;
+		}
+		
+		public void run() {
+			int amt = 0;
+			
+			ItemStack[] inv = player.getInventory().getContents();
+			ItemStack item;
+			for (int i = 0; i < inv.length; i++) {
+				item = inv[i];
+				if (item != null) {
+					if (item.getType() == Material.GOLD_NUGGET) {
+						amt += item.getAmount();
+						inv[i] = null;
+					} else if (item.getType() == Material.GOLD_INGOT) {
+						amt += (item.getAmount() * 10);
+						inv[i] = null;
+					} else if (item.getType() == Material.GOLD_BLOCK) {
+						amt += (item.getAmount() * 100);
+						inv[i] = null;
+					}
+				}
+			}
+			
+			if (amt > 0) {
+				boolean added = plugin.addMoney(player, amt);
+				if (added) {
+					player.getInventory().setContents(inv);
+				}				
+			}
 		}
 	}
 	

@@ -315,6 +315,7 @@ public class CommandExec implements CommandExecutor {
 			}
 			player.sendMessage("Party members: " + list);
 		}
+		
 		return true;
 	}
 	
