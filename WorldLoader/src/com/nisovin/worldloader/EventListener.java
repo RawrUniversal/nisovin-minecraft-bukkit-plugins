@@ -3,6 +3,7 @@ package com.nisovin.worldloader;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -58,7 +59,8 @@ public class EventListener implements Listener {
 			}
 		}
 		if (event.getMessage().startsWith("!!")) {
-			event.setMessage("[!!]" + event.getMessage().substring(2));
+			event.setFormat("[" + ChatColor.GOLD + "Global" + ChatColor.WHITE + "] " + event.getFormat());
+			event.setMessage(event.getMessage().substring(2));
 		} else {
 			Set<Player> recips = event.getRecipients();
 			recips.clear();
@@ -70,7 +72,12 @@ public class EventListener implements Listener {
 
 	@EventHandler(event=PlayerJoinEvent.class, priority=EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		plugin.enterSavedInstance(event.getPlayer());
+		Player player = event.getPlayer();
+		if (player.isOp()) {
+			player.setDisplayName(ChatColor.RED + player.getName() + ChatColor.WHITE);
+			player.setPlayerListName(ChatColor.RED + player.getName());
+		}
+		plugin.enterSavedInstance(player);
 	}
 
 	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
