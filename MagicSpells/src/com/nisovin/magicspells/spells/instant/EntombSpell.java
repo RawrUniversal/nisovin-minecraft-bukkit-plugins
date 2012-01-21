@@ -116,6 +116,7 @@ public class EntombSpell extends InstantSpell {
 				}
 			} else {
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 		}		

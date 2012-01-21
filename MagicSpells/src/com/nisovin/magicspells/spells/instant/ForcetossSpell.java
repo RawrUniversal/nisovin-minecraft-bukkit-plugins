@@ -39,6 +39,7 @@ public class ForcetossSpell extends InstantSpell {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
@@ -50,6 +51,7 @@ public class ForcetossSpell extends InstantSpell {
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
+						fizzle(player);
 						return PostCastAction.ALREADY_HANDLED;
 					}
 					damage = event.getDamage();

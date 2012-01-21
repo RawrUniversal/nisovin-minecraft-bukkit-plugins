@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -17,6 +18,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public abstract class InstantSpell extends Spell {
 	
 	protected int range;
+	protected boolean playFizzleSound;
 	private boolean castWithItem;
 	private boolean castByCommand;
 	
@@ -24,6 +26,7 @@ public abstract class InstantSpell extends Spell {
 		super(config, spellName);
 		
 		range = config.getInt("spells." + spellName + ".range", -1);
+		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
 		castWithItem = config.getBoolean("spells." + spellName + ".can-cast-with-item", true);
 		castByCommand = config.getBoolean("spells." + spellName + ".can-cast-by-command", true);
 	}
@@ -45,6 +48,15 @@ public abstract class InstantSpell extends Spell {
 	 */
 	protected boolean inRange(Location loc1, Location loc2, int range) {
 		return loc1.distanceSquared(loc2) < range*range;
+	}
+	
+	/**
+	 * Plays the fizzle sound if it is enabled for this spell.
+	 */
+	protected void fizzle(Player player) {
+		if (playFizzleSound) {
+			player.playEffect(player.getLocation(), Effect.EXTINGUISH, 0);
+		}
 	}
 	
 	/**

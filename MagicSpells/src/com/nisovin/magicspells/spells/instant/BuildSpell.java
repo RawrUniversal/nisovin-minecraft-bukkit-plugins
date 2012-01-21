@@ -46,6 +46,7 @@ public class BuildSpell extends InstantSpell {
 			if (item == null || !isAllowed(item.getType())) {
 				// fail
 				sendMessage(player, strInvalidBlock);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
@@ -54,6 +55,7 @@ public class BuildSpell extends InstantSpell {
 			if (lastBlocks.size() < 2 || lastBlocks.get(1).getType() == Material.AIR) {
 				// fail
 				sendMessage(player, strCantBuild);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				// check plugins
@@ -66,6 +68,7 @@ public class BuildSpell extends InstantSpell {
 					if (event.isCancelled() && b.getType() == item.getType()) {
 						blockState.update(true);
 						sendMessage(player, strCantBuild);
+						fizzle(player);
 						return PostCastAction.ALREADY_HANDLED;
 					}
 				}

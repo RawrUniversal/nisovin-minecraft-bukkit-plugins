@@ -50,6 +50,7 @@ public class DrainlifeSpell extends InstantSpell {
 			if (target == null) {
 				// fail: no target
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				int take = Math.round(takeAmt*power);

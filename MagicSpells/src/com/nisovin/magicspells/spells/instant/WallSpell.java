@@ -35,6 +35,7 @@ public class WallSpell extends InstantSpell {
 			if (target == null || target.getType() != Material.AIR) {
 				// fail
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				TemporaryBlockSet blockSet = new TemporaryBlockSet(Material.AIR, wallType);

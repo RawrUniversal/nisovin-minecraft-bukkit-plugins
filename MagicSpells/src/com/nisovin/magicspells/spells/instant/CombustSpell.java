@@ -32,6 +32,7 @@ public class CombustSpell extends InstantSpell {
 			LivingEntity target = getTargetedEntity(player, range>0?range:100, targetPlayers, obeyLos);
 			if (target == null) {
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				if (target instanceof Player && checkPlugins) {
@@ -40,6 +41,7 @@ public class CombustSpell extends InstantSpell {
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
+						fizzle(player);
 						return PostCastAction.ALREADY_HANDLED;
 					}
 				}

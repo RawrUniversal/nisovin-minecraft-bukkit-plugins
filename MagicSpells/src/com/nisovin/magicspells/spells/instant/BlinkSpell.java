@@ -81,10 +81,12 @@ public class BlinkSpell extends InstantSpell {
 					}
 				} else {
 					sendMessage(player, strCantBlink);
+					fizzle(player);
 					return PostCastAction.ALREADY_HANDLED;
 				}
 			} else {
 				sendMessage(player, strCantBlink);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 		}

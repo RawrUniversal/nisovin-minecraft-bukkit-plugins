@@ -46,6 +46,7 @@ public class PotionEffectSpell extends InstantSpell {
 			if (target == null) {
 				// fail no target
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			

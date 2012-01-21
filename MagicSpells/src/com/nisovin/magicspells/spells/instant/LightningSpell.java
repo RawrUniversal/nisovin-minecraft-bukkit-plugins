@@ -54,6 +54,7 @@ public class LightningSpell extends InstantSpell {
 					}
 				} else {
 					sendMessage(player, strNoTarget);
+					fizzle(player);
 					return PostCastAction.ALREADY_HANDLED;
 				}
 			} else {

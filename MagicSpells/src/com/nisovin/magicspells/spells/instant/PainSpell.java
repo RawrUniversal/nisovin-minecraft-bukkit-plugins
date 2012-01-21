@@ -34,6 +34,7 @@ public class PainSpell extends InstantSpell {
 			if (target == null) {
 				// fail -- no target
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				int dam = Math.round(damage*power);
@@ -43,6 +44,7 @@ public class PainSpell extends InstantSpell {
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
+						fizzle(player);
 						return PostCastAction.ALREADY_HANDLED;
 					}
 					dam = event.getDamage();

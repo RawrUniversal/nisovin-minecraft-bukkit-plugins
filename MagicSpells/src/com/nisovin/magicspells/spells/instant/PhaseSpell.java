@@ -57,6 +57,7 @@ public class PhaseSpell extends InstantSpell {
 			if (location == null) {
 				// no location to tp to
 				sendMessage(player, strCantPhase);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			

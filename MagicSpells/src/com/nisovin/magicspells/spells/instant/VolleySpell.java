@@ -35,6 +35,7 @@ public class VolleySpell extends InstantSpell {
 			Block target = player.getTargetBlock(null, range>0?range:100);
 			if (target == null || target.getType() == Material.AIR) {
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {				
 				Vector v = target.getLocation().toVector().subtract(spawn.toVector()).normalize();

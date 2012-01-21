@@ -35,6 +35,7 @@ public class TelekinesisSpell extends InstantSpell {
 			if (target == null) {
 				// fail
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else if (target.getType() == Material.LEVER || target.getType() == Material.STONE_BUTTON) {
 				//target.setData((byte) (target.getData() ^ 0x8));
@@ -47,6 +48,7 @@ public class TelekinesisSpell extends InstantSpell {
 			} else {
 				// fail
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 		}

@@ -29,6 +29,7 @@ public class HealSpell extends InstantSpell {
 			Player target = getTargetedPlayer(player, range, obeyLos);
 			if (target == null) {
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 			} else if (target.getHealth() == 20) {
 				sendMessage(player, formatMessage(strMaxHealth, "%t", target.getName()));
 			} else {				

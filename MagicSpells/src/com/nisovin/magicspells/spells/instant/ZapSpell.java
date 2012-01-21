@@ -62,6 +62,7 @@ public class ZapSpell extends InstantSpell {
 				// check for disallowed block
 				if (disallowedBlockTypes.contains(target.getTypeId()) || (allowedBlockTypes.size() > 0 && !allowedBlockTypes.contains(target.getTypeId()))) {
 					sendMessage(player, strCantZap);
+					fizzle(player);
 					return PostCastAction.ALREADY_HANDLED;
 				}
 				
@@ -72,6 +73,7 @@ public class ZapSpell extends InstantSpell {
 					if (event.isCancelled()) {
 						// a plugin cancelled the event
 						sendMessage(player, strCantZap);
+						fizzle(player);
 						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
@@ -93,6 +95,7 @@ public class ZapSpell extends InstantSpell {
 				
 			} else {
 				sendMessage(player, strCantZap);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 		}

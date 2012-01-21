@@ -39,6 +39,7 @@ public class ExplodeSpell extends InstantSpell {
 			if (target == null || target.getType() == Material.AIR) {
 				// fail: no target
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				// backfire chance
@@ -56,6 +57,7 @@ public class ExplodeSpell extends InstantSpell {
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
+						fizzle(player);
 						return PostCastAction.ALREADY_HANDLED;
 					}
 				}

@@ -55,6 +55,7 @@ public class FireballSpell extends InstantSpell {
 			if (target == null || target.getType() == Material.AIR) {
 				// fail -- no target
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {				
 				// get a target if required
@@ -63,6 +64,7 @@ public class FireballSpell extends InstantSpell {
 					LivingEntity entity = getTargetedEntity(player, range, targetPlayers, obeyLos);
 					if (entity == null) {
 						sendMessage(player, strNoTarget);
+						fizzle(player);
 						return PostCastAction.ALREADY_HANDLED;
 					} else if (entity instanceof Player && checkPlugins) {
 						// run a pvp damage check
@@ -70,6 +72,7 @@ public class FireballSpell extends InstantSpell {
 						Bukkit.getServer().getPluginManager().callEvent(event);
 						if (event.isCancelled()) {
 							sendMessage(player, strNoTarget);
+							fizzle(player);
 							return PostCastAction.ALREADY_HANDLED;
 						}
 					}

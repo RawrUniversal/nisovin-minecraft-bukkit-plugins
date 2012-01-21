@@ -33,6 +33,7 @@ public class CrippleSpell extends InstantSpell {
 			if (target == null) {
 				// fail
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
