@@ -20,6 +20,7 @@ import com.nisovin.bookworm.event.BookReadEvent;
 public class TomeSpell extends CommandSpell {
 
 	private boolean cancelReadOnLearn;
+	private boolean consumeBook;
 	private boolean allowOverwrite;
 	private int defaultUses;
 	private int maxUses;
@@ -37,6 +38,7 @@ public class TomeSpell extends CommandSpell {
 		super(config, spellName);
 		
 		cancelReadOnLearn = getConfigBoolean("cancel-read-on-learn", true);
+		consumeBook = getConfigBoolean("consume-book", false);
 		allowOverwrite = getConfigBoolean("allow-overwrite", false);
 		defaultUses = getConfigInt("default-uses", -1);
 		maxUses = getConfigInt("max-uses", 5);
@@ -91,6 +93,9 @@ public class TomeSpell extends CommandSpell {
 				}
 				book.addHiddenData("MagicSpell", spell.getInternalName() + (uses>0?","+uses:""));
 				book.save();
+				if (consumeBook) {
+					player.setItemInHand(null);
+				}
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

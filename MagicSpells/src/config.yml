@@ -956,6 +956,7 @@ spells:
         enabled: false
         description: Create a tome that teaches a spell.
         cancel-read-on-learn: true
+        consume-book: true
         allow-overwrite: false
         max-uses: -1
         default-uses: -1
