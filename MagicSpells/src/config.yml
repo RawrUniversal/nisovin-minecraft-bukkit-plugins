@@ -1025,6 +1025,7 @@ spells:
     windwalk:
         spell-class: ".buff.WindwalkSpell"
         name: windwalk
+        enabled: false
         description: Fly through the air.
         cast-item: 280
         cancel-on-land: true
