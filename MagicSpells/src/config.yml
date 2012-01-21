@@ -143,6 +143,7 @@ spells:
         range: 25
         pass-through-ceiling: false
         smoke-trail: true
+        portal-animation: true
         cost:
             - 331 2
         str-cost: 2 redstone dust

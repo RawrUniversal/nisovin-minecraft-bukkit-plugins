@@ -15,6 +15,7 @@ public class BlinkSpell extends InstantSpell {
 	
 	private boolean passThroughCeiling;
 	private boolean smokeTrail;
+	private boolean portalAnimation;
 	private String strCantBlink = null;
 	
 	public BlinkSpell(MagicConfig config, String spellName) {
@@ -22,6 +23,7 @@ public class BlinkSpell extends InstantSpell {
 		
 		passThroughCeiling = getConfigBoolean("pass-through-ceiling", false);
 		smokeTrail = config.getBoolean("spells." + spellName + ".smoke-trail", true);
+		portalAnimation = getConfigBoolean("portal-animation", true);
 		strCantBlink = config.getString("spells." + spellName + ".str-cant-blink", "You can't blink there.");
 	}
 	
@@ -73,6 +75,10 @@ public class BlinkSpell extends InstantSpell {
 					loc.setZ(loc.getZ()+.5);
 					loc.setPitch(player.getLocation().getPitch());
 					loc.setYaw(player.getLocation().getYaw());
+					if (portalAnimation) {
+						loc.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 0);
+						loc.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 0);
+					}
 					player.teleport(loc);
 					if (smokeTrail) {
 						for (Location l : smokes) {
