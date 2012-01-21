@@ -52,7 +52,7 @@ public class WalkwaySpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Platform carpet = platforms.get(event.getPlayer());
 		if (carpet != null) {
@@ -63,14 +63,14 @@ public class WalkwaySpell extends BuffSpell {
 		}
 	}
 
-	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (cancelOnLogout) {
 			turnOff(event.getPlayer());
 		}
 	}
 
-	@EventHandler(event=PlayerTeleportEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		if (event.isCancelled()) return;
 		if (cancelOnTeleport && platforms.containsKey(event.getPlayer())) {
@@ -80,7 +80,7 @@ public class WalkwaySpell extends BuffSpell {
 		}
 	}
 
-	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (event.isCancelled()) return;
 		for (Platform platform : platforms.values()) {

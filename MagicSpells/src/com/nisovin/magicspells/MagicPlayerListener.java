@@ -26,7 +26,7 @@ public class MagicPlayerListener implements Listener {
 		this.plugin = plugin;
 	}
 
-	@EventHandler(event=PlayerJoinEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {		
 		// set up spell book
 		Spellbook spellbook = new Spellbook(event.getPlayer(), plugin);
@@ -38,12 +38,12 @@ public class MagicPlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {		
 		MagicSpells.spellbooks.remove(event.getPlayer().getName());
 	}
 
-	@EventHandler(event=PlayerInteractEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {		
 		// first check if player is interacting with a special block
 		boolean noInteract = false;
@@ -120,7 +120,7 @@ public class MagicPlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler(event=PlayerAnimationEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerAnimation(PlayerAnimationEvent event) {		
 		if (!MagicSpells.castOnAnimate) return;
 		

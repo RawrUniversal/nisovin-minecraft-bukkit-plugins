@@ -132,7 +132,7 @@ public class SpellbookSpell extends CommandSpell {
 		saveSpellbooks();
 	}
 	
-	@EventHandler(event=PlayerInteractEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.isCancelled()) return;
 		if (event.hasBlock() && event.getClickedBlock().getType() == spellbookBlock) {
@@ -182,7 +182,7 @@ public class SpellbookSpell extends CommandSpell {
 		}
 	}
 
-	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (event.isCancelled()) return;
 		if (event.getBlock().getType() == spellbookBlock) {

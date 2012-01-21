@@ -9,7 +9,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -123,7 +122,7 @@ public class EntombSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}	
 	
-	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (blocks.contains(event.getBlock())) {
 			event.setCancelled(true);

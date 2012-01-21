@@ -15,7 +15,6 @@ import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -109,7 +108,7 @@ public class MinionSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@EventHandler(event=EntityTargetEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onEntityTarget(EntityTargetEvent event) {
 		if (!event.isCancelled() && minions.size() > 0 ) {	
 			if (event.getTarget() instanceof Player) {
@@ -158,7 +157,7 @@ public class MinionSpell extends BuffSpell {
 		}
 	}
 
-	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!event.isCancelled() && event instanceof EntityDamageByEntityEvent && event.getEntity() instanceof LivingEntity) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
@@ -179,7 +178,7 @@ public class MinionSpell extends BuffSpell {
 		}
 	}	
 
-	@EventHandler(event=EntityCombustEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onEntityCombust(EntityCombustEvent event) {
 		if (preventCombust && !event.isCancelled() && minions.containsValue(event.getEntity())) {
 			event.setCancelled(true);

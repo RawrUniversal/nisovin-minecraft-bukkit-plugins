@@ -73,7 +73,7 @@ public class WindwalkSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@EventHandler(event=PlayerToggleSneakEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
 		if (cancelOnLand && flyers.containsKey(event.getPlayer())) {
 			if (event.getPlayer().getLocation().subtract(0,1,0).getBlock().getType() != Material.AIR) {
@@ -82,28 +82,28 @@ public class WindwalkSpell extends BuffSpell {
 		}
 	}
 
-	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (!event.isCancelled() && flyers.containsKey(event.getPlayer())) {
 			event.setCancelled(true);
 		}
 	}
 
-	@EventHandler(event=BlockPlaceEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (!event.isCancelled() && flyers.containsKey(event.getPlayer())) {
 			event.setCancelled(true);
 		}
 	}
 
-	@EventHandler(event=PlayerDropItemEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		if (!event.isCancelled() && flyers.containsKey(event.getPlayer())) {
 			event.setCancelled(true);
 		}
 	}
 
-	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!event.isCancelled() && event instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;

@@ -106,7 +106,7 @@ public class TomeSpell extends CommandSpell {
 		return false;
 	}
 	
-	@EventHandler(event=BookReadEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onBookRead(BookReadEvent event) {
 		String spellData = event.getBook().getHiddenData("MagicSpell");
 		if (spellData != null && !spellData.equals("")) {

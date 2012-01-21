@@ -1,9 +1,9 @@
 package com.nisovin.magicspells.spells.instant;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -93,32 +93,6 @@ public class GateSpell extends InstantSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
-			// spell effect
-			if (useSpellEffect) {
-				final ArrayList<Block> portals = new ArrayList<Block>();
-				portals.add(b);
-				portals.add(b.getRelative(0,1,0));
-				b = player.getLocation().getBlock();
-				if (b.getType() == Material.AIR) {
-					portals.add(b);
-				}
-				if (b.getRelative(0,1,0).getType() == Material.AIR) {
-					portals.add(b.getRelative(0,1,0));
-				}
-				for (Block block : portals) {
-					block.setType(Material.PORTAL);
-				}
-				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
-					public void run() {
-						for (Block block : portals) {
-							if (block.getType() == Material.PORTAL) { 
-								block.setType(Material.AIR);
-							}
-						}
-					}
-				}, 10);
-			}
-			
 			// teleport caster
 			if (castTime > 0) {
 				// wait a bit
@@ -126,13 +100,17 @@ public class GateSpell extends InstantSpell {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Teleporter(player, location), castTime);
 			} else {
 				// go instantly
+				if (useSpellEffect) {
+					b.getWorld().playEffect(b.getLocation(), Effect.ENDER_SIGNAL, 0);
+					player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 0);
+				}
 				player.teleport(location);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.isCancelled()) return;
 		if (castTime <= 0) return;
@@ -163,6 +141,10 @@ public class GateSpell extends InstantSpell {
 				casting.remove(player.getName());
 				Location loc = player.getLocation();
 				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
+					if (useSpellEffect) {
+						target.getWorld().playEffect(target, Effect.ENDER_SIGNAL, 0);
+						player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 0);
+					}
 					player.teleport(target);
 					sendMessage(player, strCastDone);
 				} else {

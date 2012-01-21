@@ -51,7 +51,7 @@ public class CarpetSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		BlockPlatform platform = windwalkers.get(event.getPlayer().getName());
 		if (platform != null) {
@@ -79,7 +79,7 @@ public class CarpetSpell extends BuffSpell {
 		}
 	}
 
-	@EventHandler(event=PlayerToggleSneakEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
 		if (windwalkers.containsKey(event.getPlayer().getName()) && event.isSneaking()) {
 			Player player = event.getPlayer();
@@ -97,7 +97,7 @@ public class CarpetSpell extends BuffSpell {
 		}
 	}
 
-	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler(priority=EventPriority.NORMAL)
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (event.isCancelled()) return;
 		if (windwalkers.size() > 0 && event.getBlock().getType() == platformBlock) {
@@ -110,14 +110,14 @@ public class CarpetSpell extends BuffSpell {
 		}
 	}
 
-	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (cancelOnLogout) {
 			turnOff(event.getPlayer());
 		}
 	}
 
-	@EventHandler(event=PlayerTeleportEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		if (event.isCancelled()) return;
 		if (cancelOnTeleport && windwalkers.containsKey(event.getPlayer().getName())) {

@@ -87,7 +87,7 @@ public class RecallSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.isCancelled()) return;
 		if (castTime <= 0) return;

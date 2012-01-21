@@ -118,7 +118,7 @@ public class SummonSpell extends ChanneledSpell {
 		}
 	}
 	
-	@EventHandler(event=PlayerCommandPreprocessEvent.class, priority=EventPriority.LOW)
+	@EventHandler(priority=EventPriority.LOW)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		if (requireAcceptance && event.getMessage().equalsIgnoreCase("/" + acceptCommand) && pendingSummons.containsKey(event.getPlayer())) {
 			Player player = event.getPlayer();

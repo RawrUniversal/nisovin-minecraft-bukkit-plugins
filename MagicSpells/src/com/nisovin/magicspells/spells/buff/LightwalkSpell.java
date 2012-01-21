@@ -36,7 +36,7 @@ public class LightwalkSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if (lightwalkers.containsKey(event.getPlayer().getName())) {
 			Player p = event.getPlayer();

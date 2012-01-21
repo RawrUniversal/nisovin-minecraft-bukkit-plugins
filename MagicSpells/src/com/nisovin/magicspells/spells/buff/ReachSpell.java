@@ -55,7 +55,7 @@ public class ReachSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@EventHandler(event=PlayerInteractEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (reaching.contains(event.getPlayer())) {
 			Player player = event.getPlayer();

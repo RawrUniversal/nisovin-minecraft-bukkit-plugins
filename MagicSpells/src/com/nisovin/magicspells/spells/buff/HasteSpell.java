@@ -44,7 +44,7 @@ public class HasteSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@EventHandler(event=PlayerToggleSprintEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
 		if (event.isCancelled()) return;
 		Player player = event.getPlayer();

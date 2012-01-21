@@ -4,7 +4,6 @@ import java.util.HashSet;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
@@ -46,7 +45,7 @@ public class LeapSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.isCancelled()) return;
 		if (cancelDamage && event.getCause() == DamageCause.FALL && event.getEntity() instanceof Player && jumping.contains((Player)event.getEntity())) {

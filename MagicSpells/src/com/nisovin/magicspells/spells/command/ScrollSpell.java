@@ -275,7 +275,7 @@ public class ScrollSpell extends CommandSpell {
 		return 0;
 	}
 	
-	@EventHandler(event=PlayerInteractEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if ((rightClickCast && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) ||
 			(leftClickCast && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))) {
@@ -341,7 +341,7 @@ public class ScrollSpell extends CommandSpell {
 		}
 	}
 
-	@EventHandler(event=PlayerItemHeldEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onItemHeldChange(PlayerItemHeldEvent event) {
 		ItemStack inHand = event.getPlayer().getInventory().getItem(event.getNewSlot());
 		if (inHand != null && inHand.getTypeId() == itemId && inHand.getDurability() != 0) {

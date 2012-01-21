@@ -52,7 +52,7 @@ public class StonevisionSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player p = event.getPlayer();
 		if (seers.containsKey(p.getName())) {

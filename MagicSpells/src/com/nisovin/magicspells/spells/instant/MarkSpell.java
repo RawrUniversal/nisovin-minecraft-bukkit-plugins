@@ -45,7 +45,7 @@ public class MarkSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;		
 	}
 	
-	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (!permanentMarks) {
 			marks.remove(event.getPlayer().getName());

@@ -44,7 +44,7 @@ public class FrostwalkSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if (frostwalkers.containsKey(event.getPlayer().getName())) {
 			Player player = event.getPlayer();
@@ -73,7 +73,7 @@ public class FrostwalkSpell extends BuffSpell {
 		}
 	}
 
-	@EventHandler(event=BlockBreakEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (event.isCancelled()) return;
 		if (frostwalkers.size() > 0 && event.getBlock().getType() == Material.ICE) {
@@ -86,7 +86,7 @@ public class FrostwalkSpell extends BuffSpell {
 		}
 	}
 
-	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		turnOff(event.getPlayer());
 	}

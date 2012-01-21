@@ -96,7 +96,7 @@ public class FireballSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@EventHandler(event=ExplosionPrimeEvent.class, priority=EventPriority.HIGH)
+	@EventHandler(priority=EventPriority.HIGH)
 	public void onExplosionPrime(ExplosionPrimeEvent event) {
 		if (event.isCancelled()) {
 			return;
@@ -143,7 +143,7 @@ public class FireballSpell extends InstantSpell {
 		}
 	}
 
-	@EventHandler(event=EntityDamageEvent.class, priority=EventPriority.HIGH)
+	@EventHandler(priority=EventPriority.HIGH)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (additionalDamage > 0 && !event.isCancelled() && event instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;

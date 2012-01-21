@@ -54,27 +54,5 @@ public class ForcepushSpell extends InstantSpell {
 			}
 	    }
 	}
-	
-	/*public void knockback(Player player, int range, boolean targetPlayers) {
-	    Vector p = player.getLocation().toVector();
-		List<LivingEntity> entities = player.getWorld().getLivingEntities();
-		double dx, dy, dz;
-		Vector e, v;
-		for (LivingEntity entity : entities) {
-			dx = entity.getLocation().getX() - player.getLocation().getX();
-			dy = entity.getLocation().getY() - player.getLocation().getY();
-			dz = entity.getLocation().getZ() - player.getLocation().getZ();
-			if (Math.abs(dx) < range && Math.abs(dy) < range && Math.abs(dz) < range && (targetPlayers || !(entity instanceof Player))) {
-				e = entity.getLocation().toVector();
-				v = e.subtract(p).normalize().multiply(force/10.0);
-				v.setY(v.getY() * (yForce/10.0));
-				entity.setVelocity(v);
-			}
-	    }
-		p = null;
-		e = null;
-		v = null;
-		entities = null;
-	}*/
 
 }
