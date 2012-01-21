@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.spells.instant;
 
+import org.bukkit.EntityEffect;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.InstantSpell;
@@ -8,6 +9,8 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class HealSpell extends InstantSpell {
 	
 	private int healAmount;
+	private boolean cancelIfFull;
+	private boolean showSpellEffect;
 	private boolean obeyLos;
 	private String strNoTarget;
 	private String strMaxHealth;
@@ -16,11 +19,13 @@ public class HealSpell extends InstantSpell {
 	public HealSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		healAmount = config.getInt("spells." + spellName + ".heal-amount", 10);
-		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
-		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No target to heal.");
-		strMaxHealth = config.getString("spells." + spellName + ".str-max-health", "%t is already at max health.");
-		strCastTarget = config.getString("spells." + spellName + ".str-cast-target", "%a healed you.");
+		healAmount = getConfigInt("heal-amount", 10);
+		cancelIfFull = getConfigBoolean("cancel-if-full", true);
+		showSpellEffect = getConfigBoolean("show-spell-effect", true);
+		obeyLos = getConfigBoolean("obey-los", true);
+		strNoTarget = getConfigString("str-no-target", "No target to heal.");
+		strMaxHealth = getConfigString("str-max-health", "%t is already at max health.");
+		strCastTarget = getConfigString("str-cast-target", "%a healed you.");
 	}
 
 	@Override
@@ -30,13 +35,17 @@ public class HealSpell extends InstantSpell {
 			if (target == null) {
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-			} else if (target.getHealth() == 20) {
+			} else if (cancelIfFull && target.getHealth() == 20) {
 				sendMessage(player, formatMessage(strMaxHealth, "%t", target.getName()));
 			} else {				
 				int health = target.getHealth();
 				health += Math.round(healAmount*power);
 				if (health > 20) health = 20;
 				target.setHealth(health);
+				
+				if (showSpellEffect) {
+					target.playEffect(EntityEffect.WOLF_HEARTS);
+				}
 				
 				sendMessage(player, formatMessage(strCastSelf, "%t", target.getDisplayName()));
 				sendMessage(target, formatMessage(strCastTarget, "%a", player.getDisplayName()));

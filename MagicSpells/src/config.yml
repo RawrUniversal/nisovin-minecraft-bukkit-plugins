@@ -537,6 +537,8 @@ spells:
         description: Heals a target player.
         cast-item: 280
         heal-amount: 10
+        cancel-if-full: true
+        show-spell-effect: true
         obey-los: true
         cooldown: 0
         range: 12
