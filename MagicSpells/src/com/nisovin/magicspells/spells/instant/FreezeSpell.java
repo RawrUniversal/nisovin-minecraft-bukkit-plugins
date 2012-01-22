@@ -57,9 +57,9 @@ public class FreezeSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@EventHandler(priority=EventPriority.LOW)
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) return;
+		if (damage <= 0 || event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) return;
 		
 		EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 		if (!(evt.getDamager() instanceof Snowball) || evt.getDamager().getFallDistance() != 10.2F) return;

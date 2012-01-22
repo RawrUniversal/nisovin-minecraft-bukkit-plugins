@@ -3,6 +3,7 @@ package com.nisovin.magicspells;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -89,9 +90,16 @@ public abstract class BuffSpell extends Spell {
 	 * Begins counting the spell duration for a player
 	 * @param player the player to begin counting duration
 	 */
-	protected void startSpellDuration(Player player) {
+	protected void startSpellDuration(final Player player) {
 		if (duration > 0 && durationStartTime != null) {
 			durationStartTime.put(player.getName(), System.currentTimeMillis());
+			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+				public void run() {
+					if (isExpired(player)) {
+						turnOff(player);
+					}
+				}
+			}, duration * 20 + 20); // overestimate ticks, since the duration is real-time ms based
 		}
 	}
 	
