@@ -14,10 +14,12 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 
@@ -156,13 +158,25 @@ public class MinionSpell extends BuffSpell {
 			}
 		}
 	}
+	
+	@EventHandler
+	public void onEntityDeath(EntityDeathEvent event) {
+		if (minions.containsValue(event.getEntity())) {
+			event.setDroppedExp(0);
+		}
+	}
 
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!event.isCancelled() && event instanceof EntityDamageByEntityEvent && event.getEntity() instanceof LivingEntity) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
+			Player p = null;
 			if (evt.getDamager() instanceof Player) {
-				Player p = (Player)evt.getDamager();
+				p = (Player)evt.getDamager();
+			} else if (evt.getDamager() instanceof Projectile && ((Projectile)evt.getDamager()).getShooter() instanceof Player) {
+				p = (Player)((Projectile)evt.getDamager()).getShooter();
+			}
+			if (p != null) {
 				if (minions.containsKey(p.getName())) {
 					if (isExpired(p)) {
 						turnOff(p);
