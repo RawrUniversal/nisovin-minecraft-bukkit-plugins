@@ -397,6 +397,18 @@ spells:
         str-cost: 5 redstone, 2 coal, plus 1 redstone occasionally
         str-cast-self: You begin to burn your enemies around you.
         str-fade: You are no longer burning your enemies.
+    food:
+        spell-class: ".instant.FoodSpell"
+        name: food
+        description: Makes you less hungry.
+        cast-item: 280
+        cooldown: 30
+        food: 4
+        saturation: 2.5
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cast-self: You feel less hungry.
     forcepush:
         spell-class: ".instant.ForcepushSpell"
         name: forcepush
@@ -432,6 +444,23 @@ spells:
         str-no-target: No target found.
         str-cast-self: You push back your enemy!
         str-cast-others: "%a pushes back his enemy."
+    freeze:
+        spell-class: ".instant.FreezeSpell"
+        name: freeze
+        description: Spray your enemies with cold snowballs.
+        cast-item: 280
+        snowballs: 25
+        horizontal-spread: 15
+        vertical-spread: 5
+        damage: 3
+        slow-amount: 3
+        slow-duration: 80
+        target-players: false
+        cooldown: 5
+        cost:
+            - 331 1
+            - 332 1
+        str-cost: 1 redstone dust and 1 snowball
     frostwalk:
         spell-class: ".buff.FrostwalkSpell"
         name: frostwalk
@@ -836,6 +865,14 @@ spells:
         str-cost: 3 redstone dust and 1 iron bar
         str-cast-self: You've repaired your gear!
         str-nothing-to-repair: You have nothing to repair.
+    roar:
+        spell-class: ".instant.RoarSpell"
+        name: roar
+        description: Forces nearby enemies to attack you.
+        cooldown: 15
+        range: 8
+        str-cast-self: "You roar, causing nearby enemies to attack you."
+        str-cast-others: "%a roars loudly!"
     safefall:
         spell-class: ".buff.InvulnerabilitySpell"
         name: safefall

@@ -1,8 +1,5 @@
 package com.nisovin.magicspells.spells.instant;
 
-import net.minecraft.server.MobEffect;
-
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -53,10 +50,6 @@ public class PotionEffectSpell extends InstantSpell {
 			setMobEffect(target, type, duration, amplifier);
 		}		
 		return PostCastAction.HANDLE_NORMALLY;
-	}
-	
-	public void setMobEffect(LivingEntity entity, int type, int duration, int amplifier) {		
-		((CraftLivingEntity)entity).getHandle().addEffect(new MobEffect(type, duration, amplifier));
 	}
 
 }

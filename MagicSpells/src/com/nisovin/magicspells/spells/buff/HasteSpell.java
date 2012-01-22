@@ -78,25 +78,5 @@ public class HasteSpell extends BuffSpell {
 		}
 		hasted.clear();
 	}
-	
-	public void setMobEffect(LivingEntity entity, int type, int duration, int amplifier) {		
-		((CraftLivingEntity)entity).getHandle().addEffect(new MobEffect(type, duration, amplifier));
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public static void removeMobEffect(LivingEntity entity, int type) {
-		try {
-			if (entity instanceof Player) {
-				EntityPlayer player = ((CraftPlayer)entity).getHandle();
-				player.netServerHandler.sendPacket(new Packet42RemoveMobEffect(player.id, new MobEffect(type, 0, 0)));
-			}
-			Field field = EntityLiving.class.getDeclaredField("effects");
-			field.setAccessible(true);
-			HashMap effects = (HashMap)field.get(((CraftLivingEntity)entity).getHandle());
-			effects.remove(type);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 }
