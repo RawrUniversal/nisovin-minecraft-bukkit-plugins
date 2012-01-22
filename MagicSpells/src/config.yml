@@ -348,8 +348,12 @@ spells:
         target-players: false
         check-plugins: true
         damage-multiplier: 3
+        small-fireball: false
         no-fire: false
         no-explosion: false
+        no-explosion-effect: true
+        no-explosion-damage: 5
+        no-explosion-damage-range: 3
         cost: 
             - 331 3
             - 263 2

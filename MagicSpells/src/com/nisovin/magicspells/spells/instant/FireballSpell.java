@@ -2,12 +2,14 @@ package com.nisovin.magicspells.spells.instant;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -31,6 +33,9 @@ public class FireballSpell extends InstantSpell {
 	private int damageMultiplier;
 	private boolean smallFireball;
 	private boolean noExplosion;
+	private boolean noExplosionEffect;
+	private int noExplosionDamage;
+	private int noExplosionDamageRange;
 	private boolean noFire;
 	private String strNoTarget;
 	
@@ -46,6 +51,9 @@ public class FireballSpell extends InstantSpell {
 		damageMultiplier = getConfigInt("damage-multiplier", 0);
 		smallFireball = getConfigBoolean("small-fireball", false);
 		noExplosion = config.getBoolean("spells." + spellName + ".no-explosion", false);
+		noExplosionEffect = getConfigBoolean("no-explosion-effect", true);
+		noExplosionDamage = getConfigInt("no-explosion-damage", 5);
+		noExplosionDamageRange = getConfigInt("no-explosion-damage-range", 3);
 		noFire = config.getBoolean("spells." + spellName + ".no-fire", false);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You cannot throw a fireball there.");
 		
@@ -119,31 +127,46 @@ public class FireballSpell extends InstantSpell {
 				if (noExplosion) {
 					event.setCancelled(true);
 					Location loc = fireball.getLocation();
-					loc.getWorld().createExplosion(loc, 0);
-					final HashSet<Block> fires = new HashSet<Block>();
-					for (int x = loc.getBlockX()-1; x <= loc.getBlockX()+1; x++) {
-						for (int y = loc.getBlockY()-1; y <= loc.getBlockY()+1; y++) {
-							for (int z = loc.getBlockZ()-1; z <= loc.getBlockZ()+1; z++) {
-								if (loc.getWorld().getBlockTypeIdAt(x,y,z) == 0) {
-									Block b = loc.getWorld().getBlockAt(x,y,z);
-									b.setTypeIdAndData(Material.FIRE.getId(), (byte)15, false);
-									fires.add(b);
+					if (noExplosionEffect) {
+						loc.getWorld().createExplosion(loc, 0);
+					}
+					if (noExplosionDamage > 0) {
+						float power = fireballs.get(fireball);
+						List<Entity> inRange = fireball.getNearbyEntities(noExplosionDamageRange, noExplosionDamageRange, noExplosionDamageRange);
+						for (Entity entity : inRange) {
+							if (entity instanceof LivingEntity) {
+								if (targetPlayers || !(entity instanceof Player)) {
+									((LivingEntity)entity).damage(Math.round(noExplosionDamage * power), fireball.getShooter());
 								}
 							}
-						}						
+						}
 					}
-					fireball.remove();
-					if (fires.size() > 0) {
-						Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
-							@Override
-							public void run() {
-								for (Block b : fires) {
-									if (b.getType() == Material.FIRE) {
-										b.setType(Material.AIR);
+					if (!noFire) {
+						final HashSet<Block> fires = new HashSet<Block>();
+						for (int x = loc.getBlockX()-1; x <= loc.getBlockX()+1; x++) {
+							for (int y = loc.getBlockY()-1; y <= loc.getBlockY()+1; y++) {
+								for (int z = loc.getBlockZ()-1; z <= loc.getBlockZ()+1; z++) {
+									if (loc.getWorld().getBlockTypeIdAt(x,y,z) == 0) {
+										Block b = loc.getWorld().getBlockAt(x,y,z);
+										b.setTypeIdAndData(Material.FIRE.getId(), (byte)15, false);
+										fires.add(b);
 									}
 								}
-							}
-						}, 20);
+							}						
+						}
+						fireball.remove();
+						if (fires.size() > 0) {
+							Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+								@Override
+								public void run() {
+									for (Block b : fires) {
+										if (b.getType() == Material.FIRE) {
+											b.setType(Material.AIR);
+										}
+									}
+								}
+							}, 20);
+						}
 					}
 				} else if (noFire) {
 					event.setFire(false);
