@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -28,6 +29,7 @@ public class FireballSpell extends InstantSpell {
 	private boolean targetPlayers;
 	private boolean checkPlugins;
 	private int damageMultiplier;
+	private boolean smallFireball;
 	private boolean noExplosion;
 	private boolean noFire;
 	private String strNoTarget;
@@ -42,6 +44,7 @@ public class FireballSpell extends InstantSpell {
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 		damageMultiplier = getConfigInt("damage-multiplier", 0);
+		smallFireball = getConfigBoolean("small-fireball", false);
 		noExplosion = config.getBoolean("spells." + spellName + ".no-explosion", false);
 		noFire = config.getBoolean("spells." + spellName + ".no-fire", false);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You cannot throw a fireball there.");
@@ -89,10 +92,16 @@ public class FireballSpell extends InstantSpell {
 				} else {
 					loc = player.getLocation().toVector().add(player.getLocation().getDirection().setY(0).multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw()+180, 0);
 				}
-				Fireball fireball = player.getWorld().spawn(loc, Fireball.class);
+				Fireball fireball;
+				if (smallFireball) {
+					fireball = player.getWorld().spawn(loc, SmallFireball.class);
+					player.getWorld().playEffect(player.getLocation(), Effect.BLAZE_SHOOT, 0);
+				} else {
+					fireball = player.getWorld().spawn(loc, Fireball.class);
+					player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
+				}
 				fireball.setShooter(player);
 				fireballs.put(fireball,power);
-				player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -152,7 +161,7 @@ public class FireballSpell extends InstantSpell {
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (damageMultiplier > 0 && !event.isCancelled() && event instanceof EntityDamageByEntityEvent && event.getCause() == DamageCause.ENTITY_EXPLOSION) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
-			if (evt.getDamager() instanceof Fireball) {
+			if (evt.getDamager() instanceof Fireball || evt.getDamager() instanceof SmallFireball) {
 				Fireball fireball = (Fireball)evt.getDamager();
 				if (fireball.getShooter() instanceof Player && fireballs.containsKey(fireball)) {
 					float power = fireballs.remove(fireball);
