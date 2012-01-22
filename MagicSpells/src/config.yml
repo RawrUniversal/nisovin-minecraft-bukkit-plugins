@@ -347,7 +347,7 @@ spells:
         obey-los: true
         target-players: false
         check-plugins: true
-        additional-damage: 0
+        damage-multiplier: 3
         no-fire: false
         no-explosion: false
         cost: 

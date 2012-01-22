@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -26,7 +27,7 @@ public class FireballSpell extends InstantSpell {
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
-	private int additionalDamage;
+	private int damageMultiplier;
 	private boolean noExplosion;
 	private boolean noFire;
 	private String strNoTarget;
@@ -40,7 +41,7 @@ public class FireballSpell extends InstantSpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		additionalDamage = config.getInt("spells." + spellName + ".additional-damage", 0);
+		damageMultiplier = getConfigInt("damage-multiplier", 0);
 		noExplosion = config.getBoolean("spells." + spellName + ".no-explosion", false);
 		noFire = config.getBoolean("spells." + spellName + ".no-fire", false);
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You cannot throw a fireball there.");
@@ -91,6 +92,7 @@ public class FireballSpell extends InstantSpell {
 				Fireball fireball = player.getWorld().spawn(loc, Fireball.class);
 				fireball.setShooter(player);
 				fireballs.put(fireball,power);
+				player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -108,6 +110,7 @@ public class FireballSpell extends InstantSpell {
 				if (noExplosion) {
 					event.setCancelled(true);
 					Location loc = fireball.getLocation();
+					loc.getWorld().createExplosion(loc, 0);
 					final HashSet<Block> fires = new HashSet<Block>();
 					for (int x = loc.getBlockX()-1; x <= loc.getBlockX()+1; x++) {
 						for (int y = loc.getBlockY()-1; y <= loc.getBlockY()+1; y++) {
@@ -138,20 +141,22 @@ public class FireballSpell extends InstantSpell {
 				} else {
 					event.setFire(true);
 				}
-				fireballs.remove(fireball);
+				if (noExplosion || damageMultiplier == 0) {
+					fireballs.remove(fireball);
+				}
 			}
 		}
 	}
 
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (additionalDamage > 0 && !event.isCancelled() && event instanceof EntityDamageByEntityEvent) {
+		if (damageMultiplier > 0 && !event.isCancelled() && event instanceof EntityDamageByEntityEvent && event.getCause() == DamageCause.ENTITY_EXPLOSION) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 			if (evt.getDamager() instanceof Fireball) {
 				Fireball fireball = (Fireball)evt.getDamager();
 				if (fireball.getShooter() instanceof Player && fireballs.containsKey(fireball)) {
-					float power = fireballs.get(fireball);
-					event.setDamage(Math.round((event.getDamage() + additionalDamage) * power));
+					float power = fireballs.remove(fireball);
+					event.setDamage(Math.round(event.getDamage() * damageMultiplier * power));
 				}
 			}
 		}
