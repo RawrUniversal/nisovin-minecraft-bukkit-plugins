@@ -1,6 +1,5 @@
 package com.nisovin.magicspells.spells.instant;
 
-import org.bukkit.EntityEffect;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.InstantSpell;
@@ -44,7 +43,7 @@ public class HealSpell extends InstantSpell {
 				target.setHealth(health);
 				
 				if (showSpellEffect) {
-					target.playEffect(EntityEffect.WOLF_HEARTS);
+					playPotionEffect(player, target, 0xFF0000, 40);
 				}
 				
 				sendMessage(player, formatMessage(strCastSelf, "%t", target.getDisplayName()));

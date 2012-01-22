@@ -6,7 +6,6 @@ import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -121,12 +120,16 @@ public class WindwalkSpell extends BuffSpell {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.isCancelled() || !event.hasBlock()) return;
-		event.setCancelled(true);
+		if (flyers.containsKey(event.getPlayer())) {
+			event.setCancelled(true);
+		}
 	}
 	
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-		event.setCancelled(true);
+		if (flyers.containsKey(event.getPlayer())) {
+			event.setCancelled(true);
+		}
 	}
 
 	@Override
