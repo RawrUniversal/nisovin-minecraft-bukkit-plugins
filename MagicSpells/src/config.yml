@@ -128,6 +128,7 @@ spells:
         duration: 200
         targeted: true
         target-players: true
+        target-non-players: false
         obey-los: true
         cost:
             - 331 2
@@ -558,6 +559,7 @@ spells:
         duration: 200
         targeted: true
         target-players: true
+        target-non-players: false
         obey-los: true
         cost:
             - 331 2
@@ -759,7 +761,8 @@ spells:
         strength: 0
         duration: 100
         targeted: true
-        target-players: true
+        target-players: false
+        target-non-players: true
         obey-los: true
         cost:
             - 331 2

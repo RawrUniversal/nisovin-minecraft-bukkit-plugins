@@ -87,7 +87,7 @@ public abstract class InstantSpell extends Spell {
 		}
 	}
 	
-	private LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos) {
+	protected LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos) {
 		// get nearby living entities, filtered by player targeting options
 		List<Entity> ne = player.getNearbyEntities(range, range, range);
 		ArrayList<LivingEntity> entities = new ArrayList<LivingEntity>(); 

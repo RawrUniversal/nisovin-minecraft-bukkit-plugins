@@ -16,6 +16,7 @@ public class PotionEffectSpell extends InstantSpell {
 	private int amplifier;
 	private boolean targeted;
 	private boolean targetPlayers;
+	private boolean targetNonPlayers;
 	private boolean obeyLos;
 	private String strNoTarget;
 	
@@ -27,6 +28,7 @@ public class PotionEffectSpell extends InstantSpell {
 		amplifier = getConfigInt("strength", 0);
 		targeted = getConfigBoolean("targeted", false);
 		targetPlayers = getConfigBoolean("target-players", false);
+		targetNonPlayers = getConfigBoolean("target-non-players", true);
 		obeyLos = getConfigBoolean("obey-los", true);
 		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
@@ -36,7 +38,7 @@ public class PotionEffectSpell extends InstantSpell {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target;
 			if (targeted) {
-				target = getTargetedEntity(player, range, targetPlayers, obeyLos);
+				target = getTargetedEntity(player, range, targetPlayers, targetNonPlayers, obeyLos);
 			} else {
 				target = player;
 			}
