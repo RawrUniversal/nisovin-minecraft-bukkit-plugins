@@ -29,6 +29,7 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spells.*;
@@ -77,7 +78,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static HashMap<String,Spell> spellNames; // map configured names to spells
 	protected static HashMap<String,Spellbook> spellbooks; // player spellbooks
 	
-	protected static ManaBarManager mana;
+	protected static ManaHandler mana;
 	protected static HashMap<Player,Long> manaPotionCooldowns;
 	protected static NoMagicZoneManager noMagicZones;
 	
@@ -233,6 +234,8 @@ public class MagicSpells extends JavaPlugin {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
 		}
 		
+		// call loaded event
+		pm.callEvent(new MagicSpellsLoadedEvent(this));
 	}
 	
 	private void loadSpells(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
@@ -675,8 +678,12 @@ public class MagicSpells extends JavaPlugin {
 		return spellbook;
 	}
 	
-	public static ManaBarManager getManaManager() {
+	public static ManaHandler getManaHandler() {
 		return mana;
+	}
+	
+	public static void setManaHandler(ManaHandler m) {
+		mana = m;
 	}
 	
 	/**

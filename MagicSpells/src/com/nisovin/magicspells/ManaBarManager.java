@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ManaBarManager {
+public class ManaBarManager extends ManaHandler {
 
 	protected static String manaBarPrefix;
 	protected static int manaBarSize;
@@ -45,12 +45,14 @@ public class ManaBarManager {
 		startRegenerator();
 	}
 	
+	@Override
 	public void createManaBar(Player player) {
 		if (!manaBars.containsKey(player.getName())) {
 			manaBars.put(player.getName(), new ManaBar(maxMana));
 		}
 	}
 	
+	@Override
 	public boolean hasMana(Player player, int amount) {
 		if (!manaBars.containsKey(player.getName())) {
 			return false;
@@ -59,6 +61,7 @@ public class ManaBarManager {
 		}
 	}
 	
+	@Override
 	public boolean removeMana(Player player, int amount) {
 		if (!manaBars.containsKey(player.getName())) {
 			return false;
@@ -71,6 +74,7 @@ public class ManaBarManager {
 		}
 	}
 	
+	@Override
 	public boolean addMana(Player player, int amount) {
 		if (!manaBars.containsKey(player.getName())) {
 			return false;
@@ -87,6 +91,7 @@ public class ManaBarManager {
 		showMana(player, false);
 	}
 	
+	@Override
 	public void showMana(Player player, boolean forceShowInChat) {
 		ManaBar bar = manaBars.get(player.getName());
 		if (bar != null) {
@@ -101,18 +106,19 @@ public class ManaBarManager {
 		}
 	}
 	
-	public void startRegenerator() {
+	private void startRegenerator() {
 		stopRegenerator();
 		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, new ManaBarRegenerator(), manaRegenTickRate, manaRegenTickRate);
 	}
 	
-	public void stopRegenerator() {
+	private void stopRegenerator() {
 		if (taskId != -1) {
 			Bukkit.getScheduler().cancelTask(taskId);
 			taskId = -1;
 		}
 	}
 	
+	@Override
 	public void turnOff() {
 		stopRegenerator();
 		manaBars.clear();

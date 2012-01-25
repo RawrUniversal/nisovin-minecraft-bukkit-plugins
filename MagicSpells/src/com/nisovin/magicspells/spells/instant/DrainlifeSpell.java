@@ -70,7 +70,7 @@ public class DrainlifeSpell extends InstantSpell {
 					target.damage(take, player);
 				} else if (takeType.equals("mana")) {
 					if (target instanceof Player) {
-						boolean removed = MagicSpells.getManaManager().removeMana((Player)target, take);
+						boolean removed = MagicSpells.getManaHandler().removeMana((Player)target, take);
 						if (!removed) {
 							give = 0;
 						}
@@ -101,7 +101,7 @@ public class DrainlifeSpell extends InstantSpell {
 					if (h>20) h=20;
 					player.setHealth(h);
 				} else if (giveType.equals("mana")) {
-					MagicSpells.getManaManager().addMana(player, give);
+					MagicSpells.getManaHandler().addMana(player, give);
 				} else if (takeType.equals("hunger")) {
 					int food = player.getFoodLevel();
 					food += take;
