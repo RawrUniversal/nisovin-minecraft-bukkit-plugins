@@ -167,7 +167,7 @@ public abstract class ChanneledSpell extends Spell {
 		allChannelers.remove(player);
 	}
 	
-	@EventHandler(event=PlayerMoveEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public final void onPlayerMove(PlayerMoveEvent event) {
 		if (allChannelers.contains(event.getPlayer())) {
 			Location from = event.getFrom();
@@ -179,11 +179,11 @@ public abstract class ChanneledSpell extends Spell {
 		}
 	}
 
-	@EventHandler(event=PlayerQuitEvent.class, priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public final void onPlayerQuit(PlayerQuitEvent event) {
 		if (allChannelers.contains(event.getPlayer())) {
 			removeChanneler(event.getPlayer());
-		}		
+		}
 	}
 
 }

@@ -683,6 +683,7 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	public static void setManaHandler(ManaHandler m) {
+		mana.turnOff();
 		mana = m;
 	}
 	
