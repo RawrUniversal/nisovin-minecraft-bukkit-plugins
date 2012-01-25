@@ -1,0 +1,84 @@
+general:
+    text-color: a
+    text-color-2: f    
+    show-title-on-held-change: true
+    require-book-to-copy: false
+    make-real-copy: false
+    auto-chat-mode: true
+    drop-bookshelf-on-break: false
+    keep-all-books-loaded: false
+    use-spout-features: true
+    use-deny-perms: false
+    check-worldguard: true
+    use-full-filenames: true
+    clean-interval: 600
+    remove-delay: 300
+    stack-by-data-fn: a
+    
+formatting:
+    indent-size: 4
+    line-length: 55
+    page-length: 6
+    
+strings:
+    must-hold-book: You must be holding a single book to write.
+    usage-start: Use /%c <title> to start your book.
+    usage-write: 'Use /%c <text> to add text to your book.
+        You can use a double-colon :: to create a new paragraph.
+        Left click on a bookcase to place your book.
+        Type /%c -help to see special commands.'
+    usage-read: Right click to read.
+    new-book-created: 'New book created: %t'
+    
+    placed-book: 'Book placed in bookshelf:'
+    copied-book: 'Copied book:'
+    removed-book: 'Removed book:'
+    cannot-destroy: You can't destroy someone else's bookshelf!
+    placed-book-fail: You cannot put a book here.
+    command-invalid: Invalid command.
+    no-permission: You do not have permission to do that.
+    
+    write-done: 'Wrote line: %t'
+    write-fail: You cannot write in a book that is not yours.
+    
+    command-help: help
+    command-help-text: "Special commands:\n   /%c -chat -- toggle chat write mode\n\
+        \   /%c -read <page> -- read the specified page\n   /%c -undo -- undo the\
+        \ last write action\n   /%c -erase <text> -- erase the given text\n   /%c\
+        \ -replace <old text> -> <new text> -- replace text\n   /%c -title <new title>\
+        \ -- change the book's title\n   /%c -eraseall -- erase the entire book"
+        
+    command-get: get
+    command-get-done: 'Got book: '
+    command-get-fail: Unable to get book.
+    
+    command-id: id
+    command-id-done: 'Book id: '
+    command-id-fail: You are not holding a book.
+        
+    command-read: read
+    
+    command-title: title
+    
+    command-undo: undo
+    command-undo-done: Undo successful.
+    command-undo-fail: Unable to undo.
+    
+    command-erase: erase
+    command-erase-done: Text erased.
+    
+    command-replace: replace
+    command-replace-done: Text replaced.
+    command-replace-fail: Text not found.
+    
+    command-eraseall: eraseall
+    command-eraseall-done: Book contents erased.
+    
+    command-chatmode: chat
+    command-chatmode-on: Chat write mode enabled.
+    command-chatmode-off: Chat write mode disabled.    
+    
+    read-divider: '--------------------------------------------------'
+    book: Book
+    by: by
+    page: page

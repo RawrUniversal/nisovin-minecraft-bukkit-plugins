@@ -21,8 +21,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.Configuration;
 
 import com.nisovin.bookworm.event.*;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -147,17 +148,18 @@ public class BookWorm extends JavaPlugin {
 		getCommand("bookworm").setExecutor(new BookWormCommandExecutor(this));
 		
 		// register listeners
-		new BookWormPlayerListener(this);
-		new BookWormBlockListener(this);
-		new BookWormWorldListener(this);
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(new BookWormPlayerListener(this), this);
+		pm.registerEvents(new BookWormBlockListener(this), this);
+		pm.registerEvents(new BookWormWorldListener(this), this);
 		
 		// check for spout
 		if (USE_SPOUT_FEATURES) {
 			Plugin spout = getServer().getPluginManager().getPlugin("Spout");
 			if (spout != null) {
 				SPOUT_ENABLED = true;
-				new BookWormSpoutInventoryListener(this);
-				new BookWormSpoutScreenListener(this);
+				pm.registerEvents(new BookWormSpoutInventoryListener(this), this);
+				pm.registerEvents(new BookWormSpoutScreenListener(this), this);
 				getServer().getLogger().info("BookWorm 'Spout' support enabled.");
 			} else {
 				SPOUT_ENABLED = false;
@@ -300,13 +302,13 @@ public class BookWorm extends JavaPlugin {
 	}
 	
 	protected void loadConfig() {
-		Configuration config = getConfiguration();
-		config.load();
+		saveDefaultConfig();
+		Configuration config = getConfig();
 		
 		STACK_BY_DATA_FN = config.getString("general.stack-by-data-fn", STACK_BY_DATA_FN);
 		
-		TEXT_COLOR = ChatColor.getByCode(config.getInt("general.text-color", TEXT_COLOR.getCode()));
-		TEXT_COLOR_2 = ChatColor.getByCode(config.getInt("general.text-color-2", TEXT_COLOR_2.getCode()));
+		TEXT_COLOR = ChatColor.getByChar(config.getString("general.text-color", TEXT_COLOR.getChar()+""));
+		TEXT_COLOR_2 = ChatColor.getByChar(config.getString("general.text-color-2", TEXT_COLOR_2.getChar()+""));
 		
 		SHOW_TITLE_ON_HELD_CHANGE = config.getBoolean("general.show-title-on-held-change", SHOW_TITLE_ON_HELD_CHANGE);
 		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
@@ -376,8 +378,6 @@ public class BookWorm extends JavaPlugin {
 		S_PLACED_BOOK = config.getString("strings.placed-book", S_PLACED_BOOK);
 		S_PLACED_BOOK_FAIL = config.getString("strings.placed-book-fail", S_PLACED_BOOK_FAIL);
 		S_NO_PERMISSION = config.getString("strings.no-permission", S_NO_PERMISSION);
-		
-		config.save();
 	}
 	
 	protected void saveBookshelves() {

@@ -1,7 +1,8 @@
 package com.nisovin.bookworm;
 
 import org.bukkit.Material;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
 import org.getspout.spoutapi.event.inventory.InventoryListener;
@@ -9,10 +10,9 @@ import org.getspout.spoutapi.event.inventory.InventoryListener;
 public class BookWormSpoutInventoryListener extends InventoryListener {
 
 	public BookWormSpoutInventoryListener(BookWorm plugin) {
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, this, Event.Priority.Monitor, plugin);
 	}
 	
-	@Override
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onInventoryClick(InventoryClickEvent event) {
 		ItemStack itemClicked = event.getItem();
 		ItemStack itemHolding = event.getCursor();

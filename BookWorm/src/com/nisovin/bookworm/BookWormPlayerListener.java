@@ -3,32 +3,28 @@ package com.nisovin.bookworm;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.bookworm.event.BookPlaceEvent;
 import com.nisovin.bookworm.event.BookReadEvent;
 
-public class BookWormPlayerListener extends PlayerListener {
+public class BookWormPlayerListener implements Listener {
 	
 	private BookWorm plugin;
 	
 	public BookWormPlayerListener(BookWorm plugin) {
 		this.plugin = plugin;
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, this, Event.Priority.Low, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Monitor, plugin);
-		if (BookWorm.SHOW_TITLE_ON_HELD_CHANGE) {
-			plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_ITEM_HELD, this, Event.Priority.Monitor, plugin);
-		}
 	}
 	
-	@Override
+	@EventHandler(priority=EventPriority.LOW)
 	public void onPlayerChat(PlayerChatEvent event) {
 		if (event.isCancelled()) return;
 		Player player = event.getPlayer();
@@ -42,7 +38,7 @@ public class BookWormPlayerListener extends PlayerListener {
 		}
 	}
 	
-	@Override
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		ItemStack inHand = player.getItemInHand();
@@ -188,8 +184,9 @@ public class BookWormPlayerListener extends PlayerListener {
 		}		
 	}
 	
-	@Override
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onItemHeldChange(PlayerItemHeldEvent event) {
+		if (!BookWorm.SHOW_TITLE_ON_HELD_CHANGE) return;
 		ItemStack item = event.getPlayer().getInventory().getItem(event.getNewSlot());
 		if (item != null && item.getType() == Material.BOOK && item.getDurability() != 0) {
 			Book book = plugin.getBookById(item.getDurability());

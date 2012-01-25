@@ -3,20 +3,21 @@ package com.nisovin.bookworm;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockListener;
 import org.bukkit.inventory.ItemStack;
 
-public class BookWormBlockListener extends BlockListener {
+public class BookWormBlockListener implements Listener {
 
 	private BookWorm plugin;
 	
 	public BookWormBlockListener(BookWorm plugin) {
 		this.plugin = plugin;
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, this, Event.Priority.Highest, plugin);		
 	}
 	
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (!event.isCancelled() && event.getBlock().getType() == Material.BOOKSHELF) {
 			Player player = event.getPlayer();
