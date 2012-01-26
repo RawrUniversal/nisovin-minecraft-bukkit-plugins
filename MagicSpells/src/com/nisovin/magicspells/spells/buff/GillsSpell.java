@@ -102,7 +102,9 @@ public class GillsSpell extends BuffSpell {
 				}
 			}
 		}
-		helmets.clear();
+		if (helmets != null) {
+			helmets.clear();
+		}
 		fishes.clear();
 	}
 
