@@ -11,11 +11,13 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class RoarSpell extends InstantSpell {
 
+	private boolean cancelIfNoTargets;
 	private String strNoTarget;
 	
 	public RoarSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		cancelIfNoTargets = getConfigBoolean("cancel-if-no-targets", true);
 		strNoTarget = getConfigString("str-no-target", "No targets found.");
 	}
 
@@ -31,7 +33,7 @@ public class RoarSpell extends InstantSpell {
 				}
 			}
 			
-			if (count == 0) {
+			if (cancelIfNoTargets && count == 0) {
 				// nothing affected
 				sendMessage(player, strNoTarget);
 				fizzle(player);
