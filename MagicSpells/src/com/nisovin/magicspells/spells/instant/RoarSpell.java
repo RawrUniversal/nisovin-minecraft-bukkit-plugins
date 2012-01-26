@@ -34,6 +34,7 @@ public class RoarSpell extends InstantSpell {
 			if (count == 0) {
 				// nothing affected
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
