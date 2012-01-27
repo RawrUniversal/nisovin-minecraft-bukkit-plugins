@@ -329,6 +329,8 @@ spells:
         range: 25
         explosion-size: 4
         backfire-chance: 3
+        prevent-block-damage: false
+        damage-multiplier: 10
         check-plugins: true
         cost:
             - 331 5

@@ -30,7 +30,7 @@ public class FireballSpell extends InstantSpell {
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
-	private int damageMultiplier;
+	private float damageMultiplier;
 	private boolean smallFireball;
 	private boolean noExplosion;
 	private boolean noExplosionEffect;
@@ -48,7 +48,7 @@ public class FireballSpell extends InstantSpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		damageMultiplier = getConfigInt("damage-multiplier", 0);
+		damageMultiplier = getConfigFloat("damage-multiplier", 0);
 		smallFireball = getConfigBoolean("small-fireball", false);
 		noExplosion = config.getBoolean("spells." + spellName + ".no-explosion", false);
 		noExplosionEffect = getConfigBoolean("no-explosion-effect", true);
