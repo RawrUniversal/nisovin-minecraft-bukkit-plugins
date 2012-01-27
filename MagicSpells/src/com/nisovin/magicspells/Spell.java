@@ -2,6 +2,7 @@ package com.nisovin.magicspells;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -39,6 +40,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	protected String description;
 	protected CastItem castItem;
+	protected boolean bindable;
+	protected HashSet<CastItem> bindableItems;
 	protected int broadcastRange;
 	
 	protected ItemStack[] cost;
@@ -58,6 +61,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String strOnCooldown;
 	protected String strMissingReagents;
 	protected String strCantCast;
+	protected String strCantBind;
 	
 	private HashMap<String, Long> lastCast;
 	
@@ -79,6 +83,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		this.description = config.getString(section + "." + spellName + ".description", "");
 		this.castItem = new CastItem(config.getString(section + "." + spellName + ".cast-item", "280"));
+		this.bindable = config.getBoolean(section + "." + spellName + ".bindable", true);
+		List<String> bindables = config.getStringList(section + "." + spellName + ".bindable-items", null);
+		if (bindables != null) {
+			bindableItems = new HashSet<CastItem>();
+			for (String s : bindables) {
+				bindableItems.add(new CastItem(s));
+			}
+		}
 		this.broadcastRange = config.getInt(section + "." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 		
 		List<String> costList = config.getStringList(section + "." + spellName + ".cost", null);
@@ -141,7 +153,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strOnCooldown = config.getString(section + "." + spellName + ".str-on-cooldown", MagicSpells.strOnCooldown);
 		this.strMissingReagents = config.getString(section + "." + spellName + ".str-missing-reagents", MagicSpells.strMissingReagents);
 		this.strCantCast = config.getString(section + "." + spellName + ".str-cant-cast", MagicSpells.strCantCast);
-			
+		this.strCantBind = config.getString(section + "." + spellName + ".str-cant-bind", null);
 	}
 	
 	/**
@@ -292,6 +304,16 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	public abstract boolean canCastWithItem();
 	
 	public abstract boolean canCastByCommand();
+	
+	public boolean canBind(CastItem item) {
+		if (!bindable) {
+			return false;
+		} else if (bindableItems == null)  {
+			return true;
+		} else {
+			return bindableItems.contains(item);
+		}
+	}
 	
 	public String getCostStr() {
 		if (strCost == null || strCost.equals("")) {
@@ -628,6 +650,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		} else {
 			return this.internalName;
 		}
+	}
+	
+	public String getCantBindError() {
+		return strCantBind;
 	}
 	
 	public String[] getAliases() {

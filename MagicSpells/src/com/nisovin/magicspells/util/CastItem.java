@@ -23,7 +23,13 @@ public class CastItem {
 	}
 	
 	public CastItem(ItemStack i) {
-		this(i.getTypeId(), i.getDurability());
+		if (i == null) {
+			this.type = 0;
+			this.data = 0;
+		} else {
+			this.type = i.getTypeId();
+			this.data = i.getDurability();
+		}
 	}
 	
 	public CastItem(String s) {

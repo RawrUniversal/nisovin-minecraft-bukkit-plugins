@@ -72,6 +72,7 @@ public class MagicSpells extends JavaPlugin {
 	public static String strMissingReagents;
 	protected static String strCantCast;
 	protected static String strNoMagicZone;
+	protected static String strCantBind;
 	public static String strConsoleName;
 	
 	protected static HashMap<String,Spell> spells; // map internal names to spells
@@ -145,6 +146,7 @@ public class MagicSpells extends JavaPlugin {
 		strOnCooldown = config.getString("general.str-on-cooldown", "That spell is on cooldown.");
 		strMissingReagents = config.getString("general.str-missing-reagents", "You do not have the reagents for that spell.");
 		strCantCast = config.getString("general.str-cant-cast", "You can't cast that spell right now.");
+		strCantBind = config.getString("general.str-cant-bind", "You cannot bind that spell to that item.");
 		strNoMagicZone = config.getString("general.str-no-magic-zone", "An anti-magic aura makes your spell fizzle.");
 		strConsoleName = config.getString("general.console-name", "Admin");
 		
