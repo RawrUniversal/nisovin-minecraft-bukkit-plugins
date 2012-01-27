@@ -601,14 +601,18 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	@SuppressWarnings("rawtypes")
 	public static void removeMobEffect(LivingEntity entity, int type) {
 		try {
-			if (entity instanceof Player) {
-				EntityPlayer player = ((CraftPlayer)entity).getHandle();
-				player.netServerHandler.sendPacket(new Packet42RemoveMobEffect(player.id, new MobEffect(type, 0, 0)));
-			}
+			// remove effect
 			Field field = EntityLiving.class.getDeclaredField("effects");
 			field.setAccessible(true);
 			HashMap effects = (HashMap)field.get(((CraftLivingEntity)entity).getHandle());
 			effects.remove(type);
+			// alert player that effect is gone
+			if (entity instanceof Player) {
+				EntityPlayer player = ((CraftPlayer)entity).getHandle();
+				player.netServerHandler.sendPacket(new Packet42RemoveMobEffect(player.id, new MobEffect(type, 0, 0)));
+			}
+			// remove graphical effect
+			((CraftLivingEntity)entity).getHandle().getDataWatcher().watch(8, Integer.valueOf(0));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
