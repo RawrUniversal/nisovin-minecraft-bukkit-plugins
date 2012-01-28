@@ -57,7 +57,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		scrollSpellName = config.getString("scroll-spell-name", "scroll");
 		scrollItemType = config.getInt("scroll-item-type", Material.PAPER.getId());
 		strCantAffordScroll = config.getString("str-cant-afford-scroll", "You cannot afford that scroll.");
-		strPurchasedScroll = config.getString("str-purchased-scroll", "You have purchased the %s scroll.");
+		strPurchasedScroll = config.getString("str-purchased-scroll", "You have purchased a scroll for the %s spell.");
 		strScrollFail = config.getString("str-scroll-fail", "You cannot purchase a scroll at this time.");
 		
 		// set up economy hook
@@ -158,7 +158,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		
 		// create scroll
 		ScrollSpell scrollSpell = (ScrollSpell)MagicSpells.getSpellByInternalName(scrollSpellName);
-		short scrollId = scrollSpell.createScroll(scrollSpell, uses);
+		short scrollId = scrollSpell.createScroll(spell, uses);
 		if (scrollId == 0) {
 			MagicSpells.sendMessage(player, strScrollFail);
 			return;
@@ -205,8 +205,14 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 	public void onSignCreate(SignChangeEvent event) {
 		if (event.isCancelled()) return;
 		
+		boolean isSpellShop;
+		
 		String lines[] = event.getLines();
-		if (!lines[0].equals(firstLine)) {
+		if (lines[0].equals(firstLine)) {
+			isSpellShop = true;
+		} else if (lines[0].equals(firstLineScroll)) {
+			isSpellShop = false;
+		} else {
 			return;
 		}
 		
@@ -235,19 +241,9 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		}
 		
 		// get cost
-		double cost = 0;
-		if (!lines[2].isEmpty()) {
-			if (!lines[2].contains(" ") && lines[2].matches("^[0-9]+(\\.[0-9]+)?$")) {
-				cost = Integer.parseInt(lines[2]);
-			} else if (lines[2].contains(" ")) {
-				String[] s = lines[2].split(" ");
-				if (s[0].matches("^[0-9]+(\\.[0-9]+)?$")) {
-					cost = Double.parseDouble(s[0]);
-				}
-			}
-		}
+		double cost = getCost(lines[isSpellShop?2:3]);
 		
-		event.getPlayer().sendMessage("Spell shop created: " + spellName + " for " + cost + " currency.");
+		event.getPlayer().sendMessage((isSpellShop?"Spell":"Scroll") + " shop created: " + spellName + (isSpellShop?"":"(" + lines[2] + ")") + " for " + cost + " currency.");
 		
 	}
 
