@@ -1,6 +1,14 @@
-first-line: [SPELL SHOP]
 require-known-spell: true
 require-teach-perm: true
+
+first-line: [SPELL SHOP]
 str-already-known: You already know that spell.
 str-cant-afford: You cannot afford that spell.
 str-purchased: You have purchased the %s spell.
+
+first-line-scroll: [SCROLL SHOP]
+scroll-spell-name: scroll
+scroll-item-type: 339
+str-cant-afford-scroll: You cannot afford that scroll.
+str-purchased-scroll: You have purchased the %s scroll.
+str-scroll-fail: You cannot purchase a scroll at this time.
