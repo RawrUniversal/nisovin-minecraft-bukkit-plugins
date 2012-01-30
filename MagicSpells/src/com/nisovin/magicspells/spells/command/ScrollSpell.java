@@ -205,6 +205,21 @@ public class ScrollSpell extends CommandSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
+	public short createScroll(Spell spell, int uses) {
+		short id = getNextId();
+		if (id == 0) {
+			// no more scroll space
+			return 0;
+		}		
+
+		scrollSpells.put(id, spell);
+		scrollUses.put(id, uses);
+		dirtyData = true;
+		save();
+		
+		return id;
+	}
+	
 	@Override
 	public boolean castFromConsole(CommandSender sender, String[] args) {
 		if (args.length >= 2 && (args[0].equalsIgnoreCase("base") || args[0].equalsIgnoreCase("-base"))) {
