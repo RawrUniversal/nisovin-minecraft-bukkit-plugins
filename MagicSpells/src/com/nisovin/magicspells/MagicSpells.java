@@ -105,8 +105,9 @@ public class MagicSpells extends JavaPlugin {
 		new File(this.getDataFolder(), "spellbooks").mkdir();
 		
 		// load config
-		saveDefaultConfig();
-		MagicConfig config = new MagicConfig(new File(this.getDataFolder(), "config.yml"));
+		File configFile = new File(getDataFolder(), "config.yml");
+		if (!configFile.exists()) saveDefaultConfig();
+		MagicConfig config = new MagicConfig(configFile);
 		debug = config.getBoolean("general.debug", false);
 		textColor = ChatColor.getByChar(config.getString("general.text-color", ChatColor.DARK_AQUA.getChar() + ""));
 		broadcastRange = config.getInt("general.broadcast-range", 20);

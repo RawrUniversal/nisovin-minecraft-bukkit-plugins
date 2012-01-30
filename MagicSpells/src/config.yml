@@ -110,7 +110,7 @@ spells:
         name: bind
         enable: true
         description: Binds a spell to a wand item.
-        str-cast-self: You have successfully bound the %s spell to the item you are holding.
+        str-cast-self: "You have successfully bound the %s spell to the \nitem you are holding."
         str-usage: You must specify a spell name and hold an item in your hand.
         str-no-spell: You do not know a spell by that name.
         str-cant-bind-spell: That spell cannot be bound to an item.
