@@ -15,7 +15,7 @@ public class MemorySpellListener implements Listener {
 		this.plugin = plugin;
 	}
 	
-	@EventHandler(event=SpellLearnEvent.class, priority=EventPriority.NORMAL)
+	@EventHandler(priority=EventPriority.NORMAL)
 	public void onSpellLearn(SpellLearnEvent event) {
 		int req = plugin.getRequiredMemory(event.getSpell());
 		if (req > 0) {
