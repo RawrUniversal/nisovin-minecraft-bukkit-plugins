@@ -1,5 +1,7 @@
 package com.nisovin.magicspells.shop;
 
+import java.io.File;
+
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Material;
@@ -43,7 +45,10 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onEnable() {
-		saveDefaultConfig();
+		if (!new File(getDataFolder(), "config.yml").exists()) {
+			saveDefaultConfig();
+		}
+		
 		Configuration config = getConfig();
 		requireKnownSpell = config.getBoolean("require-known-spell", true);
 		requireTeachPerm = config.getBoolean("require-teach-perm", true);
