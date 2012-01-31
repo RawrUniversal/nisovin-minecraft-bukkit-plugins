@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,11 @@ import java.util.List;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import com.nisovin.magicspells.InstantSpell;
+
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class DisarmSpell extends InstantSpell {
+public class DisarmSpell extends TargetedSpell {
 
 	private List<Integer> disarmable;
 	private int disarmDuration;
@@ -34,7 +35,7 @@ public class DisarmSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get target
 			Player target = getTargetedPlayer(player, range, obeyLos);

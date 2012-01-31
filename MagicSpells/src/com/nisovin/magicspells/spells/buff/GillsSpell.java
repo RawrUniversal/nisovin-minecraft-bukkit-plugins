@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
-import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class GillsSpell extends BuffSpell {
@@ -33,7 +33,7 @@ public class GillsSpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (fishes.contains(player.getName())) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -72,7 +72,7 @@ public class GillsSpell extends BuffSpell {
 	}
 
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		if (fishes.contains(player.getName())) {
 			super.turnOff(player);
 			fishes.remove(player.getName());

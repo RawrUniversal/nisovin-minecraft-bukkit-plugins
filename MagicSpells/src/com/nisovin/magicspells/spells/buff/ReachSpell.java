@@ -18,7 +18,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class ReachSpell extends BuffSpell {
@@ -44,7 +44,7 @@ public class ReachSpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (reaching.contains(player)) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -138,7 +138,7 @@ public class ReachSpell extends BuffSpell {
 	}
 
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		if (reaching.contains(player)) {
 			super.turnOff(player);
 			reaching.remove(player);

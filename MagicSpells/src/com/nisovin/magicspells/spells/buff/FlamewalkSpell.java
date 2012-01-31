@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class FlamewalkSpell extends BuffSpell {
@@ -38,7 +38,7 @@ public class FlamewalkSpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (flamewalkers.containsKey(player.getName())) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -53,7 +53,7 @@ public class FlamewalkSpell extends BuffSpell {
 	}	
 	
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		if (flamewalkers.containsKey(player.getName())) {
 			super.turnOff(player);
 			sendMessage(player, strFade);

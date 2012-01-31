@@ -8,7 +8,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class LeapSpell extends InstantSpell {
@@ -32,7 +32,7 @@ public class LeapSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Vector v = player.getLocation().getDirection();
 			v.setY(0).normalize().multiply(forwardVelocity*power).setY(upwardVelocity*power);

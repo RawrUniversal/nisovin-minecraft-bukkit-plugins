@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.HashSet;
 
@@ -8,10 +8,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
-import com.nisovin.magicspells.*;
+
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class BlinkSpell extends InstantSpell {
+public class BlinkSpell extends TargetedSpell {
 	
 	private boolean passThroughCeiling;
 	private boolean smokeTrail;
@@ -28,7 +29,7 @@ public class BlinkSpell extends InstantSpell {
 	}
 	
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			int range = Math.round(this.range*power);
 			if (range <= 0) range = 25;

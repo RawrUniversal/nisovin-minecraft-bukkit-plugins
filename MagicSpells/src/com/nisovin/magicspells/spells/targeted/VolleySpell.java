@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -7,10 +7,10 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class VolleySpell extends InstantSpell {
+public class VolleySpell extends TargetedSpell {
 
 	private int arrows;
 	private int speed;
@@ -27,7 +27,7 @@ public class VolleySpell extends InstantSpell {
 	}
 	
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Location spawn = player.getLocation();
 			spawn.setY(spawn.getY()+3);

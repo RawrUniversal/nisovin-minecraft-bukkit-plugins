@@ -7,11 +7,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class ForcepushSpell extends InstantSpell {
 	
+	private int radius;
 	private boolean targetPlayers;
 	private int force;
 	private int yForce;
@@ -20,6 +21,7 @@ public class ForcepushSpell extends InstantSpell {
 	public ForcepushSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		radius = getConfigInt("range", 3);
 		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
 		force = config.getInt("spells." + spellName + ".pushback-force", 30);
 		yForce = config.getInt("spells." + spellName + ".additional-vertical-force", 15);
@@ -27,9 +29,9 @@ public class ForcepushSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			knockback(player, range, power, targetPlayers);
+			knockback(player, radius, power, targetPlayers);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}

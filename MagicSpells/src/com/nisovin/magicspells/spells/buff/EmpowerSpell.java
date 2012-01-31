@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class EmpowerSpell extends BuffSpell {
@@ -25,7 +25,7 @@ public class EmpowerSpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (empowered.containsKey(player)) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -46,7 +46,7 @@ public class EmpowerSpell extends BuffSpell {
 	}
 	
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		if (empowered.containsKey(player)) {
 			super.turnOff(player);
 			empowered.remove(player);

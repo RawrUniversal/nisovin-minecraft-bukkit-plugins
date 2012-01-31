@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -22,10 +22,10 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ExplodeSpell extends InstantSpell {
+public class ExplodeSpell extends TargetedSpell {
 	
 	private boolean checkPlugins;
 	private int explosionSize;

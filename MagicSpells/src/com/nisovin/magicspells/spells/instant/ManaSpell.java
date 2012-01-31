@@ -2,8 +2,8 @@ package com.nisovin.magicspells.spells.instant;
 
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class ManaSpell extends InstantSpell {
@@ -17,7 +17,7 @@ public class ManaSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			int amount = Math.round(mana*power);
 			boolean added = MagicSpells.getManaHandler().addMana(player, amount);

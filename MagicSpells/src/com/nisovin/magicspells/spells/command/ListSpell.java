@@ -7,10 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class ListSpell extends CommandSpell {
@@ -33,7 +33,7 @@ public class ListSpell extends CommandSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			String extra = "";

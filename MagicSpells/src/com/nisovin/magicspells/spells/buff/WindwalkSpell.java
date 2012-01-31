@@ -21,8 +21,8 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class WindwalkSpell extends BuffSpell {
@@ -44,7 +44,7 @@ public class WindwalkSpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(final Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(final Player player, SpellCastState state, float power, String[] args) {
 		if (flyers.containsKey(player)) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -133,7 +133,7 @@ public class WindwalkSpell extends BuffSpell {
 	}
 
 	@Override
-	protected void turnOff(final Player player) {
+	public void turnOff(final Player player) {
 		super.turnOff(player);
 		if (flyers.containsKey(player)) {
 			player.setGameMode(GameMode.SURVIVAL);

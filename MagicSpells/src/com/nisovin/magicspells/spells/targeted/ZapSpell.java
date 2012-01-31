@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,10 +12,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ZapSpell extends InstantSpell {
+public class ZapSpell extends TargetedSpell {
 	
 	private String strCantZap;
 	private HashSet<Byte> transparentBlockTypes;
@@ -54,7 +54,7 @@ public class ZapSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get targeted block
 			Block target = player.getTargetBlock(transparentBlockTypes, range>0?range:100);

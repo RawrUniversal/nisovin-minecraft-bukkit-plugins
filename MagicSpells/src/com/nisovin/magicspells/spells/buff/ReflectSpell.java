@@ -5,8 +5,8 @@ import java.util.HashSet;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
-import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class ReflectSpell extends BuffSpell {
@@ -20,7 +20,7 @@ public class ReflectSpell extends BuffSpell {
 	}
 	
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (reflectors.contains(player)) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -46,7 +46,7 @@ public class ReflectSpell extends BuffSpell {
 	}
 
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		if (reflectors.contains(player)) {
 			super.turnOff(player);
 			reflectors.remove(player);

@@ -6,12 +6,13 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.TemporaryBlockSet;
 
 public class WallSpell extends InstantSpell {
 
+	private int distance;
 	private int wallWidth;
 	private int wallHeight;
 	private Material wallType;
@@ -21,6 +22,7 @@ public class WallSpell extends InstantSpell {
 	public WallSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		distance = getConfigInt("distance", 3);
 		wallWidth = config.getInt("spells." + spellName + ".wall-width", 5);
 		wallHeight = config.getInt("spells." + spellName + ".wall-height", 3);
 		wallType = Material.getMaterial(config.getInt("spells." + spellName + ".wall-type", Material.BRICK.getId()));
@@ -29,13 +31,12 @@ public class WallSpell extends InstantSpell {
 	}
 	
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block target = player.getTargetBlock(null, range>0&&range<15?range:3);
+			Block target = player.getTargetBlock(null, distance>0&&distance<15?distance:3);
 			if (target == null || target.getType() != Material.AIR) {
 				// fail
 				sendMessage(player, strNoTarget);
-				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				TemporaryBlockSet blockSet = new TemporaryBlockSet(Material.AIR, wallType);

@@ -289,7 +289,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param args the spell arguments, if cast by command
 	 * @return the action to take after the spell is processed
 	 */
-	protected abstract PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args);
+	public abstract PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args);
 	
 	/**
 	 * This method is called when the spell is cast from the console.
@@ -328,7 +328,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param player The player to check
 	 * @return whether the spell is on cooldown
 	 */
-	protected boolean onCooldown(Player player) {
+	public boolean onCooldown(Player player) {
 		if (cooldown == 0 || player.hasPermission("magicspells.nocooldown")) {
 			return false;
 		}
@@ -347,7 +347,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param player The player to check
 	 * @return The number of seconds remaining in the cooldown
 	 */
-	protected int getCooldown(Player player) {
+	public int getCooldown(Player player) {
 		if (cooldown <= 0) {
 			return 0;
 		}
@@ -364,7 +364,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * Begins the cooldown for the spell for the specified player
 	 * @param player The player to set the cooldown for
 	 */
-	protected void setCooldown(Player player, int cooldown) {
+	public void setCooldown(Player player, int cooldown) {
 		setCooldown(player, cooldown, true);
 	}
 	
@@ -372,7 +372,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * Begins the cooldown for the spell for the specified player
 	 * @param player The player to set the cooldown for
 	 */
-	protected void setCooldown(Player player, int cooldown, boolean activateSharedCooldowns) {
+	public void setCooldown(Player player, int cooldown, boolean activateSharedCooldowns) {
 		if (cooldown > 0) {
 			lastCast.put(player.getName(), System.currentTimeMillis());
 		}

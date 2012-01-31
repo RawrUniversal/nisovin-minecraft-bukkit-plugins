@@ -13,7 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import com.nisovin.magicspells.ChanneledSpell;
+import com.nisovin.magicspells.spells.ChanneledSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class SummonSpell extends ChanneledSpell {
@@ -52,7 +52,7 @@ public class SummonSpell extends ChanneledSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get target name
 			String targetName = "";

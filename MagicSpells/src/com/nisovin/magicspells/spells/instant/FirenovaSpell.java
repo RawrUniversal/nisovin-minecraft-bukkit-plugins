@@ -12,12 +12,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class FirenovaSpell extends InstantSpell {
 
+	private int range;
 	private int tickSpeed;
 	private boolean burnTallGrass;
 	private boolean checkPlugins;
@@ -27,6 +28,7 @@ public class FirenovaSpell extends InstantSpell {
 	public FirenovaSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		range = getConfigInt("range", 3);
 		tickSpeed = config.getInt("spells." + spellName + ".tick-speed", 5);
 		burnTallGrass = getConfigBoolean("burn-tall-grass", true);
 		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
@@ -35,7 +37,7 @@ public class FirenovaSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			fireImmunity.add(player);
 			new FirenovaAnimation(player);

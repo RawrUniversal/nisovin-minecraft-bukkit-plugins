@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
 
@@ -13,11 +13,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
-import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class DrainlifeSpell extends InstantSpell {
+public class DrainlifeSpell extends TargetedSpell {
 	
 	private String takeType;
 	private int takeAmt;
@@ -44,7 +44,7 @@ public class DrainlifeSpell extends InstantSpell {
 	}
 	
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {

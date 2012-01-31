@@ -6,11 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ExternalCommandSpell extends InstantSpell {
+public class ExternalCommandSpell extends TargetedSpell {
 	
 	@SuppressWarnings("unused")
 	private static final String SPELL_NAME = "external";
@@ -44,7 +43,7 @@ public class ExternalCommandSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (commandToExecute.equals("")) {
 			Bukkit.getServer().getLogger().severe("MagicSpells: External command spell '" + name + "' has no command to execute.");
 			return PostCastAction.ALREADY_HANDLED;

@@ -1,4 +1,4 @@
-package com.nisovin.magicspells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public abstract class BuffSpell extends Spell {
@@ -186,12 +188,13 @@ public abstract class BuffSpell extends Spell {
 	 * When overriding this function, you should always be sure to call super.turnOff(player).
 	 * @param player
 	 */
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		if (useCounter != null) useCounter.remove(player.getName());
 		if (durationStartTime != null) durationStartTime.remove(player.getName());
 	}
 	
 	@Override
-	protected abstract void turnOff();
+	protected
+	abstract void turnOff();
 	
 }

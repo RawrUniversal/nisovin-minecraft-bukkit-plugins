@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 
-import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class HasteSpell extends BuffSpell {
@@ -27,7 +27,7 @@ public class HasteSpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(final Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(final Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			hasted.put(player, Math.round(strength*power));
 			startSpellDuration(player);
@@ -53,7 +53,7 @@ public class HasteSpell extends BuffSpell {
 	}
 
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		if (hasted.containsKey(player)) {
 			super.turnOff(player);
 			hasted.remove(player);

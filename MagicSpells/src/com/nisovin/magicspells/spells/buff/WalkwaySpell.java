@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
-import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class WalkwaySpell extends BuffSpell {
@@ -41,7 +41,7 @@ public class WalkwaySpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (platforms.containsKey(player)) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -92,7 +92,7 @@ public class WalkwaySpell extends BuffSpell {
 	}
 	
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		Platform platform = platforms.get(player);
 		if (platform != null) {
 			super.turnOff(player);

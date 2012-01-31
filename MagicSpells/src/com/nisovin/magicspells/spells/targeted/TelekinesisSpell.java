@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.HashSet;
 
@@ -7,10 +7,10 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class TelekinesisSpell extends InstantSpell {
+public class TelekinesisSpell extends TargetedSpell {
 
 	private String strNoTarget;
 	
@@ -29,7 +29,7 @@ public class TelekinesisSpell extends InstantSpell {
 		transparent.add((byte)Material.TORCH.getId());
 	}
 	
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = player.getTargetBlock(transparent, range>0?range:100);
 			if (target == null) {

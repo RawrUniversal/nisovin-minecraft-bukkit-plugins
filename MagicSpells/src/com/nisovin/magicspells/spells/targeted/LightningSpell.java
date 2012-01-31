@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -7,10 +7,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class LightningSpell extends InstantSpell {
+public class LightningSpell extends TargetedSpell {
 	
 	private boolean requireEntityTarget;
 	private boolean obeyLos;
@@ -35,7 +35,7 @@ public class LightningSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = null;
 			if (requireEntityTarget) {

@@ -1,11 +1,11 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class HealSpell extends InstantSpell {
+public class HealSpell extends TargetedSpell {
 	
 	private int healAmount;
 	private boolean cancelIfFull;
@@ -28,7 +28,7 @@ public class HealSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Player target = getTargetedPlayer(player, range, obeyLos);
 			if (target == null) {

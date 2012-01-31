@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityTargetEvent;
 
-import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class StealthSpell extends BuffSpell {
@@ -20,7 +20,7 @@ public class StealthSpell extends BuffSpell {
 	}
 	
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (stealthy.contains(player.getName())) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -50,7 +50,7 @@ public class StealthSpell extends BuffSpell {
 	}
 	
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		if (stealthy.contains(player.getName())) {
 			super.turnOff(player);
 			stealthy.remove(player.getName());

@@ -1,4 +1,4 @@
-package com.nisovin.magicspells;
+package com.nisovin.magicspells.spells;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public final class MultiSpell extends Spell {
@@ -46,7 +48,7 @@ public final class MultiSpell extends Spell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// check cooldowns
 			if (checkIndividualCooldowns) {

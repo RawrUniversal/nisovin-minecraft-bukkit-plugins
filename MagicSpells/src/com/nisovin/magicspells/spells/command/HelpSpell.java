@@ -3,10 +3,10 @@ package com.nisovin.magicspells.spells.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class HelpSpell extends CommandSpell {
@@ -28,7 +28,7 @@ public class HelpSpell extends CommandSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (args == null || args.length == 0) {
 				sendMessage(player, strUsage);

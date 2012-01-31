@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.ChanneledSpell;
+import com.nisovin.magicspells.spells.ChanneledSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class SunSpell extends ChanneledSpell {
@@ -20,7 +20,7 @@ public class SunSpell extends ChanneledSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			String world = player.getWorld().getName();
 			boolean success = addChanneler(world, player);

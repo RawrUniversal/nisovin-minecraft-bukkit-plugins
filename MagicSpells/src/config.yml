@@ -118,7 +118,7 @@ spells:
 
 
     blind:
-        spell-class: ".instant.PotionEffectSpell"
+        spell-class: ".targeted.PotionEffectSpell"
         name: blind
         description: Blind your target.
         cast-item: 280
@@ -137,7 +137,7 @@ spells:
         str-cast-self: You have blinded your target!
         str-no-target: No target found.
     blink:
-        spell-class: ".instant.BlinkSpell"
+        spell-class: ".targeted.BlinkSpell"
         name: blink
         description: Teleport a short distance.
         cast-item: 280
@@ -153,7 +153,7 @@ spells:
         str-cast-others: "%a blinks away!"
         str-cant-blink: You cannot blink there.
     build:
-        spell-class: ".instant.BuildSpell"
+        spell-class: ".targeted.BuildSpell"
         name: build
         description: Build blocks from far away.
         cast-item: 294
@@ -188,7 +188,7 @@ spells:
         str-cast-others: "%a is now walking on air!"
         str-fade: You are no longer walking on air.
     combust:
-        spell-class: ".instant.CombustSpell"
+        spell-class: ".targeted.CombustSpell"
         name: combust
         description: Set a target on fire.
         cast-item: 283
@@ -229,7 +229,7 @@ spells:
         str-cost: free
         str-cast-self: You have conjured some magical reagents!
     cripple:
-        spell-class: ".instant.CrippleSpell"
+        spell-class: ".targeted.CrippleSpell"
         name: cripple
         description: Slow down a targeted enemy.
         cast-item: 280
@@ -245,7 +245,7 @@ spells:
         str-cast-self: You have crippled your enemy.
         str-no-target: No target found.
     disarm:
-        spell-class: ".instant.DisarmSpell"
+        spell-class: ".targeted.DisarmSpell"
         name: disarm
         description: Disarm your opponent.
         cast-item: 283
@@ -268,7 +268,7 @@ spells:
         str-cast-self: You have disarmed %t.
         str-cast-target: "%a has disarmed you."
     drainlife:
-        spell-class: ".instant.DrainlifeSpell"
+        spell-class: ".targeted.DrainlifeSpell"
         name: drainlife
         description: Drain life from your enemy and give it to you.
         cast-item: 283
@@ -306,7 +306,7 @@ spells:
         str-cast-others: "%a begins to glow with magical energy."
         str-fade: You are no longer glowing with magical energy.
     entomb:
-        spell-class: ".instant.EntombSpell"
+        spell-class: ".targeted.EntombSpell"
         name: entomb
         description: Encase an enemy in glass.
         cast-item: 280
@@ -322,7 +322,7 @@ spells:
         str-cost: 3 redstone dust and 1 glass
         str-no-target: No target found.
     explode:
-        spell-class: ".instant.ExplodeSpell"
+        spell-class: ".targeted.ExplodeSpell"
         name: explode
         description: Create an explosion.
         cast-item: 283
@@ -341,7 +341,7 @@ spells:
         str-cast-self: Boom!
         str-cast-others: Boom!
     fireball:
-        spell-class: ".instant.FireballSpell"
+        spell-class: ".targeted.FireballSpell"
         name: fireball
         description: Throw a fiery ball of destruction.
         cast-item: 283
@@ -430,7 +430,7 @@ spells:
         str-cast-self: You push back your enemies!
         str-cast-others: "%a pushes back his enemies."
     forcetoss:
-        spell-class: ".instant.ForcetossSpell"
+        spell-class: ".targeted.ForcetossSpell"
         name: forcetoss
         description: Magically throw an enemy into the air.
         cast-item: 283
@@ -501,7 +501,7 @@ spells:
         str-cast-done: ""
         str-cast-interrupted: ""
     geyser:
-        spell-class: ".instant.GeyserSpell"
+        spell-class: ".targeted.GeyserSpell"
         name: geyser
         description: Create a geyser of water at your enemy's feet.
         cast-item: 283
@@ -551,7 +551,7 @@ spells:
         str-cast-others: "%a gains unnatural speed!"
         str-fade: You lose your unnatural speed.
     haze:
-        spell-class: ".instant.PotionEffectSpell"
+        spell-class: ".targeted.PotionEffectSpell"
         name: haze
         description: Makes your target's vision hazey.
         cast-item: 280
@@ -570,7 +570,7 @@ spells:
         str-cast-self: You have confuzzled your target!
         str-no-target: No target found.
     heal:
-        spell-class: ".instant.HealSpell"
+        spell-class: ".targeted.HealSpell"
         name: heal
         description: Heals a target player.
         cast-item: 280
@@ -652,7 +652,7 @@ spells:
         str-cast-others: Flowers grow in %a's footsteps!
         str-fade: Flowers no longer grow in your footsteps.
     lightning:
-        spell-class: ".instant.LightningSpell"
+        spell-class: ".targeted.LightningSpell"
         name: lightning
         description: Call down lightning.
         cast-item: 283
@@ -726,7 +726,7 @@ spells:
         str-cast-others: "%a has summoned an undead minion."
         str-fade: Your undead minion dies.
     pain:
-        spell-class: ".instant.PainSpell"
+        spell-class: ".targeted.PainSpell"
         name: pain
         description: Cause your enemy pain.
         cast-item: 283
@@ -754,7 +754,7 @@ spells:
         str-cost: 2 redstone dust
         str-cant-phase: Unable to find place to phase to.
     poison:
-        spell-class: ".instant.PotionEffectSpell"
+        spell-class: ".targeted.PotionEffectSpell"
         name: poison
         description: Poison your target.
         cast-item: 280
@@ -990,7 +990,7 @@ spells:
         str-spell-success: You have successfully called the sun.
         str-announce: The sun has suddenly appeared in the sky!        
     telekinesis:
-        spell-class: ".instant.TelekinesisSpell"
+        spell-class: ".targeted.TelekinesisSpell"
         name: telekinesis
         description: Manipulate switches and buttons remotely.
         cast-item: 280
@@ -1021,7 +1021,7 @@ spells:
         str-learned: You have learned the %s spell.
         str-cast-self: You have created a spell tome.
     volley:
-        spell-class: ".instant.VolleySpell"
+        spell-class: ".targeted.VolleySpell"
         name: volley
         description: Send a volley of arrows at your targeted location.
         cast-item: 283
@@ -1090,7 +1090,7 @@ spells:
         str-cast-others: "%a is now walking on the wind!"
         str-fade: You are no longer walking on the wind.
     zap:
-        spell-class: ".instant.ZapSpell"
+        spell-class: ".targeted.ZapSpell"
         name: zap
         description: Instantly destroys a block.
         cast-item: 294

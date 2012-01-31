@@ -1,4 +1,4 @@
-package com.nisovin.magicspells;
+package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +12,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public abstract class ChanneledSpell extends Spell {

@@ -19,7 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class StonevisionSpell extends BuffSpell {
@@ -41,7 +41,7 @@ public class StonevisionSpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (seers.containsKey(player.getName())) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -69,7 +69,7 @@ public class StonevisionSpell extends BuffSpell {
 	}
 	
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		super.turnOff(player);
 		if (seers.containsKey(player.getName())) {
 			seers.get(player.getName()).removeTransparency();

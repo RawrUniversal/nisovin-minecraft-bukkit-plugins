@@ -2,7 +2,7 @@ package com.nisovin.magicspells.spells.instant;
 
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class PrayerSpell extends InstantSpell {
@@ -18,7 +18,7 @@ public class PrayerSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (player.getHealth() == 20) {
 				sendMessage(player, strAtFullHealth);

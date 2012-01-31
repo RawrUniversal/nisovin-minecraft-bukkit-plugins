@@ -1,4 +1,4 @@
-package com.nisovin.magicspells;
+package com.nisovin.magicspells.spells;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,31 +12,20 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public abstract class InstantSpell extends Spell {
-	
+public abstract class TargetedSpell extends InstantSpell {
+
 	protected int range;
 	protected boolean playFizzleSound;
-	private boolean castWithItem;
-	private boolean castByCommand;
-	
-	public InstantSpell(MagicConfig config, String spellName) {
+
+	public TargetedSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		range = config.getInt("spells." + spellName + ".range", -1);
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
-		castWithItem = config.getBoolean("spells." + spellName + ".can-cast-with-item", true);
-		castByCommand = config.getBoolean("spells." + spellName + ".can-cast-by-command", true);
-	}
-	
-	public boolean canCastWithItem() {
-		return castWithItem;
-	}
-	
-	public boolean canCastByCommand() {
-		return castByCommand;
 	}
 
 	/**

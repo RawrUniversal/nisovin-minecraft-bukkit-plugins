@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,11 +20,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import com.nisovin.magicspells.InstantSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class FireballSpell extends InstantSpell {
+public class FireballSpell extends TargetedSpell {
 	
 	private boolean requireEntityTarget;
 	private boolean obeyLos;
@@ -61,7 +61,7 @@ public class FireballSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = player.getTargetBlock(null, range);
 			if (target == null || target.getType() == Material.AIR) {

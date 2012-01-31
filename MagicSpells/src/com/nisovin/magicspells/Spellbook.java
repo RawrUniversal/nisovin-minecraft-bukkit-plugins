@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.CastItem;
 
 public class Spellbook {

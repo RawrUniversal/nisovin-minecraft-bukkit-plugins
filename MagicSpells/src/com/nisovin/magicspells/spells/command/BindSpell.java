@@ -6,10 +6,10 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.CommandSpell;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -38,7 +38,7 @@ public class BindSpell extends CommandSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (args == null || args.length != 1) {
 				sendMessage(player, strUsage);

@@ -23,7 +23,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 
-import com.nisovin.magicspells.BuffSpell;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class MinionSpell extends BuffSpell {
@@ -71,7 +71,7 @@ public class MinionSpell extends BuffSpell {
 	}
 	
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (minions.containsKey(player.getName())) {
 			LivingEntity minion = minions.get(player.getName());
 			if (!minion.isDead()) { // don't toggle off if the minion is dead
@@ -200,7 +200,7 @@ public class MinionSpell extends BuffSpell {
 	}
 	
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		super.turnOff(player);
 		LivingEntity minion = minions.get(player.getName());
 		if (minion != null && !minion.isDead()) {

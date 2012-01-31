@@ -9,8 +9,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.BuffSpell;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class LifewalkSpell extends BuffSpell {
@@ -41,7 +41,7 @@ public class LifewalkSpell extends BuffSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (lifewalkers.contains(player.getName())) {
 			turnOff(player);
 			return PostCastAction.ALREADY_HANDLED;
@@ -56,7 +56,7 @@ public class LifewalkSpell extends BuffSpell {
 	}	
 	
 	@Override
-	protected void turnOff(Player player) {
+	public void turnOff(Player player) {
 		if (lifewalkers.contains(player.getName())) {
 			super.turnOff(player);
 			lifewalkers.remove(player.getName());

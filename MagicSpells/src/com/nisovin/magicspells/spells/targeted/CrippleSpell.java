@@ -1,11 +1,12 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import com.nisovin.magicspells.InstantSpell;
+
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class CrippleSpell extends InstantSpell {
+public class CrippleSpell extends TargetedSpell {
 
 	private int strength;
 	private int duration;
@@ -24,7 +25,7 @@ public class CrippleSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {		
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {		
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {

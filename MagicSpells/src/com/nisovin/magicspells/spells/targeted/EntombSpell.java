@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,10 +12,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class EntombSpell extends InstantSpell {
+public class EntombSpell extends TargetedSpell {
 
 	private boolean targetPlayers;
 	private boolean obeyLos;
@@ -42,7 +42,7 @@ public class EntombSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target != null) {

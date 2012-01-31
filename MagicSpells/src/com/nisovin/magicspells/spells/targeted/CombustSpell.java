@@ -1,14 +1,15 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import com.nisovin.magicspells.InstantSpell;
+
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class CombustSpell extends InstantSpell {
+public class CombustSpell extends TargetedSpell {
 	
 	private boolean targetPlayers;
 	private int fireTicks;
@@ -27,7 +28,7 @@ public class CombustSpell extends InstantSpell {
 	}
 	
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range>0?range:100, targetPlayers, obeyLos);
 			if (target == null) {

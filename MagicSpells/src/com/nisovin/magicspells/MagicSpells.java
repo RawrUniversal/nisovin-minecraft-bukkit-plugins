@@ -37,6 +37,24 @@ import com.nisovin.magicspells.spells.buff.*;
 import com.nisovin.magicspells.spells.channeled.*;
 import com.nisovin.magicspells.spells.command.*;
 import com.nisovin.magicspells.spells.instant.*;
+import com.nisovin.magicspells.spells.targeted.BlinkSpell;
+import com.nisovin.magicspells.spells.targeted.BuildSpell;
+import com.nisovin.magicspells.spells.targeted.CombustSpell;
+import com.nisovin.magicspells.spells.targeted.CrippleSpell;
+import com.nisovin.magicspells.spells.targeted.DisarmSpell;
+import com.nisovin.magicspells.spells.targeted.DrainlifeSpell;
+import com.nisovin.magicspells.spells.targeted.EntombSpell;
+import com.nisovin.magicspells.spells.targeted.ExplodeSpell;
+import com.nisovin.magicspells.spells.targeted.FireballSpell;
+import com.nisovin.magicspells.spells.targeted.ForcetossSpell;
+import com.nisovin.magicspells.spells.targeted.GeyserSpell;
+import com.nisovin.magicspells.spells.targeted.HealSpell;
+import com.nisovin.magicspells.spells.targeted.LightningSpell;
+import com.nisovin.magicspells.spells.targeted.PainSpell;
+import com.nisovin.magicspells.spells.targeted.PotionEffectSpell;
+import com.nisovin.magicspells.spells.targeted.TelekinesisSpell;
+import com.nisovin.magicspells.spells.targeted.VolleySpell;
+import com.nisovin.magicspells.spells.targeted.ZapSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class MagicSpells extends JavaPlugin {
@@ -54,7 +72,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static boolean onlyCycleToCastableSpells;
 	protected static boolean ignoreDefaultBindings;
 	protected static boolean showStrCostOnMissingReagents;
-	protected static List<Integer> losTransparentBlocks;
+	public static List<Integer> losTransparentBlocks;
 	public static List<Integer> ignoreCastItemDurability;
 	protected static int globalCooldown;
 	protected static boolean castOnAnimate;
@@ -68,7 +86,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static String strUnknownSpell;
 	protected static String strSpellChange;
 	protected static String strSpellChangeEmpty;
-	protected static String strOnCooldown;
+	public static String strOnCooldown;
 	public static String strMissingReagents;
 	protected static String strCantCast;
 	protected static String strNoMagicZone;
@@ -81,7 +99,7 @@ public class MagicSpells extends JavaPlugin {
 	
 	protected static ManaHandler mana;
 	protected static HashMap<Player,Long> manaPotionCooldowns;
-	protected static NoMagicZoneManager noMagicZones;
+	public static NoMagicZoneManager noMagicZones;
 	
 	@Override
 	public void onEnable() {
@@ -296,11 +314,14 @@ public class MagicSpells extends JavaPlugin {
 					debug("Loaded spell: " + spellName);
 					
 				} catch (ClassNotFoundException e) {
-					getServer().getLogger().severe("MagicSpells: Unable to load spell " + spellName + " (missing class " + className + ")");
+					getLogger().severe("Unable to load spell " + spellName + " (missing class " + className + ")");
+					if (className.contains("instant")) {
+						getLogger().severe("Try " + className.replace(".instant.", ".targeted."));
+					}
 				} catch (NoSuchMethodException e) {
-					getServer().getLogger().severe("MagicSpells: Unable to load spell " + spellName + " (malformed class)");
+					getLogger().severe("Unable to load spell " + spellName + " (malformed class)");
 				} catch (Exception e) {
-					getServer().getLogger().severe("MagicSpells: Unable to load spell " + spellName + " (unknown error)");
+					getLogger().severe("Unable to load spell " + spellName + " (unknown error)");
 					e.printStackTrace();
 				}
 			}

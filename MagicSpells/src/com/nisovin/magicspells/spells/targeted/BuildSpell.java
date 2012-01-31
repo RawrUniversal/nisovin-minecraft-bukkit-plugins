@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.instant;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.List;
 
@@ -10,10 +10,11 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
-import com.nisovin.magicspells.InstantSpell;
+
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class BuildSpell extends InstantSpell {
+public class BuildSpell extends TargetedSpell {
 	
 	private int slot;
 	private boolean consumeBlock;
@@ -39,7 +40,7 @@ public class BuildSpell extends InstantSpell {
 		strCantBuild = config.getString("spells." + spellName + "str-cant-build", "You can't build there.");
 	}
 	
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get mat
 			ItemStack item = player.getInventory().getItem(slot);

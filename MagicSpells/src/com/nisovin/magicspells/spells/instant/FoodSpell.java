@@ -2,7 +2,7 @@ package com.nisovin.magicspells.spells.instant;
 
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class FoodSpell extends InstantSpell {
@@ -18,7 +18,7 @@ public class FoodSpell extends InstantSpell {
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			player.setFoodLevel(player.getFoodLevel() + food);
 			player.setSaturation(player.getSaturation() + saturation);

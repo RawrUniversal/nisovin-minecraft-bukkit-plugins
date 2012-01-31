@@ -6,23 +6,25 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
-import com.nisovin.magicspells.InstantSpell;
+import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class PhaseSpell extends InstantSpell {
 
+	private int range;
 	private int maxDistance;
 	private String strCantPhase;
 	
 	public PhaseSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		range = getConfigInt("range", 5);
 		maxDistance = getConfigInt("max-distance", 15);
 		strCantPhase = getConfigString("str-cant-phase", "Unable to find place to phase to.");
 	}
 
 	@Override
-	protected PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			int range = Math.round(this.range * power);
 			int distance = Math.round(maxDistance * power);
@@ -57,7 +59,7 @@ public class PhaseSpell extends InstantSpell {
 			if (location == null) {
 				// no location to tp to
 				sendMessage(player, strCantPhase);
-				fizzle(player);
+				//fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			

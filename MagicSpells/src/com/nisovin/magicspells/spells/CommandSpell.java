@@ -1,7 +1,8 @@
-package com.nisovin.magicspells;
+package com.nisovin.magicspells.spells;
 
 import org.bukkit.command.CommandSender;
 
+import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public abstract class CommandSpell extends Spell {
