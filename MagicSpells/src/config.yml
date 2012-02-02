@@ -279,6 +279,7 @@ spells:
         give-type: health
         give-amt: 2
         animation-speed: 2
+        ignore-armor: false
         obey-los: true
         target-players: false
         check-plugins: true
@@ -511,6 +512,7 @@ spells:
         animation-speed: 2
         geyser-height: 4
         geyser-type: water
+        ignore-armor: false
         obey-los: true
         target-players: false
         check-plugins: true
@@ -733,6 +735,7 @@ spells:
         cooldown: 5
         damage: 3
         range: 15
+        ignore-armor: false
         obey-los: true
         target-players: false
         check-plugins: true

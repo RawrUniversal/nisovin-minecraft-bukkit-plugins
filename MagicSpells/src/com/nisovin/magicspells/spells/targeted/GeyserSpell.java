@@ -25,6 +25,7 @@ public class GeyserSpell extends TargetedSpell {
 	private int tickInterval;
 	private int geyserHeight;
 	private Material geyserType;
+	private boolean ignoreArmor;
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
@@ -43,6 +44,7 @@ public class GeyserSpell extends TargetedSpell {
 		} else {
 			geyserType = Material.STATIONARY_WATER;
 		}
+		ignoreArmor = getConfigBoolean("ignore-armor", false);
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
@@ -74,7 +76,13 @@ public class GeyserSpell extends TargetedSpell {
 			
 			// do damage and launch target
 			if (dam > 0) {
-				target.damage(dam, player);				
+				if (ignoreArmor) {
+					int health = target.getHealth() - dam;
+					if (health < 0) health = 0;
+					target.setHealth(health);
+				} else {
+					target.damage(dam);
+				}
 			}
 			if (velocity > 0) {
 				target.setVelocity(new Vector(0, velocity*power, 0));

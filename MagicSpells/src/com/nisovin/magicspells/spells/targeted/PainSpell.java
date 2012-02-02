@@ -12,6 +12,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class PainSpell extends TargetedSpell {
 
 	private int damage;
+	private boolean ignoreArmor;
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
@@ -21,6 +22,7 @@ public class PainSpell extends TargetedSpell {
 		super(config, spellName);
 		
 		damage = getConfigInt("damage", 4);
+		ignoreArmor = getConfigBoolean("ignore-armor", false);
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
@@ -49,7 +51,13 @@ public class PainSpell extends TargetedSpell {
 					}
 					dam = event.getDamage();
 				}
-				target.damage(dam);
+				if (ignoreArmor) {
+					int health = target.getHealth() - dam;
+					if (health < 0) health = 0;
+					target.setHealth(health);
+				} else {
+					target.damage(dam);
+				}
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

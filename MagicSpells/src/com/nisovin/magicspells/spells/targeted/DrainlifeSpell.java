@@ -24,6 +24,7 @@ public class DrainlifeSpell extends TargetedSpell {
 	private String giveType;
 	private int giveAmt;
 	private int animationSpeed;
+	private boolean ignoreArmor;
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
@@ -37,6 +38,7 @@ public class DrainlifeSpell extends TargetedSpell {
 		giveType = getConfigString("give-type", "health");
 		giveAmt = getConfigInt("give-amt", 2);
 		animationSpeed = getConfigInt("animation-speed", 2);
+		ignoreArmor = getConfigBoolean("ignore-armor", false);
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
@@ -67,7 +69,13 @@ public class DrainlifeSpell extends TargetedSpell {
 						}
 						take = event.getDamage();
 					}
-					target.damage(take, player);
+					if (ignoreArmor) {
+						int health = target.getHealth() - take;
+						if (health < 0) health = 0;
+						target.setHealth(health);
+					} else {
+						target.damage(take);
+					}
 				} else if (takeType.equals("mana")) {
 					if (target instanceof Player) {
 						boolean removed = MagicSpells.getManaHandler().removeMana((Player)target, take);
