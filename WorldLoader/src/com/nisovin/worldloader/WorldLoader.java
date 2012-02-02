@@ -17,6 +17,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 
 public class WorldLoader extends JavaPlugin {
@@ -69,10 +70,14 @@ public class WorldLoader extends JavaPlugin {
 		
 		// register commands and events
 		CommandExec exec = new CommandExec(this);
+
+		getCommand("sign").setExecutor(exec);
 		
 		getCommand("loadworld").setExecutor(exec);
 		getCommand("saveworld").setExecutor(exec);
 		getCommand("newworld").setExecutor(exec);
+		
+		getCommand("worlds").setExecutor(exec);
 		
 		getCommand("start").setExecutor(exec);
 		getCommand("minplayers").setExecutor(exec);
@@ -94,6 +99,11 @@ public class WorldLoader extends JavaPlugin {
 		} else {		
 			getLogger().severe("Vault economy provider could not be found!");
 		}
+	}
+	
+	@Override
+	public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+		return new EmptyWorldGen();
 	}
 
 	public void addPendingAction(PendingAction action) {
@@ -163,9 +173,9 @@ public class WorldLoader extends JavaPlugin {
 		return instance;
 	}
 	
-	public void killInstance(WorldInstance instance) {
-		System.out.println("Killing empty instance: " + instance.getWorldName());
-		instance.unloadWorld();
+	public void killInstance(WorldInstance instance, boolean delete) {
+		System.out.println("Killing instance: " + instance.getWorldName());
+		instance.unloadWorld(delete);
 		loadedWorlds.remove(instance.getWorldName());
 	}
 	
@@ -181,11 +191,13 @@ public class WorldLoader extends JavaPlugin {
 			String baseName = s.split("-")[0];
 			WorldBase base = worldBases.get(baseName);
 			if (base != null) {
+				System.out.println("Loading saved instance: " + s);
 				final WorldInstance instance = launchInstance(base, s);
-				System.out.println("Loading saved instance: " + instance.getWorldName());
 				if (instance != null && instance.worldLoaded()) {
+					System.out.println("Scheduling teleport");
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 						public void run() {
+							System.out.println("Teleporting");
 							instance.teleport(player);
 						}
 					}, 2);

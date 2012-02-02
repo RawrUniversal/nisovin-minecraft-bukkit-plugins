@@ -5,12 +5,17 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.SignChangeEvent;
 
 import com.nisovin.worldloader.PendingAction.ActionType;
 
@@ -25,12 +30,16 @@ public class CommandExec implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
 		String comm = command.getName();
-		if (comm.equals("loadworld")) {
+		if (comm.equals("sign")) {
+			return editSign(sender, args);
+		} else if (comm.equals("loadworld")) {
 			return loadWorld(sender, args);
 		} else if (comm.equals("saveworld") && sender instanceof Player) {
 			return saveWorld(sender, args);
 		} else if (comm.equals("newworld")) {
 			return newWorld(sender, args);
+		} else if (comm.equals("worlds")) {
+			return listWorlds(sender, args);
 		} else if (comm.equals("start")) {
 			return start(sender, args);
 		} else if (comm.equals("minplayers")) {
@@ -50,6 +59,38 @@ public class CommandExec implements CommandExecutor {
 		} else if (comm.equals("leave")) {
 			return leave(sender, args);
 		}
+		return true;
+	}
+	
+	private boolean editSign(CommandSender sender, String[] args) {
+		if (!(sender instanceof Player)) return true;
+		
+		if (args.length == 0) return false;
+		if (!args[0].matches("^[0-9]+$")) return false;
+		
+		int lineNo = Integer.parseInt(args[0]) - 1;
+		String newLine = "";
+		for (int i = 1; i < args.length; i++) {
+			newLine += args[i] + " ";
+		}
+		newLine = newLine.trim();
+		System.out.println("-" + newLine + "-");
+		
+		Player player = (Player)sender;
+		Block b = player.getTargetBlock(null, 5);
+		System.out.println(b);
+		if (b != null && (b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN)) {
+			Sign sign = (Sign)b.getState();
+			String[] lines = sign.getLines();
+			lines[lineNo] = newLine;
+			SignChangeEvent event = new SignChangeEvent(b, player, lines);
+			Bukkit.getPluginManager().callEvent(event);
+			if (!event.isCancelled()) {
+				sign.setLine(lineNo, newLine);
+				sign.update();
+			}
+		}
+		
 		return true;
 	}
 	
@@ -129,6 +170,20 @@ public class CommandExec implements CommandExecutor {
 		return true;
 	}
 
+	private boolean listWorlds(CommandSender sender, String[] args) {
+		int i = 1;
+		for (World world : plugin.getServer().getWorlds()) {
+			WorldInstance instance = plugin.getWorldInstance(world);
+			String s = "World " + i + ": " + world.getName();
+			if (instance != null) {
+				s += " instance of " + instance.getBase().getName();
+			}
+			sender.sendMessage(s);
+			i++;
+		}
+		return true;
+	}
+	
 	private boolean start(CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) {
 			return true;
@@ -387,7 +442,7 @@ public class CommandExec implements CommandExecutor {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				public void run() {
 					if (instance.worldLoaded() && instance.getInstanceWorld().getPlayers().size() == 0) {
-						plugin.killInstance(instance);
+						plugin.killInstance(instance, false);
 					}
 				}
 			}, 600);

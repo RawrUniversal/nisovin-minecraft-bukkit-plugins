@@ -2,7 +2,12 @@ name: WorldLoader
 main: com.nisovin.worldloader.WorldLoader
 version: 1.0
 author: nisovin
+load: startup
 commands:
+    sign:
+        description: Edit a sign line.
+        usage: /<command> <linenum> [new text]
+
     loadworld:
         description: Loads an instance of a base world
         usage: /<command> <worldname>
@@ -12,6 +17,9 @@ commands:
     newworld:
         description: Creates a new base world
         usage: /<command> <worldname> <seed> <short world description>
+    
+    worlds:
+        description: List all loaded worlds
     
     start:
         usage: /<command>
