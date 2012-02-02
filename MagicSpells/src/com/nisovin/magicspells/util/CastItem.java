@@ -28,7 +28,11 @@ public class CastItem {
 			this.data = 0;
 		} else {
 			this.type = i.getTypeId();
-			this.data = i.getDurability();
+			if (MagicSpells.ignoreCastItemDurability != null && MagicSpells.ignoreCastItemDurability.contains(type)) {
+				this.data = 0;
+			} else {
+				this.data = i.getDurability();
+			}
 		}
 	}
 	
