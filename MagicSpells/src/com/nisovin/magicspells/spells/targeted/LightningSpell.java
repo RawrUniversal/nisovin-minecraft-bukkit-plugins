@@ -41,7 +41,7 @@ public class LightningSpell extends TargetedSpell {
 			if (requireEntityTarget) {
 				LivingEntity e = getTargetedEntity(player, range>0?range:100, targetPlayers, obeyLos);
 				if (e != null && e instanceof Player && checkPlugins) {
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, e, DamageCause.ENTITY_ATTACK, 1);
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, e, DamageCause.ENTITY_ATTACK, 0);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						e = null;

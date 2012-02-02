@@ -316,7 +316,7 @@ public class MagicSpells extends JavaPlugin {
 				} catch (ClassNotFoundException e) {
 					getLogger().severe("Unable to load spell " + spellName + " (missing class " + className + ")");
 					if (className.contains("instant")) {
-						getLogger().severe("Try " + className.replace(".instant.", ".targeted."));
+						getLogger().severe("(Maybe try " + className.replace("com.nisovin.magicspells.spells.instant.", ".targeted.") + ")");
 					}
 				} catch (NoSuchMethodException e) {
 					getLogger().severe("Unable to load spell " + spellName + " (malformed class)");

@@ -20,14 +20,20 @@ public abstract class TargetedSpell extends InstantSpell {
 
 	protected int range;
 	protected boolean playFizzleSound;
+	protected String strCastTarget;
 
 	public TargetedSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		range = config.getInt("spells." + spellName + ".range", -1);
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
+		strCastTarget = getConfigString("str-cast-target", "");
 	}
 
+	protected void sendMessageToTarget(Player caster, Player target) {
+		sendMessage(target, strCastTarget, "%a", caster.getDisplayName());
+	}
+	
 	/**
 	 * Checks whether two locations are within a certain distance from each other.
 	 * @param loc1 The first location

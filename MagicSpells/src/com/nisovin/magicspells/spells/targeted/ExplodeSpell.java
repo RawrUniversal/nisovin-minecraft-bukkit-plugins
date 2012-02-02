@@ -105,7 +105,10 @@ public class ExplodeSpell extends TargetedSpell {
 	
 	@EventHandler
 	public void onExplode(EntityExplodeEvent event) {
-		if (event.isCancelled() || !preventBlockDamage) return;
+		if (event.isCancelled() || !preventBlockDamage) {
+			recentlyExploded.remove(event.getEntity());
+			return;
+		}
 		
 		if (event.getEntity() instanceof Player && recentlyExploded.containsKey(event.getEntity())) {
 			event.blockList().clear();
