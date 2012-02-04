@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
 import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class BlinkSpell extends TargetedSpell {
@@ -60,14 +61,14 @@ public class BlinkSpell extends TargetedSpell {
 				if (range > 0 && !inRange(found.getLocation(), player.getLocation(), range)) {
 				} else if (!passThroughCeiling && found.getRelative(0,-1,0).equals(prev)) {
 					// trying to move upward
-					if (prev.getType() == Material.AIR && prev.getRelative(0,-1,0).getType() == Material.AIR) {
+					if (BlockUtils.isPathable(prev) && BlockUtils.isPathable(prev.getRelative(0,-1,0))) {
 						loc = prev.getRelative(0,-1,0).getLocation();
 					}
-				} else if (found.getRelative(0,1,0).getType() == Material.AIR && found.getRelative(0,2,0).getType() == Material.AIR) {
+				} else if (BlockUtils.isPathable(found.getRelative(0,1,0)) && BlockUtils.isPathable(found.getRelative(0,2,0))) {
 					// try to stand on top
 					loc = found.getLocation();
 					loc.setY(loc.getY() + 1);
-				} else if (prev != null && prev.getType() == Material.AIR && prev.getRelative(0,1,0).getType() == Material.AIR) {
+				} else if (prev != null && BlockUtils.isPathable(prev) && BlockUtils.isPathable(prev.getRelative(0,1,0))) {
 					// no space on top, put adjacent instead
 					loc = prev.getLocation();
 				}
