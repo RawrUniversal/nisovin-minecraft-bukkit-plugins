@@ -42,6 +42,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected CastItem castItem;
 	protected boolean bindable;
 	protected HashSet<CastItem> bindableItems;
+	protected ItemStack spellIcon;
 	protected int broadcastRange;
 	
 	protected ItemStack[] cost;
@@ -90,6 +91,15 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			for (String s : bindables) {
 				bindableItems.add(new CastItem(s));
 			}
+		}
+		String icontemp = config.getString(section + "." + spellName + ".spell-icon", null);
+		if (icontemp == null) {
+			spellIcon = null;
+		} else if (icontemp.contains(":")) {
+			String[] icondata = icontemp.split(":");
+			spellIcon = new ItemStack(Integer.parseInt(icondata[0]), 0, Short.parseShort(icondata[1]));
+		} else {
+			spellIcon = new ItemStack(Integer.parseInt(icontemp), 0, (short)0);
 		}
 		this.broadcastRange = config.getInt(section + "." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 		
@@ -313,6 +323,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		} else {
 			return bindableItems.contains(item);
 		}
+	}
+	
+	public ItemStack getSpellIcon() {
+		return spellIcon;
 	}
 	
 	public String getCostStr() {
