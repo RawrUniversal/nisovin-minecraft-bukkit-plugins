@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -135,7 +136,7 @@ public class SpellbookSpell extends CommandSpell {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.isCancelled()) return;
-		if (event.hasBlock() && event.getClickedBlock().getType() == spellbookBlock) {
+		if (event.hasBlock() && event.getClickedBlock().getType() == spellbookBlock && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			MagicLocation loc = new MagicLocation(event.getClickedBlock().getLocation());
 			if (bookLocations.contains(loc)) {
 				event.setCancelled(true);
