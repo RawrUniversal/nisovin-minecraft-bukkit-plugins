@@ -2,19 +2,24 @@ package com.nisovin.muddersmilk;
 
 import java.util.Random;
 
+import net.minecraft.server.EntityLiving;
+import net.minecraft.server.MobEffect;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Cow;
-import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class MilkPlayerListener extends PlayerListener {
+public class MilkPlayerListener implements Listener {
 
 	private MuddersMilk plugin;
 	private Random random;
@@ -25,13 +30,10 @@ public class MilkPlayerListener extends PlayerListener {
 		this.plugin = plugin;
 		this.random = new Random();
 		
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT_ENTITY, this, Event.Priority.Monitor, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, this, Event.Priority.Lowest, plugin);
-		plugin.getServer().getPluginManager().registerEvent(Event.Type.PLAYER_RESPAWN, this, Event.Priority.Monitor, plugin);
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 	
-	@Override
+	@EventHandler(priority=EventPriority.HIGH)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && event.getPlayer().getItemInHand().getType() == Material.MILK_BUCKET) {
 			if (event.getPlayer().getName().equals(justMilked)) {
@@ -52,17 +54,21 @@ public class MilkPlayerListener extends PlayerListener {
 				event.getPlayer().damage(drunkLevel-(plugin.poisoningLevel-1));
 				event.getPlayer().sendMessage(ChatColor.YELLOW + plugin.poisoningStr);
 			}
+			EntityLiving e = ((CraftPlayer)event.getPlayer()).getHandle();
+			MobEffect effect = new MobEffect(9, drunkLevel * 60, 10);
+			e.addEffect(effect);
+			event.setCancelled(true);
 		}
 	}
 	
-	@Override
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 		if (event.getRightClicked() instanceof Cow && event.getPlayer().getItemInHand().getType() == Material.BUCKET) {
 			justMilked = event.getPlayer().getName();
 		}
 	}
 	
-	@Override
+	@EventHandler(priority=EventPriority.LOW)
 	public void onPlayerChat(PlayerChatEvent event) {
 		if (!event.isCancelled()) {
 			int drunkLevel = plugin.getDrunkLevel(event.getPlayer());
@@ -84,7 +90,7 @@ public class MilkPlayerListener extends PlayerListener {
 		}
 	}
 	
-	@Override
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		if (plugin.soberOnDeath) { 
 			plugin.getDrunks().remove(event.getPlayer().getName());

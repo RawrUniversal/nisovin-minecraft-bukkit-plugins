@@ -1,0 +1,21 @@
+tipsy-level: 1
+smashed-level: 5
+poisoning-level: 10
+tipsy-string: You are feeling tipsy.
+smashed-string: You are completely smashed!
+poisoning-string: You are getting alcohol poisoning!
+sober-string: You are now sober.
+sober-on-death: false
+sober-on-logout: true
+destroy-bucket-on-use: false
+effect-tick-interval: 100
+chance-to-slur-s: 50
+chance-to-slur-s-per-level: 5
+chance-to-hic: 15
+chance-to-hic-per-level: 5
+chance-to-stagger: 30
+chance-to-stagger-per-level: 10
+stagger-intensity: 5
+chance-to-drop-item: 10
+chance-to-drop-item-per-level: 2
+chance-to-sober-up-one-level: 15

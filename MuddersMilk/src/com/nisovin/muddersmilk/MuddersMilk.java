@@ -1,16 +1,11 @@
 package com.nisovin.muddersmilk;
 
-//import java.io.File;
-//import java.io.FileOutputStream;
-//import java.io.InputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.Configuration;
 
 public class MuddersMilk extends JavaPlugin {
 
@@ -45,8 +40,7 @@ public class MuddersMilk extends JavaPlugin {
 		drunks = new HashMap<String,Integer>();
 		
 		loadConfigFromJar();
-		Configuration config = this.getConfiguration();
-		config.load();
+		Configuration config = getConfig();
 		tipsyLevel = config.getInt("tipsy-level", 1);
 		smashedLevel = config.getInt("smashed-level", 5);
 		poisoningLevel = config.getInt("poisoning-level", 10);
@@ -117,28 +111,7 @@ public class MuddersMilk extends JavaPlugin {
 		}
 		File configFile = new File(this.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
-            InputStream fis = getClass().getResourceAsStream("/config.yml");
-            FileOutputStream fos = null;
-            try {
-            	fos = new FileOutputStream(configFile);
-                byte[] buf = new byte[1024];
-                int i = 0;
-                while ((i = fis.read(buf)) != -1) {
-                    fos.write(buf, 0, i);
-                }
-            } catch (Exception e) {
-            	getServer().getLogger().info("MuddersMilk: Failed to load config from JAR");
-            } finally {
-            	try {
-	                if (fis != null) {
-	                    fis.close();
-	                }
-	                if (fos != null) {
-	                    fos.close();
-	                }
-            	} catch (Exception e) {            		
-            	}
-            }
+        	this.saveDefaultConfig();
         }
 	}
 	
