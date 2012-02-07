@@ -1,0 +1,8 @@
+name: DisplayShop
+main: com.nisovin.displayshop.DisplayShop
+version: 1.0
+author: nisovin
+depend: [Vault]
+commands:
+    enchant:
+        usage: /<command> <enchantid> <level>
