@@ -2,8 +2,6 @@ package com.nisovin.magicspells.shop;
 
 import java.io.File;
 
-import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -16,7 +14,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -41,7 +38,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 	private String strPurchasedScroll;
 	private String strScrollFail;
 	
-	private Economy economy;
+	private CurrencyHandler currency;
 	
 	@Override
 	public void onEnable() {
@@ -65,13 +62,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		strPurchasedScroll = config.getString("str-purchased-scroll", "You have purchased a scroll for the %s spell.");
 		strScrollFail = config.getString("str-scroll-fail", "You cannot purchase a scroll at this time.");
 		
-		// set up economy hook
-		RegisteredServiceProvider<Economy> provider = getServer().getServicesManager().getRegistration(Economy.class);
-		if (provider != null) {
-			economy = provider.getProvider();
-		} else {		
-			getLogger().severe("Vault economy provider could not be found!");
-		}
+		currency = new CurrencyHandler(config);
 		
 		// register events
 		getServer().getPluginManager().registerEvents(this, this);
@@ -97,7 +88,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 			processSpellShopSign(event.getPlayer(), lines);
 		} else if (lines[0].equals(firstLineScroll)) {
 			processScrollShopSign(event.getPlayer(), lines);
-		}		
+		}
 		
 	}
 	
@@ -117,10 +108,10 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		}
 		
 		// get cost
-		double cost = getCost(lines[2]);
+		Cost cost = getCost(lines[2]);
 		
 		// check for currency
-		if (!canAfford(player, cost)) {
+		if (!currency.has(player, cost.amount, cost.currency)) {
 			MagicSpells.sendMessage(player, strCantAfford, "%s", spellName, "%c", cost+"");
 			return;
 		}
@@ -132,7 +123,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		}
 		
 		// remove currency
-		economy.withdrawPlayer(player.getName(), cost);
+		currency.remove(player, cost.amount, cost.currency);
 		
 		// success!
 		MagicSpells.sendMessage(player, strPurchased, "%s", spellName, "%c", cost+"");
@@ -153,10 +144,10 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		int uses = Integer.parseInt(lines[2].split(" ")[0]);
 		
 		// get cost
-		double cost = getCost(lines[3]);
+		Cost cost = getCost(lines[3]);
 		
 		// check if can afford
-		if (!canAfford(player, cost)) {
+		if (!currency.has(player, cost.amount, cost.currency)) {
 			MagicSpells.sendMessage(player, strCantAffordScroll, "%s", spellName, "%c", cost+"", "%u", uses+"");
 			return;
 		}
@@ -171,7 +162,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		ItemStack scroll = new ItemStack(scrollItemType, 1, scrollId);
 		
 		// remove currency
-		economy.withdrawPlayer(player.getName(), cost);
+		currency.remove(player, cost.amount, cost.currency);
 		
 		// give to player
 		int slot = player.getInventory().firstEmpty();
@@ -187,23 +178,20 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		MagicSpells.sendMessage(player, strPurchasedScroll, "%s", spellName, "%c", cost+"", "%u", uses+"");
 	}
 	
-	private double getCost(String line) {
-		double cost = 0;
+	private Cost getCost(String line) {
+		Cost cost = new Cost();
 		if (!line.isEmpty()) {
 			if (!line.contains(" ") && line.matches("^[0-9]+(\\.[0-9]+)?$")) {
-				cost = Integer.parseInt(line);
+				cost.amount = Double.parseDouble(line);
 			} else if (line.contains(" ")) {
 				String[] s = line.split(" ");
 				if (s[0].matches("^[0-9]+(\\.[0-9]+)?$")) {
-					cost = Double.parseDouble(s[0]);
+					cost.amount = Double.parseDouble(s[0]);
+					cost.currency = s[1];
 				}
 			}
 		}
 		return cost;
-	}
-	
-	public boolean canAfford(Player player, double cost) {
-		return (economy != null && economy.has(player.getName(), cost));
 	}
 	
 	@EventHandler(priority=EventPriority.NORMAL)
@@ -246,15 +234,22 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		}
 		
 		// get cost
-		double cost = getCost(lines[isSpellShop?2:3]);
+		Cost cost = getCost(lines[isSpellShop?2:3]);
 		
-		event.getPlayer().sendMessage((isSpellShop?"Spell":"Scroll") + " shop created: " + spellName + (isSpellShop?"":"(" + lines[2] + ")") + " for " + cost + " currency.");
+		event.getPlayer().sendMessage((isSpellShop?"Spell":"Scroll") + " shop created: " + 
+				spellName + (isSpellShop?"":"(" + lines[2] + ")") + 
+				" for " + cost.amount + " " + (currency.isValidCurrency(cost.currency) ? cost.currency : "currency") + ".");
 		
 	}
 
 	@Override
 	public void onDisable() {
 		
+	}
+	
+	private class Cost {
+		double amount = 0;
+		String currency = null;
 	}
 
 }

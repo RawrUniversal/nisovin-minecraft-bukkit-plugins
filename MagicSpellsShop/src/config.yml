@@ -1,6 +1,11 @@
 require-known-spell: true
 require-teach-perm: true
 
+currencies:
+    money: "vault"
+    sponge: "19"
+    cocoa: "351:3"
+
 first-line: [SPELL SHOP]
 str-already-known: You already know that spell.
 str-cant-afford: You cannot afford that spell.
