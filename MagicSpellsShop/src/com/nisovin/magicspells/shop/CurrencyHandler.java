@@ -6,16 +6,16 @@ import java.util.Set;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class CurrencyHandler {
 
-	private HashMap<String,String> currencies;
+	private HashMap<String,String> currencies = new HashMap<String,String>();
 	private String defaultCurrency;
 	private Economy economy;
 	
@@ -46,17 +46,17 @@ public class CurrencyHandler {
 	
 	public boolean has(Player player, double amount, String currency) {
 		String c = currencies.get(currency);
-		if (c == null) c = defaultCurrency;
+		if (c == null) c = currencies.get(defaultCurrency);
 		
 		if (c.equalsIgnoreCase("vault") && economy != null) {
 			return economy.has(player.getName(), amount);
 		} else if (c.matches("^[0-9]+$")) {
-			return player.getInventory().contains(Material.getMaterial(Integer.parseInt(c)), (int)amount);
+			return inventoryContains(player.getInventory(), new ItemStack(Integer.parseInt(c), (int)amount));
 		} else if (c.matches("^[0-9]+:[0-9]+$")) {
 			String[] s = c.split(":");
 			int type = Integer.parseInt(s[0]);
 			short data = Short.parseShort(s[1]);
-			return player.getInventory().contains(new ItemStack(type, (int)amount, data), (int)amount);
+			return inventoryContains(player.getInventory(), new ItemStack(type, (int)amount, data));
 		} else {
 			return false;
 		}
@@ -66,24 +66,62 @@ public class CurrencyHandler {
 		remove(player, amount, defaultCurrency);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void remove(Player player, double amount, String currency) {
 		String c = currencies.get(currency);
-		if (c == null) c = defaultCurrency;
+		if (c == null) c = currencies.get(defaultCurrency);
 		
 		if (c.equalsIgnoreCase("vault") && economy != null) {
+			System.out.println("vault");
 			economy.withdrawPlayer(player.getName(), amount);
 		} else if (c.matches("^[0-9]+$")) {
-			player.getInventory().remove(new ItemStack(Material.getMaterial(Integer.parseInt(c)), (int)amount));
+			removeFromInventory(player.getInventory(), new ItemStack(Integer.parseInt(c), (int)amount));
+			player.updateInventory();
 		} else if (c.matches("^[0-9]+:[0-9]+$")) {
 			String[] s = c.split(":");
 			int type = Integer.parseInt(s[0]);
 			short data = Short.parseShort(s[1]);
-			player.getInventory().remove(new ItemStack(type, (int)amount, data));
+			removeFromInventory(player.getInventory(), new ItemStack(type, (int)amount, data));
+			player.updateInventory();
 		}
 	}
 	
 	public boolean isValidCurrency(String currency) {
-		return currencies.containsKey(currency);
+		return ((currency == null) ? false : currencies.containsKey(currency));
+	}
+	
+	private boolean inventoryContains(Inventory inventory, ItemStack item) {
+		int count = 0;
+		ItemStack[] items = inventory.getContents();
+		for (int i = 0; i < items.length; i++) {
+			if (items[i] != null && items[i].getType() == item.getType() && items[i].getDurability() == item.getDurability()) {
+				count += items[i].getAmount();
+			}
+			if (count >= item.getAmount()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private void removeFromInventory(Inventory inventory, ItemStack item) {
+		int amt = item.getAmount();
+		ItemStack[] items = inventory.getContents();
+		for (int i = 0; i < items.length; i++) {
+			if (items[i] != null && items[i].getType() == item.getType() && items[i].getDurability() == item.getDurability()) {
+				if (items[i].getAmount() > amt) {
+					items[i].setAmount(items[i].getAmount() - amt);
+					break;
+				} else if (items[i].getAmount() == amt) {
+					items[i] = null;
+					break;
+				} else {
+					amt -= items[i].getAmount();
+					items[i] = null;
+				}
+			}
+		}
+		inventory.setContents(items);
 	}
 	
 }

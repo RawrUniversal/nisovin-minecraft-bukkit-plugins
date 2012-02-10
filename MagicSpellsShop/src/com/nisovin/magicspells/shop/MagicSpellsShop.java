@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -194,7 +195,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		return cost;
 	}
 	
-	@EventHandler(priority=EventPriority.NORMAL)
+	@EventHandler
 	public void onSignCreate(SignChangeEvent event) {
 		if (event.isCancelled()) return;
 		
@@ -217,9 +218,13 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		
 		// check for valid spell
 		String spellName = lines[1];
-		Spell spell = MagicSpells.getSpellByInGameName(spellName);
-		if (spell == null) {
+		if (spellName == null || spellName.isEmpty()) {
 			event.getPlayer().sendMessage("A spell by that name does not exist.");
+		} else {
+			Spell spell = MagicSpells.getSpellByInGameName(spellName);
+			if (spell == null) {
+				event.getPlayer().sendMessage("A spell by that name does not exist.");
+			}
 		}
 		
 		// check permissions
@@ -240,6 +245,20 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 				spellName + (isSpellShop?"":"(" + lines[2] + ")") + 
 				" for " + cost.amount + " " + (currency.isValidCurrency(cost.currency) ? cost.currency : "currency") + ".");
 		
+	}
+	
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event) {
+		if (event.isCancelled()) return;
+		
+		Material mat = event.getBlock().getType();
+		if (mat != Material.WALL_SIGN && mat != Material.SIGN_POST) return;
+		
+		Sign sign = (Sign)event.getBlock().getState();
+		String line = sign.getLine(0);
+		if ((line.equals(firstLine) || line.equals(firstLineScroll)) && !event.getPlayer().hasPermission("magicspells.createsignshop")) {
+			event.setCancelled(true);
+		}
 	}
 
 	@Override
