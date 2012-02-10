@@ -218,13 +218,10 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		
 		// check for valid spell
 		String spellName = lines[1];
-		if (spellName == null || spellName.isEmpty()) {
+		Spell spell = MagicSpells.getSpellByInGameName(spellName);
+		if (spell == null) {
 			event.getPlayer().sendMessage("A spell by that name does not exist.");
-		} else {
-			Spell spell = MagicSpells.getSpellByInGameName(spellName);
-			if (spell == null) {
-				event.getPlayer().sendMessage("A spell by that name does not exist.");
-			}
+			return;
 		}
 		
 		// check permissions
