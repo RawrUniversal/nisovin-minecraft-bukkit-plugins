@@ -24,14 +24,15 @@ public class CurrencyHandler {
 		if (sec == null) {
 			defaultCurrency = "money";
 			currencies.put("money", "vault");
-		}
-		Set<String> keys = sec.getKeys(false);
-		for (String key : keys) {
-			if (defaultCurrency == null) {
-				defaultCurrency = key;
+		} else {
+			Set<String> keys = sec.getKeys(false);
+			for (String key : keys) {
+				if (defaultCurrency == null) {
+					defaultCurrency = key;
+				}
+				currencies.put(key, sec.getString(key));
 			}
-			currencies.put(key, sec.getString(key));
-		}		
+		}
 
 		// set up vault hook
 		RegisteredServiceProvider<Economy> provider = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);

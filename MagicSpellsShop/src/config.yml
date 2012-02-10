@@ -3,7 +3,7 @@ require-teach-perm: true
 
 currencies:
     money: "vault"
-    sponge: "19"
+    gold: "266"
     cocoa: "351:3"
 
 first-line: [SPELL SHOP]

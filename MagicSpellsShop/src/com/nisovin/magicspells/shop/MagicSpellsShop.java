@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
 import com.nisovin.magicspells.spells.command.ScrollSpell;
 
 public class MagicSpellsShop extends JavaPlugin implements Listener {
@@ -43,6 +44,13 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onEnable() {
+		load();
+		
+		// register events
+		getServer().getPluginManager().registerEvents(this, this);
+	}
+	
+	public void load() {
 		if (!new File(getDataFolder(), "config.yml").exists()) {
 			saveDefaultConfig();
 		}
@@ -65,8 +73,12 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		
 		currency = new CurrencyHandler(config);
 		
-		// register events
-		getServer().getPluginManager().registerEvents(this, this);
+		getLogger().info("MagicSpellsShop config loaded.");
+	}
+	
+	@EventHandler
+	public void onMagicSpellsLoad(MagicSpellsLoadedEvent event) {
+		load();
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -89,8 +101,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 			processSpellShopSign(event.getPlayer(), lines);
 		} else if (lines[0].equals(firstLineScroll)) {
 			processScrollShopSign(event.getPlayer(), lines);
-		}
-		
+		}		
 	}
 	
 	private void processSpellShopSign(Player player, String[] lines) {
