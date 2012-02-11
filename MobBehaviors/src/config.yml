@@ -1,0 +1,31 @@
+Worlds:
+    world:
+        DefaultBehaviorSet: Default
+        Region1:
+            Point1: -30,0,-30
+            Point2: 30,128,30
+            BehaviorSet: Chaos
+    world_nether:
+        DefaultBehaviorSet: Default
+
+BehaviorSets:
+    Default:
+        Zombie:
+            Action1: # these names don't matter
+                Priority: 1
+                Type: Swim
+            Action2:
+                Priority: 2
+                Type: MeleeAttack
+                Range: 16.0
+            Action3:
+                Priority: 3
+                Type: Wander
+            Action4:
+                Priority: 4
+                Type: LookAtPlayer
+                Range: 8.0
+            Action5:
+                Priority: 4
+                Type: LookAround
+        
