@@ -2,6 +2,8 @@ package com.nisovin.magicspells.spells.targeted;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -49,7 +51,7 @@ public class PotionEffectSpell extends TargetedSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
-			setMobEffect(target, type, duration, amplifier);
+			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), duration, amplifier));
 		}		
 		return PostCastAction.HANDLE_NORMALLY;
 	}

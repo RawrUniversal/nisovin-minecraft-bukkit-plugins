@@ -2,6 +2,8 @@ package com.nisovin.magicspells.spells.targeted;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -35,7 +37,7 @@ public class CrippleSpell extends TargetedSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
-			setMobEffect(target, 2, duration, strength);
+			target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration, strength), true);
 		}
 		
 		return PostCastAction.HANDLE_NORMALLY;

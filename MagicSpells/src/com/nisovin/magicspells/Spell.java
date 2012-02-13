@@ -1,6 +1,5 @@
 package com.nisovin.magicspells;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,11 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import net.minecraft.server.DataWatcher;
-import net.minecraft.server.EntityLiving;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.MobEffect;
 import net.minecraft.server.Packet40EntityMetadata;
-import net.minecraft.server.Packet42RemoveMobEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -431,7 +426,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		if (reagents == null && healthCost <= 0 && manaCost <= 0 && hungerCost <= 0) {
 			return true;
 		}
-		if (healthCost > 0 && player.getHealth() <= healthCost) { // TODO: add option to allow death from health cost
+		if (healthCost > 0 && player.getHealth() <= healthCost) {
 			return false;
 		}
 		if (manaCost > 0 && !MagicSpells.mana.hasMana(player, manaCost)) {
@@ -628,30 +623,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
 			}
 		}, duration);
-	}
-	
-	public void setMobEffect(LivingEntity entity, int type, int duration, int amplifier) {		
-		((CraftLivingEntity)entity).getHandle().addEffect(new MobEffect(type, duration, amplifier));
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public static void removeMobEffect(LivingEntity entity, int type) {
-		try {
-			// remove effect
-			Field field = EntityLiving.class.getDeclaredField("effects");
-			field.setAccessible(true);
-			HashMap effects = (HashMap)field.get(((CraftLivingEntity)entity).getHandle());
-			effects.remove(type);
-			// alert player that effect is gone
-			if (entity instanceof Player) {
-				EntityPlayer player = ((CraftPlayer)entity).getHandle();
-				player.netServerHandler.sendPacket(new Packet42RemoveMobEffect(player.id, new MobEffect(type, 0, 0)));
-			}
-			// remove graphical effect
-			((CraftLivingEntity)entity).getHandle().getDataWatcher().watch(8, Integer.valueOf(0));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public String getInternalName() {
