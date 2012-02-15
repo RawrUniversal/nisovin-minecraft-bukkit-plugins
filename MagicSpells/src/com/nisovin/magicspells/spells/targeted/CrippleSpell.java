@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class CrippleSpell extends TargetedSpell {
+public class CrippleSpell extends TargetedEntitySpell {
 
 	private int strength;
 	private int duration;
@@ -37,10 +37,20 @@ public class CrippleSpell extends TargetedSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
-			target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration, strength), true);
+			target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Math.round(duration*power), strength), true);
 		}
 		
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+
+	@Override
+	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+		if (target instanceof Player && !targetPlayers) {
+			return false;
+		} else {
+			target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Math.round(duration*power), strength), true);
+			return true;
+		}
 	}
 
 }

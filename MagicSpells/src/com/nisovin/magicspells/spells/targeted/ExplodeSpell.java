@@ -22,10 +22,10 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ExplodeSpell extends TargetedSpell {
+public class ExplodeSpell extends TargetedLocationSpell {
 	
 	private boolean checkPlugins;
 	private int explosionSize;
@@ -60,36 +60,49 @@ public class ExplodeSpell extends TargetedSpell {
 				fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
-				// backfire chance
-				if (backfireChance > 0) {
-					Random rand = new Random();
-					if (rand.nextInt(10000) < backfireChance) {
-						target = player.getLocation().getBlock();
-					}					
+				boolean exploded = explode(player, target.getLocation(), power);
+				if (!exploded) {
+					sendMessage(player, strNoTarget);
+					fizzle(player);
+					return PostCastAction.ALREADY_HANDLED;
 				}
-				if (checkPlugins) {
-					// check plugins
-					EntityTNTPrimed e = new EntityTNTPrimed(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ());
-					CraftTNTPrimed c = new CraftTNTPrimed((CraftServer)Bukkit.getServer(), e);
-					ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize*power, false);
-					Bukkit.getServer().getPluginManager().callEvent(event);
-					if (event.isCancelled()) {
-						sendMessage(player, strNoTarget);
-						fizzle(player);
-						return PostCastAction.ALREADY_HANDLED;
-					}
-				}
-				if (preventBlockDamage || damageMultiplier > 0) {
-					recentlyExploded.put(player, power);
-				}
-				createExplosion(player, target.getLocation(), explosionSize*power);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
+	private boolean explode(Player player, Location target, float power) {
+		// backfire chance
+		if (backfireChance > 0) {
+			Random rand = new Random();
+			if (rand.nextInt(10000) < backfireChance) {
+				target = player.getLocation();
+			}					
+		}
+		if (checkPlugins) {
+			// check plugins
+			EntityTNTPrimed e = new EntityTNTPrimed(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ());
+			CraftTNTPrimed c = new CraftTNTPrimed((CraftServer)Bukkit.getServer(), e);
+			ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize*power, false);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			if (event.isCancelled()) {
+				return false;
+			}
+		}
+		if (preventBlockDamage || damageMultiplier > 0) {
+			recentlyExploded.put(player, power);
+		}
+		createExplosion(player, target, explosionSize*power);
+		return true;
+	}
+	
 	public void createExplosion(Player player, Location location, float size) {
 		((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftPlayer)player).getHandle(), location.getX(), location.getY(), location.getZ(), size, false);
+	}
+
+	@Override
+	public boolean castAtLocation(Player caster, Location target, float power) {
+		return explode(caster, target, power);
 	}
 
 	@EventHandler(priority=EventPriority.HIGH)
