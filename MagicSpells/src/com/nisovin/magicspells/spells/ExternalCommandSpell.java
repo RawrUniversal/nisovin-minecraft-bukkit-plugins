@@ -3,13 +3,14 @@ package com.nisovin.magicspells.spells;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ExternalCommandSpell extends TargetedSpell {
+public class ExternalCommandSpell extends TargetedEntitySpell {
 	
 	@SuppressWarnings("unused")
 	private static final String SPELL_NAME = "external";
@@ -57,32 +58,46 @@ public class ExternalCommandSpell extends TargetedSpell {
 					return PostCastAction.ALREADY_HANDLED;
 				}
 			}
-			// grant permissions
-			if (temporaryPermissions != null) {
-				for (String perm : temporaryPermissions) {
-					if (!player.hasPermission(perm)) {
-						player.addAttachment(MagicSpells.plugin, perm, true, 5);
-					}
-				}
-			}
-			// perform commands
-			for (String comm : commandToExecute) {
-				if (args != null && args.length > 0) {
-					for (int i = 0; i < args.length; i++) {
-						comm = comm.replace("%"+(i+1), args[i]);
-					}
-				}
-				comm = comm.replace("%a", player.getName());
-				if (target != null) {
-					comm = comm.replace("%t", target.getName());
-				}
-				player.performCommand(comm);
-			}
-			if (commandToExecuteLater != null && commandToExecuteLater.size() > 0 && !commandToExecuteLater.get(0).isEmpty()) {
-				Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new DelayedCommand(player, target), commandDelay);
-			}
+			process(player, target, args);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private void process(Player player, Player target, String[] args) {
+		// grant permissions
+		if (temporaryPermissions != null) {
+			for (String perm : temporaryPermissions) {
+				if (!player.hasPermission(perm)) {
+					player.addAttachment(MagicSpells.plugin, perm, true, 5);
+				}
+			}
+		}
+		// perform commands
+		for (String comm : commandToExecute) {
+			if (args != null && args.length > 0) {
+				for (int i = 0; i < args.length; i++) {
+					comm = comm.replace("%"+(i+1), args[i]);
+				}
+			}
+			comm = comm.replace("%a", player.getName());
+			if (target != null) {
+				comm = comm.replace("%t", target.getName());
+			}
+			player.performCommand(comm);
+		}
+		if (commandToExecuteLater != null && commandToExecuteLater.size() > 0 && !commandToExecuteLater.get(0).isEmpty()) {
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new DelayedCommand(player, target), commandDelay);
+		}
+	}
+
+	@Override
+	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+		if (requirePlayerTarget && target instanceof Player) {
+			process(caster, (Player)target, null);
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	@EventHandler
