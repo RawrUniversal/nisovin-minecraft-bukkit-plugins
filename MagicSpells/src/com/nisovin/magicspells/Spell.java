@@ -39,6 +39,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected HashSet<CastItem> bindableItems;
 	protected ItemStack spellIcon;
 	protected int broadcastRange;
+	protected int experience;
 	
 	protected ItemStack[] cost;
 	protected int healthCost = 0;
@@ -97,6 +98,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			spellIcon = new ItemStack(Integer.parseInt(icontemp), 0, (short)0);
 		}
 		this.broadcastRange = config.getInt(section + "." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
+		this.experience = config.getInt(section + "." + spellName + ".experience", 0);
 		
 		List<String> costList = config.getStringList(section + "." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
@@ -280,6 +282,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				MagicSpells.sendMessage(player, strCantCast);
 			} else if (state == SpellCastState.NO_MAGIC_ZONE) {
 				MagicSpells.noMagicZones.sendNoMagicMessage(player, this);
+			}
+			if (experience > 0) {
+				player.giveExp(experience);
 			}
 		}
 		
