@@ -107,6 +107,8 @@ public class BlinkSpell extends TargetedLocationSpell {
 	
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
+		target.setYaw(caster.getLocation().getYaw());
+		target.setPitch(caster.getLocation().getPitch());
 		teleport(caster, target, null);
 		return true;
 	}
