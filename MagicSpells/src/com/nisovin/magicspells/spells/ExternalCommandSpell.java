@@ -23,6 +23,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 	private List<String> commandToBlock;
 	private List<String> temporaryPermissions;
 	private boolean requirePlayerTarget;
+	private boolean executeAsTargetInstead;
 	private boolean obeyLos;
 	private String strCantUseCommand;
 	private String strNoTarget;
@@ -38,6 +39,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 		commandToBlock = getConfigStringList("command-to-block", null);
 		temporaryPermissions = getConfigStringList("temporary-permissions", null);
 		requirePlayerTarget = getConfigBoolean("require-player-target", false);
+		executeAsTargetInstead = getConfigBoolean("execute-as-target-instead", false);
 		obeyLos = getConfigBoolean("obey-los", true);
 		strCantUseCommand = config.getString("spells." + spellName + ".str-cant-use-command", "&4You don't have permission to do that.");
 		strNoTarget = getConfigString("str-no-target", "No target found.");
@@ -67,8 +69,14 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 		// grant permissions
 		if (temporaryPermissions != null) {
 			for (String perm : temporaryPermissions) {
-				if (!player.hasPermission(perm)) {
-					player.addAttachment(MagicSpells.plugin, perm, true, 5);
+				if (!executeAsTargetInstead) {
+					if (!player.hasPermission(perm)) {
+						player.addAttachment(MagicSpells.plugin, perm, true, 5);
+					}
+				} else {
+					if (!target.hasPermission(perm)) {
+						target.addAttachment(MagicSpells.plugin, perm, true, 5);
+					}
 				}
 			}
 		}
@@ -83,7 +91,11 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 			if (target != null) {
 				comm = comm.replace("%t", target.getName());
 			}
-			player.performCommand(comm);
+			if (!executeAsTargetInstead) {
+				player.performCommand(comm);
+			} else {
+				target.performCommand(comm);
+			}
 		}
 		if (commandToExecuteLater != null && commandToExecuteLater.size() > 0 && !commandToExecuteLater.get(0).isEmpty()) {
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new DelayedCommand(player, target), commandDelay);
@@ -140,8 +152,14 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 			// grant permissions
 			if (temporaryPermissions != null) {
 				for (String perm : temporaryPermissions) {
-					if (!player.hasPermission(perm)) {
-						player.addAttachment(MagicSpells.plugin, perm, true, 5);
+					if (!executeAsTargetInstead) {
+						if (!player.hasPermission(perm)) {
+							player.addAttachment(MagicSpells.plugin, perm, true, 5);
+						}
+					} else {
+						if (!target.hasPermission(perm)) {
+							target.addAttachment(MagicSpells.plugin, perm, true, 5);
+						}
 					}
 				}
 			}
@@ -152,7 +170,11 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 					if (target != null) {
 						comm = comm.replace("%t", target.getName());
 					}
-					player.performCommand(comm);
+					if (!executeAsTargetInstead) {
+						player.performCommand(comm);
+					} else {
+						target.performCommand(comm);
+					}
 				}
 			}			
 		}
