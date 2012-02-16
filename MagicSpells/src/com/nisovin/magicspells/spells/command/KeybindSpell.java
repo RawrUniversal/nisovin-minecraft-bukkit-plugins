@@ -4,13 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import net.minecraft.server.Packet103SetSlot;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -192,14 +189,7 @@ public class KeybindSpell extends CommandSpell {
 	}
 	
 	protected void sendFakeSlotUpdate(Player player, int slot, ItemStack item) {
-		net.minecraft.server.ItemStack nmsItem = null;
-		if (item != null) {
-			nmsItem = new net.minecraft.server.ItemStack(item.getTypeId(), slot+1, item.getDurability());
-		} else {
-			nmsItem = null;
-		}
-		Packet103SetSlot packet = new Packet103SetSlot(0, (short)slot+36, nmsItem);
-		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
+		MagicSpells.craftbukkit.sendFakeSlotUpdate(player, slot, item);
 	}
 	
 	private class Keybinds {

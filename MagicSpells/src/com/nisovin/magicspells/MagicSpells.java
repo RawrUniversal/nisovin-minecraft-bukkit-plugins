@@ -55,12 +55,17 @@ import com.nisovin.magicspells.spells.targeted.PotionEffectSpell;
 import com.nisovin.magicspells.spells.targeted.TelekinesisSpell;
 import com.nisovin.magicspells.spells.targeted.VolleySpell;
 import com.nisovin.magicspells.spells.targeted.ZapSpell;
+import com.nisovin.magicspells.util.CraftBukkitHandle;
+import com.nisovin.magicspells.util.CraftBukkitHandleDisabled;
+import com.nisovin.magicspells.util.CraftBukkitHandleEnabled;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class MagicSpells extends JavaPlugin {
 
 	public static MagicSpells plugin;
 
+	public static CraftBukkitHandle craftbukkit;
+	
 	protected static boolean debug;
 	protected static ChatColor textColor;
 	protected static int broadcastRange;
@@ -127,6 +132,13 @@ public class MagicSpells extends JavaPlugin {
 		if (!configFile.exists()) saveDefaultConfig();
 		MagicConfig config = new MagicConfig(configFile);
 		debug = config.getBoolean("general.debug", false);
+		
+		if (config.getBoolean("enable-volatile-features", true)) {
+			craftbukkit = new CraftBukkitHandleEnabled();
+		} else {
+			craftbukkit = new CraftBukkitHandleDisabled();
+		}
+		
 		textColor = ChatColor.getByChar(config.getString("general.text-color", ChatColor.DARK_AQUA.getChar() + ""));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		

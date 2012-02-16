@@ -5,9 +5,9 @@ import java.util.HashSet;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -52,13 +52,10 @@ public class TelekinesisSpell extends TargetedLocationSpell {
 	
 	private boolean activate(Block target) {
 		if (target.getType() == Material.LEVER || target.getType() == Material.STONE_BUTTON) {
-			net.minecraft.server.Block.byId[target.getType().getId()].interact(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ(), null);
+			MagicSpells.craftbukkit.toggleLeverOrButton(target);
 			return true;
 		} else if (target.getType() == Material.WOOD_PLATE || target.getType() == Material.STONE_PLATE) {
-			target.setData((byte) (target.getData() ^ 0x1));
-			net.minecraft.server.World w = ((CraftWorld)target.getWorld()).getHandle();
-			w.applyPhysics(target.getX(), target.getY(), target.getZ(), target.getType().getId());
-			w.applyPhysics(target.getX(), target.getY()-1, target.getZ(), target.getType().getId());
+			MagicSpells.craftbukkit.pressPressurePlate(target);
 			return true;
 		} else {
 			return false;

@@ -96,7 +96,12 @@ public abstract class TargetedSpell extends InstantSpell {
 		
 		// find target
 		LivingEntity target = null;
-		BlockIterator bi = new BlockIterator(player, range);
+		BlockIterator bi;
+		try {
+			bi = new BlockIterator(player, range);
+		} catch (IllegalStateException e) {
+			return null;
+		}
 		Block b;
 		Location l;
 		int bx, by, bz;

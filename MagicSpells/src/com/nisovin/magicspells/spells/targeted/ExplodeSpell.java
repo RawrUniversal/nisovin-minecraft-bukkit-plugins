@@ -3,23 +3,15 @@ package com.nisovin.magicspells.spells.targeted;
 import java.util.HashMap;
 import java.util.Random;
 
-import net.minecraft.server.EntityTNTPrimed;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
@@ -27,7 +19,6 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class ExplodeSpell extends TargetedLocationSpell {
 	
-	private boolean checkPlugins;
 	private int explosionSize;
 	private int backfireChance;
 	private boolean preventBlockDamage;
@@ -39,7 +30,6 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	public ExplodeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		checkPlugins = getConfigBoolean("check-plugins", true);
 		explosionSize = getConfigInt("explosion-size", 4);
 		backfireChance = getConfigInt("backfire-chance", 0);
 		preventBlockDamage = getConfigBoolean("prevent-block-damage", false);
@@ -79,25 +69,11 @@ public class ExplodeSpell extends TargetedLocationSpell {
 				target = player.getLocation();
 			}					
 		}
-		if (checkPlugins) {
-			// check plugins
-			EntityTNTPrimed e = new EntityTNTPrimed(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ());
-			CraftTNTPrimed c = new CraftTNTPrimed((CraftServer)Bukkit.getServer(), e);
-			ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize*power, false);
-			Bukkit.getServer().getPluginManager().callEvent(event);
-			if (event.isCancelled()) {
-				return false;
-			}
-		}
 		if (preventBlockDamage || damageMultiplier > 0) {
 			recentlyExploded.put(player, power);
 		}
-		createExplosion(player, target, explosionSize*power);
+		player.getWorld().createExplosion(target, explosionSize * power);
 		return true;
-	}
-	
-	public void createExplosion(Player player, Location location, float size) {
-		((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftPlayer)player).getHandle(), location.getX(), location.getY(), location.getZ(), size, false);
 	}
 
 	@Override

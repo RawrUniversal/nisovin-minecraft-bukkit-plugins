@@ -6,13 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.minecraft.server.DataWatcher;
-import net.minecraft.server.Packet40EntityMetadata;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -613,21 +608,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param duration how long the effect will last, in ticks
 	 */
 	protected void playPotionEffect(final Player player, final LivingEntity entity, int color, int duration) {
-		final DataWatcher dw = new DataWatcher();
-		dw.a(8, Integer.valueOf(0));
-		dw.watch(8, Integer.valueOf(color));
-		
-		Packet40EntityMetadata packet = new Packet40EntityMetadata(entity.getEntityId(), dw);
-		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
-		
-		Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
-			public void run() {
-				DataWatcher dwReal = ((CraftLivingEntity)entity).getHandle().getDataWatcher();
-				dw.watch(8, dwReal.getInt(8));
-				Packet40EntityMetadata packet = new Packet40EntityMetadata(entity.getEntityId(), dw);
-				((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
-			}
-		}, duration);
+		MagicSpells.craftbukkit.playPotionEffect(player, entity, color, duration);
 	}
 	
 	public String getInternalName() {
