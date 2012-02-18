@@ -72,8 +72,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		if (preventBlockDamage || damageMultiplier > 0) {
 			recentlyExploded.put(player, power);
 		}
-		player.getWorld().createExplosion(target, explosionSize * power);
-		return true;
+		return player.getWorld().createExplosion(target, explosionSize * power);
 	}
 
 	@Override
