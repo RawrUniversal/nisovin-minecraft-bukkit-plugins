@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public class BlockPlatform {
@@ -38,12 +39,16 @@ public class BlockPlatform {
 		// get platform blocks
 		if (type.equals("square")) {
 			Block block, above;
-			for (int x = center.getX()-size; x <= center.getX()+size; x++) {
-				for (int z = center.getZ()-size; z <= center.getZ()+size; z++) {
-					int y = center.getY();
-					block = center.getWorld().getBlockAt(x,y,z);
+			int cx = center.getX();
+			int cy = center.getY();
+			int cz = center.getZ();
+			World world = center.getWorld();
+			int max = world.getMaxHeight();
+			for (int x = cx-size; x <= cx+size; x++) {
+				for (int z = cz-size; z <= cz+size; z++) {
+					block = world.getBlockAt(x,cy,z);
 					above = block.getRelative(0,1,0);
-					if ((block.getType() == replaceType && (block.getY() == 127 || blocks.contains(above) || above.getType() == Material.AIR)) || (blocks != null && blocks.contains(block))) {
+					if ((block.getType() == replaceType && (cy >= max-1 || blocks.contains(above) || above.getType() == Material.AIR)) || (blocks != null && blocks.contains(block))) {
 						// only add if it's a replaceable block and has air above, or if it is already part of the platform
 						platform.add(block);
 					}
@@ -75,9 +80,9 @@ public class BlockPlatform {
 		
 		// add new platform blocks
 		for (Block block : platform) {
-			//if (blocks == null || !blocks.contains(block)) {
+			if (blocks == null || !blocks.contains(block)) {
 				block.setType(platformType);
-			//}
+			}
 		}
 		
 		// update platform block set
