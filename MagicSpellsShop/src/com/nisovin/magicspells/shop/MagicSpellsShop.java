@@ -141,6 +141,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		MagicSpells.sendMessage(player, strPurchased, "%s", spellName, "%c", cost+"");
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void processScrollShopSign(Player player, String[] lines) {
 		// get spell
 		String spellName = lines[1];
@@ -180,8 +181,10 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		int slot = player.getInventory().firstEmpty();
 		if (player.getItemInHand() == null) {
 			player.setItemInHand(scroll);
+			player.updateInventory();
 		} else if (slot >= 0) {
 			player.getInventory().setItem(slot, scroll);
+			player.updateInventory();
 		} else {
 			player.getWorld().dropItem(player.getLocation(), scroll);
 		}

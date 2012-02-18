@@ -32,6 +32,10 @@ public class CurrencyHandler {
 				}
 				currencies.put(key, sec.getString(key));
 			}
+			if (defaultCurrency == null) {
+				defaultCurrency = "money";
+				currencies.put("money", "vault");
+			}
 		}
 
 		// set up vault hook
@@ -49,7 +53,9 @@ public class CurrencyHandler {
 		String c = currencies.get(currency);
 		if (c == null) c = currencies.get(defaultCurrency);
 		
-		if (c.equalsIgnoreCase("vault") && economy != null) {
+		if (c == null) {
+			return false;
+		} else if (c.equalsIgnoreCase("vault") && economy != null) {
 			return economy.has(player.getName(), amount);
 		} else if (c.matches("^[0-9]+$")) {
 			return inventoryContains(player.getInventory(), new ItemStack(Integer.parseInt(c), (int)amount));
