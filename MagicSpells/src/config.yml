@@ -336,7 +336,7 @@ spells:
         backfire-chance: 3
         prevent-block-damage: false
         damage-multiplier: 10
-        check-plugins: true
+        ignore-canceled: false
         cost:
             - 331 5
             - 289 1

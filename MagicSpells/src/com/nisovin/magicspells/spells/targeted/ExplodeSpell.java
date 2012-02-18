@@ -23,6 +23,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	private int backfireChance;
 	private boolean preventBlockDamage;
 	private float damageMultiplier;
+	private boolean ignoreCanceled;
 	private String strNoTarget;
 	
 	private HashMap<Player,Float> recentlyExploded;
@@ -34,6 +35,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		backfireChance = getConfigInt("backfire-chance", 0);
 		preventBlockDamage = getConfigBoolean("prevent-block-damage", false);
 		damageMultiplier = getConfigFloat("damage-multiplier", 0);
+		ignoreCanceled = getConfigBoolean("ignore-canceled", false);
 		strNoTarget = getConfigString("str-no-target", "Cannot explode there.");
 		
 		if (preventBlockDamage || damageMultiplier > 0) {
@@ -51,7 +53,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				boolean exploded = explode(player, target.getLocation(), power);
-				if (!exploded) {
+				if (!exploded && !ignoreCanceled) {
 					sendMessage(player, strNoTarget);
 					fizzle(player);
 					return PostCastAction.ALREADY_HANDLED;

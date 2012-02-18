@@ -131,14 +131,14 @@ public class MagicSpells extends JavaPlugin {
 		File configFile = new File(getDataFolder(), "config.yml");
 		if (!configFile.exists()) saveDefaultConfig();
 		MagicConfig config = new MagicConfig(configFile);
-		debug = config.getBoolean("general.debug", false);
 		
-		if (config.getBoolean("enable-volatile-features", true)) {
+		if (config.getBoolean("general.enable-volatile-features", true)) {
 			craftbukkit = new CraftBukkitHandleEnabled();
 		} else {
 			craftbukkit = new CraftBukkitHandleDisabled();
 		}
 		
+		debug = config.getBoolean("general.debug", false);
 		textColor = ChatColor.getByChar(config.getString("general.text-color", ChatColor.DARK_AQUA.getChar() + ""));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		
