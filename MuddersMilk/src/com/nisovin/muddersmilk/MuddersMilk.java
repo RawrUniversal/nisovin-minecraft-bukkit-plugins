@@ -23,6 +23,7 @@ public class MuddersMilk extends JavaPlugin {
 	public boolean soberOnDeath;
 	public boolean soberOnLogout;
 	public boolean destroyBucketOnUse;
+	public int visionBlurDurationPerLevel;
 	public int chanceToSlurS;
 	public int chanceToSlurSPerLevel;
 	public int chanceToHic;
@@ -51,6 +52,7 @@ public class MuddersMilk extends JavaPlugin {
 		soberOnDeath = config.getBoolean("sober-on-death", false);
 		soberOnLogout = config.getBoolean("sober-on-logout", true);
 		destroyBucketOnUse = config.getBoolean("destroy-bucket-on-use", false);
+		visionBlurDurationPerLevel = config.getInt("vision-blur-duration-per-level", 50);
 		chanceToSlurS = config.getInt("chance-to-slur-s", 50);
 		chanceToSlurSPerLevel = config.getInt("chance-to-slur-s-per-level", 5);
 		chanceToHic = config.getInt("chance-to-hic", 15);

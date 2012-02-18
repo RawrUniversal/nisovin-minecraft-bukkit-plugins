@@ -9,6 +9,7 @@ sober-on-death: false
 sober-on-logout: true
 destroy-bucket-on-use: false
 effect-tick-interval: 100
+vision-blur-duration-per-level: 50
 chance-to-slur-s: 50
 chance-to-slur-s-per-level: 5
 chance-to-hic: 15
