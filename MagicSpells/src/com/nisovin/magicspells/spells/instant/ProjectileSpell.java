@@ -17,6 +17,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
@@ -102,12 +103,24 @@ public class ProjectileSpell extends InstantSpell {
 		ProjectileInfo info = projectiles.get(projectile);
 		if (info == null || event.isCancelled()) return;
 				
-		if (!info.done && (maxDistanceSquared == 0 || projectile.getLocation().distanceSquared(info.start) <= maxDistanceSquared)) { 
+		if (!info.done && (maxDistanceSquared == 0 || projectile.getLocation().distanceSquared(info.start) <= maxDistanceSquared) && event.getEntity() instanceof LivingEntity) { 
+			LivingEntity target = (LivingEntity)event.getEntity();
+			
+			// call target event
+			SpellTargetEvent evt = new SpellTargetEvent(this, info.player, target);
+			Bukkit.getPluginManager().callEvent(evt);
+			if (evt.isCancelled()) {
+				return;
+			} else {
+				target = evt.getTarget();
+			}
+			
+			// run spells
 			for (TargetedSpell spell : spells) {
-				if (spell instanceof TargetedEntitySpell && event.getEntity() instanceof LivingEntity) {
-					((TargetedEntitySpell)spell).castAtEntity(info.player, (LivingEntity)event.getEntity(), info.power);
+				if (spell instanceof TargetedEntitySpell) {
+					((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
 				} else if (spell instanceof TargetedLocationSpell) {
-					((TargetedLocationSpell)spell).castAtLocation(info.player, event.getEntity().getLocation(), info.power);
+					((TargetedLocationSpell)spell).castAtLocation(info.player, target.getLocation(), info.power);
 				}
 			}
 			info.done = true;
