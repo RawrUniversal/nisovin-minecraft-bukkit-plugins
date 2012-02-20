@@ -220,12 +220,9 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// load permissions
-		Set<Permission> perms = pm.getPermissions();
-		if (perms != null && perms.size() > 0) {
-			//for (Permission perm : perms) {
-				//pm.removePermission(perm);
-			//}
-		}
+		addPermission(pm, "noreagents", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP);
+		addPermission(pm, "nocooldown", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP);
+		addPermission(pm, "notarget", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP);
 		HashMap<String, Boolean> permGrantChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permLearnChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permCastChildren = new HashMap<String,Boolean>();
