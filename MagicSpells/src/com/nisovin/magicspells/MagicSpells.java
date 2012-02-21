@@ -20,7 +20,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -291,14 +290,16 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// get spells from config
-		ConfigurationSection configSection = config.getSpellSection();
-		Set<String> spellKeys = configSection.getKeys(false);
+		Set<String> spellKeys = config.getSpellKeys();
 		for (String spellName : spellKeys) {
 			String className = "";
-			if (configSection.contains(spellName + ".spell-class")) {
-				className = configSection.getString(spellName + ".spell-class");
+			if (config.contains("spells." + spellName + ".spell-class")) {
+				className = config.getString("spells." + spellName + ".spell-class", "");
 			}
-			if (className.startsWith(".")) {
+			if (className == null || className.isEmpty()) {
+				getLogger().warning("Spell '" + spellName + "' does not have a spell-class property");
+				continue;
+			} else if (className.startsWith(".")) {
 				className = "com.nisovin.magicspells.spells" + className;
 			}
 			if (config.getBoolean("spells." + spellName + ".enabled", true)) {
