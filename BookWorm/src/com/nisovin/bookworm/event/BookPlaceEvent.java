@@ -10,12 +10,11 @@ public class BookPlaceEvent extends BookEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
-	private static final long serialVersionUID = 1L;
 	private Player player;
 	private Location location;
 	
 	public BookPlaceEvent(Player player, Book book, Location location) {
-		super("BOOK_WORM_PLACE", book);
+		super(book);
 		
 		this.player = player;
 		this.location = location;

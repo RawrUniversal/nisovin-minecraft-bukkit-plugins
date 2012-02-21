@@ -7,12 +7,10 @@ import com.nisovin.bookworm.Book;
 
 public abstract class BookEvent extends Event implements Cancellable {
 
-	private static final long serialVersionUID = 1L;
 	private Book book;
 	private boolean cancelled;
 	
-	protected BookEvent(String name, Book book) {
-		super(name);
+	protected BookEvent(Book book) {
 		this.book = book;
 	}
 	

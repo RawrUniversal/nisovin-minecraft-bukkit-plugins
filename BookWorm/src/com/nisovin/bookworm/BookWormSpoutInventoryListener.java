@@ -3,11 +3,11 @@ package com.nisovin.bookworm;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.getspout.spoutapi.event.inventory.InventoryClickEvent;
-import org.getspout.spoutapi.event.inventory.InventoryListener;
 
-public class BookWormSpoutInventoryListener extends InventoryListener {
+public class BookWormSpoutInventoryListener implements Listener {
 
 	public BookWormSpoutInventoryListener(BookWorm plugin) {
 	}

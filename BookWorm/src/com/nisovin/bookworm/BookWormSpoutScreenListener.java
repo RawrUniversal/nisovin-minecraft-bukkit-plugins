@@ -3,11 +3,11 @@ package com.nisovin.bookworm;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
-import org.getspout.spoutapi.event.screen.ScreenListener;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-public class BookWormSpoutScreenListener extends ScreenListener {
+public class BookWormSpoutScreenListener implements Listener {
 
 	private BookWorm plugin;
 	
