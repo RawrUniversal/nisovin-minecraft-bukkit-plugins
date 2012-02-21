@@ -9,6 +9,7 @@ general:
     keep-all-books-loaded: false
     use-spout-features: true
     use-deny-perms: false
+    save-bookcases-in-world-folders: false
     check-worldguard: true
     use-full-filenames: true
     clean-interval: 600
@@ -59,6 +60,10 @@ strings:
     command-read: read
     
     command-title: title
+    command-title-done: "Title changed: "
+    
+    command-author: author
+    command-author-done: "Author changed: "
     
     command-undo: undo
     command-undo-done: Undo successful.

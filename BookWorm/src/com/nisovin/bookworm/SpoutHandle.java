@@ -100,7 +100,7 @@ public class SpoutHandle {
 		}
 		
 		// create page text
-		String text = book.getTitle() + "\n    " + BookWorm.S_READ_BY + " " + book.getAuthor() + "\n\n";
+		String text = book.getTitle() + "\n    " + BookWorm.S_READ_BY + " " + book.getDisplayAuthor() + "\n\n";
 		for (String s : pageText) {
 			if (s != null && !s.isEmpty()) {
 				text += s + "\n";

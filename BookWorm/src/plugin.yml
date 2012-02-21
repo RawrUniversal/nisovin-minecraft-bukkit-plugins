@@ -1,6 +1,6 @@
 name: BookWorm
 main: com.nisovin.bookworm.BookWorm
-version: 1.10
+version: 1.11
 softdepend: [Spout]
 commands:
     bookworm:
@@ -17,6 +17,8 @@ permissions:
             bookworm.create: true
             bookworm.write.own: true
             bookworm.write.others: true
+            bookworm.setauthor.own: true
+            bookworm.setauthor.others: true
             bookworm.place.own: true
             bookworm.place.others: true
             bookworm.copy.own: true
@@ -47,6 +49,12 @@ permissions:
         default: true
     bookworm.write.others:
         description: Write in another player's book
+        default: op
+    bookworm.setauthor.own:
+        description: Set the author of your own book
+        default: op
+    bookworm.setauthor.others:
+        description: Set the author of another player's book
         default: op
     bookworm.place.own:
         description: Place your book in a bookshelf

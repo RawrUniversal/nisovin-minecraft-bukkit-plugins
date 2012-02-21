@@ -22,6 +22,18 @@ public class PermissionManager {
 		}
 	}
 	
+	public boolean canChangeBookAuthor(Player player, Book book) {
+		if (!hasPerm(player, "bookworm.setauthor.own")) {
+			return false;
+		} else if (book.getAuthor().equalsIgnoreCase(player.getName())) {
+			return true;
+		} else if (hasPerm(player, "bookworm.setauthor.others")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public boolean canCopyBook(Player player, Book book) {
 		if (BookWorm.USE_DENY_PERMS && hasPerm(player, "bookworm.copy.deny." + book.getId())) {
 			return false;

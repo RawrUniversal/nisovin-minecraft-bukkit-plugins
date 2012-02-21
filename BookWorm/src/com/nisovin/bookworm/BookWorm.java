@@ -51,6 +51,7 @@ public class BookWorm extends JavaPlugin {
 	protected static boolean USE_SPOUT_FEATURES = true;
 	protected static boolean SPOUT_ENABLED = false;
 	protected static boolean USE_DENY_PERMS = false;
+	protected static boolean SAVE_BOOKCASES_IN_WORLD_FOLDER = false;
 	
 	protected static int CLEAN_INTERVAL = 600;
 	protected static int REMOVE_DELAY = 300;
@@ -71,6 +72,7 @@ public class BookWorm extends JavaPlugin {
 	protected static String S_COMM_ID = "id";
 	protected static String S_COMM_READ = "read";
 	protected static String S_COMM_TITLE = "title";
+	protected static String S_COMM_AUTHOR = "author";
 	protected static String S_COMM_UNDO = "undo";
 	protected static String S_COMM_ERASE = "erase";
 	protected static String S_COMM_REPLACE = "replace";
@@ -89,6 +91,8 @@ public class BookWorm extends JavaPlugin {
 	protected static String S_COMM_GET_FAIL = "Unable to get book.";
 	protected static String S_COMM_ID_DONE = "Book id: ";
 	protected static String S_COMM_ID_FAIL = "You are not holding a book.";
+	protected static String S_COMM_TITLE_DONE = "Title changed: ";
+	protected static String S_COMM_AUTHOR_DONE = "Author changed: ";
 	protected static String S_COMM_UNDO_DONE = "Undo successful.";
 	protected static String S_COMM_UNDO_FAIL = "Unable to undo.";
 	protected static String S_COMM_ERASE_DONE = "Text erased.";
@@ -318,6 +322,7 @@ public class BookWorm extends JavaPlugin {
 		KEEP_ALL_BOOKS_LOADED = config.getBoolean("general.keep-all-books-loaded", KEEP_ALL_BOOKS_LOADED);
 		USE_SPOUT_FEATURES = config.getBoolean("general.use-spout-features", USE_SPOUT_FEATURES);
 		USE_DENY_PERMS = config.getBoolean("general.use-deny-perms", USE_DENY_PERMS);
+		SAVE_BOOKCASES_IN_WORLD_FOLDER = config.getBoolean("general.save-bookcases-in-world-folders", SAVE_BOOKCASES_IN_WORLD_FOLDER);
 
 		CHECK_WORLDGUARD = config.getBoolean("general.check-worldguard", CHECK_WORLDGUARD);
 		USE_FULL_FILENAMES = config.getBoolean("general.use-full-filenames", USE_FULL_FILENAMES);
@@ -344,6 +349,7 @@ public class BookWorm extends JavaPlugin {
 		S_COMM_ID = config.getString("strings.command-id", S_COMM_ID);
 		S_COMM_READ = config.getString("strings.command-read", S_COMM_READ);
 		S_COMM_TITLE = config.getString("strings.command-title", S_COMM_TITLE);
+		S_COMM_AUTHOR = config.getString("strings.command-author", S_COMM_AUTHOR);
 		S_COMM_UNDO = config.getString("strings.command-undo", S_COMM_UNDO);
 		S_COMM_ERASE = config.getString("strings.command-erase", S_COMM_ERASE);
 		S_COMM_REPLACE = config.getString("strings.command-replace", S_COMM_REPLACE);
@@ -355,6 +361,8 @@ public class BookWorm extends JavaPlugin {
 		S_COMM_GET_FAIL = config.getString("strings.command-get-fail", S_COMM_GET_FAIL);
 		S_COMM_ID_DONE = config.getString("strings.command-id-done", S_COMM_ID_DONE);
 		S_COMM_ID_FAIL = config.getString("strings.command-id-fail", S_COMM_ID_FAIL);
+		S_COMM_TITLE_DONE = config.getString("strings.command-title-done", S_COMM_TITLE_DONE);
+		S_COMM_AUTHOR_DONE = config.getString("strings.command-author-done", S_COMM_AUTHOR_DONE);
 		S_COMM_UNDO_DONE = config.getString("strings.command-undo-done", S_COMM_UNDO_DONE);
 		S_COMM_UNDO_FAIL = config.getString("strings.command-undo-fail", S_COMM_UNDO_FAIL);
 		S_COMM_ERASE_DONE = config.getString("strings.command-erase-done", S_COMM_ERASE_DONE);

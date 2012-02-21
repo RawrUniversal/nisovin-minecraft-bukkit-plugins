@@ -91,6 +91,15 @@ public class Book {
 		return author;
 	}
 	
+	public String getDisplayAuthor() {
+		if (!loaded) load();
+		String auth = getHiddenData("Author");
+		if (auth == null) {
+			auth = author;
+		}
+		return auth;
+	}
+	
 	public String getTitle() {
 		if (!loaded) load();
 		return title;
@@ -217,12 +226,14 @@ public class Book {
 		if (loaded) {
 			page = page % pages;
 			
+			String dispAuthor = getDisplayAuthor();
+			
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_DIVIDER);
-			if (title.length() + author.length() + 25 > BookWorm.LINE_LENGTH && author.length() > 0) {
+			if (title.length() + dispAuthor.length() + 25 > BookWorm.LINE_LENGTH && dispAuthor.length() > 0) {
 				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + title);
-				player.sendMessage(BookWorm.INDENT + BookWorm.TEXT_COLOR + BookWorm.S_READ_BY + ": " + BookWorm.TEXT_COLOR_2 + author + BookWorm.TEXT_COLOR + " (" + BookWorm.S_READ_PAGE + " " + (page+1) + "/" + pages + ")");
+				player.sendMessage(BookWorm.INDENT + BookWorm.TEXT_COLOR + BookWorm.S_READ_BY + ": " + BookWorm.TEXT_COLOR_2 + dispAuthor + BookWorm.TEXT_COLOR + " (" + BookWorm.S_READ_PAGE + " " + (page+1) + "/" + pages + ")");
 			} else {
-				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + title + BookWorm.TEXT_COLOR + (author.length() > 0 ? " " + BookWorm.S_READ_BY + ": " + BookWorm.TEXT_COLOR_2 + author + BookWorm.TEXT_COLOR : "") + " (" + BookWorm.S_READ_PAGE + " " + (page+1) + "/" + pages + ")");
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + title + BookWorm.TEXT_COLOR + (author.length() > 0 ? " " + BookWorm.S_READ_BY + ": " + BookWorm.TEXT_COLOR_2 + dispAuthor + BookWorm.TEXT_COLOR : "") + " (" + BookWorm.S_READ_PAGE + " " + (page+1) + "/" + pages + ")");
 			}
 			player.sendMessage("   ");
 			for (int i = 0; i < BookWorm.PAGE_LENGTH && page*BookWorm.PAGE_LENGTH + i < contents.length; i++) {

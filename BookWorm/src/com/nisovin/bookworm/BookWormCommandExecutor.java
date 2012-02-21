@@ -65,6 +65,8 @@ public class BookWormCommandExecutor implements CommandExecutor {
 						read(player, book, args);
 					} else if (args[0].equalsIgnoreCase("-" + BookWorm.S_COMM_TITLE) && args.length > 1) {
 						title(player, book, args);
+					} else if (args[0].equalsIgnoreCase("-" + BookWorm.S_COMM_AUTHOR) && args.length > 1) {
+						author(player, book, args);
 					} else if (args[0].equalsIgnoreCase("-" + BookWorm.S_COMM_UNDO)) {
 						undo(player, book);
 					} else if (args[0].equalsIgnoreCase("-" + BookWorm.S_COMM_ERASE) && args.length > 1) {
@@ -321,10 +323,23 @@ public class BookWormCommandExecutor implements CommandExecutor {
 				title += args[i] + " ";
 			}
 			book.setTitle(title.trim());
-			player.sendMessage(BookWorm.TEXT_COLOR + "Title changed: " + BookWorm.TEXT_COLOR_2 + title);							
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_TITLE_DONE + BookWorm.TEXT_COLOR_2 + title);
 		} else {
-			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);		
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);
 		}		
+	}
+	
+	private void author(Player player, Book book, String[] args) {
+		if (plugin.perms.canChangeBookAuthor(player, book)) {
+			String author = "";
+			for (int i = 1; i < args.length; i++) {
+				author += args[i] + " ";
+			}
+			book.addHiddenData("Author", author.trim());
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_AUTHOR_DONE + BookWorm.TEXT_COLOR_2 + author);
+		} else {
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);
+		}
 	}
 	
 	private void undo(Player player, Book book) {
