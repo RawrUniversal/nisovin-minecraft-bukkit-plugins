@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -538,6 +539,22 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			}
 		}
 		inventory.setContents(items);
+	}
+	
+	protected void registerEvents() {
+		registerEvents(this);
+	}
+	
+	protected void registerEvents(Listener listener) {
+		Bukkit.getPluginManager().registerEvents(listener, MagicSpells.plugin);
+	}
+	
+	protected void unregisterEvents() {
+		unregisterEvents(this);
+	}
+	
+	protected void unregisterEvents(Listener listener) {
+		HandlerList.unregisterAll(listener);
 	}
 	
 	/**
