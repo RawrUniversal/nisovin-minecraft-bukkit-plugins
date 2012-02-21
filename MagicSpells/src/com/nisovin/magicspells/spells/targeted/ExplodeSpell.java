@@ -96,7 +96,9 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	@EventHandler
 	public void onExplode(EntityExplodeEvent event) {
 		if (event.isCancelled() || !preventBlockDamage) {
-			recentlyExploded.remove(event.getEntity());
+			if (recentlyExploded != null) {
+				recentlyExploded.remove(event.getEntity());
+			}
 			return;
 		}
 		

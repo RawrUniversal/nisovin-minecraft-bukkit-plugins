@@ -356,7 +356,7 @@ spells:
         cancel-damage: true
         remove-projectile: true
         max-distance: 25
-        spell-names: [explode]
+        spells: [explode]
         cost:
             - 331 4
             - 289 2
