@@ -25,7 +25,7 @@ public abstract class TargetedSpell extends InstantSpell {
 	public TargetedSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		range = config.getInt("spells." + spellName + ".range", -1);
+		range = config.getInt("spells." + spellName + ".range", 20);
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
 		strCastTarget = getConfigString("str-cast-target", "");
 	}

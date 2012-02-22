@@ -976,6 +976,7 @@ spells:
         use-spell-effect: true
         target-players: false
         obey-los: true
+        range: 15
         cost:
             - 331 2
         str-cost: 2 redstone dust
