@@ -567,7 +567,7 @@ public class MagicSpells extends JavaPlugin {
 			for (String spellName : multiSpells) {
 				if (config.getBoolean("multispells." + spellName + ".enabled", true)) {
 					// initialize spell
-					MultiSpell multiSpell = new MultiSpell(config, spellName);
+					OldMultiSpell multiSpell = new OldMultiSpell(config, spellName);
 					spells.put(spellName, multiSpell);
 					// add permissions
 					addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
