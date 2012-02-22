@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 
 public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 
@@ -47,6 +48,11 @@ public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	@Override
 	public void pressPressurePlate(Block block) {
 		block.setData((byte) (block.getData() ^ 0x1));
+	}
+
+	@Override
+	public void removeMobEffect(LivingEntity entity, PotionEffectType type) {
+		entity.removePotionEffect(type);
 	}
 
 }

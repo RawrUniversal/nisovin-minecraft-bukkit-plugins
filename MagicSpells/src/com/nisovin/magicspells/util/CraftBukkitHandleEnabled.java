@@ -6,8 +6,11 @@ import java.util.Set;
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.EntityCreature;
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.MobEffect;
 import net.minecraft.server.Packet103SetSlot;
 import net.minecraft.server.Packet40EntityMetadata;
+import net.minecraft.server.Packet42RemoveMobEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -20,6 +23,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 
 import com.nisovin.magicspells.MagicSpells;
 
@@ -107,6 +111,23 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 		net.minecraft.server.World w = ((CraftWorld)block.getWorld()).getHandle();
 		w.applyPhysics(block.getX(), block.getY(), block.getZ(), block.getType().getId());
 		w.applyPhysics(block.getX(), block.getY()-1, block.getZ(), block.getType().getId());
+	}
+
+	@Override
+	public void removeMobEffect(LivingEntity entity, PotionEffectType type) {
+        try {
+            // remove effect
+    		entity.removePotionEffect(type);
+            // alert player that effect is gone
+            if (entity instanceof Player) {
+                    EntityPlayer player = ((CraftPlayer)entity).getHandle();
+                    player.netServerHandler.sendPacket(new Packet42RemoveMobEffect(player.id, new MobEffect(type.getId(), 0, 0)));
+            }
+            // remove graphical effect
+            ((CraftLivingEntity)entity).getHandle().getDataWatcher().watch(8, Integer.valueOf(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 
 }

@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -59,7 +60,7 @@ public class HasteSpell extends BuffSpell {
 		if (hasted.containsKey(player)) {
 			super.turnOff(player);
 			hasted.remove(player);
-			player.removePotionEffect(PotionEffectType.SPEED);
+			MagicSpells.craftbukkit.removeMobEffect(player, PotionEffectType.SPEED);
 			sendMessage(player, strFade);
 		}
 	}

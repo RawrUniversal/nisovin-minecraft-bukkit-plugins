@@ -1,5 +1,6 @@
 general:
     debug: false
+    enable-volatile-features: true
     use-new-spell-loading: true
     alt-config: altConfig.yml
     str-cast-usage: |
