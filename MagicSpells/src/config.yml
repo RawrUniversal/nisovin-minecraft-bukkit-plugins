@@ -1222,3 +1222,17 @@ spells:
             - 50 1
         str-cost: 2 redstone dust and 1 torch
         str-cast-self: You can now fire torch arrows.
+        
+    zeus:
+        spell-class: ".MultiSpell"
+        name: zeus
+        cooldown: 30
+        check-individual-cooldowns: false
+        cost:
+            - 331 5
+        str-cost: 5 redstone dust
+        spells:
+            - lightning
+            - DELAY 5
+            - explode
+            
