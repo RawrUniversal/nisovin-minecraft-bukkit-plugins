@@ -198,7 +198,6 @@ spells:
         obey-los: true
         fire-ticks: 100
         fire-tick-damage: 1
-        prevent-immunity: true
         target-players: false
         check-plugins: true
         cost:

@@ -19,7 +19,6 @@ public class CombustSpell extends TargetedEntitySpell {
 	private boolean targetPlayers;
 	private int fireTicks;
 	private int fireTickDamage;
-	private boolean preventImmunity;
 	private boolean obeyLos;
 	private boolean checkPlugins;
 	private String strNoTarget;
@@ -32,7 +31,6 @@ public class CombustSpell extends TargetedEntitySpell {
 		targetPlayers = getConfigBoolean("target-players", false);
 		fireTicks = getConfigInt("fire-ticks", 100);
 		fireTickDamage = getConfigInt("fire-tick-damage", 1);
-		preventImmunity = getConfigBoolean("prevent-immunity", true);
 		obeyLos = getConfigBoolean("obey-los", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 		strNoTarget = getConfigString("str-no-target", "");
@@ -89,13 +87,6 @@ public class CombustSpell extends TargetedEntitySpell {
 		CombustData data = combusting.get(event.getEntity().getEntityId());
 		if (data != null) {
 			event.setDamage(Math.round(fireTickDamage * data.power));
-			if (preventImmunity) {
-				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
-					public void run() {
-						((LivingEntity)event.getEntity()).setNoDamageTicks(0);
-					}
-				}, 0);
-			}
 		}
 	}
 	
