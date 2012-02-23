@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -74,7 +75,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		if (preventBlockDamage || damageMultiplier > 0) {
 			recentlyExploded.put(player, power);
 		}
-		return player.getWorld().createExplosion(target, explosionSize * power);
+		return MagicSpells.craftbukkit.createExplosion(player, target, explosionSize * power);
 	}
 
 	@Override
