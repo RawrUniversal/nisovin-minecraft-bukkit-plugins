@@ -3,7 +3,6 @@ package com.nisovin.magicspells.util;
 import java.util.Set;
 
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -28,7 +27,5 @@ public interface CraftBukkitHandle {
 	public void pressPressurePlate(Block block);
 	
 	public void removeMobEffect(LivingEntity entity, PotionEffectType type);
-	
-	public boolean createExplosion(Entity entity, Location location, float size);
 	
 }

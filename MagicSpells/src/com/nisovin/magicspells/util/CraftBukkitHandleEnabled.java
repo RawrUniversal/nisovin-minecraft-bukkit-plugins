@@ -7,7 +7,6 @@ import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.EntityCreature;
 import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.Explosion;
 import net.minecraft.server.MobEffect;
 import net.minecraft.server.Packet103SetSlot;
 import net.minecraft.server.Packet40EntityMetadata;
@@ -15,11 +14,9 @@ import net.minecraft.server.Packet42RemoveMobEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftCreature;
-import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
@@ -132,12 +129,5 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
             e.printStackTrace();
         }
 	}
-
-	@Override
-	public boolean createExplosion(Entity entity, Location location, float size) {
-        Explosion explosion = ((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftEntity)entity).getHandle(), location.getX(), location.getY(), location.getZ(), size, false);
-        return !explosion.wasCanceled;
-	}
-
 
 }
