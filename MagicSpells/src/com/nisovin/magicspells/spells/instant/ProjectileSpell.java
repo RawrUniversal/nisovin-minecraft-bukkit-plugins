@@ -61,12 +61,12 @@ public class ProjectileSpell extends InstantSpell {
 				if (spell != null && (spell instanceof TargetedEntitySpell || spell instanceof TargetedLocationSpell)) {
 					spells.add((TargetedSpell)spell);
 				} else {
-					MagicSpells.plugin.getLogger().warning("Projectile spell '" + internalName + "' attempted to add invalid spell '" + spellName + "'.");
+					MagicSpells.error("Projectile spell '" + internalName + "' attempted to add invalid spell '" + spellName + "'.");
 				}
 			}
 		}
 		if (spells.size() == 0) {
-			MagicSpells.plugin.getLogger().warning("Projectile spell '" + internalName + "' has no spells!");
+			MagicSpells.error("Projectile spell '" + internalName + "' has no spells!");
 		}
 	}
 

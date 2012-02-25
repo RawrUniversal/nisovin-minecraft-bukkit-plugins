@@ -231,6 +231,9 @@ public class MagicSpells extends JavaPlugin {
 		if (useNewLoading) {
 			loadSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
 		} else {
+			error("You are still using the old spell loading method!");
+			error("You should update your config to use the new");
+			error("spell loading method as soon as possible.");
 			loadNormalSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
 			loadCustomSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
 			loadSpellCopies(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);			
@@ -297,7 +300,7 @@ public class MagicSpells extends JavaPlugin {
 				className = config.getString("spells." + spellName + ".spell-class", "");
 			}
 			if (className == null || className.isEmpty()) {
-				getLogger().warning("Spell '" + spellName + "' does not have a spell-class property");
+				error("Spell '" + spellName + "' does not have a spell-class property");
 				continue;
 			} else if (className.startsWith(".")) {
 				className = "com.nisovin.magicspells.spells" + className;
@@ -324,14 +327,14 @@ public class MagicSpells extends JavaPlugin {
 					debug("Loaded spell: " + spellName);
 					
 				} catch (ClassNotFoundException e) {
-					getLogger().severe("Unable to load spell " + spellName + " (missing class " + className + ")");
+					error("Unable to load spell " + spellName + " (missing class " + className + ")");
 					if (className.contains("instant")) {
-						getLogger().severe("(Maybe try " + className.replace("com.nisovin.magicspells.spells.instant.", ".targeted.") + ")");
+						error("(Maybe try " + className.replace("com.nisovin.magicspells.spells.instant.", ".targeted.") + ")");
 					}
 				} catch (NoSuchMethodException e) {
-					getLogger().severe("Unable to load spell " + spellName + " (malformed class)");
+					error("Unable to load spell " + spellName + " (malformed class)");
 				} catch (Exception e) {
-					getLogger().severe("Unable to load spell " + spellName + " (unknown error)");
+					error("Unable to load spell " + spellName + " (unknown error)");
 					e.printStackTrace();
 				}
 			}
@@ -564,6 +567,11 @@ public class MagicSpells extends JavaPlugin {
 		// load multi-spells
 		Set<String> multiSpells = config.getKeys("multispells");
 		if (multiSpells != null && multiSpells.size() > 0) {
+			error("Please update your Multi Spells to the new layout! To do so,");
+			error("just remove the 'multispells:' config header so that your multi spells");
+			error("are in the same section as your normal spells. Then, add the");
+			error("spell-class: \".MultiSpell\"");
+			error("option to all of your Multi Spells. Now you're good to go!");
 			for (String spellName : multiSpells) {
 				if (config.getBoolean("multispells." + spellName + ".enabled", true)) {
 					// initialize spell
@@ -769,8 +777,16 @@ public class MagicSpells extends JavaPlugin {
 	 */
 	public static void debug(String message) {
 		if (MagicSpells.debug) {
-			plugin.getServer().getLogger().info("MagicSpells: " + message);
+			log(Level.WARNING, message);
 		}
+	}
+	
+	public static void log(String message) {
+		log(Level.INFO, message);
+	}
+	
+	public static void error(String message) {
+		log(Level.WARNING, message);
 	}
 	
 	/**
@@ -778,8 +794,8 @@ public class MagicSpells extends JavaPlugin {
 	 * @param level the error level
 	 * @param message the error message
 	 */
-	public static void error(Level level, String message) {
-		plugin.getServer().getLogger().log(level, "MagicSpells: " + message);
+	public static void log(Level level, String message) {
+		plugin.getLogger().log(level, message);
 	}
 	
 	/**

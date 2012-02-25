@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -104,7 +103,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				
 				// validate cost data
 				if (!costVal.matches("^([1-9][0-9]*(:[1-9][0-9]*)?|mana|health|hunger|experience|levels) [1-9][0-9]*$")) {
-					MagicSpells.error(Level.WARNING, "Failed to process cost value for " + spellName + " spell: " + costVal);
+					MagicSpells.error("Failed to process cost value for " + spellName + " spell: " + costVal);
 					continue;
 				}
 				
