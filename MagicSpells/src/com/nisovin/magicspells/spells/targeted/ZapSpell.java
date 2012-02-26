@@ -57,7 +57,12 @@ public class ZapSpell extends TargetedSpell {
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get targeted block
-			Block target = player.getTargetBlock(transparentBlockTypes, range>0?range:100);
+			Block target;
+			try {
+				target = player.getTargetBlock(transparentBlockTypes, range>0?range:100);
+			} catch (IllegalStateException e) {
+				target = null;
+			}
 			if (target != null) {
 				// check for disallowed block
 				if (disallowedBlockTypes.contains(target.getTypeId()) || (allowedBlockTypes.size() > 0 && !allowedBlockTypes.contains(target.getTypeId()))) {

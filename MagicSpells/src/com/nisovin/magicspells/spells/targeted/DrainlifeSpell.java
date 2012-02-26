@@ -163,7 +163,12 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 			Vector playerVector = player.getLocation().toVector();
 			double distanceSq = start.distanceSquared(playerVector);
 			Vector direction = playerVector.subtract(start);
-			BlockIterator iterator = new BlockIterator(player.getWorld(), start, direction, player.getEyeHeight(), range);
+			BlockIterator iterator;
+			try { 
+				iterator = new BlockIterator(player.getWorld(), start, direction, player.getEyeHeight(), range);
+			} catch (IllegalStateException e) {
+				return;
+			}
 			blocks = new ArrayList<Block>();
 			Block b;
 			while (iterator.hasNext()) {

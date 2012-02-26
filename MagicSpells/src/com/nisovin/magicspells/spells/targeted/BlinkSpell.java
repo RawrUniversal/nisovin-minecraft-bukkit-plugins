@@ -35,7 +35,12 @@ public class BlinkSpell extends TargetedLocationSpell {
 			int range = Math.round(this.range*power);
 			if (range <= 0) range = 25;
 			if (range > 125) range = 125;
-			BlockIterator iter = new BlockIterator(player, range>0&&range<150?range:150);
+			BlockIterator iter; 
+			try {
+				iter = new BlockIterator(player, range>0&&range<150?range:150);
+			} catch (IllegalStateException e) {
+				iter = null;
+			}
 			HashSet<Location> smokes = null;
 			if (smokeTrail) {
 				smokes = new HashSet<Location>();
@@ -43,16 +48,18 @@ public class BlinkSpell extends TargetedLocationSpell {
 			Block prev = null;
 			Block found = null;
 			Block b;
-			while (iter.hasNext()) {
-				b = iter.next();
-				if (b.getType() == Material.AIR) {
-					prev = b;
-					if (smokeTrail) {
-						smokes.add(b.getLocation());
+			if (iter != null) {
+				while (iter.hasNext()) {
+					b = iter.next();
+					if (b.getType() == Material.AIR) {
+						prev = b;
+						if (smokeTrail) {
+							smokes.add(b.getLocation());
+						}
+					} else {
+						found = b;
+						break;
 					}
-				} else {
-					found = b;
-					break;
 				}
 			}
 			
