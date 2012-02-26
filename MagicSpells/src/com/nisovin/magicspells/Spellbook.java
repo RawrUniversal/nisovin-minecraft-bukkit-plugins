@@ -75,6 +75,10 @@ public class Spellbook {
 			MagicSpells.debug("  Loading spells from player file...");
 			File file;
 			if (MagicSpells.separatePlayerSpellsPerWorld) {
+				File folder = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName());
+				if (!folder.exists()) {
+					folder.mkdir();
+				}
 				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + playerWorld.getName() + File.separator + playerName.toLowerCase() + ".txt");
 			} else {
 				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + playerName.toLowerCase() + ".txt");
@@ -310,6 +314,10 @@ public class Spellbook {
 		try {
 			File file;
 			if (MagicSpells.separatePlayerSpellsPerWorld) {
+				File folder = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName());
+				if (!folder.exists()) {
+					folder.mkdir();
+				}
 				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName() + playerName.toLowerCase() + ".txt");
 			} else {
 				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + playerName.toLowerCase() + ".txt");
