@@ -72,6 +72,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static boolean opsHaveAllSpells;
 	protected static boolean defaultAllPermsFalse;
 	
+	protected static boolean separatePlayerSpellsPerWorld;
 	protected static boolean allowCycleToNoSpell;
 	protected static boolean onlyCycleToCastableSpells;
 	protected static boolean ignoreDefaultBindings;
@@ -144,6 +145,7 @@ public class MagicSpells extends JavaPlugin {
 		opsHaveAllSpells = config.getBoolean("general.ops-have-all-spells", true);
 		defaultAllPermsFalse = config.getBoolean("general.default-all-perms-false", false);
 
+		separatePlayerSpellsPerWorld = config.getBoolean("general.separate-player-spells-per-world", false);
 		allowCycleToNoSpell = config.getBoolean("general.allow-cycle-to-no-spell", false);
 		onlyCycleToCastableSpells = config.getBoolean("general.only-cycle-to-castable-spells", true);
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);

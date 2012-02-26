@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,8 +35,16 @@ public class Spellbook {
 		this.player = player;
 		this.playerName = player.getName();
 		
+		load();
+	}
+	
+	public void load() {
+		load(player.getWorld());
+	}
+	
+	public void load(World playerWorld) {
 		// load spells from file
-		loadFromFile();
+		loadFromFile(playerWorld);
 		
 		// give all spells to ops
 		if (player.isOp() && MagicSpells.opsHaveAllSpells) {
@@ -58,6 +67,38 @@ public class Spellbook {
 			} else {
 				Collections.sort(spells);
 			}
+		}		
+	}
+	
+	private void loadFromFile(World playerWorld) {
+		try {
+			MagicSpells.debug("  Loading spells from player file...");
+			File file;
+			if (MagicSpells.separatePlayerSpellsPerWorld) {
+				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + playerWorld.getName() + File.separator + playerName.toLowerCase() + ".txt");
+			} else {
+				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + playerName.toLowerCase() + ".txt");
+			}
+			Scanner scanner = new Scanner(file);
+			while (scanner.hasNext()) {
+				String line = scanner.nextLine();
+				if (!line.equals("")) {
+					if (!line.contains(":")) {
+						Spell spell = MagicSpells.spells.get(line);
+						if (spell != null) {
+							addSpell(spell);
+						}
+					} else {
+						String[] data = line.split(":",2);
+						Spell spell = MagicSpells.spells.get(data[0]);
+						if (spell != null && data[1].matches("^-?[0-9:]+$")) {
+							addSpell(spell, new CastItem(data[1]));
+						}
+					}
+				}
+			}
+			scanner.close();
+		} catch (Exception e) {
 		}
 	}
 	
@@ -92,32 +133,6 @@ public class Spellbook {
 	
 	public boolean hasAdvancedPerm() {
 		return player.hasPermission("magicspells.advanced");
-	}
-	
-	private void loadFromFile() {
-		try {
-			MagicSpells.debug("  Loading spells from player file...");
-			Scanner scanner = new Scanner(new File(plugin.getDataFolder(), "spellbooks/" + playerName.toLowerCase() + ".txt"));
-			while (scanner.hasNext()) {
-				String line = scanner.nextLine();
-				if (!line.equals("")) {
-					if (!line.contains(":")) {
-						Spell spell = MagicSpells.spells.get(line);
-						if (spell != null) {
-							addSpell(spell);
-						}
-					} else {
-						String[] data = line.split(":",2);
-						Spell spell = MagicSpells.spells.get(data[0]);
-						if (spell != null && data[1].matches("^-?[0-9:]+$")) {
-							addSpell(spell, new CastItem(data[1]));
-						}
-					}
-				}
-			}
-			scanner.close();
-		} catch (Exception e) {
-		}
 	}
 	
 	public Spell getSpellByName(String spellName) {
@@ -286,9 +301,20 @@ public class Spellbook {
 		customBindings.clear();
 	}
 	
+	public void reload() {
+		removeAllSpells();
+		load();
+	}
+	
 	public void save() {
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(plugin.getDataFolder(), "spellbooks/" + playerName.toLowerCase() + ".txt"), false));
+			File file;
+			if (MagicSpells.separatePlayerSpellsPerWorld) {
+				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName() + playerName.toLowerCase() + ".txt");
+			} else {
+				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + playerName.toLowerCase() + ".txt");
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
 			for (Spell spell : allSpells) {
 				writer.append(spell.getInternalName());
 				if (customBindings.containsKey(spell)) {

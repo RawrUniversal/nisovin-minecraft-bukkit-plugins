@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -120,6 +121,14 @@ public class MagicPlayerListener implements Listener {
 		}
 	}
 
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
+		if (MagicSpells.separatePlayerSpellsPerWorld) {
+			MagicSpells.debug("Player '" + event.getPlayer().getName() + "' changed from world '" + event.getFrom().getName() + "' to '" + event.getPlayer().getWorld().getName() + "', reloading spells");
+			MagicSpells.getSpellbook(event.getPlayer()).reload();
+		}
+	}
+	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerAnimation(PlayerAnimationEvent event) {		
 		if (event.isCancelled() || !MagicSpells.castOnAnimate) return;
