@@ -46,6 +46,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected HashMap<Spell, Integer> sharedCooldowns;
 	protected boolean ignoreGlobalCooldown;
 	
+	protected List<String> prerequisites;
+	protected List<String> replaces;
+	
 	protected String strCost;
 	protected String strCastSelf;
 	protected String strCastOthers;
@@ -147,6 +150,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		if (cooldown > 0) {
 			lastCast = new HashMap<String, Long>();
 		}
+
+		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
+		this.replaces = config.getStringList(section + "." + spellName + ".replaces", null);
 		
 		this.strCost = config.getString(section + "." + spellName + ".str-cost", null);
 		this.strCastSelf = config.getString(section + "." + spellName + ".str-cast-self", null);

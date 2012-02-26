@@ -124,6 +124,14 @@ public class Spellbook {
 	}
 	
 	public boolean canLearn(Spell spell) {
+		if (spell.prerequisites != null) {
+			for (String spellName : spell.prerequisites) {
+				Spell sp = MagicSpells.getSpellByInternalName(spellName);
+				if (sp == null || !hasSpell(sp)) {
+					return false;
+				}
+			}
+		}
 		return player.hasPermission("magicspells.learn." + spell.getInternalName());
 	}
 	
@@ -268,6 +276,15 @@ public class Spellbook {
 				temp.add(spell);
 				itemSpells.put(item, temp);
 				activeSpells.put(item, -1);
+			}
+		}
+		// remove any spells that this spell replaces
+		if (spell.replaces != null) {
+			for (String spellName : spell.replaces) {
+				Spell sp = MagicSpells.getSpellByInternalName(spellName);
+				if (sp != null) {
+					removeSpell(sp);
+				}
 			}
 		}
 	}
