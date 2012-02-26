@@ -55,12 +55,12 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 				// fail: no target
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			} else {
 				boolean drained = drain(player, target, power);
 				if (!drained) {
 					sendMessage(player, strNoTarget);
-					return PostCastAction.ALREADY_HANDLED;
+					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 				}
 			}
 		}

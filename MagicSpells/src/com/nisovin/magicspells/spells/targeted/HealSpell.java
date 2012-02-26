@@ -46,8 +46,8 @@ public class HealSpell extends TargetedEntitySpell {
 				
 				return PostCastAction.NO_MESSAGES;
 			}
-			
-			return PostCastAction.ALREADY_HANDLED;
+
+			return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}

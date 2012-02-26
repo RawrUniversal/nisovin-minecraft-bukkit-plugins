@@ -34,7 +34,7 @@ public class CrippleSpell extends TargetedEntitySpell {
 				// fail
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			}
 			
 			target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Math.round(duration*power), strength), true);

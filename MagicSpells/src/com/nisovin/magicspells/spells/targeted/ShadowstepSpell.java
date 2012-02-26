@@ -39,13 +39,13 @@ public class ShadowstepSpell extends TargetedEntitySpell {
 			if (target == null) {
 				// fail
 				sendMessage(player, strNoTarget);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			}
 			
 			boolean done = shadowstep(player, target);
 			if (!done) {
 				sendMessage(player, strNoLandingSpot);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			}
 			
 		}

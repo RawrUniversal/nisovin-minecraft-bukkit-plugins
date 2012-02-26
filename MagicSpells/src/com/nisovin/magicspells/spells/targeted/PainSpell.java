@@ -37,13 +37,13 @@ public class PainSpell extends TargetedEntitySpell {
 				// fail -- no target
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			} else {
 				boolean done = causePain(player, target, power);
 				if (!done) {
 					sendMessage(player, strNoTarget);
 					fizzle(player);
-					return PostCastAction.ALREADY_HANDLED;
+					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 				}
 			}
 		}

@@ -61,7 +61,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 				// fail
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			}
 			
 			boolean disarmed = disarm(target);
@@ -74,7 +74,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 			} else {
 				// fail
 				sendMessage(player, strInvalidItem);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

@@ -19,13 +19,15 @@ import com.nisovin.magicspells.util.MagicConfig;
 public abstract class TargetedSpell extends InstantSpell {
 
 	protected int range;
+	protected boolean alwaysActivate;
 	protected boolean playFizzleSound;
 	protected String strCastTarget;
 
 	public TargetedSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		range = config.getInt("spells." + spellName + ".range", 20);
+		range = getConfigInt("range", 20);
+		alwaysActivate = getConfigBoolean("always-activate", false);
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
 		strCastTarget = getConfigString("str-cast-target", "");
 	}

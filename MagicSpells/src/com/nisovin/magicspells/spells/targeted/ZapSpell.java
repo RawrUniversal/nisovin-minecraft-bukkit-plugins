@@ -68,7 +68,7 @@ public class ZapSpell extends TargetedSpell {
 				if (disallowedBlockTypes.contains(target.getTypeId()) || (allowedBlockTypes.size() > 0 && !allowedBlockTypes.contains(target.getTypeId()))) {
 					sendMessage(player, strCantZap);
 					fizzle(player);
-					return PostCastAction.ALREADY_HANDLED;
+					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 				}
 				
 				// check for protection
@@ -79,7 +79,7 @@ public class ZapSpell extends TargetedSpell {
 						// a plugin cancelled the event
 						sendMessage(player, strCantZap);
 						fizzle(player);
-						return PostCastAction.ALREADY_HANDLED;
+						return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 					}
 				}
 				

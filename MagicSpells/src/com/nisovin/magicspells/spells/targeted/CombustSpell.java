@@ -45,13 +45,13 @@ public class CombustSpell extends TargetedEntitySpell {
 			if (target == null) {
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			} else {
 				boolean combusted = combust(player, target, power);
 				if (!combusted) {
 					sendMessage(player, strNoTarget);
 					fizzle(player);
-					return PostCastAction.ALREADY_HANDLED;
+					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 				}
 				// TODO: manually send messages with replacements
 			}

@@ -88,12 +88,12 @@ public class BlinkSpell extends TargetedLocationSpell {
 				} else {
 					sendMessage(player, strCantBlink);
 					fizzle(player);
-					return PostCastAction.ALREADY_HANDLED;
+					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 				}
 			} else {
 				sendMessage(player, strCantBlink);
 				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

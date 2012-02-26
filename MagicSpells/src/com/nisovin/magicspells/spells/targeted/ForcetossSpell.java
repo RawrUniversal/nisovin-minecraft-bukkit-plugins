@@ -40,7 +40,7 @@ public class ForcetossSpell extends TargetedEntitySpell {
 			if (target == null) {
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// do damage
@@ -52,7 +52,7 @@ public class ForcetossSpell extends TargetedEntitySpell {
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
 						fizzle(player);
-						return PostCastAction.ALREADY_HANDLED;
+						return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 					}
 					damage = event.getDamage();
 				}

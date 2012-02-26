@@ -30,11 +30,16 @@ public class VolleySpell extends TargetedLocationSpell {
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			
-			Block target = player.getTargetBlock(null, range>0?range:100);
+			Block target;
+			try {
+				target = player.getTargetBlock(null, range>0?range:100);
+			} catch (IllegalStateException e) {
+				target = null;
+			}
 			if (target == null || target.getType() == Material.AIR) {
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			} else {
 				volley(player, target.getLocation(), power);
 			}

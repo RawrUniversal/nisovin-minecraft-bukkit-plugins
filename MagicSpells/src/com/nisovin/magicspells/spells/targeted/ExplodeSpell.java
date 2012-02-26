@@ -48,13 +48,13 @@ public class ExplodeSpell extends TargetedLocationSpell {
 				// fail: no target
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			} else {
 				boolean exploded = explode(player, target.getLocation(), power);
 				if (!exploded && !ignoreCanceled) {
 					sendMessage(player, strNoTarget);
 					fizzle(player);
-					return PostCastAction.ALREADY_HANDLED;
+					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 				}
 			}
 		}

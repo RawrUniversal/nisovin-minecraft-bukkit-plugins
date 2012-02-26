@@ -63,54 +63,46 @@ public class FireballSpell extends TargetedSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block target = player.getTargetBlock(null, range);
-			if (target == null || target.getType() == Material.AIR) {
-				// fail -- no target
-				sendMessage(player, strNoTarget);
-				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
-			} else {				
-				// get a target if required
-				boolean selfTarget = false;
-				if (requireEntityTarget) {
-					LivingEntity entity = getTargetedEntity(player, range, targetPlayers, obeyLos);
-					if (entity == null) {
+			// get a target if required
+			boolean selfTarget = false;
+			if (requireEntityTarget) {
+				LivingEntity entity = getTargetedEntity(player, range, targetPlayers, obeyLos);
+				if (entity == null) {
+					sendMessage(player, strNoTarget);
+					fizzle(player);
+					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+				} else if (entity instanceof Player && checkPlugins) {
+					// run a pvp damage check
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, 1);
+					Bukkit.getServer().getPluginManager().callEvent(event);
+					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
 						fizzle(player);
-						return PostCastAction.ALREADY_HANDLED;
-					} else if (entity instanceof Player && checkPlugins) {
-						// run a pvp damage check
-						EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, 1);
-						Bukkit.getServer().getPluginManager().callEvent(event);
-						if (event.isCancelled()) {
-							sendMessage(player, strNoTarget);
-							fizzle(player);
-							return PostCastAction.ALREADY_HANDLED;
-						}
-					}
-					if (entity.equals(player)) {
-						selfTarget = true;
+						return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 					}
 				}
-				
-				// create fireball
-				Location loc;
-				if (!selfTarget) {
-					loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw(), player.getLocation().getPitch());
-				} else {
-					loc = player.getLocation().toVector().add(player.getLocation().getDirection().setY(0).multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw()+180, 0);
+				if (entity.equals(player)) {
+					selfTarget = true;
 				}
-				Fireball fireball;
-				if (smallFireball) {
-					fireball = player.getWorld().spawn(loc, SmallFireball.class);
-					player.getWorld().playEffect(player.getLocation(), Effect.BLAZE_SHOOT, 0);
-				} else {
-					fireball = player.getWorld().spawn(loc, Fireball.class);
-					player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
-				}
-				fireball.setShooter(player);
-				fireballs.put(fireball,power);
 			}
+			
+			// create fireball
+			Location loc;
+			if (!selfTarget) {
+				loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw(), player.getLocation().getPitch());
+			} else {
+				loc = player.getLocation().toVector().add(player.getLocation().getDirection().setY(0).multiply(2)).toLocation(player.getWorld(), player.getLocation().getYaw()+180, 0);
+			}
+			Fireball fireball;
+			if (smallFireball) {
+				fireball = player.getWorld().spawn(loc, SmallFireball.class);
+				player.getWorld().playEffect(player.getLocation(), Effect.BLAZE_SHOOT, 0);
+			} else {
+				fireball = player.getWorld().spawn(loc, Fireball.class);
+				player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
+			}
+			fireball.setShooter(player);
+			fireballs.put(fireball,power);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
