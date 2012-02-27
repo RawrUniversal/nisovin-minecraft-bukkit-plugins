@@ -50,13 +50,13 @@ public class MaterializeSpell extends TargetedLocationSpell {
 				if (!done) {
 					sendMessage(player, strFailed);
 					fizzle(player);
-					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 				}
 			} else {
 				// fail no target
 				sendMessage(player, strNoTarget);
 				fizzle(player);
-				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

@@ -56,7 +56,7 @@ public class LightningSpell extends TargetedLocationSpell {
 				} else {
 					sendMessage(player, strNoTarget);
 					fizzle(player);
-					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 				}
 			} else {
 				target = player.getTargetBlock(null, range>0?range:500);
@@ -69,7 +69,7 @@ public class LightningSpell extends TargetedLocationSpell {
 				playGraphicalEffects(player, target.getLocation());
 			} else {
 				sendMessage(player, strCastFail);
-				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

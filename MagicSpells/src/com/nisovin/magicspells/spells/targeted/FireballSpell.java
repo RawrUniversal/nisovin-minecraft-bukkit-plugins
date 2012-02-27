@@ -70,7 +70,7 @@ public class FireballSpell extends TargetedSpell {
 				if (entity == null) {
 					sendMessage(player, strNoTarget);
 					fizzle(player);
-					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 				} else if (entity instanceof Player && checkPlugins) {
 					// run a pvp damage check
 					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, 1);
@@ -78,7 +78,7 @@ public class FireballSpell extends TargetedSpell {
 					if (event.isCancelled()) {
 						sendMessage(player, strNoTarget);
 						fizzle(player);
-						return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+						return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 					}
 				}
 				if (entity.equals(player)) {

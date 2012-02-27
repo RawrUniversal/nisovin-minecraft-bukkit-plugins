@@ -45,7 +45,7 @@ public class BuildSpell extends TargetedSpell {
 				// fail
 				sendMessage(player, strInvalidBlock);
 				fizzle(player);
-				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 			}
 			
 			// get target
@@ -54,7 +54,7 @@ public class BuildSpell extends TargetedSpell {
 				// fail
 				sendMessage(player, strCantBuild);
 				fizzle(player);
-				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 			} else {
 				// check plugins
 				Block b = lastBlocks.get(0);
@@ -67,7 +67,7 @@ public class BuildSpell extends TargetedSpell {
 						blockState.update(true);
 						sendMessage(player, strCantBuild);
 						fizzle(player);
-						return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+						return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 					}
 				}
 				playGraphicalEffects(2, b.getLocation(), item.getTypeId()+"");
