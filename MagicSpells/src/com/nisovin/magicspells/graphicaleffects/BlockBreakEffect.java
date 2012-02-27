@@ -4,6 +4,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 
 public class BlockBreakEffect extends GraphicalEffect {
+	
 	@Override
 	public void showEffect(Location location, String param) {
 		int id = 0;

@@ -39,19 +39,20 @@ public class LightningSpell extends TargetedLocationSpell {
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block target = null;
+			LivingEntity entityTarget = null;
 			if (requireEntityTarget) {
-				LivingEntity e = getTargetedEntity(player, range>0?range:100, targetPlayers, obeyLos);
-				if (e != null && e instanceof Player && checkPlugins) {
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, e, DamageCause.ENTITY_ATTACK, 0);
+				entityTarget = getTargetedEntity(player, range>0?range:100, targetPlayers, obeyLos);
+				if (entityTarget != null && entityTarget instanceof Player && checkPlugins) {
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entityTarget, DamageCause.ENTITY_ATTACK, 0);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
-						e = null;
+						entityTarget = null;
 					}					
 				}
-				if (e != null) {
-					target = e.getLocation().getBlock();
+				if (entityTarget != null) {
+					target = entityTarget.getLocation().getBlock();
 					if (additionalDamage > 0) {
-						e.damage(Math.round(additionalDamage*power), player);
+						entityTarget.damage(Math.round(additionalDamage*power), player);
 					}
 				} else {
 					sendMessage(player, strNoTarget);
@@ -67,6 +68,10 @@ public class LightningSpell extends TargetedLocationSpell {
 			if (target != null) {
 				lightning(target.getLocation());
 				playGraphicalEffects(player, target.getLocation());
+				if (entityTarget != null) {
+					sendMessages(player, entityTarget);
+					return PostCastAction.NO_MESSAGES;
+				}
 			} else {
 				sendMessage(player, strCastFail);
 				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;

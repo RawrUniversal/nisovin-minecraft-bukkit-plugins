@@ -335,7 +335,7 @@ public class Spellbook {
 				if (!folder.exists()) {
 					folder.mkdir();
 				}
-				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName() + playerName.toLowerCase() + ".txt");
+				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName() + File.separator + playerName.toLowerCase() + ".txt");
 			} else {
 				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + playerName.toLowerCase() + ".txt");
 			}

@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -37,6 +38,8 @@ public class ProjectileSpell extends InstantSpell {
 	private int maxDistanceSquared;
 	private List<String> spellNames;
 	private List<TargetedSpell> spells;
+	private String strHitCaster;
+	private String strHitTarget;
 	
 	private HashMap<Projectile, ProjectileInfo> projectiles;
 	
@@ -51,6 +54,8 @@ public class ProjectileSpell extends InstantSpell {
 		maxDistanceSquared = getConfigInt("max-distance", 0);
 		maxDistanceSquared = maxDistanceSquared * maxDistanceSquared;
 		spellNames = getConfigStringList("spells", null);
+		strHitCaster = getConfigString("str-hit-caster", "");
+		strHitTarget = getConfigString("str-hit-target", "");
 		
 		projectiles = new HashMap<Projectile, ProjectileInfo>();
 	}
@@ -129,6 +134,22 @@ public class ProjectileSpell extends InstantSpell {
 				}
 			}
 			info.done = true;
+			
+			// send messages
+			String entityName;
+			if (target instanceof Player) {
+				entityName = ((Player)target).getDisplayName();
+			} else {
+				EntityType entityType = target.getType();
+				entityName = MagicSpells.entityNames.get(entityType);
+				if (entityName == null) {
+					entityName = entityType.getName();
+				}
+			}
+			sendMessage(info.player, strHitCaster, "%t", entityName);
+			if (target instanceof Player) {
+				sendMessage((Player)target, strHitTarget, "%a", info.player.getDisplayName());
+			}
 		}
 		
 		if (cancelDamage) {
@@ -149,6 +170,7 @@ public class ProjectileSpell extends InstantSpell {
 					}
 				}
 				info.done = true;
+				sendMessage(info.player, strHitCaster);
 			}
 			// remove it from world
 			if (removeProjectile) {
