@@ -20,6 +20,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
@@ -79,6 +80,7 @@ public class MagicSpells extends JavaPlugin {
 	protected static boolean showStrCostOnMissingReagents;
 	public static List<Integer> losTransparentBlocks;
 	public static List<Integer> ignoreCastItemDurability;
+	public static HashMap<EntityType, String> entityNames;
 	protected static int globalCooldown;
 	protected static boolean castOnAnimate;
 	
@@ -170,6 +172,17 @@ public class MagicSpells extends JavaPlugin {
 		ignoreCastItemDurability = config.getIntList("general.ignore-cast-item-durability", new ArrayList<Integer>());
 		globalCooldown = config.getInt("general.global-cooldown", 500);
 		castOnAnimate = config.getBoolean("general.cast-on-animate", true);
+		
+		entityNames = new HashMap<EntityType, String>();
+		if (config.contains("general.entity-names")) {
+			Set<String> keys = config.getSection("general.entity-names").getKeys(false);
+			for (String key : keys) {
+				EntityType entityType = EntityType.fromName(key);
+				if (entityType != null) {
+					entityNames.put(entityType, config.getString("general.entity-names." + key, entityType.getName().toLowerCase()));
+				}
+			}
+		}
 		
 		strCastUsage = config.getString("general.str-cast-usage", "Usage: /cast <spell>. Use /cast list to see a list of spells.");
 		strUnknownSpell = config.getString("general.str-unknown-spell", "You do not know a spell with that name.");

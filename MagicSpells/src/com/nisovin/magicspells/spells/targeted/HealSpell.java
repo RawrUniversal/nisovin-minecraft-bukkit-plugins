@@ -13,7 +13,6 @@ public class HealSpell extends TargetedEntitySpell {
 	private boolean obeyLos;
 	private String strNoTarget;
 	private String strMaxHealth;
-	private String strCastTarget;
 
 	public HealSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -23,7 +22,6 @@ public class HealSpell extends TargetedEntitySpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		strNoTarget = getConfigString("str-no-target", "No target to heal.");
 		strMaxHealth = getConfigString("str-max-health", "%t is already at max health.");
-		strCastTarget = getConfigString("str-cast-target", "%a healed you.");
 	}
 
 	@Override
@@ -38,9 +36,7 @@ public class HealSpell extends TargetedEntitySpell {
 			} else {
 				heal(player, target, power);
 				
-				sendMessage(player, formatMessage(strCastSelf, "%t", target.getDisplayName()));
-				sendMessage(target, formatMessage(strCastTarget, "%a", player.getDisplayName()));
-				sendMessageNear(player, formatMessage(strCastOthers, "%t", target.getDisplayName(), "%a", player.getDisplayName()));
+				sendMessages(player, target);
 				
 				return PostCastAction.NO_MESSAGES;
 			}

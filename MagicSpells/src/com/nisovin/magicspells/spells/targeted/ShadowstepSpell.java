@@ -43,6 +43,9 @@ public class ShadowstepSpell extends TargetedEntitySpell {
 			if (!done) {
 				sendMessage(player, strNoLandingSpot);
 				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+			} else {
+				sendMessages(player, target);
+				return PostCastAction.NO_MESSAGES;
 			}
 			
 		}

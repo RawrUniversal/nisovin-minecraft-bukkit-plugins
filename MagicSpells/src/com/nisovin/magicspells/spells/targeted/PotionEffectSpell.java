@@ -53,6 +53,8 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 			
 			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier));
 			playGraphicalEffects(player, target);
+			sendMessages(player, target);
+			return PostCastAction.NO_MESSAGES;
 		}		
 		return PostCastAction.HANDLE_NORMALLY;
 	}

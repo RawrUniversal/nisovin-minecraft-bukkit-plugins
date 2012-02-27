@@ -53,7 +53,8 @@ public class CombustSpell extends TargetedEntitySpell {
 					fizzle(player);
 					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 				}
-				// TODO: manually send messages with replacements
+				sendMessages(player, target);
+				return PostCastAction.NO_MESSAGES;
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

@@ -38,6 +38,8 @@ public class CrippleSpell extends TargetedEntitySpell {
 			}
 			playGraphicalEffects(player, target);
 			target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Math.round(duration*power), strength), true);
+			sendMessages(player, target);
+			return PostCastAction.NO_MESSAGES;
 		}
 		
 		return PostCastAction.HANDLE_NORMALLY;

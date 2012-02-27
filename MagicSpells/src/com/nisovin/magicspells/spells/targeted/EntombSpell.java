@@ -55,6 +55,8 @@ public class EntombSpell extends TargetedEntitySpell {
 				
 				createTomb(target, power);
 				playGraphicalEffects(player, target);
+				sendMessages(player, target);
+				return PostCastAction.NO_MESSAGES;
 			} else {
 				sendMessage(player, strNoTarget);
 				fizzle(player);

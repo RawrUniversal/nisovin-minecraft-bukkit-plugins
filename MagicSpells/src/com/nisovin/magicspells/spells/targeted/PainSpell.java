@@ -44,6 +44,9 @@ public class PainSpell extends TargetedEntitySpell {
 					sendMessage(player, strNoTarget);
 					fizzle(player);
 					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+				} else {
+					sendMessages(player, target);
+					return PostCastAction.NO_MESSAGES;
 				}
 			}
 		}

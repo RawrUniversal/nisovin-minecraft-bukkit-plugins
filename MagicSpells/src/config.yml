@@ -25,6 +25,32 @@ general:
     ignore-cast-item-durability: [ 268, 269, 270, 271, 283, 284, 285, 286, 290, 294, 314, 315, 316, 317 ]
     global-cooldown: 500
     cast-on-animate: true
+    
+    entity-names:
+        zombie: an ugly zombie
+        skeleton: a skeleton
+        spider: a spider
+        cavespider: a nasty little spider
+        creeper: a creepy creeper
+        slime: a slimy blob
+        wolf: a wolf
+        snowman: a snow golem
+        villager: an innocent villager
+        enderman: Mr. Enderman
+        silverfish: a slimy silverfish
+        ghast: a ghast
+        pigzombie: a pig zombie
+        blaze: a blaze
+        lavaslime: a magma slime
+        giant: the giant
+        enderdragon: the ender dragon
+        cow: a cow
+        sheep: a sheep
+        pig: a pig
+        chicken: a duck
+        mushroomcow: a deformed cow
+        squid: a squid
+    
     mana:
         enable-mana-bars: true
         max-mana: 100

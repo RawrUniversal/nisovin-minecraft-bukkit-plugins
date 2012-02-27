@@ -726,7 +726,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param message the message to send
 	 */
 	protected void sendMessageNear(Player player, String message) {
-		sendMessageNear(player, message, broadcastRange);
+		sendMessageNear(player, null, message, broadcastRange);
 	}
 	
 	/**
@@ -735,12 +735,12 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param message the message to send
 	 * @param range the broadcast range
 	 */
-	protected void sendMessageNear(Player player, String message, int range) {
+	protected void sendMessageNear(Player player, Player ignore, String message, int range) {
 		if (message != null && !message.equals("") && !player.hasPermission("magicspells.silent")) {
 			String [] msgs = message.replaceAll("&([0-9a-f])", "\u00A7$1").split("\n");
 			List<Entity> entities = player.getNearbyEntities(range*2, range*2, range*2);
 			for (Entity entity : entities) {
-				if (entity instanceof Player && entity != player) {
+				if (entity instanceof Player && entity != player && entity != ignore) {
 					for (String msg : msgs) {
 						if (!msg.equals("")) {
 							((Player)entity).sendMessage(MagicSpells.textColor + msg);

@@ -61,6 +61,9 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 				if (!drained) {
 					sendMessage(player, strNoTarget);
 					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+				} else {
+					sendMessages(player, target);
+					return PostCastAction.NO_MESSAGES;
 				}
 			}
 		}

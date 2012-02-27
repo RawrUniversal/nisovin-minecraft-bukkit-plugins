@@ -8,6 +8,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
@@ -34,6 +35,26 @@ public abstract class TargetedSpell extends InstantSpell {
 
 	protected void sendMessageToTarget(Player caster, Player target) {
 		sendMessage(target, strCastTarget, "%a", caster.getDisplayName());
+	}
+	
+	protected void sendMessages(Player caster, LivingEntity target) {
+		EntityType entityType = target.getType();
+		String entityName;
+		Player playerTarget = null;
+		if (target instanceof Player) {
+			playerTarget = (Player)target;
+			entityName = playerTarget.getDisplayName();
+		} else {
+			entityName = MagicSpells.entityNames.get(entityType);
+			if (entityName == null) {
+				entityName = entityType.getName();
+			}
+		}
+		sendMessage(caster, strCastSelf, "%a", caster.getDisplayName(), "%t", entityName);
+		if (playerTarget != null) {
+			sendMessage(playerTarget, strCastTarget, "%a", caster.getDisplayName(), "%t", entityName);
+		}
+		sendMessageNear(caster, playerTarget, formatMessage(strCastOthers, "%a", caster.getDisplayName(), "%t", entityName), broadcastRange);
 	}
 	
 	/**

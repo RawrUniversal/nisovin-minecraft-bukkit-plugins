@@ -88,6 +88,9 @@ public class GeyserSpell extends TargetedEntitySpell {
 			// do geyser action + animation
 			geyser(target, power);
 			playGraphicalEffects(player, target);
+			
+			sendMessages(player, target);
+			return PostCastAction.NO_MESSAGES;
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}

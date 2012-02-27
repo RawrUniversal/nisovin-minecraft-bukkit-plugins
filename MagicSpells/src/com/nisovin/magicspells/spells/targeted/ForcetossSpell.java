@@ -61,6 +61,9 @@ public class ForcetossSpell extends TargetedEntitySpell {
 			
 			// throw target
 			toss(player, target, power);
+			
+			sendMessages(player, target);
+			return PostCastAction.NO_MESSAGES;
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}

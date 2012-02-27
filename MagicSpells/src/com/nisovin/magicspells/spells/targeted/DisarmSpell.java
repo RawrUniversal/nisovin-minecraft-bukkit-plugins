@@ -27,7 +27,6 @@ public class DisarmSpell extends TargetedEntitySpell {
 	
 	private String strNoTarget;
 	private String strInvalidItem;
-	private String strCastTarget;
 	
 	private HashMap<Item, Player> disarmedItems;
 	
@@ -44,7 +43,6 @@ public class DisarmSpell extends TargetedEntitySpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		strNoTarget = getConfigString("str-no-target", "No target found.");
 		strInvalidItem = getConfigString("str-invalid-item", "Your target could not be disarmed.");
-		strCastTarget = getConfigString("str-cast-target", "%a has disarmed you.");
 		
 		if (dontDrop) preventTheft = false;
 		if (preventTheft) {
@@ -68,9 +66,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 			if (disarmed) {
 				playGraphicalEffects(player, target);
 				// send messages
-				sendMessage(player, strCastSelf, "%t", target.getDisplayName());
-				sendMessage(target, strCastTarget, "%a", player.getDisplayName());
-				sendMessageNear(player, formatMessage(strCastOthers, "%t", target.getDisplayName(), "%a", player.getDisplayName()));
+				sendMessages(player, target);
 				return PostCastAction.NO_MESSAGES;
 			} else {
 				// fail
