@@ -44,6 +44,8 @@ public class TelekinesisSpell extends TargetedLocationSpell {
 					sendMessage(player, strNoTarget);
 					fizzle(player);
 					return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
+				} else {
+					playGraphicalEffects(player, target.getLocation());
 				}
 			}
 		}
@@ -64,6 +66,10 @@ public class TelekinesisSpell extends TargetedLocationSpell {
 
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
-		return activate(target.getBlock());
+		boolean activated = activate(target.getBlock());
+		if (activated) {
+			playGraphicalEffects(caster, target);
+		}
+		return activated;
 	}
 }

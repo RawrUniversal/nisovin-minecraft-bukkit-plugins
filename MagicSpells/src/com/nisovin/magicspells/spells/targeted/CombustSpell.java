@@ -71,6 +71,7 @@ public class CombustSpell extends TargetedEntitySpell {
 		int duration = Math.round(fireTicks*power);
 		combusting.put(target.getEntityId(), new CombustData(power));
 		target.setFireTicks(duration);
+		playGraphicalEffects(player, target);
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 			public void run() {
 				CombustData data = combusting.get(target.getEntityId());

@@ -29,6 +29,7 @@ public class PrayerSpell extends InstantSpell {
 					health = 20;
 				}
 				player.setHealth(health);
+				playGraphicalEffects(1, player);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

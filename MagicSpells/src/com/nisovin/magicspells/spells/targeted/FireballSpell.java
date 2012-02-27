@@ -103,6 +103,8 @@ public class FireballSpell extends TargetedSpell {
 			}
 			fireball.setShooter(player);
 			fireballs.put(fireball,power);
+			
+			playGraphicalEffects(1, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -116,6 +118,7 @@ public class FireballSpell extends TargetedSpell {
 		if (event.getEntity() instanceof Fireball) {
 			Fireball fireball = (Fireball)event.getEntity();
 			if (fireballs.containsKey(fireball)) {
+				playGraphicalEffects(2, fireball.getLocation());
 				if (noExplosion) {
 					event.setCancelled(true);
 					Location loc = fireball.getLocation();

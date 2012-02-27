@@ -1,11 +1,13 @@
 package com.nisovin.magicspells;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -15,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.graphicaleffects.GraphicalEffect;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
@@ -34,6 +37,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected ItemStack spellIcon;
 	protected int broadcastRange;
 	protected int experience;
+	protected HashMap<Integer, List<String>> graphicalEffects;
 	
 	protected ItemStack[] cost;
 	protected int healthCost = 0;
@@ -75,6 +79,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			aliases = temp.toArray(aliases);
 		}
 		
+		// general options
 		this.description = config.getString(section + "." + spellName + ".description", "");
 		this.castItem = new CastItem(config.getString(section + "." + spellName + ".cast-item", "280"));
 		this.bindable = config.getBoolean(section + "." + spellName + ".bindable", true);
@@ -97,6 +102,33 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.broadcastRange = config.getInt(section + "." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 		this.experience = config.getInt(section + "." + spellName + ".experience", 0);
 		
+		// graphical effects
+		List<String> effects = config.getStringList(section + "." + spellName + ".effects", null);
+		if (effects != null) {
+			this.graphicalEffects = new HashMap<Integer, List<String>>();
+			List<String> e;
+			for (String eff : effects) {
+				String[] data = eff.split(" ", 2);
+				int pos = 0;
+				if (data[0].equals("1") || data[0].equalsIgnoreCase("pos1") || data[0].equalsIgnoreCase("position1") || data[0].equalsIgnoreCase("caster") || data[0].equalsIgnoreCase("actor")) {
+					pos = 1;
+				} else if (data[0].equals("2") || data[0].equalsIgnoreCase("pos2") || data[0].equalsIgnoreCase("position2") || data[0].equalsIgnoreCase("target")) {
+					pos = 2;
+				} else if (data[0].equals("3") || data[0].equalsIgnoreCase("line") || data[0].equalsIgnoreCase("trail")) {
+					pos = 3;
+				}
+				if (pos != 0) {
+					e = graphicalEffects.get(pos);
+					if (e == null) {
+						e = new ArrayList<String>();
+						graphicalEffects.put(pos, e);
+					}
+					e.add(data[1]);
+				}
+			}
+		}
+		
+		// cost
 		List<String> costList = config.getStringList(section + "." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
 			cost = new ItemStack [costList.size()];
@@ -133,6 +165,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			cost = null;
 		}
 		
+		// cooldowns
 		this.cooldown = config.getInt(section + "." + spellName + ".cooldown", 0);
 		List<String> cooldowns = config.getStringList(section + "." + spellName + ".shared-cooldowns", null);
 		if (cooldowns != null) {
@@ -151,9 +184,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			lastCast = new HashMap<String, Long>();
 		}
 
+		// hierarchy options
 		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
 		this.replaces = config.getStringList(section + "." + spellName + ".replaces", null);
 		
+		// strings
 		this.strCost = config.getString(section + "." + spellName + ".str-cost", null);
 		this.strCastSelf = config.getString(section + "." + spellName + ".str-cast-self", null);
 		this.strCastOthers = config.getString(section + "." + spellName + ".str-cast-others", null);
@@ -543,6 +578,101 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			}
 		}
 		inventory.setContents(items);
+	}
+	
+	protected void playGraphicalEffects(Entity pos1, Entity pos2) {
+		playGraphicalEffects(1, pos1);
+		playGraphicalEffects(2, pos2);
+		playGraphicalEffectsTrail(pos1.getLocation(), pos2.getLocation(), null);
+	}
+	
+	protected void playGraphicalEffects(Entity pos1, Location pos2) {
+		playGraphicalEffects(1, pos1);
+		playGraphicalEffects(2, pos2);
+		playGraphicalEffectsTrail(pos1.getLocation(), pos2, null);
+	}
+	
+	protected void playGraphicalEffects(Location pos1, Entity pos2) {
+		playGraphicalEffects(1, pos1);
+		playGraphicalEffects(2, pos2);
+		playGraphicalEffectsTrail(pos1, pos2.getLocation(), null);
+	}
+	
+	protected void playGraphicalEffects(Location pos1, Location pos2) {
+		playGraphicalEffects(1, pos1);
+		playGraphicalEffects(2, pos2);
+		playGraphicalEffectsTrail(pos1, pos2, null);
+	}
+	
+	protected void playGraphicalEffects(int pos, Entity entity) {
+		playGraphicalEffects(pos, entity, null);
+	}
+	
+	protected void playGraphicalEffects(int pos, Entity entity, String param) {
+		if (graphicalEffects != null) {
+			List<String> effects = graphicalEffects.get(pos);
+			if (effects != null) {
+				for (String eff : effects) {
+					GraphicalEffect effect = null;
+					if (eff.contains(" ")) {
+						String[] data = eff.split(" ", 2);
+						effect = GraphicalEffect.getEffectByName(data[0]);
+						param = data[1];
+					} else {
+						effect = GraphicalEffect.getEffectByName(eff);
+					}
+					if (effect != null) {
+						effect.showEffect(entity, param);
+					}
+				}
+			}
+		}
+	}
+	
+	protected void playGraphicalEffects(int pos, Location location) {
+		playGraphicalEffects(pos, location, null);
+	}
+	
+	protected void playGraphicalEffects(int pos, Location location, String param) {
+		if (graphicalEffects != null) {
+			List<String> effects = graphicalEffects.get(pos);
+			if (effects != null) {
+				for (String eff : effects) {
+					GraphicalEffect effect = null;
+					if (eff.contains(" ")) {
+						String[] data = eff.split(" ", 2);
+						effect = GraphicalEffect.getEffectByName(data[0]);
+						param = data[1];
+					} else {
+						effect = GraphicalEffect.getEffectByName(eff);
+					}
+					if (effect != null) {
+						effect.showEffect(location, param);
+					}
+				}
+			}
+		}
+	}
+	
+	protected void playGraphicalEffectsTrail(Location loc1, Location loc2, String param) {
+		if (graphicalEffects != null) {
+			List<String> effects = graphicalEffects.get(3);
+			if (effects != null) {
+				for (String eff : effects) {
+					GraphicalEffect effect = null;
+					if (eff.contains(" ")) {
+						String[] data = eff.split(" ", 2);
+						effect = GraphicalEffect.getEffectByName(data[0]);
+						param = data[1];
+					} else {
+						effect = GraphicalEffect.getEffectByName(eff);
+					}
+					if (effect != null) {
+						effect.showEffect(loc1, loc2, param);
+					}
+				}
+			}
+		}
 	}
 	
 	protected void registerEvents() {

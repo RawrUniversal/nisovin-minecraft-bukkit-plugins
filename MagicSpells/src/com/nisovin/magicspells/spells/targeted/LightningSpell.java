@@ -66,6 +66,7 @@ public class LightningSpell extends TargetedLocationSpell {
 			}
 			if (target != null) {
 				lightning(target.getLocation());
+				playGraphicalEffects(player, target.getLocation());
 			} else {
 				sendMessage(player, strCastFail);
 				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
@@ -85,6 +86,7 @@ public class LightningSpell extends TargetedLocationSpell {
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		lightning(target);
+		playGraphicalEffects(caster, target);
 		return true;
 	}
 }

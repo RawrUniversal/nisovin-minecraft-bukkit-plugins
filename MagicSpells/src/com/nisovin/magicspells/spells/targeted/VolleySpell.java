@@ -56,7 +56,9 @@ public class VolleySpell extends TargetedLocationSpell {
 		for (int i = 0; i < arrows; i++) {
 			Arrow a = player.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
 			a.setShooter(player);
-		}		
+		}
+		
+		playGraphicalEffects(player, target);
 	}
 
 	@Override

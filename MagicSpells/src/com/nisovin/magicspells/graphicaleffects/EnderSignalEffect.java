@@ -1,0 +1,13 @@
+package com.nisovin.magicspells.graphicaleffects;
+
+import org.bukkit.Effect;
+import org.bukkit.Location;
+
+public class EnderSignalEffect extends GraphicalEffect {
+
+	@Override
+	public void showEffect(Location location, String param) {
+		location.getWorld().playEffect(location, Effect.ENDER_SIGNAL, 0);
+	}
+
+}

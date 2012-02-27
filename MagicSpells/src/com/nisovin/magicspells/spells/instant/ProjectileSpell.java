@@ -90,6 +90,7 @@ public class ProjectileSpell extends InstantSpell {
 					projectile.setVelocity(player.getLocation().getDirection().multiply(velocity));
 				}
 				projectiles.put(projectile, new ProjectileInfo(player, power));
+				playGraphicalEffects(1, projectile);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -119,8 +120,10 @@ public class ProjectileSpell extends InstantSpell {
 			for (TargetedSpell spell : spells) {
 				if (spell instanceof TargetedEntitySpell) {
 					((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
+					playGraphicalEffects(2, target);
 				} else if (spell instanceof TargetedLocationSpell) {
 					((TargetedLocationSpell)spell).castAtLocation(info.player, target.getLocation(), info.power);
+					playGraphicalEffects(2, target.getLocation());
 				}
 			}
 			info.done = true;
@@ -140,6 +143,7 @@ public class ProjectileSpell extends InstantSpell {
 				for (TargetedSpell spell : spells) {
 					if (spell instanceof TargetedLocationSpell) {
 						((TargetedLocationSpell)spell).castAtLocation(info.player, projectile.getLocation(), info.power);
+						playGraphicalEffects(2, projectile.getLocation());
 					}
 				}
 				info.done = true;

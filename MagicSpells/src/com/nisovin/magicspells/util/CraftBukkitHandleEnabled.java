@@ -6,6 +6,7 @@ import java.util.Set;
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.EntityCreature;
+import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.MobEffect;
 import net.minecraft.server.Packet103SetSlot;
@@ -44,6 +45,23 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 				dw.watch(8, dwReal.getInt(8));
 				Packet40EntityMetadata packet = new Packet40EntityMetadata(entity.getEntityId(), dw);
 				((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
+			}
+		}, duration);
+	}
+
+	@Override
+	public void addPotionGraphicalEffect(LivingEntity entity, int color, int duration) {
+		final EntityLiving el = ((CraftLivingEntity)entity).getHandle();
+		final DataWatcher dw = el.getDataWatcher();
+		dw.watch(8, Integer.valueOf(color));
+		
+		Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+			public void run() {
+				int c = 0;
+				if (!el.effects.isEmpty()) {
+					c = net.minecraft.server.PotionBrewer.a(el.effects.values());
+				}
+				dw.watch(8, Integer.valueOf(c));
 			}
 		}, duration);
 	}

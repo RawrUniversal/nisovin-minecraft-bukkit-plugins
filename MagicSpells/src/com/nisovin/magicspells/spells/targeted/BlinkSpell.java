@@ -17,7 +17,6 @@ public class BlinkSpell extends TargetedLocationSpell {
 	
 	private boolean passThroughCeiling;
 	private boolean smokeTrail;
-	private boolean portalAnimation;
 	private String strCantBlink = null;
 	
 	public BlinkSpell(MagicConfig config, String spellName) {
@@ -25,7 +24,6 @@ public class BlinkSpell extends TargetedLocationSpell {
 		
 		passThroughCeiling = getConfigBoolean("pass-through-ceiling", false);
 		smokeTrail = config.getBoolean("spells." + spellName + ".smoke-trail", true);
-		portalAnimation = getConfigBoolean("portal-animation", true);
 		strCantBlink = config.getString("spells." + spellName + ".str-cant-blink", "You can't blink there.");
 	}
 	
@@ -100,10 +98,7 @@ public class BlinkSpell extends TargetedLocationSpell {
 	}
 
 	private void teleport(Player player, Location location, HashSet<Location> smokeLocs) {
-		if (portalAnimation) {
-			location.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 0);
-			location.getWorld().playEffect(location, Effect.ENDER_SIGNAL, 0);
-		}
+		playGraphicalEffects(player.getLocation(), location);
 		player.teleport(location);
 		if (smokeTrail && smokeLocs != null) {
 			for (Location l : smokeLocs) {

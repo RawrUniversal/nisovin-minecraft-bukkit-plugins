@@ -148,7 +148,9 @@ spells:
         range: 25
         pass-through-ceiling: false
         smoke-trail: true
-        portal-animation: true
+        effects:
+            - pos1 ender
+            - pos2 ender
         cost:
             - 331 2
         str-cost: 2 redstone dust
@@ -164,7 +166,8 @@ spells:
         range: 25
         slot: 0
         consume-block: true
-        show-effect: true
+        effects:
+            - target blockbreak
         check-plugins: true
         allowed-types: 1,2,3,4,5,12,13,17,20,22,24,35,41,42,43,44,45,47,48,49,50,53,57,65,67,80,85,87,88,89,91,92
         cost:
@@ -514,7 +517,9 @@ spells:
         can-cast-with-item: false
         world: CURRENT
         coordinates: SPAWN
-        use-spell-effect: true
+        effects:
+            - pos1 ender
+            - pos2 ender
         cast-time: 0
         cost:
             - 331 1
@@ -602,7 +607,8 @@ spells:
         cast-item: 280
         heal-amount: 10
         cancel-if-full: true
-        show-spell-effect: true
+        effects:
+            - target potion FF0000 40
         obey-los: true
         cooldown: 0
         range: 12
@@ -975,7 +981,9 @@ spells:
         spell-class: ".targeted.ShadowstepSpell"
         name: shadowstep
         cast-item: 280
-        use-spell-effect: true
+        effects:
+            - caster spawner
+            - target spawner
         target-players: false
         obey-los: true
         range: 15
@@ -1175,6 +1183,8 @@ spells:
         disallowed-block-types: 0,7
         drop-block: false
         drop-normal: true
+        effects:
+            - target breakblock
         check-plugins: true
         range: 15
         cost:

@@ -3,7 +3,6 @@ package com.nisovin.magicspells.spells.targeted;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -18,7 +17,6 @@ public class BuildSpell extends TargetedSpell {
 	
 	private int slot;
 	private boolean consumeBlock;
-	private boolean showEffect;
 	private int[] allowedTypes;
 	private boolean checkPlugins;
 	private String strInvalidBlock;
@@ -29,7 +27,6 @@ public class BuildSpell extends TargetedSpell {
 		
 		slot = config.getInt("spells." + spellName + ".slot", 0);
 		consumeBlock = config.getBoolean("spells." + spellName + ".consume-block", true);
-		showEffect = config.getBoolean("spells." + spellName + ".show-effect", true);
 		String[] allowed = config.getString("spells." + spellName + ".allowed-types", "1,2,3,4,5,12,13,17,20,22,24,35,41,42,43,44,45,47,48,49,50,53,57,65,67,80,85,87,88,89,91,92").split(",");
 		allowedTypes = new int[allowed.length];
 		for (int i = 0; i < allowed.length; i++) {
@@ -73,9 +70,7 @@ public class BuildSpell extends TargetedSpell {
 						return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 					}
 				}
-				if (showEffect) {
-					b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, item.getTypeId());
-				}
+				playGraphicalEffects(2, b.getLocation(), item.getTypeId()+"");
 				if (consumeBlock) {
 					int amt = item.getAmount()-1;
 					if (amt > 0) {

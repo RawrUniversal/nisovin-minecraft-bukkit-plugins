@@ -52,6 +52,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 			}
 			
 			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier));
+			playGraphicalEffects(player, target);
 		}		
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -64,6 +65,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 			return false;
 		} else {
 			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier));
+			playGraphicalEffects(caster, target);
 			return true;
 		}
 	}

@@ -21,14 +21,21 @@ public class PurgeSpell extends InstantSpell {
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		// TODO: make this spell more customizable, also don't charge if there was nothing nearby
 		if (state == SpellCastState.NORMAL) {
 			int range = Math.round(this.radius*power);
 			List<Entity> entities = player.getNearbyEntities(range, range, range);
+			boolean killed = false;
 			for (Entity entity : entities) {
 				if (entity instanceof LivingEntity && !(entity instanceof Player)) {
 					((LivingEntity)entity).setHealth(0);
+					killed = true;
+					playGraphicalEffects(2, entity);
 				}
+			}
+			if (killed) {
+				playGraphicalEffects(1, player);
+			} else {
+				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

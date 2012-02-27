@@ -133,6 +133,8 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 			player.setTotalExperience(exp);
 		}
 		
+		playGraphicalEffects(player, target);
+		
 		// show animation
 		if (showSpellEffect) {
 			new DrainlifeAnimation(player, target);

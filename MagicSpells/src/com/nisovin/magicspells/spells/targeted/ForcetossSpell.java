@@ -72,6 +72,7 @@ public class ForcetossSpell extends TargetedEntitySpell {
 				.multiply(hForce*power)
 				.setY(vForce*power);
 		target.setVelocity(v);
+		playGraphicalEffects(player, target);
 	}
 
 	@Override

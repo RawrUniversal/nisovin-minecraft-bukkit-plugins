@@ -79,6 +79,9 @@ public class MaterializeSpell extends TargetedLocationSpell {
 			block.setTypeIdAndData(type, data, applyPhysics);
 		}
 		
+		playGraphicalEffects(1, player);
+		playGraphicalEffects(2, block.getLocation(), block.getTypeId() + "");
+		
 		return true;
 	}
 	

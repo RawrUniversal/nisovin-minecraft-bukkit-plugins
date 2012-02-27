@@ -18,6 +18,10 @@ public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	}
 
 	@Override
+	public void addPotionGraphicalEffect(LivingEntity entity, int color, int duration) {
+	}
+
+	@Override
 	public void entityPathTo(LivingEntity entity, LivingEntity target) {
 	}
 

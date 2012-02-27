@@ -1,6 +1,5 @@
 package com.nisovin.magicspells.spells.targeted;
 
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -14,7 +13,6 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class ShadowstepSpell extends TargetedEntitySpell {
 
-	private boolean useSpellEffect;
 	private boolean targetPlayers;
 	private boolean obeyLos;
 	private String strNoTarget;
@@ -23,7 +21,6 @@ public class ShadowstepSpell extends TargetedEntitySpell {
 	public ShadowstepSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		useSpellEffect = getConfigBoolean("use-spell-effect", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		obeyLos = getConfigBoolean("obey-los", true);
 		strNoTarget = getConfigString("str-no-target", "No target found.");
@@ -68,10 +65,7 @@ public class ShadowstepSpell extends TargetedEntitySpell {
 		}
 		
 		// ok
-		if (useSpellEffect) {
-			player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 0);
-			player.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 0);
-		}
+		playGraphicalEffects(player.getLocation(), loc);
 		player.teleport(loc);
 		
 		return true;

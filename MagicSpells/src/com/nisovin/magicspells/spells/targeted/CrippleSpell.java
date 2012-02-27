@@ -36,7 +36,7 @@ public class CrippleSpell extends TargetedEntitySpell {
 				fizzle(player);
 				return alwaysActivate ? PostCastAction.HANDLE_NORMALLY : PostCastAction.ALREADY_HANDLED;
 			}
-			
+			playGraphicalEffects(player, target);
 			target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Math.round(duration*power), strength), true);
 		}
 		
@@ -48,6 +48,7 @@ public class CrippleSpell extends TargetedEntitySpell {
 		if (target instanceof Player && !targetPlayers) {
 			return false;
 		} else {
+			playGraphicalEffects(caster, target);
 			target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Math.round(duration*power), strength), true);
 			return true;
 		}

@@ -79,6 +79,8 @@ public class RecallSpell extends InstantSpell {
 						Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Teleporter(player, mark), castTime);
 					} else {
 						// go instantly
+						playGraphicalEffects(1, player);
+						playGraphicalEffects(2, mark);
 						player.teleport(mark);
 					}
 				}
@@ -118,6 +120,8 @@ public class RecallSpell extends InstantSpell {
 				casting.remove(player.getName());
 				Location loc = player.getLocation();
 				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
+					playGraphicalEffects(1, player);
+					playGraphicalEffects(2, mark);
 					player.teleport(mark);
 					sendMessage(player, strCastDone);
 				} else {

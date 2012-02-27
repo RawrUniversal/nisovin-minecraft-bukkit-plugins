@@ -87,6 +87,7 @@ public class GeyserSpell extends TargetedEntitySpell {
 			
 			// do geyser action + animation
 			geyser(target, power);
+			playGraphicalEffects(player, target);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -116,6 +117,7 @@ public class GeyserSpell extends TargetedEntitySpell {
 			return false;
 		} else {
 			geyser(target, power);
+			playGraphicalEffects(caster, target);
 			return true;
 		}
 	}

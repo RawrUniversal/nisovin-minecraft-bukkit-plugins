@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -93,7 +92,8 @@ public class ZapSpell extends TargetedSpell {
 				}
 				
 				// show animation
-				player.getWorld().playEffect(target.getLocation(), Effect.STEP_SOUND, target.getTypeId());
+				playGraphicalEffects(1, player);
+				playGraphicalEffects(2, target.getLocation(), target.getTypeId() + "");
 				
 				// remove block
 				target.setType(Material.AIR);

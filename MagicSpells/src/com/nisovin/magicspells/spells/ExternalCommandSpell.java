@@ -97,6 +97,13 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 				target.performCommand(comm);
 			}
 		}
+		// effects
+		if (target != null) {
+			playGraphicalEffects(player, target);
+		} else {
+			playGraphicalEffects(1, player);
+		}
+		// add delayed command
 		if (commandToExecuteLater != null && commandToExecuteLater.size() > 0 && !commandToExecuteLater.get(0).isEmpty()) {
 			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new DelayedCommand(player, target), commandDelay);
 		}

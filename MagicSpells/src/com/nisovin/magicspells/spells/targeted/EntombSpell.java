@@ -54,6 +54,7 @@ public class EntombSpell extends TargetedEntitySpell {
 				target.teleport(loc);
 				
 				createTomb(target, power);
+				playGraphicalEffects(player, target);
 			} else {
 				sendMessage(player, strNoTarget);
 				fizzle(player);
@@ -132,6 +133,7 @@ public class EntombSpell extends TargetedEntitySpell {
 			return false;
 		} else {
 			createTomb(target, power);
+			playGraphicalEffects(caster, target);
 			return true;
 		}
 	}

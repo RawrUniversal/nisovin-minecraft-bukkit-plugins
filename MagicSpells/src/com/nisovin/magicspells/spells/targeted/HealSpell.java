@@ -10,7 +10,6 @@ public class HealSpell extends TargetedEntitySpell {
 	
 	private int healAmount;
 	private boolean cancelIfFull;
-	private boolean showSpellEffect;
 	private boolean obeyLos;
 	private String strNoTarget;
 	private String strMaxHealth;
@@ -21,7 +20,6 @@ public class HealSpell extends TargetedEntitySpell {
 		
 		healAmount = getConfigInt("heal-amount", 10);
 		cancelIfFull = getConfigBoolean("cancel-if-full", true);
-		showSpellEffect = getConfigBoolean("show-spell-effect", true);
 		obeyLos = getConfigBoolean("obey-los", true);
 		strNoTarget = getConfigString("str-no-target", "No target to heal.");
 		strMaxHealth = getConfigString("str-max-health", "%t is already at max health.");
@@ -58,9 +56,8 @@ public class HealSpell extends TargetedEntitySpell {
 		if (health > 20) health = 20;
 		target.setHealth(health);
 		
-		if (showSpellEffect) {
-			playPotionEffect(player, target, 0xFF0000, 40);
-		}
+		playGraphicalEffects(1, player);
+		playGraphicalEffects(2, target, "FF0000 40");
 	}
 
 	@Override

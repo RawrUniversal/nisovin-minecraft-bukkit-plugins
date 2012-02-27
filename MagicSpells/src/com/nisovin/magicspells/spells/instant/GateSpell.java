@@ -3,7 +3,6 @@ package com.nisovin.magicspells.spells.instant;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -22,7 +21,6 @@ public class GateSpell extends InstantSpell {
 	
 	private String world;
 	private String coords;
-	private boolean useSpellEffect;
 	private int castTime;
 	private String strGateFailed;
 	private String strCastDone;
@@ -35,7 +33,6 @@ public class GateSpell extends InstantSpell {
 		
 		world = config.getString("spells." + spellName + ".world", "CURRENT");
 		coords = config.getString("spells." + spellName + ".coordinates", "SPAWN");
-		useSpellEffect = config.getBoolean("spells." + spellName + ".use-spell-effect", true);
 		castTime = getConfigInt("cast-time", 0);
 		strGateFailed = config.getString("spells." + spellName + ".str-gate-failed", "Unable to teleport.");
 		strCastDone = getConfigString("str-cast-done", "");
@@ -100,10 +97,8 @@ public class GateSpell extends InstantSpell {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Teleporter(player, location), castTime);
 			} else {
 				// go instantly
-				if (useSpellEffect) {
-					b.getWorld().playEffect(b.getLocation(), Effect.ENDER_SIGNAL, 0);
-					player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 0);
-				}
+				playGraphicalEffects(1, player);
+				playGraphicalEffects(2, b.getLocation());
 				player.teleport(location);
 			}
 		}
@@ -141,10 +136,8 @@ public class GateSpell extends InstantSpell {
 				casting.remove(player.getName());
 				Location loc = player.getLocation();
 				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
-					if (useSpellEffect) {
-						target.getWorld().playEffect(target, Effect.ENDER_SIGNAL, 0);
-						player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 0);
-					}
+					playGraphicalEffects(1, player);
+					playGraphicalEffects(2, target);
 					player.teleport(target);
 					sendMessage(player, strCastDone);
 				} else {

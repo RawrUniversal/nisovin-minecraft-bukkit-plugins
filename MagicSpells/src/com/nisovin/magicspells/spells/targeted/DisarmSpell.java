@@ -66,6 +66,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 			
 			boolean disarmed = disarm(target);
 			if (disarmed) {
+				playGraphicalEffects(player, target);
 				// send messages
 				sendMessage(player, strCastSelf, "%t", target.getDisplayName());
 				sendMessage(target, strCastTarget, "%a", player.getDisplayName());
@@ -124,7 +125,11 @@ public class DisarmSpell extends TargetedEntitySpell {
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
 		if (target instanceof Player) {
-			return disarm((Player)target);
+			boolean disarmed =  disarm((Player)target);
+			if (disarmed) {
+				playGraphicalEffects(caster, target);
+			}
+			return disarmed;
 		} else {
 			return false;
 		}

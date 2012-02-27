@@ -14,6 +14,8 @@ public interface CraftBukkitHandle {
 
 	public void playPotionEffect(Player player, Entity entity, int color, int duration);
 	
+	public void addPotionGraphicalEffect(LivingEntity entity, int color, int duration);
+	
 	public void entityPathTo(LivingEntity entity, LivingEntity target);
 	
 	public void queueChunksForUpdate(Player player, Set<Chunk> chunks);

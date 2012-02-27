@@ -71,7 +71,11 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		}
 		currentTick = Bukkit.getWorlds().get(0).getFullTime();
 		currentPower = power;
-		return target.getWorld().createExplosion(target, explosionSize * power);
+		boolean ret = target.getWorld().createExplosion(target, explosionSize * power);
+		if (ret) {
+			playGraphicalEffects(player, target);
+		}
+		return ret;
 	}
 
 	@Override
