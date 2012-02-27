@@ -143,8 +143,8 @@ public class Spellbook {
 		return player.hasPermission("magicspells.teach." + spell.getInternalName());
 	}
 	
-	public boolean hasAdvancedPerm() {
-		return player.hasPermission("magicspells.advanced");
+	public boolean hasAdvancedPerm(Spell spell) {
+		return player.hasPermission("magicspells.advanced." + spell.getInternalName());
 	}
 	
 	public Spell getSpellByName(String spellName) {

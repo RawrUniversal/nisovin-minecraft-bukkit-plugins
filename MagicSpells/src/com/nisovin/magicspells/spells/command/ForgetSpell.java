@@ -52,7 +52,7 @@ public class ForgetSpell extends CommandSpell {
 			Player target = null;
 			if (args.length == 1 && allowSelfForget) {
 				target = player;
-			} else if (args.length == 2 && casterSpellbook.hasAdvancedPerm()) {
+			} else if (args.length == 2 && casterSpellbook.hasAdvancedPerm(this)) {
 				List<Player> players = MagicSpells.plugin.getServer().matchPlayer(args[0]);
 				if (players.size() != 1) {
 					// fail: no player match

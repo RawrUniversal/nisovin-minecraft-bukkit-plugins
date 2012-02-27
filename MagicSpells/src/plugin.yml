@@ -16,6 +16,3 @@ permissions:
     magicspells.silent:
         description: Cast spells without spell text messages
         default: false
-    magicspells.advanced:
-        description: Advanced spell functionality
-        default: op

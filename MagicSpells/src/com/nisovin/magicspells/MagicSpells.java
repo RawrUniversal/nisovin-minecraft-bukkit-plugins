@@ -242,6 +242,16 @@ public class MagicSpells extends JavaPlugin {
 		HashMap<String, Boolean> permCastChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permTeachChildren = new HashMap<String,Boolean>();
 		
+		// advanced perms
+		addPermission(pm, "advanced.list", PermissionDefault.FALSE);
+		addPermission(pm, "advanced.forget", PermissionDefault.FALSE);
+		addPermission(pm, "advanced.scroll", PermissionDefault.FALSE);
+		HashMap<String, Boolean> advancedPermChildren = new HashMap<String,Boolean>();
+		advancedPermChildren.put("magicspells.advanced.list", true);
+		advancedPermChildren.put("magicspells.advanced.forget", true);
+		advancedPermChildren.put("magicspells.advanced.scroll", true);
+		addPermission(pm, "advanced.*", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP, advancedPermChildren);
+		
 		// load spells
 		if (useNewLoading) {
 			loadSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
