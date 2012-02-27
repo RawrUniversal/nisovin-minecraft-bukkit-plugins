@@ -6,10 +6,13 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -73,19 +76,18 @@ public class ProjectileSpell extends InstantSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Projectile projectile = null;
+			Class<? extends Projectile> projectileClass = null;
 			if (projectileType.equalsIgnoreCase("arrow")) {
-				projectile = player.shootArrow();
+				projectileClass = Arrow.class;
 			} else if (projectileType.equalsIgnoreCase("snowball")) {
-				projectile = player.throwSnowball();
+				projectileClass = Snowball.class;
 			} else if (projectileType.equalsIgnoreCase("egg")) {
-				projectile = player.throwEgg();
+				projectileClass = Egg.class;
 			} else if (projectileType.equalsIgnoreCase("enderpearl")) {
-				Location loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(1.5)).toLocation(player.getWorld(), player.getLocation().getYaw(), player.getLocation().getPitch());
-				projectile = player.getWorld().spawn(loc, EnderPearl.class);
-				projectile.setVelocity(player.getLocation().getDirection());
+				projectileClass = EnderPearl.class;
 			}
-			if (projectile != null) {
+			if (projectileClass != null) {
+				Projectile projectile = player.launchProjectile(projectileClass);
 				if (velocity > 0) {
 					projectile.setVelocity(player.getLocation().getDirection().multiply(velocity));
 				}
