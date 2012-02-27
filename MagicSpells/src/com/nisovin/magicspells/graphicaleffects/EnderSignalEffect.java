@@ -6,7 +6,7 @@ import org.bukkit.Location;
 public class EnderSignalEffect extends GraphicalEffect {
 
 	@Override
-	public void showEffect(Location location, String param) {
+	public void playEffect(Location location, String param) {
 		location.getWorld().playEffect(location, Effect.ENDER_SIGNAL, 0);
 	}
 

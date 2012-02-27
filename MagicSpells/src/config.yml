@@ -651,7 +651,9 @@ spells:
         description: Makes you invisible to players and monsters.
         cast-item: 280
         cooldown: 60
-        show-spell-effect: true
+        effects:
+            - caster spawn
+            - disabled spawn
         toggle: true
         prevent-pickups: true
         cancel-on-attack: true

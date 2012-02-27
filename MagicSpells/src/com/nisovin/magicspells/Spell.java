@@ -116,6 +116,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					pos = 2;
 				} else if (data[0].equals("3") || data[0].equalsIgnoreCase("line") || data[0].equalsIgnoreCase("trail")) {
 					pos = 3;
+				} else if (data[0].equals("4") || data[0].equalsIgnoreCase("delayed") || data[0].equalsIgnoreCase("disabled")) {
+					pos = 4;
 				}
 				if (pos != 0) {
 					e = graphicalEffects.get(pos);
@@ -622,7 +624,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 						effect = GraphicalEffect.getEffectByName(eff);
 					}
 					if (effect != null) {
-						effect.showEffect(entity, param);
+						effect.playEffect(entity, param);
 					}
 				}
 			}
@@ -647,7 +649,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 						effect = GraphicalEffect.getEffectByName(eff);
 					}
 					if (effect != null) {
-						effect.showEffect(location, param);
+						effect.playEffect(location, param);
 					}
 				}
 			}
@@ -668,7 +670,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 						effect = GraphicalEffect.getEffectByName(eff);
 					}
 					if (effect != null) {
-						effect.showEffect(loc1, loc2, param);
+						effect.playEffect(loc1, loc2, param);
 					}
 				}
 			}

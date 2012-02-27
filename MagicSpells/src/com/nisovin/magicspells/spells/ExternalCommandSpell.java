@@ -183,7 +183,9 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 						target.performCommand(comm);
 					}
 				}
-			}			
+			}
+			// graphical effect
+			playGraphicalEffects(4, player);
 		}
 		
 	}

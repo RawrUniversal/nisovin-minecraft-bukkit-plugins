@@ -12,7 +12,7 @@ import com.nisovin.magicspells.MagicSpells;
 public class SmokeTrailEffect extends GraphicalEffect {
 
 	@Override
-	public void showEffect(Location location1, Location location2, String param) {
+	public void playEffect(Location location1, Location location2, String param) {
 		int interval = 0;
 		if (param != null) {
 			try {
@@ -35,7 +35,6 @@ public class SmokeTrailEffect extends GraphicalEffect {
 		private Location endLoc;
 		private ArrayList<Location> locationsForProjection;
 		private World world;
-		private float smokeThickness;
 
 		private int i;
 		private int id;
@@ -47,7 +46,6 @@ public class SmokeTrailEffect extends GraphicalEffect {
 
 			this.locationsForProjection = calculateLocsForProjection();
 			this.i = 0;
-			this.smokeThickness = 4;
 			
 		}
 		
@@ -67,7 +65,7 @@ public class SmokeTrailEffect extends GraphicalEffect {
 				return;
 			}
 			Location loc = locationsForProjection.get(i);
-			for (int j = 0; j < smokeThickness; j++) {
+			for (int j = 0; j <= 8; j+=2) {
 				world.playEffect(loc, Effect.SMOKE, j);
 			}
 			i++;			

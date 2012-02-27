@@ -5,7 +5,7 @@ import org.bukkit.Location;
 public class LightningEffect extends GraphicalEffect {
 
 	@Override
-	public void showEffect(Location location, String param) {
+	public void playEffect(Location location, String param) {
 		location.getWorld().strikeLightningEffect(location);
 	}
 

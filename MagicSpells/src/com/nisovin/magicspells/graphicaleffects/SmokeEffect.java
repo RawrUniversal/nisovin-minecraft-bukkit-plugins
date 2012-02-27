@@ -6,7 +6,7 @@ import org.bukkit.Location;
 public class SmokeEffect extends GraphicalEffect {
 
 	@Override
-	public void showEffect(Location location, String param) {
+	public void playEffect(Location location, String param) {
 		int dir = 4;
 		if (param != null && !param.isEmpty()) {
 			try {

@@ -8,7 +8,7 @@ import com.nisovin.magicspells.MagicSpells;
 public class PotionEffect extends GraphicalEffect {
 
 	@Override
-	public void showEffect(Entity entity, String param) {
+	public void playEffect(Entity entity, String param) {
 		if (entity instanceof LivingEntity) {
 			LivingEntity le = (LivingEntity)entity;
 			
