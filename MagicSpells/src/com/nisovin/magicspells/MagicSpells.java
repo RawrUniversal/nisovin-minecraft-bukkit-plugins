@@ -2,6 +2,7 @@ package com.nisovin.magicspells;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
@@ -59,6 +60,7 @@ import com.nisovin.magicspells.util.CraftBukkitHandle;
 import com.nisovin.magicspells.util.CraftBukkitHandleDisabled;
 import com.nisovin.magicspells.util.CraftBukkitHandleEnabled;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Metrics;
 
 public class MagicSpells extends JavaPlugin {
 
@@ -290,6 +292,9 @@ public class MagicSpells extends JavaPlugin {
 		for (Player p : getServer().getOnlinePlayers()) {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
 		}
+		
+		// set up metrics
+		setupMetrics();
 		
 		// call loaded event
 		pm.callEvent(new MagicSpellsLoadedEvent(this));
@@ -625,6 +630,21 @@ public class MagicSpells extends JavaPlugin {
 	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault, Map<String,Boolean> children) {
 		if (pm.getPermission("magicspells." + perm) == null) {
 			pm.addPermission(new Permission("magicspells." + perm, permDefault, children));
+		}
+	}
+	
+	private void setupMetrics() {
+		try {
+			Metrics metrics = new Metrics();
+			
+			metrics.addCustomData(this, new Metrics.Plotter("Spell Count") {
+				public int getValue() {
+					return spells.size();
+				}
+			});
+			
+			metrics.beginMeasuringPlugin(this);
+		} catch (IOException e) {
 		}
 	}
 	
