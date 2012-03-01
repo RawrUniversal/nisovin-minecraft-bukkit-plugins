@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Set;
 
 import net.minecraft.server.ChunkCoordIntPair;
@@ -99,19 +100,19 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 			boolean ok = false;
 			try {
 				// attempt to make books with different data values stack separately
-				Field field1 = net.minecraft.server.Item.class.getDeclaredField(var);
-				if (field1.getType() == boolean.class) {
-					field1.setAccessible(true);
-					field1.setBoolean(net.minecraft.server.Item.byId[itemId], true);
+				Method method = net.minecraft.server.Item.class.getDeclaredMethod(var, boolean.class);
+				if (method.getReturnType() == net.minecraft.server.Item.class) {
+					method.setAccessible(true);
+					method.invoke(net.minecraft.server.Item.byId[itemId], true);
 					ok = true;
-				} 
+				}
 			} catch (Exception e) {
 			}
 			if (!ok) {
 				// otherwise limit stack size to 1
-				Field field2 = net.minecraft.server.Item.class.getDeclaredField("maxStackSize");
-				field2.setAccessible(true);
-				field2.setInt(net.minecraft.server.Item.byId[itemId], 1);
+				Field field = net.minecraft.server.Item.class.getDeclaredField("maxStackSize");
+				field.setAccessible(true);
+				field.setInt(net.minecraft.server.Item.byId[itemId], 1);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

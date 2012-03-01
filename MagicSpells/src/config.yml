@@ -994,7 +994,7 @@ spells:
         charge-reagents-for-spell-per-charge: false
         require-teach-perm: true
         require-scroll-cast-perm-on-use: true
-        stack-by-data-var: bQ
+        stack-by-data-fn: "a"
         str-scroll-over: "Spell Scroll: %s (%u uses remaining)"
         str-usage: |
             You must hold a single blank paper 

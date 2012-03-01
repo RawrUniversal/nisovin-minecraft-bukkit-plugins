@@ -38,7 +38,7 @@ public class ScrollSpell extends CommandSpell {
 	private boolean chargeReagentsForSpellPerCharge;
 	private boolean requireTeachPerm;
 	private boolean requireScrollCastPermOnUse;
-	private String stackByDataVar;
+	private String stackByDataFn;
 	private int maxScrolls;
 	private String strScrollOver;
 	private String strUsage;
@@ -66,7 +66,7 @@ public class ScrollSpell extends CommandSpell {
 		chargeReagentsForSpellPerCharge = getConfigBoolean("charge-reagents-for-spell-per-charge", false);
 		requireTeachPerm = getConfigBoolean("require-teach-perm", true);
 		requireScrollCastPermOnUse = getConfigBoolean("require-scroll-cast-perm-on-use", true);
-		stackByDataVar = getConfigString("stack-by-data-var", "bQ");
+		stackByDataFn = getConfigString("stack-by-data-fn", "a");
 		maxScrolls = getConfigInt("max-scrolls", 500);
 		strScrollOver = getConfigString("str-scroll-over", "Spell Scroll: %s (%u uses remaining)");
 		strUsage = getConfigString("str-usage", "You must hold a single blank paper \nand type /cast scroll <spell> <uses>.");
@@ -81,7 +81,7 @@ public class ScrollSpell extends CommandSpell {
 		
 		// prevent paper stacking
 		if (setUnstackable) {
-			//MagicSpells.craftbukkit.stackByData(itemId, stackByDataVar);
+			MagicSpells.craftbukkit.stackByData(itemId, stackByDataFn);
 		}
 	}
 	
@@ -369,6 +369,9 @@ public class ScrollSpell extends CommandSpell {
 				// trying to shift move
 				// TODO: make this better
 				event.setCancelled(true);
+				//System.out.println("inv: " + event.getInventory().getType());
+				//System.out.println("top: " + event.getView().getTopInventory().getType());
+				//System.out.println("bottom: " + event.getView().getBottomInventory().getType());
 			}
 		}
 	}
