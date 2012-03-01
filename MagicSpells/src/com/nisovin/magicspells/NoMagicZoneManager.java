@@ -16,7 +16,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-public class NoMagicZoneManager {
+public class NoMagicZoneManager implements NoMagicZoneHandler {
 	
 	private HashSet<NoMagicZone> zones;
 
@@ -35,8 +35,7 @@ public class NoMagicZoneManager {
 				String worldName = zoneConfig.getString("world", Bukkit.getServer().getWorlds().get(0).getName());
 				String type = zoneConfig.getString("type", "cuboid");
 				String message = zoneConfig.getString("message", "You are in a no-magic zone.");
-				@SuppressWarnings("unchecked")
-				List<String> allowedSpells = zoneConfig.getList("allowed-spells", null);
+				List<String> allowedSpells = zoneConfig.getStringList("allowed-spells");
 				if (type.equalsIgnoreCase("worldguard") && worldGuard != null) {
 					World w = Bukkit.getServer().getWorld(worldName);
 					if (w != null) {
@@ -71,10 +70,12 @@ public class NoMagicZoneManager {
 		}
 	}
 	
+	@Override
 	public boolean willFizzle(Player player, Spell spell) {
 		return willFizzle(player.getLocation(), spell);
 	}
 	
+	@Override
 	public boolean willFizzle(Location location, Spell spell) {
 		for (NoMagicZone zone : zones) {
 			if (zone.willFizzle(location, spell)) {
@@ -84,6 +85,7 @@ public class NoMagicZoneManager {
 		return false;
 	}
 	
+	@Override
 	public void sendNoMagicMessage(Player player, Spell spell) {
 		for (NoMagicZone zone : zones) {
 			if (zone.willFizzle(player, spell)) {
@@ -93,6 +95,7 @@ public class NoMagicZoneManager {
 		}
 	}
 	
+	@Override
 	public int zoneCount() {
 		return zones.size();
 	}

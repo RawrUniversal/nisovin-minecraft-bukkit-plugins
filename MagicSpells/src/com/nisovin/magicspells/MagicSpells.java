@@ -108,7 +108,7 @@ public class MagicSpells extends JavaPlugin {
 	
 	protected static ManaHandler mana;
 	protected static HashMap<Player,Long> manaPotionCooldowns;
-	public static NoMagicZoneManager noMagicZones;
+	public static NoMagicZoneHandler noMagicZones;
 	
 	@Override
 	public void onEnable() {
