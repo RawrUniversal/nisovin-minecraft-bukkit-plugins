@@ -12,8 +12,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -78,7 +81,7 @@ public class ScrollSpell extends CommandSpell {
 		
 		// prevent paper stacking
 		if (setUnstackable) {
-			MagicSpells.craftbukkit.stackByData(itemId, stackByDataVar);
+			//MagicSpells.craftbukkit.stackByData(itemId, stackByDataVar);
 		}
 	}
 	
@@ -338,11 +341,59 @@ public class ScrollSpell extends CommandSpell {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onItemHeldChange(PlayerItemHeldEvent event) {
 		ItemStack inHand = event.getPlayer().getInventory().getItem(event.getNewSlot());
-		if (inHand != null && inHand.getTypeId() == itemId && inHand.getDurability() != 0) {
-			Spell spell = scrollSpells.get(inHand.getDurability());
-			if (spell != null) {
-				sendMessage(event.getPlayer(), formatMessage(strScrollOver, "%s", spell.getName(), "%u", scrollUses.get(inHand.getDurability())+""));
+		if (inHand != null && inHand.getTypeId() == itemId && inHand.getDurability() != 0) {			
+			sendInfoMessage(event.getPlayer(), inHand);
+		}
+	}
+	
+	@EventHandler(ignoreCancelled=true)
+	public void onInventoryClick(InventoryClickEvent event) {
+		ItemStack clicked = event.getCurrentItem();
+		ItemStack cursor = event.getCursor();
+		
+		if (clicked != null && clicked.getTypeId() == itemId && clicked.getDurability() != 0) {
+			if (cursor != null && cursor.getTypeId() == itemId && event.isLeftClick() && !event.isShiftClick() && clicked.getDurability() != cursor.getDurability()) {
+				// trying to stack different scrolls - prevent it
+				event.setCancelled(true);
+				event.setCursor(clicked.clone());
+				event.setCurrentItem(cursor.clone());
+			} else if (cursor != null && cursor.getType() == Material.AIR && event.isRightClick()) {
+				// get info
+				if (event.getWhoClicked() instanceof Player) {
+					boolean sent = sendInfoMessage((Player)event.getWhoClicked(), clicked);
+					if (sent) {
+						event.setCancelled(true);
+					}
+				}
+			} else if (event.isShiftClick()) {
+				// trying to shift move
+				// TODO: make this better
+				event.setCancelled(true);
 			}
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
+	public void onPickupItem(PlayerPickupItemEvent event) {
+		ItemStack item = event.getItem().getItemStack();
+		if (item.getTypeId() == itemId && item.getDurability() > 0) {
+			event.setCancelled(true);
+			Inventory inv = event.getPlayer().getInventory();
+			int slot = inv.firstEmpty();
+			if (slot >= 0) {
+				inv.setItem(slot, item);
+				event.getItem().remove();
+			}
+		}
+	}
+	
+	private boolean sendInfoMessage(Player player, ItemStack item) {
+		Spell spell = scrollSpells.get(item.getDurability());
+		if (spell != null) {
+			sendMessage(player, strScrollOver, "%s", spell.getName(), "%u", scrollUses.get(item.getDurability())+"");
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
