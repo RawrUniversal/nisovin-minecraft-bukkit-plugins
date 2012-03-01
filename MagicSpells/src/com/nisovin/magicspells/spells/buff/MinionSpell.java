@@ -7,7 +7,7 @@ import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;
-import org.bukkit.entity.CreatureType;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -25,7 +25,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class MinionSpell extends BuffSpell {
 	
-	private CreatureType[] creatureTypes;
+	private EntityType[] creatureTypes;
 	private int[] chances;
 	private boolean preventCombust;
 	private boolean targetPlayers;
@@ -44,11 +44,11 @@ public class MinionSpell extends BuffSpell {
 		if (c.size() == 0) {
 			c.add("Zombie 100");
 		}
-		creatureTypes = new CreatureType[c.size()];
+		creatureTypes = new EntityType[c.size()];
 		chances = new int[c.size()];
 		for (int i = 0; i < c.size(); i++) {
 			String[] data = c.get(i).split(" ");
-			CreatureType creatureType = CreatureType.fromName(data[0]);
+			EntityType creatureType = EntityType.fromName(data[0]);
 			int chance = 0;
 			if (creatureType != null) {
 				try {
@@ -77,7 +77,7 @@ public class MinionSpell extends BuffSpell {
 			}
 		} 
 		if (state == SpellCastState.NORMAL) {
-			CreatureType creatureType = null;
+			EntityType creatureType = null;
 			int num = random.nextInt(100);
 			int n = 0;
 			for (int i = 0; i < creatureTypes.length; i++) {

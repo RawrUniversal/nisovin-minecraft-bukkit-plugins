@@ -26,8 +26,8 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	private boolean ignoreCanceled;
 	private String strNoTarget;
 	
-	private long currentTick;
-	private float currentPower;
+	private long currentTick = 0;
+	private float currentPower = 0;
 	
 	public ExplodeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);

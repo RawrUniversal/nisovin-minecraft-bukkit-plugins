@@ -30,11 +30,11 @@ public class Spellbook {
 	private HashMap<Spell,CastItem> customBindings = new HashMap<Spell,CastItem>();
 	
 	public Spellbook(Player player, MagicSpells plugin) {
-		MagicSpells.debug("Loading player spell list: " + player.getName());
 		this.plugin = plugin;
 		this.player = player;
 		this.playerName = player.getName();
-		
+
+		MagicSpells.debug("Loading player spell list: " + playerName);
 		load();
 	}
 	
@@ -323,6 +323,7 @@ public class Spellbook {
 	}
 	
 	public void reload() {
+		MagicSpells.debug("Reloading player spell list: " + playerName);
 		removeAllSpells();
 		load();
 	}
