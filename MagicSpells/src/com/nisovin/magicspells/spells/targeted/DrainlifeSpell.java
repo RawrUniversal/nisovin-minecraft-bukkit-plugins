@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.EntityEffect;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -88,6 +89,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 				int health = target.getHealth() - take;
 				if (health < 0) health = 0;
 				target.setHealth(health);
+				target.playEffect(EntityEffect.HURT);
 			} else {
 				target.damage(take);
 			}

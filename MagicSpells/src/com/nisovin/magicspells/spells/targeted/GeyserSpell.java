@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -80,6 +81,7 @@ public class GeyserSpell extends TargetedEntitySpell {
 					int health = target.getHealth() - dam;
 					if (health < 0) health = 0;
 					target.setHealth(health);
+					target.playEffect(EntityEffect.HURT);
 				} else {
 					target.damage(dam);
 				}

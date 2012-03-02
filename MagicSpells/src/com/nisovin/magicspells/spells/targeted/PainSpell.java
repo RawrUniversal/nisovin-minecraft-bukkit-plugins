@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.spells.targeted;
 
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -68,6 +69,7 @@ public class PainSpell extends TargetedEntitySpell {
 			int health = target.getHealth() - dam;
 			if (health < 0) health = 0;
 			target.setHealth(health);
+			target.playEffect(EntityEffect.HURT);
 		} else {
 			target.damage(dam);
 		}

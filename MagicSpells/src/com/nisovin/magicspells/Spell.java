@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -690,7 +691,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	protected void unregisterEvents(Listener listener) {
-		//HandlerList.unregisterAll(listener);
+		HandlerList.unregisterAll(listener);
 	}
 	
 	/**
