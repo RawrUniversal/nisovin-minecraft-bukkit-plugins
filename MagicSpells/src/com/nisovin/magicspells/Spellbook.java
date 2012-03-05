@@ -143,8 +143,8 @@ public class Spellbook {
 		return player.hasPermission("magicspells.teach." + spell.getInternalName());
 	}
 	
-	public boolean hasAdvancedPerm(Spell spell) {
-		return player.hasPermission("magicspells.advanced." + spell.getInternalName());
+	public boolean hasAdvancedPerm(String spell) {
+		return player.hasPermission("magicspells.advanced." + spell);
 	}
 	
 	public Spell getSpellByName(String spellName) {
@@ -257,6 +257,7 @@ public class Spellbook {
 	}
 	
 	public void addSpell(Spell spell, CastItem castItem) {
+		if (spell == null) return;
 		MagicSpells.debug("    Added spell: " + spell.getInternalName());
 		allSpells.add(spell);
 		if (spell.canCastWithItem()) {

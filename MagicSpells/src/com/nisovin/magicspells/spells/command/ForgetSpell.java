@@ -52,12 +52,12 @@ public class ForgetSpell extends CommandSpell {
 			Player target = null;
 			if (args.length == 1 && allowSelfForget) {
 				target = player;
-			} else if (args.length == 2 && casterSpellbook.hasAdvancedPerm(this)) {
+			} else if (args.length == 2 && casterSpellbook.hasAdvancedPerm("forget")) {
 				List<Player> players = MagicSpells.plugin.getServer().matchPlayer(args[0]);
 				if (players.size() != 1) {
 					// fail: no player match
 					sendMessage(player, strNoTarget);
-					return PostCastAction.ALREADY_HANDLED;				
+					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					target = players.get(0);
 				}
@@ -146,7 +146,7 @@ public class ForgetSpell extends CommandSpell {
 					sender.sendMessage(strNoSpell);
 				} else {
 					Spellbook targetSpellbook = MagicSpells.getSpellbook(players.get(0));
-					if (targetSpellbook == null || !targetSpellbook.hasSpell(spell)) {
+					if (targetSpellbook == null || (!all && !targetSpellbook.hasSpell(spell))) {
 						// fail: no spellbook for some reason or can't learn the spell
 						sender.sendMessage(strDoesntKnow);
 					} else {
