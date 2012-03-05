@@ -59,6 +59,7 @@ public class BindSpell extends CommandSpell {
 					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					CastItem castItem = new CastItem(player.getItemInHand());
+					MagicSpells.debug("Trying to bind spell '" + spell.getInternalName() + "' to cast item " + castItem.toString() + "...");
 					if (bindableItems != null && !bindableItems.contains(castItem)) {
 						sendMessage(player, strCantBindItem);
 						return PostCastAction.ALREADY_HANDLED;
@@ -66,11 +67,13 @@ public class BindSpell extends CommandSpell {
 						String msg = spell.getCantBindError();
 						if (msg == null) msg = strCantBindItem;
 						sendMessage(player, msg);
-						return PostCastAction.ALREADY_HANDLED;						
+						return PostCastAction.ALREADY_HANDLED;
 					} else {
+						MagicSpells.debug("    Performing bind...");
 						spellbook.removeSpell(spell);
 						spellbook.addSpell(spell, new CastItem(player.getItemInHand()));
 						spellbook.save();
+						MagicSpells.debug("    Bind successful.");
 						sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
 						return PostCastAction.NO_MESSAGES;
 					}

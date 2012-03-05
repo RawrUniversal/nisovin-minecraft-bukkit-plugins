@@ -287,6 +287,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		SpellCastEvent event = new SpellCastEvent(this, player, state, power, args, cooldown, reagents);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
+			MagicSpells.debug("    Spell canceled");
 			return new SpellCastResult(SpellCastState.CANT_CAST, PostCastAction.HANDLE_NORMALLY);
 		} else {
 			power = event.getPower();
@@ -294,7 +295,18 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		// cast spell
+		MagicSpells.debug("    Power: " + power);
+		MagicSpells.debug("    Cooldown: " + cooldown);
+		if (MagicSpells.debug && args != null && args.length > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (String arg : args) {
+				if (sb.length() > 0) sb.append(",");
+				sb.append(arg);
+			}
+			MagicSpells.debug("    Args: {" + sb.toString() + "}");
+		}
 		PostCastAction action = castSpell(player, state, power, args);
+		MagicSpells.debug("    Post-cast action: " + action);
 		
 		// perform post-cast action
 		if (action != null && action != PostCastAction.ALREADY_HANDLED) {

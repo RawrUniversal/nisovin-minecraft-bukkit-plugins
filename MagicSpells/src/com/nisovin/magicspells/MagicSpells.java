@@ -822,7 +822,7 @@ public class MagicSpells extends JavaPlugin {
 	 */
 	public static void debug(String message) {
 		if (MagicSpells.debug) {
-			log(Level.WARNING, message);
+			log(Level.INFO, message);
 		}
 	}
 	
