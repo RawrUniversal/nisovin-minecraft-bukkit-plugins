@@ -4,23 +4,27 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class NoMagicZone {
 
 	private String worldName;
+	private String regionName = null;
 	private ProtectedRegion region = null;
 	private Vector point1 = null;
 	private Vector point2 = null;
 	private String message;
 	private List<String> allowedSpells;
 	
-	public NoMagicZone(String worldName, ProtectedRegion region, String message, List<String> allowedSpells) {
+	public NoMagicZone(String worldName, String regionName, String message, List<String> allowedSpells) {
 		this.worldName = worldName;
-		this.region = region;
+		this.regionName = regionName;
 		this.message = message;
 		this.allowedSpells = allowedSpells;
 	}
@@ -64,9 +68,31 @@ public class NoMagicZone {
 			return false;
 		} else if (!worldName.equalsIgnoreCase(location.getWorld().getName())) {
 			return false;
-		} else if (region != null) {
-			com.sk89q.worldedit.Vector v = new com.sk89q.worldedit.Vector(location.getX(), location.getY(), location.getZ());
-			return region.contains(v);
+		} else if (regionName != null) {
+			// get region, if necessary
+			if (region == null) {
+				WorldGuardPlugin worldGuard = null;
+				if (Bukkit.getServer().getPluginManager().isPluginEnabled("WorldGuard")) {
+					worldGuard = (WorldGuardPlugin)Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
+				}
+				if (worldGuard != null) {
+					World w = Bukkit.getServer().getWorld(worldName);
+					if (w != null) {
+						RegionManager rm = worldGuard.getRegionManager(w);
+						if (rm != null) {
+							region = rm.getRegion(regionName);
+						}
+					}
+				}
+			}
+			// check if contains
+			if (region != null) {
+				com.sk89q.worldedit.Vector v = new com.sk89q.worldedit.Vector(location.getX(), location.getY(), location.getZ());
+				return region.contains(v);
+			} else {
+				MagicSpells.error("Failed to access WorldGuard region '" + regionName + "'");
+				return false;
+			}
 		} else if (point1 != null && point2 != null) {
 			int x = location.getBlockX();
 			int y = location.getBlockY();
