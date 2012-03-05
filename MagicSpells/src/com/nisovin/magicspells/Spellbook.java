@@ -275,7 +275,7 @@ public class Spellbook {
 				temp = new ArrayList<Spell>();
 				temp.add(spell);
 				itemSpells.put(item, temp);
-				activeSpells.put(item, -1);
+				activeSpells.put(item, MagicSpells.allowCycleToNoSpell ? -1 : 0);
 			}
 		}
 		// remove any spells that this spell replaces
