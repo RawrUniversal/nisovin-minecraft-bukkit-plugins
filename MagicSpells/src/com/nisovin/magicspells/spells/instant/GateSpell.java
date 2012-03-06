@@ -57,7 +57,7 @@ public class GateSpell extends InstantSpell {
 			}
 			if (world == null) {
 				// fail -- no world
-				Bukkit.getServer().getLogger().warning("MagicSpells: " + name + ": world " + this.world + " does not exist");
+				MagicSpells.error("MagicSpells: " + name + ": world " + this.world + " does not exist");
 				sendMessage(player, strGateFailed);
 				return PostCastAction.ALREADY_HANDLED;
 			}
@@ -74,18 +74,19 @@ public class GateSpell extends InstantSpell {
 				location = world.getSpawnLocation();
 			} else {
 				// fail -- no location
-				Bukkit.getServer().getLogger().warning("MagicSpells: " + name + ": " + this.coords + " is not a valid location");
+				MagicSpells.error("MagicSpells: " + name + ": " + this.coords + " is not a valid location");
 				sendMessage(player, strGateFailed);
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			location.setX(location.getX()+.5);
 			location.setZ(location.getZ()+.5);
+			MagicSpells.debug("Gate location: " + location.toString());
 			
 			// check for landing point
 			Block b = location.getBlock();
 			if (b.getType() != Material.AIR || b.getRelative(0,1,0).getType() != Material.AIR) {
 				// fail -- blocked
-				Bukkit.getServer().getLogger().warning("MagicSpells: " + name + ": landing spot blocked");
+				MagicSpells.error("MagicSpells: " + name + ": landing spot blocked");
 				sendMessage(player, strGateFailed);
 				return PostCastAction.ALREADY_HANDLED;
 			}
@@ -97,9 +98,18 @@ public class GateSpell extends InstantSpell {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Teleporter(player, location), castTime);
 			} else {
 				// go instantly
-				playGraphicalEffects(1, player);
-				playGraphicalEffects(2, b.getLocation());
-				player.teleport(location);
+				Location from = player.getLocation();
+				Location to = b.getLocation();
+				boolean teleported = player.teleport(location);
+				if (teleported) {
+					playGraphicalEffects(1, from);
+					playGraphicalEffects(2, to);
+				} else {
+					// fail - teleport blocked
+					MagicSpells.error("Gate teleport prevented!");
+					sendMessage(player, strGateFailed);
+					return PostCastAction.ALREADY_HANDLED;
+				}
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -136,10 +146,16 @@ public class GateSpell extends InstantSpell {
 				casting.remove(player.getName());
 				Location loc = player.getLocation();
 				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
-					playGraphicalEffects(1, player);
-					playGraphicalEffects(2, target);
-					player.teleport(target);
-					sendMessage(player, strCastDone);
+					boolean teleported = player.teleport(target);
+					if (teleported) {
+						playGraphicalEffects(1, location);
+						playGraphicalEffects(2, target);
+						sendMessage(player, strCastDone);
+					} else {
+						// fail -- teleport prevented
+						MagicSpells.error("Gate teleport prevented!");
+						sendMessage(player, strGateFailed);
+					}
 				} else {
 					sendMessage(player, strCastInterrupted);
 				}
