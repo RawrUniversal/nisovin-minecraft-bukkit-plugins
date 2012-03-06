@@ -32,7 +32,12 @@ public class TelekinesisSpell extends TargetedLocationSpell {
 	
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block target = player.getTargetBlock(transparent, range>0?range:100);
+			Block target = null;
+			try {
+				target = player.getTargetBlock(transparent, range);
+			} catch (IllegalStateException e) {
+				target = null;
+			}
 			if (target == null) {
 				// fail
 				sendMessage(player, strNoTarget);

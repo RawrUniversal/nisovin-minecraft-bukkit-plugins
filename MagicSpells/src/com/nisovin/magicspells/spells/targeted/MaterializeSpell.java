@@ -44,8 +44,13 @@ public class MaterializeSpell extends TargetedLocationSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			List<Block> lastTwo = player.getLastTwoTargetBlocks(null, range);
-			if (lastTwo.size() == 2 && lastTwo.get(1).getType() != Material.AIR && lastTwo.get(0).getType() == Material.AIR) {
+			List<Block> lastTwo = null;
+			try {
+				lastTwo = player.getLastTwoTargetBlocks(null, range);
+			} catch (IllegalStateException e) {
+				lastTwo = null;
+			}
+			if (lastTwo != null && lastTwo.size() == 2 && lastTwo.get(1).getType() != Material.AIR && lastTwo.get(0).getType() == Material.AIR) {
 				boolean done = materialize(player, lastTwo.get(0), lastTwo.get(1));
 				if (!done) {
 					sendMessage(player, strFailed);

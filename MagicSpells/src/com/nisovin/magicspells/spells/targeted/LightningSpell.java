@@ -60,8 +60,9 @@ public class LightningSpell extends TargetedLocationSpell {
 					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 				}
 			} else {
-				target = player.getTargetBlock(null, range>0?range:500);
-				if (target.getWorld().getHighestBlockYAt(target.getLocation()) != target.getY()+1) {
+				try {
+					target = player.getTargetBlock(null, range);
+				} catch (IllegalStateException e) {	
 					target = null;
 				}
 			}

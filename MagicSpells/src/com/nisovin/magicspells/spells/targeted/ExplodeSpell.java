@@ -43,7 +43,12 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block target = player.getTargetBlock(null, range);
+			Block target = null;
+			try {
+				target = player.getTargetBlock(null, range);
+			} catch (IllegalStateException e) {
+				target = null;
+			}
 			if (target == null || target.getType() == Material.AIR) {
 				// fail: no target
 				sendMessage(player, strNoTarget);
