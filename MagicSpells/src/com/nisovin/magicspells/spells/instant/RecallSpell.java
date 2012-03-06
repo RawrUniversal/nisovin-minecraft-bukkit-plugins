@@ -25,6 +25,7 @@ public class RecallSpell extends InstantSpell {
 	private String strTooFar;
 	private String strCastDone;
 	private String strCastInterrupted;
+	private String strRecallFailed;
 	
 	private HashSet<String> casting;
 
@@ -40,6 +41,7 @@ public class RecallSpell extends InstantSpell {
 		strTooFar = config.getString("spells." + spellName + ".str-too-far", "You mark is too far away.");
 		strCastDone = getConfigString("str-cast-done", "");
 		strCastInterrupted = getConfigString("str-cast-interrupted", "");
+		strRecallFailed = getConfigString("str-recall-failed", "Could not recall.");
 		
 		if (castTime > 0) {
 			casting = new HashSet<String>();
@@ -79,9 +81,17 @@ public class RecallSpell extends InstantSpell {
 						Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Teleporter(player, mark), castTime);
 					} else {
 						// go instantly
-						playGraphicalEffects(1, player);
-						playGraphicalEffects(2, mark);
-						player.teleport(mark);
+						Location from = player.getLocation();
+						boolean teleported = player.teleport(mark);
+						if (teleported) {
+							playGraphicalEffects(1, from);
+							playGraphicalEffects(2, mark);
+						} else {
+							// fail -- teleport prevented
+							MagicSpells.error("Recall teleport blocked for " + player.getName());
+							sendMessage(player, strRecallFailed);
+							return PostCastAction.ALREADY_HANDLED;
+						}
 					}
 				}
 			}
@@ -120,10 +130,16 @@ public class RecallSpell extends InstantSpell {
 				casting.remove(player.getName());
 				Location loc = player.getLocation();
 				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
-					playGraphicalEffects(1, player);
-					playGraphicalEffects(2, mark);
-					player.teleport(mark);
-					sendMessage(player, strCastDone);
+					boolean teleported = player.teleport(mark);
+					if (teleported) {
+						playGraphicalEffects(1, location);
+						playGraphicalEffects(2, mark);
+						sendMessage(player, strCastDone);
+					} else {
+						// fail -- teleport prevented
+						MagicSpells.error("Recall teleport blocked for " + player.getName());
+						sendMessage(player, strRecallFailed);
+					}
 				} else {
 					sendMessage(player, strCastInterrupted);
 				}
