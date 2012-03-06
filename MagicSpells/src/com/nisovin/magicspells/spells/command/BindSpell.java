@@ -42,6 +42,7 @@ public class BindSpell extends CommandSpell {
 		if (state == SpellCastState.NORMAL) {
 			if (args == null || args.length != 1) {
 				sendMessage(player, strUsage);
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
 				Spell spell = MagicSpells.getSpellByInGameName(args[0]);
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
