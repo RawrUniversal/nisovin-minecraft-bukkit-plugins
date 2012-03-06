@@ -1,7 +1,6 @@
 general:
     debug: false
     enable-volatile-features: true
-    use-new-spell-loading: true
     alt-config: altConfig.yml
     str-cast-usage: |
         Usage: /cast <spell>. 
@@ -293,6 +292,8 @@ spells:
             - 276
             - 283
         disarm-duration: 100
+        dont-drop: false
+        prevent-theft: true
         obey-los: true
         cost:
             - 331 4

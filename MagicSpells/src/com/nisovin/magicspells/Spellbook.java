@@ -49,7 +49,7 @@ public class Spellbook {
 		// give all spells to ops
 		if (player.isOp() && MagicSpells.opsHaveAllSpells) {
 			MagicSpells.debug("  Op, granting all spells...");
-			for (Spell spell : MagicSpells.spells.values()) {
+			for (Spell spell : MagicSpells.spellsOrdered) {
 				if (!allSpells.contains(spell)) {
 					addSpell(spell);
 				}
@@ -109,7 +109,7 @@ public class Spellbook {
 	public void addGrantedSpells() {
 		MagicSpells.debug("  Adding granted spells...");
 		boolean added = false;
-		for (Spell spell : MagicSpells.spells.values()) {
+		for (Spell spell : MagicSpells.spellsOrdered) {
 			MagicSpells.debug("    Checking spell " + spell.getInternalName() + "...");
 			if (!hasSpell(spell, false)) {
 				if (player.hasPermission("magicspells.grant." + spell.getInternalName())) {
@@ -284,6 +284,7 @@ public class Spellbook {
 			for (String spellName : spell.replaces) {
 				Spell sp = MagicSpells.getSpellByInternalName(spellName);
 				if (sp != null) {
+					MagicSpells.debug("        Removing replaced spell: " + sp.getInternalName());
 					removeSpell(sp);
 				}
 			}

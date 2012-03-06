@@ -1,10 +1,8 @@
 package com.nisovin.magicspells;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -34,28 +32,6 @@ import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spells.*;
-import com.nisovin.magicspells.spells.buff.*;
-import com.nisovin.magicspells.spells.channeled.*;
-import com.nisovin.magicspells.spells.command.*;
-import com.nisovin.magicspells.spells.instant.*;
-import com.nisovin.magicspells.spells.targeted.BlinkSpell;
-import com.nisovin.magicspells.spells.targeted.BuildSpell;
-import com.nisovin.magicspells.spells.targeted.CombustSpell;
-import com.nisovin.magicspells.spells.targeted.CrippleSpell;
-import com.nisovin.magicspells.spells.targeted.DisarmSpell;
-import com.nisovin.magicspells.spells.targeted.DrainlifeSpell;
-import com.nisovin.magicspells.spells.targeted.EntombSpell;
-import com.nisovin.magicspells.spells.targeted.ExplodeSpell;
-import com.nisovin.magicspells.spells.targeted.FireballSpell;
-import com.nisovin.magicspells.spells.targeted.ForcetossSpell;
-import com.nisovin.magicspells.spells.targeted.GeyserSpell;
-import com.nisovin.magicspells.spells.targeted.HealSpell;
-import com.nisovin.magicspells.spells.targeted.LightningSpell;
-import com.nisovin.magicspells.spells.targeted.PainSpell;
-import com.nisovin.magicspells.spells.targeted.PotionEffectSpell;
-import com.nisovin.magicspells.spells.targeted.TelekinesisSpell;
-import com.nisovin.magicspells.spells.targeted.VolleySpell;
-import com.nisovin.magicspells.spells.targeted.ZapSpell;
 import com.nisovin.magicspells.util.CraftBukkitHandle;
 import com.nisovin.magicspells.util.CraftBukkitHandleDisabled;
 import com.nisovin.magicspells.util.CraftBukkitHandleEnabled;
@@ -104,6 +80,7 @@ public class MagicSpells extends JavaPlugin {
 	
 	protected static HashMap<String,Spell> spells; // map internal names to spells
 	protected static HashMap<String,Spell> spellNames; // map configured names to spells
+	protected static ArrayList<Spell> spellsOrdered; // spells in loaded order
 	protected static HashMap<String,Spellbook> spellbooks; // player spellbooks
 	
 	protected static ManaHandler mana;
@@ -125,6 +102,7 @@ public class MagicSpells extends JavaPlugin {
 		// create storage stuff
 		spells = new HashMap<String,Spell>();
 		spellNames = new HashMap<String,Spell>();
+		spellsOrdered = new ArrayList<Spell>();
 		spellbooks = new HashMap<String,Spellbook>();
 		
 		// make sure directories are created
@@ -201,8 +179,6 @@ public class MagicSpells extends JavaPlugin {
 		manaPotionCooldown = config.getInt("general.mana.mana-potion-cooldown", 30);
 		strManaPotionOnCooldown = config.getString("general.mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
 		
-		boolean useNewLoading = config.getBoolean("general.use-new-spell-loading", false);
-		
 		// setup mana bar manager
 		if (enableManaBars) {
 			mana = new ManaBarManager(config);
@@ -255,16 +231,7 @@ public class MagicSpells extends JavaPlugin {
 		addPermission(pm, "advanced.*", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP, advancedPermChildren);
 		
 		// load spells
-		if (useNewLoading) {
-			loadSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
-		} else {
-			error("You are still using the old spell loading method!");
-			error("You should update your config to use the new");
-			error("spell loading method as soon as possible.");
-			loadNormalSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
-			loadCustomSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
-			loadSpellCopies(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);			
-		}
+		loadSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
 		loadMultiSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
 		
 		// finalize permissions
@@ -342,6 +309,7 @@ public class MagicSpells extends JavaPlugin {
 					Constructor<? extends Spell> constructor = spellClass.getConstructor(MagicConfig.class, String.class);
 					Spell spell = constructor.newInstance(config, spellName);
 					spells.put(spellName, spell);
+					spellsOrdered.add(spell);
 					
 					// add permissions
 					addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
@@ -371,228 +339,6 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	private void loadNormalSpells(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
-		// create list of spells
-		ArrayList<Class<? extends Spell>> spellClasses = new ArrayList<Class<? extends Spell>>();
-		spellClasses.add(BindSpell.class);
-		spellClasses.add(BlinkSpell.class);
-		spellClasses.add(BuildSpell.class);
-		spellClasses.add(CarpetSpell.class);
-		spellClasses.add(CombustSpell.class);
-		spellClasses.add(ConfusionSpell.class);
-		spellClasses.add(ConjureSpell.class);
-		spellClasses.add(CrippleSpell.class);
-		spellClasses.add(DisarmSpell.class);
-		spellClasses.add(DrainlifeSpell.class);
-		spellClasses.add(EmpowerSpell.class);
-		spellClasses.add(EntombSpell.class);
-		spellClasses.add(ExplodeSpell.class);
-		spellClasses.add(ExternalCommandSpell.class);
-		spellClasses.add(FireballSpell.class);
-		spellClasses.add(FirenovaSpell.class);
-		spellClasses.add(FlamewalkSpell.class);
-		spellClasses.add(ForcepushSpell.class);
-		spellClasses.add(ForcetossSpell.class);
-		spellClasses.add(ForgetSpell.class);
-		spellClasses.add(FrostwalkSpell.class);
-		spellClasses.add(GateSpell.class);
-		spellClasses.add(GeyserSpell.class);
-		spellClasses.add(GillsSpell.class);
-		spellClasses.add(HasteSpell.class);
-		spellClasses.add(HealSpell.class);
-		spellClasses.add(HelpSpell.class);
-		spellClasses.add(InvulnerabilitySpell.class);
-		spellClasses.add(LeapSpell.class);
-		spellClasses.add(LifewalkSpell.class);
-		spellClasses.add(LightningSpell.class);
-		spellClasses.add(LightwalkSpell.class);
-		spellClasses.add(ListSpell.class);
-		spellClasses.add(ManaSpell.class);
-		spellClasses.add(MarkSpell.class);
-		spellClasses.add(MinionSpell.class);
-		spellClasses.add(PainSpell.class);
-		spellClasses.add(PermissionSpell.class);
-		spellClasses.add(PhaseSpell.class);
-		spellClasses.add(PotionEffectSpell.class);
-		spellClasses.add(PrayerSpell.class);
-		spellClasses.add(PurgeSpell.class);
-		spellClasses.add(ReachSpell.class);
-		spellClasses.add(RecallSpell.class);
-		spellClasses.add(ReflectSpell.class);
-		spellClasses.add(RepairSpell.class);
-		spellClasses.add(ScrollSpell.class);
-		spellClasses.add(SpellbookSpell.class);
-		spellClasses.add(StealthSpell.class);
-		spellClasses.add(StonevisionSpell.class);
-		spellClasses.add(SummonSpell.class);
-		spellClasses.add(SunSpell.class);
-		spellClasses.add(TeachSpell.class);
-		spellClasses.add(TelekinesisSpell.class);
-		if (getServer().getPluginManager().isPluginEnabled("BookWorm")) spellClasses.add(TomeSpell.class);
-		spellClasses.add(VolleySpell.class);
-		spellClasses.add(WalkwaySpell.class);
-		spellClasses.add(WallSpell.class);
-		spellClasses.add(WindwalkSpell.class);
-		spellClasses.add(ZapSpell.class);
-		// load the spells
-		for (Class<? extends Spell> c : spellClasses) {
-			try {
-				// get spell name
-				String spellName;
-				try {
-					Field spellNameField = c.getDeclaredField("SPELL_NAME");
-					spellNameField.setAccessible(true);
-					spellName = (String)spellNameField.get(null);
-				} catch (NoSuchFieldException e) {
-					spellName = c.getSimpleName().replace("Spell", "").toLowerCase(); 
-				} catch (IllegalAccessException e) {
-					spellName = c.getSimpleName().replace("Spell", "").toLowerCase(); 	
-				}
-				// check enabled
-				if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-					// initialize spell
-					Constructor<? extends Spell> constructor = c.getConstructor(MagicConfig.class, String.class);
-					Spell spell = constructor.newInstance(config, spellName);
-					spells.put(spellName, spell);
-					// add permissions
-					addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
-					addPermission(pm, "learn." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-					addPermission(pm, "cast." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-					addPermission(pm, "teach." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-					permGrantChildren.put("magicspells.grant." + spellName, true);
-					permLearnChildren.put("magicspells.learn." + spellName, true);
-					permCastChildren.put("magicspells.cast." + spellName, true);
-					permTeachChildren.put("magicspells.teach." + spellName, true);
-					// spell load complete
-					debug("Loaded spell: " + spellName);
-				}
-			} catch (Exception e) {
-				getServer().getLogger().severe("MagicSpells: Failed to load spell: " + c.getName());
-				e.printStackTrace();
-			}
-		}
-		
-	}
-	
-	private void loadCustomSpells(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
-		// load spells from plugin folder
-		final List<File> jarList = new ArrayList<File>();
-		File[] classFiles = getDataFolder().listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				if (name.endsWith(".class")) {
-					if (name.contains("$")) {
-						return false;
-					} else {
-						return true;
-					}
-				} else if (name.endsWith(".jar")) {
-					jarList.add(new File(dir, name));
-					return true;
-				} else {
-					return false;
-				}
-			}			
-		});
-		try {
-			// generate URL list for look up
-			URL[] urls = new URL[jarList.size()+1];
-			
-			// first URL is data folder itself for .class files
-			urls[0] = getDataFolder().toURI().toURL();
-			
-			// other URLs are Jar files
-			for(int i = 1; i <= jarList.size(); i++) {
-				urls[i] = jarList.get(i-1).toURI().toURL();
-			}
-			
-			// load the classes
-			URLClassLoader ucl = new URLClassLoader(urls, getClassLoader());
-			for (File file : classFiles) {
-				try {
-					
-					// load spell from class file
-					String fileName = file.getName().replaceAll("\\.[\\p{javaLetter}]+$", "");
-					Class<? extends Spell> c = Class.forName(fileName, true, ucl).asSubclass(Spell.class);
-					
-					// get spell name
-					String spellName;
-					try {
-						Field spellNameField = c.getDeclaredField("SPELL_NAME");
-						spellNameField.setAccessible(true);
-						spellName = (String)spellNameField.get(null);
-					} catch (NoSuchFieldException e) {
-						spellName = c.getSimpleName().replace("Spell", "").toLowerCase(); 
-					} catch (IllegalAccessException e) {
-						spellName = c.getSimpleName().replace("Spell", "").toLowerCase(); 						
-					}
-					
-					// load the spell
-					if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-						// initialize spell
-						Spell spell = c.getConstructor(MagicConfig.class, String.class).newInstance(config, spellName);
-						spells.put(spellName, spell);
-						// add permissions
-						addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
-						addPermission(pm, "learn." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-						addPermission(pm, "cast." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-						addPermission(pm, "teach." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-						permGrantChildren.put("magicspells.grant." + spellName, true);
-						permLearnChildren.put("magicspells.learn." + spellName, true);
-						permCastChildren.put("magicspells.cast." + spellName, true);
-						permTeachChildren.put("magicspells.teach." + spellName, true);
-						// spell load complete
-						debug("Loaded external spell: " + spellName);
-					}
-				} catch (Exception e) {
-					getServer().getLogger().severe("MagicSpells: Failed to load external spell: " + file.getName());
-					e.printStackTrace();
-				}
-			}
-		} catch (Exception e) {
-			getServer().getLogger().severe("MagicSpells: Failed to create external spells");
-			e.printStackTrace();
-		}
-	}
-	
-	private void loadSpellCopies(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
-		// load spell copies
-		List<String> copies = config.getStringList("spellcopies", new ArrayList<String>());
-		List<String> moreCopies = config.getStringList("spells.spellcopies", null);
-		if (moreCopies != null && copies != null) {
-			copies.addAll(moreCopies);
-		}
-		if (copies != null && copies.size() > 0) {
-			for (String copy : copies) {
-				String[] data = copy.split("=");
-				Spell spell = spells.get(data[1]);
-				String spellName = data[0];
-				if (spell != null) {
-					try {
-						// check enabled
-						if (config.getBoolean("spells." + spellName + ".enabled", true)) {
-							// initialize spell
-							Spell spellCopy = spell.getClass().getConstructor(MagicConfig.class, String.class).newInstance(config, spellName);
-							spells.put(spellName, spellCopy);
-							// add permissions
-							addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
-							addPermission(pm, "learn." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-							addPermission(pm, "cast." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-							addPermission(pm, "teach." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-							permGrantChildren.put("magicspells.grant." + spellName, true);
-							permLearnChildren.put("magicspells.learn." + spellName, true);
-							permCastChildren.put("magicspells.cast." + spellName, true);
-							permTeachChildren.put("magicspells.teach." + spellName, true);
-							// load complete
-							debug("Loaded spell copy: " + data[0] + " (copy of " + data[1] + ")");
-						}
-					} catch (Exception e) {
-						getServer().getLogger().severe("MagicSpells: Failed to create spell copy: " + copy);
-					}
-				}
-			}
-		}
-	}
-	
 	private void loadMultiSpells(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
 		// load multi-spells
 		Set<String> multiSpells = config.getKeys("multispells");
@@ -607,6 +353,7 @@ public class MagicSpells extends JavaPlugin {
 					// initialize spell
 					OldMultiSpell multiSpell = new OldMultiSpell(config, spellName);
 					spells.put(spellName, multiSpell);
+					spellsOrdered.add(multiSpell);
 					// add permissions
 					addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
 					addPermission(pm, "learn." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
