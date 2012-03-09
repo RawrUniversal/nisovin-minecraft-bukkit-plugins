@@ -36,6 +36,7 @@ public class Bookmark {
 	}
 	
 	private void read(Player player) {
+		BookWorm.metricReads++;
 		if (BookWorm.SPOUT_ENABLED) {
 			boolean shown = SpoutHandle.showBook(player, book, page);
 			if (!shown) {

@@ -150,6 +150,7 @@ public class Book {
 	}
 	
 	public String write(String text) {
+		BookWorm.metricWrites++;
 		lastText = this.text;
 		this.text += " " + text.trim();
 		this.text = this.text.trim();
@@ -158,6 +159,7 @@ public class Book {
 	}
 	
 	public String write(String[] text) {
+		BookWorm.metricWrites++;
 		lastText = this.text;
 		String line = "";
 		for (int i = 0; i < text.length; i++) {

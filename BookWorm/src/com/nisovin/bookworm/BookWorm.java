@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
@@ -127,6 +128,10 @@ public class BookWorm extends JavaPlugin {
 	protected WorldGuardPlugin worldGuard;
 	protected ArrayList<Short> extraBookIds;
 	
+	protected static int metricBookCount = 0;
+	protected static int metricReads = 0;
+	protected static int metricWrites = 0;
+	
 	@Override
 	public void onEnable() {
 		plugin = this;
@@ -192,6 +197,9 @@ public class BookWorm extends JavaPlugin {
 			}
 		}
 		
+		// setup metrics
+		setupMetrics();
+		
 		// prevent book stacking
 		try {
 			boolean ok = false;
@@ -217,6 +225,48 @@ public class BookWorm extends JavaPlugin {
 		
 		getServer().getLogger().info("BookWorm v" + this.getDescription().getVersion() + " loaded!");
 		
+	}
+	
+	private void setupMetrics() {
+		try {
+			Metrics metrics = new Metrics();
+			
+			metricBookCount = getDataFolder().listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					if (name.endsWith(".txt") && !name.equals("bookid.txt") && !name.equals("bookshelves.txt") && !name.equals("extrabookids.txt")) {
+						return true;
+					} else {
+						return false;
+					}
+				}				
+			}).length;
+			
+			metrics.addCustomData(this, new Metrics.Plotter("Book Count") {
+				public int getValue() {
+					return metricBookCount;
+				}
+			});
+			
+			metrics.addCustomData(this, new Metrics.Plotter("Pages Read") {
+				public int getValue() {
+					int reads = metricReads;
+					metricReads = 0;
+					return reads;
+				}
+			});
+			
+			metrics.addCustomData(this, new Metrics.Plotter("Lines Written") {
+				public int getValue() {
+					int writes = metricWrites;
+					metricWrites = 0;
+					return writes;
+				}
+			});
+			
+			metrics.beginMeasuringPlugin(this);
+		} catch (IOException e) {
+		}
 	}
 	
 	public static Book getBook(Player player) {

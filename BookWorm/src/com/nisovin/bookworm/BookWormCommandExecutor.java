@@ -288,6 +288,7 @@ public class BookWormCommandExecutor implements CommandExecutor {
 			plugin.books.put(bookId, book);
 			inHand.setDurability(bookId);
 			player.setItemInHand(inHand);
+			BookWorm.metricBookCount++;
 			
 			// send messages
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NEW_BOOK_CREATED.replace("%t", BookWorm.TEXT_COLOR_2 + book.getTitle()));
