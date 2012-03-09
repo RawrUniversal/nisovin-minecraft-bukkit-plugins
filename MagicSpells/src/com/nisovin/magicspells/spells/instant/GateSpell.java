@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.InstantSpell;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class GateSpell extends InstantSpell {
@@ -64,14 +65,20 @@ public class GateSpell extends InstantSpell {
 			
 			// get location
 			Location location;
-			if (coords.matches("^-?[0-9]+,[0-9]+,-?[0-9]+$")) {
-				String[] c = coords.split(",");
+			if (coords.matches("^-?[0-9]+, ?[0-9]+, ?-?[0-9]+$")) {
+				String[] c = coords.replace(" ", "").split(",");
 				int x = Integer.parseInt(c[0]);
 				int y = Integer.parseInt(c[1]);
 				int z = Integer.parseInt(c[2]);
 				location = new Location(world, x, y, z);
 			} else if (coords.equals("SPAWN")) {
 				location = world.getSpawnLocation();
+				location = new Location(world, location.getX(), world.getHighestBlockYAt(location), location.getZ());
+			} else if (coords.equals("EXACTSPAWN")) {
+				location = world.getSpawnLocation();
+			} else if (coords.equals("CURRENT")) {
+				Location l = player.getLocation();
+				location = new Location(world, l.getBlockX(), l.getBlockY(), l.getBlockZ());
 			} else {
 				// fail -- no location
 				MagicSpells.error(name + ": " + this.coords + " is not a valid location");
@@ -84,7 +91,7 @@ public class GateSpell extends InstantSpell {
 			
 			// check for landing point
 			Block b = location.getBlock();
-			if (b.getType() != Material.AIR || b.getRelative(0,1,0).getType() != Material.AIR) {
+			if (!BlockUtils.isPathable(b) || !BlockUtils.isPathable(b.getRelative(0,1,0))) {
 				// fail -- blocked
 				MagicSpells.error(name + ": landing spot blocked");
 				sendMessage(player, strGateFailed);
