@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
@@ -23,6 +24,10 @@ public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 
 	@Override
 	public void entityPathTo(LivingEntity entity, LivingEntity target) {
+	}
+
+	@Override
+	public void makeMinion(LivingEntity entity, Player master) {
 	}
 
 	@Override
@@ -56,6 +61,7 @@ public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 
 	@Override
 	public void removeMobEffect(LivingEntity entity, PotionEffectType type) {
+		entity.addPotionEffect(new PotionEffect(type, 1, 0), true);
 		entity.removePotionEffect(type);
 	}
 

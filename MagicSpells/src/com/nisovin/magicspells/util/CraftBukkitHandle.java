@@ -18,6 +18,8 @@ public interface CraftBukkitHandle {
 	
 	public void entityPathTo(LivingEntity entity, LivingEntity target);
 	
+	public void makeMinion(LivingEntity entity, Player master);
+	
 	public void queueChunksForUpdate(Player player, Set<Chunk> chunks);
 	
 	public void sendFakeSlotUpdate(Player player, int slot, ItemStack item);

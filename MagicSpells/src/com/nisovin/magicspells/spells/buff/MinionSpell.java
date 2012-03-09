@@ -69,7 +69,10 @@ public class MinionSpell extends BuffSpell {
 	
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (minions.containsKey(player.getName())) {
+		player.sendMessage("That spell is currently disabled.");
+		return PostCastAction.ALREADY_HANDLED;
+		
+		/*if (minions.containsKey(player.getName())) {
 			LivingEntity minion = minions.get(player.getName());
 			if (!minion.isDead()) { // don't toggle off if the minion is dead
 				turnOff(player);
@@ -96,15 +99,21 @@ public class MinionSpell extends BuffSpell {
 				
 				// spawn creature
 				LivingEntity minion = player.getWorld().spawnCreature(loc, creatureType);
-				minions.put(player.getName(), minion);
-				targets.put(player.getName(), null);
-				startSpellDuration(player);
+				if (minion instanceof Creature) {
+					minions.put(player.getName(), minion);
+					targets.put(player.getName(), null);
+					startSpellDuration(player);
+				} else {
+					minion.remove();
+					MagicSpells.error("Cannot summon a non-creature with the minion spell!");
+					return PostCastAction.ALREADY_HANDLED;
+				}
 			} else {
 				// fail -- no creature found
 				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
-		return PostCastAction.HANDLE_NORMALLY;
+		return PostCastAction.HANDLE_NORMALLY;*/
 	}
 	
 	@EventHandler
