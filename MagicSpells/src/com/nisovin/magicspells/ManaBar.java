@@ -62,16 +62,18 @@ public class ManaBar {
 	
 	public void showOnTool(Player player) {
 		ItemStack item = player.getInventory().getItem(ManaBarManager.manaBarToolSlot);
-		Material type = item.getType();
-		if (type == Material.WOOD_AXE || type == Material.WOOD_HOE || type == Material.WOOD_PICKAXE || type == Material.WOOD_SPADE || type == Material.WOOD_SWORD) {
-			int dur = 60 - (int)(((double)mana/(double)maxMana) * 60);
-			if (dur == 60) {
-				dur = 59;
-			} else if (dur == 0) {
-				dur = 1;
+		if (item != null) {
+			Material type = item.getType();
+			if (type == Material.WOOD_AXE || type == Material.WOOD_HOE || type == Material.WOOD_PICKAXE || type == Material.WOOD_SPADE || type == Material.WOOD_SWORD) {
+				int dur = 60 - (int)(((double)mana/(double)maxMana) * 60);
+				if (dur == 60) {
+					dur = 59;
+				} else if (dur == 0) {
+					dur = 1;
+				}
+				item.setDurability((short)dur);
+				player.getInventory().setItem(ManaBarManager.manaBarToolSlot, item);
 			}
-			item.setDurability((short)dur);
-			player.getInventory().setItem(ManaBarManager.manaBarToolSlot, item);
 		}
 	}
 	
