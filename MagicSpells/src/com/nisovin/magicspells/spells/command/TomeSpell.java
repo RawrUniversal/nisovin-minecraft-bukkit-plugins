@@ -146,7 +146,7 @@ public class TomeSpell extends CommandSpell {
 						}
 						// consume
 						if (uses <= 0 && consumeBook) {
-							player.setItemInHand(null);
+							event.getPlayer().setItemInHand(null);
 						}
 					}
 				}
