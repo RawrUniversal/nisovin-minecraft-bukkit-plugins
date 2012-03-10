@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -41,6 +42,9 @@ public class ProjectileSpell extends InstantSpell {
 	private int maxDistanceSquared;
 	private List<String> spellNames;
 	private List<TargetedSpell> spells;
+	private int aoeRadius;
+	private boolean targetPlayers;
+	private boolean allowTargetChange;
 	private String strHitCaster;
 	private String strHitTarget;
 	
@@ -69,6 +73,9 @@ public class ProjectileSpell extends InstantSpell {
 		maxDistanceSquared = getConfigInt("max-distance", 0);
 		maxDistanceSquared = maxDistanceSquared * maxDistanceSquared;
 		spellNames = getConfigStringList("spells", null);
+		aoeRadius = getConfigInt("aoe-radius", 0);
+		targetPlayers = getConfigBoolean("target-players", false);
+		allowTargetChange = getConfigBoolean("allow-target-change", true);
 		strHitCaster = getConfigString("str-hit-caster", "");
 		strHitTarget = getConfigString("str-hit-target", "");
 		
@@ -121,44 +128,54 @@ public class ProjectileSpell extends InstantSpell {
 		if (info == null || event.isCancelled()) return;
 				
 		if (!info.done && (maxDistanceSquared == 0 || projectile.getLocation().distanceSquared(info.start) <= maxDistanceSquared) && event.getEntity() instanceof LivingEntity) { 
-			LivingEntity target = (LivingEntity)event.getEntity();
 			
-			// call target event
-			SpellTargetEvent evt = new SpellTargetEvent(this, info.player, target);
-			Bukkit.getPluginManager().callEvent(evt);
-			if (evt.isCancelled()) {
-				return;
-			} else {
-				target = evt.getTarget();
-			}
-			
-			// run spells
-			for (TargetedSpell spell : spells) {
-				if (spell instanceof TargetedEntitySpell) {
-					((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
-					playGraphicalEffects(2, target);
-				} else if (spell instanceof TargetedLocationSpell) {
-					((TargetedLocationSpell)spell).castAtLocation(info.player, target.getLocation(), info.power);
-					playGraphicalEffects(2, target.getLocation());
+			if (aoeRadius == 0) {
+				LivingEntity target = (LivingEntity)event.getEntity();
+				
+				// check player
+				if (!targetPlayers && target instanceof Player) return;
+				
+				// call target event
+				SpellTargetEvent evt = new SpellTargetEvent(this, info.player, target);
+				Bukkit.getPluginManager().callEvent(evt);
+				if (evt.isCancelled()) {
+					return;
+				} else if (allowTargetChange) {
+					target = evt.getTarget();
 				}
+				
+				// run spells
+				for (TargetedSpell spell : spells) {
+					if (spell instanceof TargetedEntitySpell) {
+						((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
+						playGraphicalEffects(2, target);
+					} else if (spell instanceof TargetedLocationSpell) {
+						((TargetedLocationSpell)spell).castAtLocation(info.player, target.getLocation(), info.power);
+						playGraphicalEffects(2, target.getLocation());
+					}
+				}
+				
+				// send messages
+				String entityName;
+				if (target instanceof Player) {
+					entityName = ((Player)target).getDisplayName();
+				} else {
+					EntityType entityType = target.getType();
+					entityName = MagicSpells.entityNames.get(entityType);
+					if (entityName == null) {
+						entityName = entityType.getName();
+					}
+				}
+				sendMessage(info.player, strHitCaster, "%t", entityName);
+				if (target instanceof Player) {
+					sendMessage((Player)target, strHitTarget, "%a", info.player.getDisplayName());
+				}
+			} else {
+				aoe(projectile, info);
 			}
+			
 			info.done = true;
 			
-			// send messages
-			String entityName;
-			if (target instanceof Player) {
-				entityName = ((Player)target).getDisplayName();
-			} else {
-				EntityType entityType = target.getType();
-				entityName = MagicSpells.entityNames.get(entityType);
-				if (entityName == null) {
-					entityName = entityType.getName();
-				}
-			}
-			sendMessage(info.player, strHitCaster, "%t", entityName);
-			if (target instanceof Player) {
-				sendMessage((Player)target, strHitTarget, "%a", info.player.getDisplayName());
-			}
 		}
 		
 		if (cancelDamage) {
@@ -172,14 +189,18 @@ public class ProjectileSpell extends InstantSpell {
 		ProjectileInfo info = projectiles.get(projectile);
 		if (info != null) {
 			if (!requireHitEntity && !info.done && (maxDistanceSquared == 0 || projectile.getLocation().distanceSquared(info.start) <= maxDistanceSquared)) {
-				for (TargetedSpell spell : spells) {
-					if (spell instanceof TargetedLocationSpell) {
-						((TargetedLocationSpell)spell).castAtLocation(info.player, projectile.getLocation(), info.power);
-						playGraphicalEffects(2, projectile.getLocation());
+				if (aoeRadius == 0) {
+					for (TargetedSpell spell : spells) {
+						if (spell instanceof TargetedLocationSpell) {
+							((TargetedLocationSpell)spell).castAtLocation(info.player, projectile.getLocation(), info.power);
+							playGraphicalEffects(2, projectile.getLocation());
+						}
 					}
+					sendMessage(info.player, strHitCaster);
+				} else {
+					aoe(projectile, info);
 				}
 				info.done = true;
-				sendMessage(info.player, strHitCaster);
 			}
 			// remove it from world
 			if (removeProjectile) {
@@ -192,6 +213,41 @@ public class ProjectileSpell extends InstantSpell {
 				}
 			}, 0);
 		}
+	}
+	
+	private void aoe(Projectile projectile, ProjectileInfo info) {
+		List<Entity> entities = projectile.getNearbyEntities(aoeRadius, aoeRadius, aoeRadius);
+		for (Entity entity : entities) {
+			if (entity instanceof LivingEntity && (targetPlayers || !(entity instanceof Player)) && !entity.equals(info.player)) {
+				LivingEntity target = (LivingEntity)entity;
+				
+				// call target event
+				SpellTargetEvent evt = new SpellTargetEvent(this, info.player, target);
+				Bukkit.getPluginManager().callEvent(evt);
+				if (evt.isCancelled()) {
+					continue;
+				} else if (allowTargetChange) {
+					target = evt.getTarget();
+				}
+				
+				// run spells
+				for (TargetedSpell spell : spells) {
+					if (spell instanceof TargetedEntitySpell) {
+						((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
+						playGraphicalEffects(2, target);
+					} else if (spell instanceof TargetedLocationSpell) {
+						((TargetedLocationSpell)spell).castAtLocation(info.player, target.getLocation(), info.power);
+						playGraphicalEffects(2, target.getLocation());
+					}
+				}
+				
+				// send message if player
+				if (target instanceof Player) {
+					sendMessage((Player)target, strHitTarget, "%a", info.player.getDisplayName());
+				}
+			}
+		}
+		sendMessage(info.player, strHitCaster);
 	}
 	
 	public class EnderTpListener implements Listener {
