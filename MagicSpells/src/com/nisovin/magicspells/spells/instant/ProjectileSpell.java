@@ -16,8 +16,11 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
@@ -30,7 +33,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class ProjectileSpell extends InstantSpell {
 
-	private String projectileType;
+	private Class<? extends Projectile> projectileClass;
 	private double velocity;
 	private boolean requireHitEntity;
 	private boolean cancelDamage;
@@ -46,7 +49,19 @@ public class ProjectileSpell extends InstantSpell {
 	public ProjectileSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		projectileType = getConfigString("projectile", "arrow");
+		String projectileType = getConfigString("projectile", "arrow");
+		if (projectileType.equalsIgnoreCase("arrow")) {
+			projectileClass = Arrow.class;
+		} else if (projectileType.equalsIgnoreCase("snowball")) {
+			projectileClass = Snowball.class;
+		} else if (projectileType.equalsIgnoreCase("egg")) {
+			projectileClass = Egg.class;
+		} else if (projectileType.equalsIgnoreCase("enderpearl")) {
+			projectileClass = EnderPearl.class;
+		}
+		if (projectileClass == null) {
+			MagicSpells.error("Invalid projectile type on spell '" + internalName + "'");
+		}
 		velocity = getConfigFloat("velocity", 0);
 		requireHitEntity = getConfigBoolean("require-hit-entity", false);
 		cancelDamage = getConfigBoolean("cancel-damage", true);
@@ -76,21 +91,15 @@ public class ProjectileSpell extends InstantSpell {
 		if (spells.size() == 0) {
 			MagicSpells.error("Projectile spell '" + internalName + "' has no spells!");
 		}
+		
+		if (projectileClass == EnderPearl.class) {
+			registerEvents(new EnderTpListener());
+		}
 	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Class<? extends Projectile> projectileClass = null;
-			if (projectileType.equalsIgnoreCase("arrow")) {
-				projectileClass = Arrow.class;
-			} else if (projectileType.equalsIgnoreCase("snowball")) {
-				projectileClass = Snowball.class;
-			} else if (projectileType.equalsIgnoreCase("egg")) {
-				projectileClass = Egg.class;
-			} else if (projectileType.equalsIgnoreCase("enderpearl")) {
-				projectileClass = EnderPearl.class;
-			}
 			if (projectileClass != null) {
 				Projectile projectile = player.launchProjectile(projectileClass);
 				if (velocity > 0) {
@@ -182,6 +191,19 @@ public class ProjectileSpell extends InstantSpell {
 					projectiles.remove(projectile);
 				}
 			}, 0);
+		}
+	}
+	
+	public class EnderTpListener implements Listener {
+		@EventHandler(ignoreCancelled=true)
+		public void onPlayerTeleport(PlayerTeleportEvent event) {
+			if (event.getCause() == TeleportCause.ENDER_PEARL) {
+				for (Projectile projectile : projectiles.keySet()) {
+					if (projectile.getLocation().equals(event.getTo())) {
+						event.setCancelled(true);
+					}
+				}
+			}
 		}
 	}
 	
