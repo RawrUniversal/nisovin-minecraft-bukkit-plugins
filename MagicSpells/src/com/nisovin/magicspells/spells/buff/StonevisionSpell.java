@@ -206,7 +206,7 @@ public class StonevisionSpell extends BuffSpell {
 			
 			// queue up chunks for resending
 			if (unobfuscate) {
-				MagicSpells.craftbukkit.queueChunksForUpdate(player, chunks);
+				MagicSpells.getVolatileCodeHandler().queueChunksForUpdate(player, chunks);
 			}
 		}
 	}

@@ -59,10 +59,10 @@ public class TelekinesisSpell extends TargetedLocationSpell {
 	
 	private boolean activate(Block target) {
 		if (target.getType() == Material.LEVER || target.getType() == Material.STONE_BUTTON) {
-			MagicSpells.craftbukkit.toggleLeverOrButton(target);
+			MagicSpells.getVolatileCodeHandler().toggleLeverOrButton(target);
 			return true;
 		} else if (target.getType() == Material.WOOD_PLATE || target.getType() == Material.STONE_PLATE) {
-			MagicSpells.craftbukkit.pressPressurePlate(target);
+			MagicSpells.getVolatileCodeHandler().pressPressurePlate(target);
 			return true;
 		} else {
 			return false;

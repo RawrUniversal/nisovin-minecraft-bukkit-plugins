@@ -150,7 +150,7 @@ public class MinionSpell extends BuffSpell {
 						double distSq = minion.getLocation().toVector().distanceSquared(player.getLocation().toVector());
 						if (distSq > 3*3) {
 							// minion is too far, tell him to move closer
-							MagicSpells.craftbukkit.entityPathTo(minion, player);
+							MagicSpells.getVolatileCodeHandler().entityPathTo(minion, player);
 						} 
 					}
 				} else if (!targetPlayers && minions.containsValue(event.getEntity())) {

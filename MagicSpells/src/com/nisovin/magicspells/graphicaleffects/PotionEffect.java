@@ -28,7 +28,7 @@ public class PotionEffect extends GraphicalEffect {
 				}
 			}
 			
-			MagicSpells.craftbukkit.addPotionGraphicalEffect(le, color, duration);
+			MagicSpells.getVolatileCodeHandler().addPotionGraphicalEffect(le, color, duration);
 		}
 	}
 	

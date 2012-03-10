@@ -45,7 +45,7 @@ public abstract class TargetedSpell extends InstantSpell {
 			playerTarget = (Player)target;
 			entityName = playerTarget.getDisplayName();
 		} else {
-			entityName = MagicSpells.entityNames.get(entityType);
+			entityName = MagicSpells.getEntityNames().get(entityType);
 			if (entityName == null) {
 				entityName = entityType.getName();
 			}
@@ -135,7 +135,7 @@ public abstract class TargetedSpell extends InstantSpell {
 			bx = b.getX();
 			by = b.getY();
 			bz = b.getZ();			
-			if (checkLos && !MagicSpells.losTransparentBlocks.contains(b.getTypeId())) {
+			if (checkLos && !MagicSpells.getTransparentBlocks().contains(b.getTypeId())) {
 				// line of sight is broken, stop without target
 				break;
 			} else {
@@ -150,7 +150,7 @@ public abstract class TargetedSpell extends InstantSpell {
 						target = e;
 						
 						// check for anti-magic-zone
-						if (target != null && MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.willFizzle(target.getLocation(), this)) {
+						if (target != null && MagicSpells.getNoMagicZoneHandler() != null && MagicSpells.getNoMagicZoneHandler().willFizzle(target.getLocation(), this)) {
 							target = null;
 							continue;
 						}

@@ -829,6 +829,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return this.levelsCost;
 	}
 	
+	public String getConsoleName() {
+		return MagicSpells.strConsoleName;
+	}
+	
 	/**
 	 * This method is called immediately after all spells have been loaded.
 	 */

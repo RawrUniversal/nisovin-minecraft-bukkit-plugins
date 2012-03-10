@@ -161,7 +161,7 @@ public class ProjectileSpell extends InstantSpell {
 					entityName = ((Player)target).getDisplayName();
 				} else {
 					EntityType entityType = target.getType();
-					entityName = MagicSpells.entityNames.get(entityType);
+					entityName = MagicSpells.getEntityNames().get(entityType);
 					if (entityName == null) {
 						entityName = entityType.getName();
 					}

@@ -42,50 +42,50 @@ public class MagicSpells extends JavaPlugin {
 
 	public static MagicSpells plugin;
 
-	public static CraftBukkitHandle craftbukkit;
+	static CraftBukkitHandle craftbukkit;
 	
-	protected static boolean debug;
-	protected static ChatColor textColor;
-	protected static int broadcastRange;
+	static boolean debug;
+	static ChatColor textColor;
+	static int broadcastRange;
 	
-	protected static boolean opsHaveAllSpells;
-	protected static boolean defaultAllPermsFalse;
+	static boolean opsHaveAllSpells;
+	static boolean defaultAllPermsFalse;
 	
-	protected static boolean separatePlayerSpellsPerWorld;
-	protected static boolean allowCycleToNoSpell;
-	protected static boolean onlyCycleToCastableSpells;
-	protected static boolean ignoreDefaultBindings;
-	protected static boolean showStrCostOnMissingReagents;
-	public static List<Integer> losTransparentBlocks;
-	public static List<Integer> ignoreCastItemDurability;
-	public static HashMap<EntityType, String> entityNames;
-	protected static int globalCooldown;
-	protected static boolean castOnAnimate;
+	static boolean separatePlayerSpellsPerWorld;
+	static boolean allowCycleToNoSpell;
+	static boolean onlyCycleToCastableSpells;
+	static boolean ignoreDefaultBindings;
+	static boolean showStrCostOnMissingReagents;
+	static List<Integer> losTransparentBlocks;
+	static List<Integer> ignoreCastItemDurability;
+	static HashMap<EntityType, String> entityNames;
+	static int globalCooldown;
+	static boolean castOnAnimate;
 	
-	protected static boolean enableManaBars;
-	protected static int manaPotionCooldown;
-	protected static String strManaPotionOnCooldown;
-	protected static HashMap<ItemStack,Integer> manaPotions;
+	static boolean enableManaBars;
+	static int manaPotionCooldown;
+	static String strManaPotionOnCooldown;
+	static HashMap<ItemStack,Integer> manaPotions;
 	
-	protected static String strCastUsage;
-	protected static String strUnknownSpell;
-	protected static String strSpellChange;
-	protected static String strSpellChangeEmpty;
-	public static String strOnCooldown;
-	public static String strMissingReagents;
-	protected static String strCantCast;
-	protected static String strNoMagicZone;
-	protected static String strCantBind;
-	public static String strConsoleName;
+	static String strCastUsage;
+	static String strUnknownSpell;
+	static String strSpellChange;
+	static String strSpellChangeEmpty;
+	static String strOnCooldown;
+	static String strMissingReagents;
+	static String strCantCast;
+	static String strNoMagicZone;
+	static String strCantBind;
+	static String strConsoleName;
 	
-	protected static HashMap<String,Spell> spells; // map internal names to spells
-	protected static HashMap<String,Spell> spellNames; // map configured names to spells
-	protected static ArrayList<Spell> spellsOrdered; // spells in loaded order
-	protected static HashMap<String,Spellbook> spellbooks; // player spellbooks
+	static HashMap<String,Spell> spells; // map internal names to spells
+	static HashMap<String,Spell> spellNames; // map configured names to spells
+	static ArrayList<Spell> spellsOrdered; // spells in loaded order
+	static HashMap<String,Spellbook> spellbooks; // player spellbooks
 	
-	protected static ManaHandler mana;
-	protected static HashMap<Player,Long> manaPotionCooldowns;
-	public static NoMagicZoneHandler noMagicZones;
+	static ManaHandler mana;
+	static HashMap<Player,Long> manaPotionCooldowns;
+	static NoMagicZoneHandler noMagicZones;
 	
 	@Override
 	public void onEnable() {
@@ -512,13 +512,70 @@ public class MagicSpells extends JavaPlugin {
 		return spellbook;
 	}
 	
+	/**
+	 * Gets a list of blocks that are considered transparent
+	 * @return list of block types
+	 */
+	public static List<Integer> getTransparentBlocks() {
+		return losTransparentBlocks;
+	}
+	
+	/**
+	 * Gets a map of entity types and their configured names, to be used when sending messages to players
+	 * @return the map
+	 */
+	public static HashMap<EntityType, String> getEntityNames() {
+		return entityNames;
+	}
+	
+	/**
+	 * Checks whether to ignore the durability on the given type when using it as a cast item.
+	 * @param type the type to check
+	 * @return whether to ignore durability
+	 */
+	public static boolean ignoreCastItemDurability(int type) {
+		if (ignoreCastItemDurability != null && ignoreCastItemDurability.contains(type)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Gets the handler for no-magic zones.
+	 * @return the no-magic zone handler
+	 */
+	public static NoMagicZoneHandler getNoMagicZoneHandler() {
+		return noMagicZones;
+	}
+	
+	/**
+	 * Sets the handler for no-magic zones
+	 * @param handler the no-magic zone handler
+	 */
+	public static void setNoMagicZoneHandler(NoMagicZoneHandler handler) {
+		noMagicZones = handler;
+	}
+	
+	/**
+	 * Gets the mana handler, which handles all mana transactions.
+	 * @return the mana handler
+	 */
 	public static ManaHandler getManaHandler() {
 		return mana;
 	}
 	
-	public static void setManaHandler(ManaHandler m) {
+	/**
+	 * Sets the mana handler, which handles all mana transactions.
+	 * @param handler the mana handler
+	 */
+	public static void setManaHandler(ManaHandler handler) {
 		mana.turnOff();
-		mana = m;
+		mana = handler;
+	}
+	
+	public static CraftBukkitHandle getVolatileCodeHandler() {
+		return craftbukkit;
 	}
 	
 	/**

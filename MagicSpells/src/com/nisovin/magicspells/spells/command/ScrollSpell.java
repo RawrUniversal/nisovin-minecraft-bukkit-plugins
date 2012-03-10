@@ -81,7 +81,7 @@ public class ScrollSpell extends CommandSpell {
 		
 		// prevent paper stacking
 		if (setUnstackable) {
-			MagicSpells.craftbukkit.stackByData(itemId, stackByDataFn);
+			MagicSpells.getVolatileCodeHandler().stackByData(itemId, stackByDataFn);
 		}
 	}
 	
@@ -164,7 +164,7 @@ public class ScrollSpell extends CommandSpell {
 				int levelsCost = spell.getLevelsCost() * uses;
 				if (!hasReagents(player, reagents, healthCost, manaCost, hungerCost, experienceCost, levelsCost)) {
 					// missing reagents
-					sendMessage(player, MagicSpells.strMissingReagents);
+					sendMessage(player, strMissingReagents);
 					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					// has reagents, so just remove them

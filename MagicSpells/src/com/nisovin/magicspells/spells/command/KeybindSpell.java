@@ -189,7 +189,7 @@ public class KeybindSpell extends CommandSpell {
 	}
 	
 	protected void sendFakeSlotUpdate(Player player, int slot, ItemStack item) {
-		MagicSpells.craftbukkit.sendFakeSlotUpdate(player, slot, item);
+		MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, slot, item);
 	}
 	
 	private class Keybinds {
