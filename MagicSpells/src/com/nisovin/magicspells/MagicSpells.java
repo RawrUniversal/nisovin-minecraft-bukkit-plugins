@@ -74,7 +74,7 @@ public class MagicSpells extends JavaPlugin {
 	static String strOnCooldown;
 	static String strMissingReagents;
 	static String strCantCast;
-	static String strNoMagicZone;
+	static String strWrongWorld;
 	static String strCantBind;
 	static String strConsoleName;
 	
@@ -172,7 +172,7 @@ public class MagicSpells extends JavaPlugin {
 		strMissingReagents = config.getString("general.str-missing-reagents", "You do not have the reagents for that spell.");
 		strCantCast = config.getString("general.str-cant-cast", "You can't cast that spell right now.");
 		strCantBind = config.getString("general.str-cant-bind", "You cannot bind that spell to that item.");
-		strNoMagicZone = config.getString("general.str-no-magic-zone", "An anti-magic aura makes your spell fizzle.");
+		strWrongWorld = config.getString("general.str-wrong-world", "You cannot cast that spell here.");
 		strConsoleName = config.getString("general.console-name", "Admin");
 		
 		enableManaBars = config.getBoolean("general.mana.enable-mana-bars", true);
@@ -233,6 +233,7 @@ public class MagicSpells extends JavaPlugin {
 		// load spells
 		loadSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
 		loadMultiSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
+		log("Spells loaded: " + spells.size());
 		
 		// finalize permissions
 		addPermission(pm, "grant.*", PermissionDefault.FALSE, permGrantChildren);

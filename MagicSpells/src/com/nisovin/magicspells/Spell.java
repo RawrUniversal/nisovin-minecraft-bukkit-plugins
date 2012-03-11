@@ -53,6 +53,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	protected List<String> prerequisites;
 	protected List<String> replaces;
+	protected List<String> worldRestrictions;
 	
 	protected String strCost;
 	protected String strCastSelf;
@@ -61,6 +62,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String strMissingReagents;
 	protected String strCantCast;
 	protected String strCantBind;
+	protected String strWrongWorld;
 	
 	private HashMap<String, Long> lastCast;
 	
@@ -190,6 +192,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		// hierarchy options
 		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
 		this.replaces = config.getStringList(section + "." + spellName + ".replaces", null);
+		this.worldRestrictions = config.getStringList(section + "." + spellName + ".restrict-to-worlds", null);
 		
 		// strings
 		this.strCost = config.getString(section + "." + spellName + ".str-cost", null);
@@ -199,6 +202,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strMissingReagents = config.getString(section + "." + spellName + ".str-missing-reagents", MagicSpells.strMissingReagents);
 		this.strCantCast = config.getString(section + "." + spellName + ".str-cant-cast", MagicSpells.strCantCast);
 		this.strCantBind = config.getString(section + "." + spellName + ".str-cant-bind", null);
+		this.strWrongWorld = config.getString(section + "." + spellName + ".str-wrong-world", MagicSpells.strWrongWorld);
 	}
 	
 	/**
@@ -268,6 +272,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		SpellCastState state;
 		if (!MagicSpells.getSpellbook(player).canCast(this)) {
 			state = SpellCastState.CANT_CAST;
+		} else if (worldRestrictions != null && !worldRestrictions.contains(player.getWorld().getName())) {
+			state = SpellCastState.WRONG_WORLD;
 		} else if (MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.willFizzle(player, this)) {
 			state = SpellCastState.NO_MAGIC_ZONE;
 		} else if (onCooldown(player)) {
@@ -321,6 +327,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					sendMessage(player, strCastSelf);
 					sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getDisplayName()));
 				}
+				if (experience > 0) {
+					player.giveExp(experience);
+				}
 			} else if (state == SpellCastState.ON_COOLDOWN) {
 				MagicSpells.sendMessage(player, formatMessage(strOnCooldown, "%c", getCooldown(player)+""));
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
@@ -332,9 +341,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				MagicSpells.sendMessage(player, strCantCast);
 			} else if (state == SpellCastState.NO_MAGIC_ZONE) {
 				MagicSpells.noMagicZones.sendNoMagicMessage(player, this);
-			}
-			if (experience > 0) {
-				player.giveExp(experience);
+			} else if (state == SpellCastState.WRONG_WORLD) {
+				MagicSpells.sendMessage(player, strWrongWorld);
 			}
 		}
 		
@@ -869,7 +877,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		ON_COOLDOWN,
 		MISSING_REAGENTS,
 		CANT_CAST,
-		NO_MAGIC_ZONE
+		NO_MAGIC_ZONE,
+		WRONG_WORLD
 	}
 	
 	public enum PostCastAction {
