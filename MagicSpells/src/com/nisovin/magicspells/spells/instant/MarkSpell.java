@@ -20,7 +20,7 @@ public class MarkSpell extends InstantSpell {
 	
 	private boolean permanentMarks;
 	
-	public static HashMap<String,MagicLocation> marks;
+	private HashMap<String,MagicLocation> marks;
 
 	public MarkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -53,9 +53,13 @@ public class MarkSpell extends InstantSpell {
 		}
 	}
 	
+	public HashMap<String,MagicLocation> getMarks() {
+		return marks;
+	}
+	
 	private void loadMarks() {
 		try {
-			Scanner scanner = new Scanner(new File(MagicSpells.plugin.getDataFolder(), "marks.txt"));
+			Scanner scanner = new Scanner(new File(MagicSpells.plugin.getDataFolder(), "marks-" + internalName + ".txt"));
 			while (scanner.hasNext()) {
 				String line = scanner.nextLine();
 				if (!line.equals("")) {
@@ -75,7 +79,7 @@ public class MarkSpell extends InstantSpell {
 	
 	private void saveMarks() {
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(MagicSpells.plugin.getDataFolder(), "marks.txt"), false));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(new File(MagicSpells.plugin.getDataFolder(), "marks-" + internalName + ".txt"), false));
 			for (String name : marks.keySet()) {
 				MagicLocation loc = marks.get(name);
 				writer.append(name + ":" + loc.getWorld() + ":" + loc.getX() + ":" + loc.getY() + ":" + loc.getZ() + ":" + loc.getYaw() + ":" + loc.getPitch());

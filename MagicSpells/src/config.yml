@@ -912,6 +912,7 @@ spells:
         name: recall
         description: Teleports you to your marked location.
         cooldown: 300
+        mark-spell: mark
         max-range: -1
         cast-time: 0
         allow-cross-world: true

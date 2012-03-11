@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.spells.instant;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
@@ -11,11 +12,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.MagicLocation;
 
 public class RecallSpell extends InstantSpell {
 	
+	private String markSpellName;
 	private boolean allowCrossWorld;
 	private int maxRange;
 	private int castTime;
@@ -27,11 +31,13 @@ public class RecallSpell extends InstantSpell {
 	private String strCastInterrupted;
 	private String strRecallFailed;
 	
+	private HashMap<String,MagicLocation> marks;
 	private HashSet<String> casting;
 
 	public RecallSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		markSpellName = getConfigString("mark-spell", "mark");
 		allowCrossWorld = config.getBoolean("spells." + spellName + ".allow-cross-world", true);
 		maxRange = config.getInt("spells." + spellName + ".max-range", 0);
 		castTime = getConfigInt("cast-time", 0);
@@ -47,51 +53,58 @@ public class RecallSpell extends InstantSpell {
 			casting = new HashSet<String>();
 		}
 	}
+	
+	@Override
+	public void initialize() {
+		Spell spell = MagicSpells.getSpellByInternalName(markSpellName);
+		if (spell != null && spell instanceof MarkSpell) {
+			marks = ((MarkSpell)spell).getMarks();
+		} else {
+			MagicSpells.error("Failed to get marks list for '" + internalName + "' spell");
+		}
+	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			if (MarkSpell.marks == null || !MarkSpell.marks.containsKey(player.getName())) {
-				// no mark
+			Location mark = null;
+			if (useBedLocation) {
+				mark = player.getBedSpawnLocation();
+			} else if (marks != null) {
+				MagicLocation loc = marks.get(player.getName());
+				if (loc != null) {
+					mark = loc.getLocation();
+				}
+			}
+			if (mark == null) {
 				sendMessage(player, strNoMark);
 				return PostCastAction.ALREADY_HANDLED;
+			} else if (!allowCrossWorld && !mark.getWorld().getName().equals(player.getLocation().getWorld().getName())) {
+				// can't cross worlds
+				sendMessage(player, strOtherWorld);
+				return PostCastAction.ALREADY_HANDLED;
+			} else if (maxRange > 0 && mark.toVector().distanceSquared(player.getLocation().toVector()) > maxRange*maxRange) {
+				// too far
+				sendMessage(player, strTooFar);
+				return PostCastAction.ALREADY_HANDLED;
 			} else {
-				Location mark = null;
-				if (useBedLocation) {
-					player.getBedSpawnLocation();
+				// all good!
+				if (castTime > 0) {
+					// wait a bit
+					casting.add(player.getName());
+					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Teleporter(player, mark), castTime);
 				} else {
-					mark = MarkSpell.marks.get(player.getName()).getLocation();
-				}
-				if (mark == null) {
-					sendMessage(player, strNoMark);
-					return PostCastAction.ALREADY_HANDLED;
-				} else if (!allowCrossWorld && !mark.getWorld().getName().equals(player.getLocation().getWorld().getName())) {
-					// can't cross worlds
-					sendMessage(player, strOtherWorld);
-					return PostCastAction.ALREADY_HANDLED;
-				} else if (maxRange > 0 && mark.toVector().distanceSquared(player.getLocation().toVector()) > maxRange*maxRange) {
-					// too far
-					sendMessage(player, strTooFar);
-					return PostCastAction.ALREADY_HANDLED;
-				} else {
-					// all good!
-					if (castTime > 0) {
-						// wait a bit
-						casting.add(player.getName());
-						Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Teleporter(player, mark), castTime);
+					// go instantly
+					Location from = player.getLocation();
+					boolean teleported = player.teleport(mark);
+					if (teleported) {
+						playGraphicalEffects(1, from);
+						playGraphicalEffects(2, mark);
 					} else {
-						// go instantly
-						Location from = player.getLocation();
-						boolean teleported = player.teleport(mark);
-						if (teleported) {
-							playGraphicalEffects(1, from);
-							playGraphicalEffects(2, mark);
-						} else {
-							// fail -- teleport prevented
-							MagicSpells.error("Recall teleport blocked for " + player.getName());
-							sendMessage(player, strRecallFailed);
-							return PostCastAction.ALREADY_HANDLED;
-						}
+						// fail -- teleport prevented
+						MagicSpells.error("Recall teleport blocked for " + player.getName());
+						sendMessage(player, strRecallFailed);
+						return PostCastAction.ALREADY_HANDLED;
 					}
 				}
 			}
