@@ -16,8 +16,11 @@ public class MagicConfig {
 	
 	public MagicConfig(File file) {
 		try {
+			// load main config
 			mainConfig = new YamlConfiguration();
 			mainConfig.load(file);
+			
+			// load alt config
 			String s = this.getString("general.alt-config", null);
 			if (s != null && !s.trim().equals("")) {
 				s = s.trim();
@@ -27,8 +30,37 @@ public class MagicConfig {
 					altConfig.load(f);
 				}
 			}
+			
+			// load mini configs
+			File spellConfigsFolder = new File(MagicSpells.plugin.getDataFolder(), "spellconfigs");
+			if (spellConfigsFolder.exists()) {
+				loadSpellConfigs(spellConfigsFolder);
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		}
+	}
+	
+	private void loadSpellConfigs(File folder) {
+		YamlConfiguration conf;
+		String name;
+		File[] files = folder.listFiles();
+		for (File file : files) {
+			if (file.isDirectory()) {
+				loadSpellConfigs(file);
+			} else if (file.getName().endsWith(".yml")) {
+				name = file.getName().replace(".yml", "");
+				conf = new YamlConfiguration();
+				try {
+					conf.load(file);
+					for(String key : conf.getKeys(false)) {
+						mainConfig.set("spells." + name + "." + key, conf.get(key));
+					}
+				} catch (Exception e) {
+					MagicSpells.debug("Error reading spell config file: " + file.getName());
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
@@ -126,10 +158,6 @@ public class MagicConfig {
 		}
 	}
 	
-	public ConfigurationSection getSpellSection() {
-		return mainConfig.getConfigurationSection("spells");
-	}
-	
 	public Set<String> getSpellKeys() {
 		Set<String> keys = mainConfig.getConfigurationSection("spells").getKeys(false);
 		if (altConfig != null && altConfig.contains("spells") && altConfig.isConfigurationSection("spells")) {
@@ -137,6 +165,32 @@ public class MagicConfig {
 			keys.addAll(altkeys);
 		}
 		return keys;
+	}
+	
+	public static void explode() {
+		try {
+			File spellConfFolder = new File(MagicSpells.plugin.getDataFolder(), "spellconfigs");
+			if (!spellConfFolder.exists()) {
+				spellConfFolder.mkdir();
+			}
+			
+			YamlConfiguration config = new YamlConfiguration();
+			config.load(new File(MagicSpells.plugin.getDataFolder(), "config.yml"));
+			for (String spellName : config.getConfigurationSection("spells").getKeys(false)) {
+				File spellFile = new File(spellConfFolder, spellName + ".yml");
+				if (!spellFile.exists()) {
+					YamlConfiguration spellConf = new YamlConfiguration();
+					ConfigurationSection spellSec = config.getConfigurationSection("spells." + spellName);
+					for (String key : spellSec.getKeys(false)) {
+						spellConf.set(key, spellSec.get(key));
+					}
+					spellConf.save(spellFile);
+				}
+			}
+		} catch (Exception e) {
+			MagicSpells.error("Failed to explode config");
+			e.printStackTrace();
+		}
 	}
 	
 }

@@ -425,6 +425,9 @@ public class MagicSpells extends JavaPlugin {
 			} else if (sender.isOp() && args[0].equals("debug")) {
 				debug = !debug;
 				sender.sendMessage("MagicSpells: debug mode " + (debug?"enabled":"disabled"));
+			} else if (sender.isOp() && args[0].equals("configexplode")) {
+				MagicConfig.explode();
+				sender.sendMessage("MagicSpells: spell config exploded");
 			} else if (sender instanceof Player) {
 				Player player = (Player)sender;
 				Spellbook spellbook = getSpellbook(player);
