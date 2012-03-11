@@ -16,6 +16,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class BindSpell extends CommandSpell {
 	
 	private HashSet<CastItem> bindableItems;
+	private boolean allowBindToFist;
 	private String strUsage;
 	private String strNoSpell;
 	private String strCantBindSpell;
@@ -31,10 +32,11 @@ public class BindSpell extends CommandSpell {
 				bindableItems.add(new CastItem(s));
 			}
 		}
-		strUsage = config.getString("spells." + spellName + ".str-usage", "You must specify a spell name and hold an item in your hand.");
-		strNoSpell = config.getString("spells." + spellName + ".str-no-spell", "You do not know a spell by that name.");
-		strCantBindSpell = config.getString("spells." + spellName + ".str-cant-bind-spell", "That spell cannot be bound to an item.");
-		strCantBindItem = config.getString("spells." + spellName + ".str-cant-bind-item", "That spell cannot be bound to that item.");
+		allowBindToFist = getConfigBoolean("allow-bind-to-fist", false);
+		strUsage = getConfigString("str-usage", "You must specify a spell name and hold an item in your hand.");
+		strNoSpell = getConfigString("str-no-spell", "You do not know a spell by that name.");
+		strCantBindSpell = getConfigString("str-cant-bind-spell", "That spell cannot be bound to an item.");
+		strCantBindItem = getConfigString("str-cant-bind-item", "That spell cannot be bound to that item.");
 	}
 
 	@Override
@@ -61,7 +63,10 @@ public class BindSpell extends CommandSpell {
 				} else {
 					CastItem castItem = new CastItem(player.getItemInHand());
 					MagicSpells.debug("Trying to bind spell '" + spell.getInternalName() + "' to cast item " + castItem.toString() + "...");
-					if (bindableItems != null && !bindableItems.contains(castItem)) {
+					if (castItem.getItemTypeId() == 0 && !allowBindToFist) {
+						sendMessage(player, strCantBindItem);
+						return PostCastAction.ALREADY_HANDLED;
+					} else if (bindableItems != null && !bindableItems.contains(castItem)) {
 						sendMessage(player, strCantBindItem);
 						return PostCastAction.ALREADY_HANDLED;
 					} else if (!spell.canBind(castItem)) {
@@ -72,7 +77,7 @@ public class BindSpell extends CommandSpell {
 					} else {
 						MagicSpells.debug("    Performing bind...");
 						spellbook.removeSpell(spell);
-						spellbook.addSpell(spell, new CastItem(player.getItemInHand()));
+						spellbook.addSpell(spell, castItem);
 						spellbook.save();
 						MagicSpells.debug("    Bind successful.");
 						sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));

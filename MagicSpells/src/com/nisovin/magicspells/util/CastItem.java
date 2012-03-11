@@ -28,7 +28,7 @@ public class CastItem {
 			this.data = 0;
 		} else {
 			this.type = i.getTypeId();
-			if (MagicSpells.ignoreCastItemDurability(type)) {
+			if (this.type == 0 || MagicSpells.ignoreCastItemDurability(type)) {
 				this.data = 0;
 			} else {
 				this.data = i.getDurability();
@@ -48,8 +48,11 @@ public class CastItem {
 		} else {
 			this.type = Integer.parseInt(s);
 			this.data = 0;
-		}
-		
+		}		
+	}
+	
+	public int getItemTypeId() {
+		return this.type;
 	}
 	
 	public boolean equals(CastItem i) {

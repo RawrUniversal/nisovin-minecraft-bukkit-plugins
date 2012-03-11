@@ -161,7 +161,12 @@ public class Spellbook {
 	}
 	
 	protected Spell nextSpell(ItemStack item) {
-		CastItem castItem = new CastItem(item);
+		CastItem castItem;
+		if (item != null) {
+			castItem = new CastItem(item);
+		} else {
+			castItem = new CastItem(0);
+		}
 		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
@@ -193,7 +198,12 @@ public class Spellbook {
 	}
 	
 	protected Spell prevSpell(ItemStack item) {
-		CastItem castItem = new CastItem(item);
+		CastItem castItem;
+		if (item != null) {
+			castItem = new CastItem(item);
+		} else {
+			castItem = new CastItem(0);
+		}
 		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
@@ -202,7 +212,7 @@ public class Spellbook {
 				while (count++ < spells.size()) {
 					i--;
 					if (i < 0) {
-						if (MagicSpells.allowCycleToNoSpell) {
+						if (MagicSpells.allowCycleToNoSpell && i == -1) {
 							activeSpells.put(castItem, -1);
 							MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
 							return null;

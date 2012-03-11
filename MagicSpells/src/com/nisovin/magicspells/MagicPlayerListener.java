@@ -73,7 +73,7 @@ public class MagicPlayerListener implements Listener {
 			Player player = event.getPlayer();
 			ItemStack inHand = player.getItemInHand();
 			
-			if (inHand != null && inHand.getType() != Material.AIR) {
+			if ((inHand != null && inHand.getType() != Material.AIR) || MagicSpells.allowCastWithFist) {
 			
 				// cycle spell
 				Spell spell = null;
@@ -145,11 +145,9 @@ public class MagicPlayerListener implements Listener {
 	
 	private void castSpell(Player player) {
 		ItemStack inHand = player.getItemInHand();
-		Spell spell = null;
-		try {
-			spell = MagicSpells.getSpellbook(player).getActiveSpell(inHand);
-		} catch (NullPointerException e) {
-		}
+		if (!MagicSpells.allowCastWithFist && (inHand == null || inHand.getType() == Material.AIR)) return;
+		
+		Spell spell = MagicSpells.getSpellbook(player).getActiveSpell(inHand);
 		if (spell != null && spell.canCastWithItem()) {
 			// first check global cooldown
 			if (MagicSpells.globalCooldown > 0 && !spell.ignoreGlobalCooldown) {

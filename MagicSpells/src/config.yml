@@ -18,6 +18,7 @@ general:
     separate-player-spells-per-world: false
     allow-cycle-to-no-spell: false
     only-cycle-to-castable-spells: true
+    allow-cast-with-fist: false
     ops-have-all-spells: true
     default-all-perms-false: false
     ignore-default-bindings: false
@@ -138,11 +139,21 @@ spells:
         name: bind
         enable: true
         description: Binds a spell to a wand item.
+        allow-bind-to-fist: false
         str-cast-self: "You have successfully bound the %s spell to the \nitem you are holding."
         str-usage: You must specify a spell name and hold an item in your hand.
         str-no-spell: You do not know a spell by that name.
         str-cant-bind-spell: That spell cannot be bound to an item.
         str-cant-bind-item: That spell cannot be bound to that item.
+    unbind:
+        spell-class: ".command.UnbindSpell"
+        name: unbind
+        enable: true
+        description: Unbinds a spell from its assigned wand item.
+        str-cast-self: "You have successfully unbound the %s spell."
+        str-usage: You must specify a spell name.
+        str-no-spell: You do not know a spell by that name.
+        str-cant-bind-spell: That spell cannot be bound to an item.
 
 
     blind:
