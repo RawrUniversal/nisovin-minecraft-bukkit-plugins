@@ -15,10 +15,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -62,6 +64,8 @@ public class ProjectileSpell extends InstantSpell {
 			projectileClass = Egg.class;
 		} else if (projectileType.equalsIgnoreCase("enderpearl")) {
 			projectileClass = EnderPearl.class;
+		} else if (projectileType.equalsIgnoreCase("potion")) {
+			projectileClass = ThrownPotion.class;
 		}
 		if (projectileClass == null) {
 			MagicSpells.error("Invalid projectile type on spell '" + internalName + "'");
@@ -101,6 +105,8 @@ public class ProjectileSpell extends InstantSpell {
 		
 		if (projectileClass == EnderPearl.class) {
 			registerEvents(new EnderTpListener());
+		} else if (projectileClass == ThrownPotion.class) {
+			registerEvents(new PotionListener());
 		}
 	}
 
@@ -260,6 +266,15 @@ public class ProjectileSpell extends InstantSpell {
 						event.setCancelled(true);
 					}
 				}
+			}
+		}
+	}
+	
+	public class PotionListener implements Listener {
+		@EventHandler(ignoreCancelled=true)
+		public void onPotionSplash(PotionSplashEvent event) {
+			if (projectiles.containsKey(event.getPotion())) {
+				event.setCancelled(true);
 			}
 		}
 	}
