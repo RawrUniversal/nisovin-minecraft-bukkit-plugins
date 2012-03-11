@@ -119,7 +119,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					pos = 2;
 				} else if (data[0].equals("3") || data[0].equalsIgnoreCase("line") || data[0].equalsIgnoreCase("trail")) {
 					pos = 3;
-				} else if (data[0].equals("4") || data[0].equalsIgnoreCase("delayed") || data[0].equalsIgnoreCase("disabled")) {
+				} else if (data[0].equals("4") || data[0].equalsIgnoreCase("delayed") || data[0].equalsIgnoreCase("disabled") || data[0].equalsIgnoreCase("special")) {
 					pos = 4;
 				}
 				if (pos != 0) {

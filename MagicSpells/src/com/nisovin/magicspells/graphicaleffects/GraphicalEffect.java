@@ -32,6 +32,7 @@ public abstract class GraphicalEffect {
 	static {
 		effects.put("bigsmoke", new BigSmokeEffect());
 		effects.put("blockbreak", new BlockBreakEffect());
+		effects.put("cloud", new CloudEffect());
 		effects.put("ender", new EnderSignalEffect());
 		effects.put("explosion", new ExplosionEffect());
 		effects.put("lightning", new LightningEffect());

@@ -216,6 +216,7 @@ public class ProjectileSpell extends InstantSpell {
 	}
 	
 	private void aoe(Projectile projectile, ProjectileInfo info) {
+		playGraphicalEffects(4, projectile.getLocation());
 		List<Entity> entities = projectile.getNearbyEntities(aoeRadius, aoeRadius, aoeRadius);
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity && (targetPlayers || !(entity instanceof Player)) && !entity.equals(info.player)) {
