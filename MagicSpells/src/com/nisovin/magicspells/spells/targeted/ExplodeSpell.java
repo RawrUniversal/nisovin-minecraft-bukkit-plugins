@@ -22,6 +22,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	private int explosionSize;
 	private int backfireChance;
 	private boolean preventBlockDamage;
+	private boolean preventPlayerDamage;
 	private float damageMultiplier;
 	private boolean ignoreCanceled;
 	private String strNoTarget;
@@ -35,6 +36,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		explosionSize = getConfigInt("explosion-size", 4);
 		backfireChance = getConfigInt("backfire-chance", 0);
 		preventBlockDamage = getConfigBoolean("prevent-block-damage", false);
+		preventPlayerDamage = getConfigBoolean("prevent-player-damage", false);
 		damageMultiplier = getConfigFloat("damage-multiplier", 0);
 		ignoreCanceled = getConfigBoolean("ignore-canceled", false);
 		strNoTarget = getConfigString("str-no-target", "Cannot explode there.");
@@ -90,13 +92,17 @@ public class ExplodeSpell extends TargetedLocationSpell {
 
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (damageMultiplier > 0 
+		if ((damageMultiplier > 0 || preventPlayerDamage) 
 				&& !event.isCancelled() 
 				&& event.getCause() == DamageCause.BLOCK_EXPLOSION
 				&& event instanceof EntityDamageByBlockEvent
 				&& ((EntityDamageByBlockEvent)event).getDamager() == null
 				&& currentTick == Bukkit.getWorlds().get(0).getFullTime()) {
-			event.setDamage(Math.round(event.getDamage() * damageMultiplier * currentPower));
+			if (preventPlayerDamage && event.getEntity() instanceof Player) {
+				event.setCancelled(true);
+			} else if (damageMultiplier > 0) {
+				event.setDamage(Math.round(event.getDamage() * damageMultiplier * currentPower));
+			}
 		}
 	}
 	

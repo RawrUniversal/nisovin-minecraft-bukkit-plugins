@@ -378,6 +378,7 @@ spells:
         explosion-size: 4
         backfire-chance: 3
         prevent-block-damage: false
+        prevent-player-damage: false
         damage-multiplier: 10
         ignore-canceled: false
         cost:
