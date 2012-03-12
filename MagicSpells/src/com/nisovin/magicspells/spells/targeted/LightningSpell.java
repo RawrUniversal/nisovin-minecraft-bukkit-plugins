@@ -5,7 +5,10 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
@@ -33,6 +36,13 @@ public class LightningSpell extends TargetedLocationSpell {
 		noDamage = config.getBoolean("spells." + spellName + ".no-damage", false);		
 		strCastFail = config.getString("spells." + spellName + ".str-cast-fail", "");
 		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "Unable to find target.");
+	}
+	
+	@Override
+	public void initialize() {
+		if (!targetPlayers) {
+			registerEvents(new PlayerDamageListener());
+		}
 	}
 
 	@Override
@@ -94,5 +104,14 @@ public class LightningSpell extends TargetedLocationSpell {
 		lightning(target);
 		playGraphicalEffects(caster, target);
 		return true;
+	}
+	
+	public class PlayerDamageListener implements Listener {
+		@EventHandler(ignoreCancelled=true)
+		public void onDamage(EntityDamageEvent event) {
+			if (!targetPlayers && event.getCause() == DamageCause.LIGHTNING && event.getEntity() instanceof Player) {
+				event.setCancelled(true);
+			}
+		}
 	}
 }
