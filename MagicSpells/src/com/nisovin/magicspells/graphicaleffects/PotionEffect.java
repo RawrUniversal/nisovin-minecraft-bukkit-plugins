@@ -5,7 +5,7 @@ import org.bukkit.entity.LivingEntity;
 
 import com.nisovin.magicspells.MagicSpells;
 
-public class PotionEffect extends GraphicalEffect {
+class PotionEffect extends GraphicalEffect {
 
 	@Override
 	public void playEffect(Entity entity, String param) {

@@ -9,7 +9,7 @@ import org.bukkit.World;
 
 import com.nisovin.magicspells.MagicSpells;
 
-public class SmokeTrailEffect extends GraphicalEffect {
+class SmokeTrailEffect extends GraphicalEffect {
 
 	@Override
 	public void playEffect(Location location1, Location location2, String param) {

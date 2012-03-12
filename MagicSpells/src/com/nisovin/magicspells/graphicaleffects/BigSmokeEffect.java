@@ -4,7 +4,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class BigSmokeEffect extends GraphicalEffect {
+class BigSmokeEffect extends GraphicalEffect {
 
 	@Override
 	public void playEffect(Location location, String param) {

@@ -7,7 +7,7 @@ import org.bukkit.entity.Entity;
 
 import com.nisovin.magicspells.MagicSpells;
 
-public class SmokeSwirlEffect extends GraphicalEffect {
+class SmokeSwirlEffect extends GraphicalEffect {
 
 	private int[] x = {1,1,0,-1,-1,-1,0,1};
 	private int[] z = {0,1,1,1,0,-1,-1,-1};

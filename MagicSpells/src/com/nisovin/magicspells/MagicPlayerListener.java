@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class MagicPlayerListener implements Listener {
+class MagicPlayerListener implements Listener {
 	
 	private MagicSpells plugin;
 	

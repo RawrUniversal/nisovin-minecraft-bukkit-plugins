@@ -3,7 +3,7 @@ package com.nisovin.magicspells.graphicaleffects;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 
-public class EnderSignalEffect extends GraphicalEffect {
+class EnderSignalEffect extends GraphicalEffect {
 
 	@Override
 	public void playEffect(Location location, String param) {

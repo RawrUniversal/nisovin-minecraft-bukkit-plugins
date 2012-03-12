@@ -9,7 +9,7 @@ import org.bukkit.block.Block;
 
 import com.nisovin.magicspells.util.BlockUtils;
 
-public class CloudEffect extends GraphicalEffect {
+class CloudEffect extends GraphicalEffect {
 
 	Random rand = new Random();
 	
