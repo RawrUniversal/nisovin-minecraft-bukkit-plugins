@@ -168,7 +168,7 @@ public class FireballSpell extends TargetedSpell {
 				} else {
 					event.setFire(true);
 				}
-				if (noExplosion || damageMultiplier == 0) {
+				if (noExplosion || (damageMultiplier == 0 && targetPlayers)) {
 					fireballs.remove(fireball);
 				}
 			}
@@ -177,13 +177,17 @@ public class FireballSpell extends TargetedSpell {
 
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (damageMultiplier > 0 && !event.isCancelled() && event instanceof EntityDamageByEntityEvent && event.getCause() == DamageCause.ENTITY_EXPLOSION) {
+		if ((damageMultiplier > 0 || !targetPlayers) && !event.isCancelled() && event instanceof EntityDamageByEntityEvent && event.getCause() == DamageCause.ENTITY_EXPLOSION) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 			if (evt.getDamager() instanceof Fireball || evt.getDamager() instanceof SmallFireball) {
 				Fireball fireball = (Fireball)evt.getDamager();
 				if (fireball.getShooter() instanceof Player && fireballs.containsKey(fireball)) {
 					float power = fireballs.remove(fireball);
-					event.setDamage(Math.round(event.getDamage() * damageMultiplier * power));
+					if (event.getEntity() instanceof Player && !targetPlayers) {
+						event.setCancelled(true);
+					} else if (damageMultiplier > 0) {
+						event.setDamage(Math.round(event.getDamage() * damageMultiplier * power));
+					}
 				}
 			}
 		}
