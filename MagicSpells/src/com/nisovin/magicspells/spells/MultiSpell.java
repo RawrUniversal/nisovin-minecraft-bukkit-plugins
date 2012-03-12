@@ -16,6 +16,7 @@ public final class MultiSpell extends Spell {
 	private boolean castByCommand;
 	private boolean checkIndividualCooldowns;
 	
+	private List<String> spellList;
 	private ArrayList<Action> actions;
 	
 	public MultiSpell(MagicConfig config, String spellName) {
@@ -26,7 +27,13 @@ public final class MultiSpell extends Spell {
 		checkIndividualCooldowns = getConfigBoolean("check-individual-cooldowns", false);
 
 		actions = new ArrayList<Action>();
-		List<String> spellList = getConfigStringList("spells", null);
+		spellList = getConfigStringList("spells", null);
+	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+
 		if (spellList != null) {
 			for (String s : spellList) {
 				if (s.matches("DELAY [0-9]+")) {
@@ -37,11 +44,12 @@ public final class MultiSpell extends Spell {
 					if (spell != null) {
 						actions.add(new Action(spell));
 					} else {
-						Bukkit.getServer().getLogger().severe("MagicSpells: no such spell '" + s + "' for multi-spell '" + spellName + "'");
+						Bukkit.getServer().getLogger().severe("MagicSpells: no such spell '" + s + "' for multi-spell '" + internalName + "'");
 					}
 				}
 			}
 		}
+		spellList = null;
 	}
 
 	@Override
