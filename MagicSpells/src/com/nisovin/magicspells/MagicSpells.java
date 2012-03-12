@@ -307,8 +307,9 @@ public class MagicSpells extends JavaPlugin {
 			if (config.getBoolean("spells." + spellName + ".enabled", true)) {
 				try {
 					// load spell class
-					Class<? extends Spell> spellClass = cl.loadClass(className).asSubclass(Spell.class); // Class.forName(className, true, cl).asSubclass(Spell.class);
+					Class<? extends Spell> spellClass = cl.loadClass(className).asSubclass(Spell.class);
 					Constructor<? extends Spell> constructor = spellClass.getConstructor(MagicConfig.class, String.class);
+					constructor.setAccessible(true);
 					Spell spell = constructor.newInstance(config, spellName);
 					spells.put(spellName, spell);
 					spellsOrdered.add(spell);

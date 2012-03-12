@@ -7,6 +7,12 @@ import org.bukkit.event.HandlerList;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.util.SpellReagents;
 
+/** 
+ * The event that is called whenever a player attempts to cast a spell. 
+ * This event is called just before the effects of the spell are performed.
+ * Cancelling this event will prevent the spell from casting.
+ *
+ */
 public class SpellCastEvent extends SpellEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
