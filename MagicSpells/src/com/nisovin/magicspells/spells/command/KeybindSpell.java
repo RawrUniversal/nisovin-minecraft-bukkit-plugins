@@ -52,6 +52,7 @@ public class KeybindSpell extends CommandSpell {
 	
 	@Override
 	protected void initialize() {
+		super.initialize();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			loadKeybinds(p);
 		}

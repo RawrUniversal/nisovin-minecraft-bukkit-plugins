@@ -255,7 +255,6 @@ public class MagicSpells extends JavaPlugin {
 				}
 			}
 			spell.initialize();
-			pm.registerEvents(spell, this);
 		}
 		
 		// load online player spellbooks

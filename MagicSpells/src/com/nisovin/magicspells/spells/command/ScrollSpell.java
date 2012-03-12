@@ -87,6 +87,7 @@ public class ScrollSpell extends CommandSpell {
 	
 	@Override
 	protected void initialize() {
+		super.initialize();
 		load();
 	}
 

@@ -88,6 +88,7 @@ public class ProjectileSpell extends InstantSpell {
 	
 	@Override
 	public void initialize() {
+		super.initialize();
 		spells = new ArrayList<TargetedSpell>();
 		if (spellNames != null) {
 			for (String spellName : spellNames) {
