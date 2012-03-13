@@ -64,6 +64,9 @@ public class Book {
 		for (int i = 0; i < paras.length; i++) {
 			if (!paras[i].equals("")) {
 				String para = BookWorm.INDENT + paras[i].trim();
+				if (BookWorm.ENABLE_COLORS) {
+					para = para.replaceAll("&([0-9a-fk])", "\u00A7$1");
+				}
 				while (para.length() > BookWorm.LINE_LENGTH) {
 					int end = para.substring(0, BookWorm.LINE_LENGTH).lastIndexOf(' ');
                     if (end < 0) {
@@ -229,13 +232,18 @@ public class Book {
 			page = page % pages;
 			
 			String dispAuthor = getDisplayAuthor();
+			String title = this.title;
+			if (BookWorm.ENABLE_COLORS) {
+				dispAuthor = dispAuthor.replaceAll("&([0-9a-fk])", "\u00A7$1");
+				title = title.replaceAll("&([0-9a-fk])", "\u00A7$1");
+			}
 			
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_DIVIDER);
 			if (title.length() + dispAuthor.length() + 25 > BookWorm.LINE_LENGTH && dispAuthor.length() > 0) {
 				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + title);
 				player.sendMessage(BookWorm.INDENT + BookWorm.TEXT_COLOR + BookWorm.S_READ_BY + ": " + BookWorm.TEXT_COLOR_2 + dispAuthor + BookWorm.TEXT_COLOR + " (" + BookWorm.S_READ_PAGE + " " + (page+1) + "/" + pages + ")");
 			} else {
-				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + title + BookWorm.TEXT_COLOR + (author.length() > 0 ? " " + BookWorm.S_READ_BY + ": " + BookWorm.TEXT_COLOR_2 + dispAuthor + BookWorm.TEXT_COLOR : "") + " (" + BookWorm.S_READ_PAGE + " " + (page+1) + "/" + pages + ")");
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_BOOK + ": " + BookWorm.TEXT_COLOR_2 + title + BookWorm.TEXT_COLOR + (dispAuthor.length() > 0 ? " " + BookWorm.S_READ_BY + ": " + BookWorm.TEXT_COLOR_2 + dispAuthor + BookWorm.TEXT_COLOR : "") + " (" + BookWorm.S_READ_PAGE + " " + (page+1) + "/" + pages + ")");
 			}
 			player.sendMessage("   ");
 			for (int i = 0; i < BookWorm.PAGE_LENGTH && page*BookWorm.PAGE_LENGTH + i < contents.length; i++) {
@@ -245,7 +253,7 @@ public class Book {
 		}
 	}
 	
-	public String[] getPage(int page) {		
+	public String[] getPage(int page) {
 		if (!loaded) {
 			load();
 		}

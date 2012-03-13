@@ -1,6 +1,7 @@
 general:
     text-color: a
-    text-color-2: f    
+    text-color-2: f
+    enable-color-codes: true
     show-title-on-held-change: true
     require-book-to-copy: false
     make-real-copy: false

@@ -35,6 +35,7 @@ public class BookWorm extends JavaPlugin {
 	
 	protected static ChatColor TEXT_COLOR = ChatColor.GREEN;
 	protected static ChatColor TEXT_COLOR_2 = ChatColor.WHITE;
+	protected static boolean ENABLE_COLORS = true;
 	
 	protected static int LINE_LENGTH = 55;
 	protected static int PAGE_LENGTH = 6;
@@ -231,7 +232,7 @@ public class BookWorm extends JavaPlugin {
 		try {
 			Metrics metrics = new Metrics();
 			
-			metricBookCount = getDataFolder().listFiles(new FilenameFilter() {
+			metricBookCount = getDataFolder().list(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
 					if (name.endsWith(".txt") && !name.equals("bookid.txt") && !name.equals("bookshelves.txt") && !name.equals("extrabookids.txt")) {
@@ -362,6 +363,7 @@ public class BookWorm extends JavaPlugin {
 		
 		TEXT_COLOR = ChatColor.getByChar(config.getString("general.text-color", TEXT_COLOR.getChar()+""));
 		TEXT_COLOR_2 = ChatColor.getByChar(config.getString("general.text-color-2", TEXT_COLOR_2.getChar()+""));
+		ENABLE_COLORS = config.getBoolean("general.enable-color-codes", ENABLE_COLORS);
 		
 		SHOW_TITLE_ON_HELD_CHANGE = config.getBoolean("general.show-title-on-held-change", SHOW_TITLE_ON_HELD_CHANGE);
 		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
