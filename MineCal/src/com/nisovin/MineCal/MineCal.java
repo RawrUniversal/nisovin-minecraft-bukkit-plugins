@@ -8,18 +8,26 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Scanner;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class MineCal extends JavaPlugin {
+public class MineCal extends JavaPlugin implements Listener {
 
 	private long day = 0;
 	private long yearOffset = 0;
@@ -59,10 +67,52 @@ public class MineCal extends JavaPlugin {
 		DayWatcher watcher = new DayWatcher(this, world, offset, ignoreBigChanges, tickInterval);
 		task = getServer().getScheduler().scheduleAsyncRepeatingTask(this, watcher, tickInterval, tickInterval);
 		
-		new CalBlockListener(this);
-		new CalWorldListener(this);
+		getServer().getPluginManager().registerEvents(this, this);
 		
 		getServer().getLogger().info("MineCal v" + this.getDescription().getVersion() + " loaded!");
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onChunkLoad(final ChunkLoadEvent event) {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+				Chunk chunk = event.getChunk();
+				for (Location loc : signs.keySet()) {
+					if (loc.getChunk().equals(chunk)) {
+						updateSign(loc);
+					}
+				}
+			}
+		}, 2);
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onSignChange(SignChangeEvent event) {
+		if (!event.isCancelled()) {
+			boolean isCalSign = false;
+			for (int i = 0; i < 4; i++) {
+				if (event.getLine(i).contains("[cal]")) {
+					isCalSign = true;
+					break;
+				}
+			}
+			if (isCalSign) {
+				signs.put(event.getBlock().getLocation(), event.getLines().clone());
+				initSign(event);
+				saveSigns();
+			}
+		}
+	}
+
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onBlockBreak(BlockBreakEvent event) {
+		Block block = event.getBlock();
+		if (!event.isCancelled() && (block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN)) {
+			if (signs.containsKey(block.getLocation())) {
+				signs.remove(block.getLocation());
+				saveSigns();
+			}
+		}
 	}
 	
 	@Override
@@ -136,8 +186,8 @@ public class MineCal extends JavaPlugin {
 	
 	public void sendDate(CommandSender player) {		
 		String str = dateStr.replace("%y", year).replace("%m", month).replace("%w", weekday).replace("%d", dayOfMonth+"");
-		for (int i = 15; i >= 0; i--) {
-			str = str.replaceAll("%"+i, ChatColor.getByCode(i).toString());
+		for (ChatColor color : ChatColor.values()) {
+			str = str.replace("&" + color.getChar(), color.toString());
 		}
 		player.sendMessage(str);
 	}
