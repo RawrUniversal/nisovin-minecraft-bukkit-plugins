@@ -1,6 +1,6 @@
 name: MineCal
 main: com.nisovin.MineCal.MineCal
-version: 0.4
+version: 0.4.1
 commands:
     today:
         description: Show today's date

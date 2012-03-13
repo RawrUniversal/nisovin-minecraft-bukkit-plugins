@@ -65,7 +65,7 @@ public class MineCal extends JavaPlugin implements Listener {
 		World world = getServer().getWorld(worldName);
 		
 		DayWatcher watcher = new DayWatcher(this, world, offset, ignoreBigChanges, tickInterval);
-		task = getServer().getScheduler().scheduleAsyncRepeatingTask(this, watcher, tickInterval, tickInterval);
+		task = getServer().getScheduler().scheduleSyncRepeatingTask(this, watcher, tickInterval, tickInterval);
 		
 		getServer().getPluginManager().registerEvents(this, this);
 		
@@ -78,7 +78,7 @@ public class MineCal extends JavaPlugin implements Listener {
 			public void run() {
 				Chunk chunk = event.getChunk();
 				for (Location loc : signs.keySet()) {
-					if (loc.getChunk().equals(chunk)) {
+					if (loc.getBlockX() >> 4 == chunk.getX() && loc.getBlockZ() >> 4 == chunk.getZ()) {
 						updateSign(loc);
 					}
 				}
