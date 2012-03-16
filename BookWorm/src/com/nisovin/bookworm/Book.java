@@ -65,7 +65,7 @@ public class Book {
 			if (!paras[i].equals("")) {
 				String para = BookWorm.INDENT + paras[i].trim();
 				if (BookWorm.ENABLE_COLORS) {
-					para = para.replaceAll("&([0-9a-fk])", "\u00A7$1");
+					para = BookWorm.colorize(para);
 				}
 				while (para.length() > BookWorm.LINE_LENGTH) {
 					int end = para.substring(0, BookWorm.LINE_LENGTH).lastIndexOf(' ');
@@ -100,12 +100,19 @@ public class Book {
 		if (auth == null) {
 			auth = author;
 		}
+		if (BookWorm.ENABLE_COLORS) {
+			auth = BookWorm.colorize(auth);
+		}
 		return auth;
 	}
 	
 	public String getTitle() {
 		if (!loaded) load();
-		return title;
+		if (BookWorm.ENABLE_COLORS) {
+			return BookWorm.colorize(title);
+		} else {
+			return title;
+		}
 	}
 	
 	public void setTitle(String title) {
@@ -158,7 +165,11 @@ public class Book {
 		this.text += " " + text.trim();
 		this.text = this.text.trim();
 		unsaved = true;
-		return text.trim();
+		if (BookWorm.ENABLE_COLORS) {
+			return BookWorm.colorize(text.trim());
+		} else {
+			return text.trim();
+		}
 	}
 	
 	public String write(String[] text) {
@@ -171,7 +182,11 @@ public class Book {
 		}
 		this.text = this.text.trim();
 		unsaved = true;
-		return line.trim();
+		if (BookWorm.ENABLE_COLORS) {
+			return BookWorm.colorize(line.trim());
+		} else {
+			return line.trim();
+		}
 	}
 	
 	public boolean replace(String s) {
@@ -232,11 +247,7 @@ public class Book {
 			page = page % pages;
 			
 			String dispAuthor = getDisplayAuthor();
-			String title = this.title;
-			if (BookWorm.ENABLE_COLORS) {
-				dispAuthor = dispAuthor.replaceAll("&([0-9a-fk])", "\u00A7$1");
-				title = title.replaceAll("&([0-9a-fk])", "\u00A7$1");
-			}
+			String title = getTitle();
 			
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_READ_DIVIDER);
 			if (title.length() + dispAuthor.length() + 25 > BookWorm.LINE_LENGTH && dispAuthor.length() > 0) {

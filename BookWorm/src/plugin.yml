@@ -6,7 +6,7 @@ commands:
     bookworm:
         description: Basic bookworm command
         usage: /<command>
-        aliases: [bw, write, w]
+        aliases: [bw, write]
 permissions:
     bookworm.*:
         description: Gives access to all BookWorm abilities

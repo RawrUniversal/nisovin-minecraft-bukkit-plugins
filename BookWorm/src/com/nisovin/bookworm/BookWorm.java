@@ -323,6 +323,10 @@ public class BookWorm extends JavaPlugin {
 		return copy;
 	}
 	
+	protected static String colorize(String s) {
+		return s.replaceAll("&([0-9a-fk])", "\u00A7$1");
+	}
+	
 	protected void callEvent(BookEvent event) {
 		getServer().getPluginManager().callEvent(event);
 	}

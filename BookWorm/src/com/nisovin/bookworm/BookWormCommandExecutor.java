@@ -324,7 +324,7 @@ public class BookWormCommandExecutor implements CommandExecutor {
 				title += args[i] + " ";
 			}
 			book.setTitle(title.trim());
-			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_TITLE_DONE + BookWorm.TEXT_COLOR_2 + title);
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_TITLE_DONE + BookWorm.TEXT_COLOR_2 + book.getTitle());
 		} else {
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);
 		}		
@@ -337,7 +337,7 @@ public class BookWormCommandExecutor implements CommandExecutor {
 				author += args[i] + " ";
 			}
 			book.addHiddenData("Author", author.trim());
-			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_AUTHOR_DONE + BookWorm.TEXT_COLOR_2 + author);
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_AUTHOR_DONE + BookWorm.TEXT_COLOR_2 + book.getDisplayAuthor());
 		} else {
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);
 		}
