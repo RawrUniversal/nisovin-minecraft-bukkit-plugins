@@ -64,6 +64,10 @@ public class MagicConfig {
 		}
 	}
 	
+	public boolean isLoaded() {
+		return (mainConfig.contains("general") && mainConfig.contains("spells"));
+	}
+	
 	public boolean contains(String path) {
 		if (altConfig != null && altConfig.contains(path)) {
 			return true;
@@ -159,12 +163,16 @@ public class MagicConfig {
 	}
 	
 	public Set<String> getSpellKeys() {
-		Set<String> keys = mainConfig.getConfigurationSection("spells").getKeys(false);
-		if (altConfig != null && altConfig.contains("spells") && altConfig.isConfigurationSection("spells")) {
-			Set<String> altkeys = altConfig.getConfigurationSection("spells").getKeys(false);
-			keys.addAll(altkeys);
+		if (mainConfig != null && mainConfig.contains("spells") && mainConfig.isConfigurationSection("spells")) {
+			Set<String> keys = mainConfig.getConfigurationSection("spells").getKeys(false);
+			if (altConfig != null && altConfig.contains("spells") && altConfig.isConfigurationSection("spells")) {
+				Set<String> altkeys = altConfig.getConfigurationSection("spells").getKeys(false);
+				keys.addAll(altkeys);
+			}
+			return keys;
+		} else {
+			return null;
 		}
-		return keys;
 	}
 	
 	public static void explode() {
