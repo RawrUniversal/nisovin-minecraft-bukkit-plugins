@@ -10,7 +10,7 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public final class MultiSpell extends Spell {
+public final class MultiSpell extends InstantSpell {
 
 	private boolean castWithItem;
 	private boolean castByCommand;
@@ -44,7 +44,7 @@ public final class MultiSpell extends Spell {
 					if (spell != null) {
 						actions.add(new Action(spell));
 					} else {
-						Bukkit.getServer().getLogger().severe("MagicSpells: no such spell '" + s + "' for multi-spell '" + internalName + "'");
+						MagicSpells.error("No such spell '" + s + "' for multi-spell '" + internalName + "'");
 					}
 				}
 			}
