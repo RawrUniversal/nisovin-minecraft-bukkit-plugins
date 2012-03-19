@@ -30,7 +30,7 @@ public class CurrencyHandler {
 				if (defaultCurrency == null) {
 					defaultCurrency = key;
 				}
-				currencies.put(key, sec.getString(key));
+				currencies.put(key, sec.getString(key).toLowerCase());
 			}
 			if (defaultCurrency == null) {
 				defaultCurrency = "money";
@@ -39,9 +39,11 @@ public class CurrencyHandler {
 		}
 
 		// set up vault hook
-		RegisteredServiceProvider<Economy> provider = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
-		if (provider != null) {
-			economy = provider.getProvider();
+		if (currencies.containsValue("vault")) {
+			RegisteredServiceProvider<Economy> provider = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
+			if (provider != null) {
+				economy = provider.getProvider();
+			}
 		}
 	}
 	
@@ -55,7 +57,7 @@ public class CurrencyHandler {
 		
 		if (c == null) {
 			return false;
-		} else if (c.equalsIgnoreCase("vault") && economy != null) {
+		} else if (c.equals("vault") && economy != null) {
 			return economy.has(player.getName(), amount);
 		} else if (c.matches("^[0-9]+$")) {
 			return inventoryContains(player.getInventory(), new ItemStack(Integer.parseInt(c), (int)amount));
