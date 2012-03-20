@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
@@ -18,10 +19,10 @@ public class MainPlugin extends JavaPlugin {
 	public static MainPlugin yapp;
 	public static boolean debug = true;
 
-	private Map<String, Group> groups = new TreeMap<String, Group>();
-	private Map<String, User> players = new HashMap<String, User>();
+	private Map<String, Group> groups;
+	private Map<String, User> players;
 	
-	private Map<String, PermissionAttachment> attachments = new HashMap<String, PermissionAttachment>();
+	private Map<String, PermissionAttachment> attachments;
 	
 	@Override
 	public void onEnable() {
@@ -38,6 +39,8 @@ public class MainPlugin extends JavaPlugin {
 		
 		
 		// load logged in players
+		players = new HashMap<String, User>();
+		attachments = new HashMap<String, PermissionAttachment>();
 		for (Player player : getServer().getOnlinePlayers()) {
 			loadPlayerPermissions(player);
 		}
@@ -52,9 +55,35 @@ public class MainPlugin extends JavaPlugin {
 		}
 	}
 	
+	@Override
+	public void onDisable() {
+		saveAll();
+		
+		groups.clear();
+		groups = null;
+		players.clear();
+		players = null;
+		
+		for (PermissionAttachment attachment : attachments.values()) {
+			attachment.remove();
+		}
+		attachments.clear();
+		attachments = null;
+		
+		HandlerList.unregisterAll(this);
+		getServer().getServicesManager().unregisterAll(this);
+		
+		yapp = null;
+	}
+	
+	public void reload() {
+		onDisable();
+		onEnable();
+	}
+	
 	public void loadGroups() {
 		debug("Loading groups...");
-		groups = new HashMap<String, Group>();
+		groups = new TreeMap<String, Group>();
 		
 		// get groups from group folder
 		File groupsFolder = new File(getDataFolder(), "groups");
@@ -141,6 +170,15 @@ public class MainPlugin extends JavaPlugin {
 		String playerName = player.getName().toLowerCase();
 		players.remove(playerName).save();
 		attachments.remove(playerName);
+	}
+	
+	public void saveAll() {
+		for (User user : players.values()) {
+			user.save();
+		}
+		for (Group group : groups.values()) {
+			group.save();
+		}
 	}
 	
 	public static void addGroup(Group group) {
