@@ -35,6 +35,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	public PermissionContainer(String name, String type) {
 		this.name = name;
 		this.type = type;
+		this.dirty = true;
 	}
 	
 	public List<PermissionNode> getAllPermissions(World world) {
@@ -258,6 +259,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				}
 			}
 		}
+		
+		dirty = false;
 	}
 	
 	public void loadFromFile(File file, List<Group> groups, List<PermissionNode> perms) {

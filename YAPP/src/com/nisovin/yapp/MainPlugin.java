@@ -7,6 +7,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.conversations.Conversable;
+import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.PermissionAttachment;
@@ -14,7 +20,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.nisovin.yapp.menu.Menu;
+
 public class MainPlugin extends JavaPlugin {
+	
+	public static ChatColor TEXT_COLOR = ChatColor.GOLD;
 	
 	public static MainPlugin yapp;
 	public static boolean debug = true;
@@ -23,6 +33,9 @@ public class MainPlugin extends JavaPlugin {
 	private Map<String, User> players;
 	
 	private Map<String, PermissionAttachment> attachments;
+	
+	private boolean modalMenu = true;
+	private ConversationFactory menuFactory;
 	
 	@Override
 	public void onEnable() {
@@ -33,6 +46,15 @@ public class MainPlugin extends JavaPlugin {
 		if (!folder.exists()) {
 			folder.mkdir();
 		}
+		
+		// get config
+		File configFile = new File(folder, "config.txt");
+		if (!configFile.exists()) {
+			this.saveResource("config.txt", false);
+		}
+		SimpleConfig config = new SimpleConfig(configFile);
+		debug = config.getBool("general.debug");
+		
 		
 		// load all group data
 		loadGroups();
@@ -53,6 +75,13 @@ public class MainPlugin extends JavaPlugin {
 		if (pm.isPluginEnabled("Vault")) {
 			getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, new VaultService(), this, ServicePriority.Highest);
 		}
+		
+		// load menu data
+		menuFactory = new ConversationFactory(this)
+				.withFirstPrompt(Menu.MAIN_MENU)
+				.withModality(modalMenu)
+				.withEscapeSequence("q")
+				.withTimeout(60);
 	}
 	
 	@Override
@@ -74,6 +103,14 @@ public class MainPlugin extends JavaPlugin {
 		getServer().getServicesManager().unregisterAll(this);
 		
 		yapp = null;
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+		if (sender instanceof Conversable) {
+			menuFactory.buildConversation((Conversable)sender).begin();
+		}
+		return true;
 	}
 	
 	public void reload() {
