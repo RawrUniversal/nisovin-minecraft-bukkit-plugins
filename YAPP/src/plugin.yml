@@ -1,0 +1,9 @@
+name: YAPP
+main: com.nisovin.yapp.MainPlugin
+author: nisovin
+version: 1.0
+softdepend: [Vault]
+commands:
+    yapp:
+        description: Modify permission settings.
+        aliases: [permissions, permission, perms, perm]
