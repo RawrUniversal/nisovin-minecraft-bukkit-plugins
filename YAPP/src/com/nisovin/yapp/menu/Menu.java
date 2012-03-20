@@ -9,10 +9,10 @@ public class Menu {
 
 	// colors
 	public static ChatColor TEXT_COLOR = MainPlugin.TEXT_COLOR;
-	public static ChatColor HIGHLIGHT = ChatColor.YELLOW;
+	public static ChatColor HIGHLIGHT = MainPlugin.HIGHLIGHT_COLOR;
 	public static ChatColor KEYWORD_COLOR = ChatColor.DARK_AQUA;
 	public static ChatColor KEYLETTER_COLOR = ChatColor.AQUA;
-	public static ChatColor ERROR_COLOR = ChatColor.DARK_RED;
+	public static ChatColor ERROR_COLOR = MainPlugin.ERROR_COLOR;
 	
 	// prompts
 	public static final Prompt MAIN_MENU = new MainMenu();

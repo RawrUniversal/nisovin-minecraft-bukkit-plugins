@@ -50,6 +50,7 @@ public class SimpleConfig {
 					}
 					secdata.put(key.toLowerCase(), val);
 				}
+				scanner.close();
 			} catch (IOException e) {
 			}
 		}

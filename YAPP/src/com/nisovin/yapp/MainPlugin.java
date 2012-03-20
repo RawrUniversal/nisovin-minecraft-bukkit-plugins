@@ -8,10 +8,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.conversations.Conversable;
-import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -25,6 +21,8 @@ import com.nisovin.yapp.menu.Menu;
 public class MainPlugin extends JavaPlugin {
 	
 	public static ChatColor TEXT_COLOR = ChatColor.GOLD;
+	public static ChatColor HIGHLIGHT_COLOR = ChatColor.YELLOW;
+	public static ChatColor ERROR_COLOR = ChatColor.DARK_RED;
 	
 	public static MainPlugin yapp;
 	public static boolean debug = true;
@@ -70,6 +68,7 @@ public class MainPlugin extends JavaPlugin {
 		// register listeners
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PermListener(this), this);
+		getCommand("yapp").setExecutor(new CommandExec(this));
 		
 		// register vault hook
 		if (pm.isPluginEnabled("Vault")) {
@@ -103,14 +102,6 @@ public class MainPlugin extends JavaPlugin {
 		getServer().getServicesManager().unregisterAll(this);
 		
 		yapp = null;
-	}
-	
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-		if (sender instanceof Conversable) {
-			menuFactory.buildConversation((Conversable)sender).begin();
-		}
-		return true;
 	}
 	
 	public void reload() {
@@ -201,6 +192,10 @@ public class MainPlugin extends JavaPlugin {
 			debug("    Added: " + node);
 		}
 		player.recalculatePermissions();
+	}
+	
+	public ConversationFactory getMenuFactory() {
+		return menuFactory;
 	}
 	
 	public void unloadPlayer(Player player) {

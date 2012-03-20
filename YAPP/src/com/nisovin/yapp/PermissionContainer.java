@@ -142,9 +142,11 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public boolean addPermission(String world, String permission) {
+		PermissionNode node = new PermissionNode(permission);
 		if (world == null || world.isEmpty()) {
 			// add to base perms
-			permissions.add(new PermissionNode(permission));
+			permissions.remove(node);
+			permissions.add(node);
 			dirty = true;
 		} else {
 			List<PermissionNode> nodes = worldPermissions.get(world);
@@ -152,7 +154,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				nodes = new ArrayList<PermissionNode>();
 				worldPermissions.put(world, nodes);
 			}
-			nodes.add(new PermissionNode(permission));
+			nodes.remove(node);
+			nodes.add(node);
 			dirty = true;
 		}
 		return true;
@@ -326,7 +329,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				} else {
 					MainPlugin.warning(type + " '" + name + "' has orphan line: " + line);
 				}
-			}				
+			}
+			scanner.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}		
@@ -412,7 +416,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		file.newLine();
 		file.newLine();
 		for (PermissionNode n : perms) {
-			file.write((n.getValue() == true ? "+" : "-") + n.getNodeName());
+			file.write((n.getValue() == true ? " + " : " - ") + n.getNodeName());
 			file.newLine();
 		}
 		file.newLine();
