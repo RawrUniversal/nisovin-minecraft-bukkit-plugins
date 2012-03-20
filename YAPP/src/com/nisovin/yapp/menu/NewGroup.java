@@ -2,12 +2,11 @@ package com.nisovin.yapp.menu;
 
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
-import org.bukkit.conversations.StringPrompt;
 
 import com.nisovin.yapp.Group;
 import com.nisovin.yapp.MainPlugin;
 
-public class NewGroup extends StringPrompt {
+public class NewGroup extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
@@ -16,11 +15,9 @@ public class NewGroup extends StringPrompt {
 	}
 
 	@Override
-	public Prompt acceptInput(ConversationContext context, String input) {
+	public Prompt accept(ConversationContext context, String input) {
 		input = input.toLowerCase();
-		if (input.equals("<")) {
-			return Menu.SELECT_GROUP;
-		} else if (input.startsWith("y")) {
+		if (input.startsWith("y")) {
 			String groupName = (String)context.getSessionData("newgroupname");
 			Group group = new Group(groupName);
 			MainPlugin.addGroup(group);
@@ -32,6 +29,11 @@ public class NewGroup extends StringPrompt {
 			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "That is not a valid option!");
 			return this;
 		}
+	}
+
+	@Override
+	public Prompt getPreviousPrompt(ConversationContext context) {
+		return Menu.SELECT_GROUP;
 	}
 
 }

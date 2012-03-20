@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.entity.Player;
+
+import com.nisovin.yapp.menu.Menu;
 
 public class CommandExec implements CommandExecutor {
 
@@ -27,6 +30,7 @@ public class CommandExec implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
 		if (args.length == 0 && sender instanceof Conversable) {
+			Menu.sendLine((Conversable)sender);
 			plugin.getMenuFactory().buildConversation((Conversable)sender).begin();
 		} else if (args.length == 1) {
 			if (args[0].equals("@") || args[0].equalsIgnoreCase("reload")) {
@@ -35,6 +39,17 @@ public class CommandExec implements CommandExecutor {
 				sender.sendMessage(MainPlugin.TEXT_COLOR + "YAPP data reloaded");
 			} else if (args[0].equals("?")) {
 				// show status
+				PermissionContainer obj = selectedObject.get(sender);
+				String world = selectedWorld.get(sender);
+				if (obj == null && world == null) {
+					sender.sendMessage(MainPlugin.TEXT_COLOR + "You have nothing selected");
+				} else if (obj == null && world != null) {
+					sender.sendMessage(MainPlugin.TEXT_COLOR + "You have selected the world " + MainPlugin.HIGHLIGHT_COLOR + world);
+				} else {
+					String type = getType(obj);
+					sender.sendMessage(MainPlugin.TEXT_COLOR + "You have selected the " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + 
+							(world != null ? MainPlugin.TEXT_COLOR + " on world " + MainPlugin.HIGHLIGHT_COLOR + world : ""));
+				}
 			} else if (args[0].equalsIgnoreCase("delete")) {
 				// deleting current object (no confirmation yet)
 				delete(sender, false, alias);
@@ -101,18 +116,14 @@ public class CommandExec implements CommandExecutor {
 				delete(sender, true, alias);
 			} else if (args[0].equals("?")) {
 				// checking for permission or group
-				char mode;
 				if (arg.startsWith("p:") || arg.startsWith("P:") || arg.startsWith("n:") || arg.startsWith("N:")) {
-					mode = 'p';
+					checkPerm(sender, arg.substring(2));
 				} else if (arg.startsWith("g:") || arg.startsWith("G:")) {
-					mode = 'g';
+					checkGroup(sender, arg.substring(2));
 				} else if (arg.contains(".")) {
-					mode = 'p';
+					checkPerm(sender, arg);
 				} else {
-					mode = 'g';
-				}
-				if (mode == 'p') {
-					
+					checkGroup(sender, arg);
 				}
 			}
 		}
@@ -121,7 +132,7 @@ public class CommandExec implements CommandExecutor {
 	
 	private void select(CommandSender sender, String search) {
 		char mode = 'p';
-		if (search.contains(":")) {
+		if (search.contains(":") && search.length() >= 2) {
 			String[] s = search.split(":", 2);
 			char c = s[0].toLowerCase().charAt(0);
 			if (c == 'p' || c == 'u') {
@@ -184,13 +195,8 @@ public class CommandExec implements CommandExecutor {
 		}		
 		String world = selectedWorld.get(sender);		
 		obj.addPermission(world, perm);
-		
-		String type = "";
-		if (obj instanceof User) {
-			type = "player";
-		} else if (obj instanceof Group) {
-			type = "group";
-		}
+
+		String type = getType(obj);
 		sender.sendMessage(MainPlugin.TEXT_COLOR + "Added permission " + MainPlugin.HIGHLIGHT_COLOR + perm + MainPlugin.TEXT_COLOR + " to " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
 	}
 	
@@ -208,13 +214,8 @@ public class CommandExec implements CommandExecutor {
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "New group " + MainPlugin.HIGHLIGHT_COLOR + group + MainPlugin.TEXT_COLOR + " created");
 		}
 		obj.addGroup(world, g);
-		
-		String type = "";
-		if (obj instanceof User) {
-			type = "player";
-		} else if (obj instanceof Group) {
-			type = "group";
-		}
+
+		String type = getType(obj);
 		sender.sendMessage(MainPlugin.TEXT_COLOR + "Added group " + MainPlugin.HIGHLIGHT_COLOR + g.getName() + MainPlugin.TEXT_COLOR + " to " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
 	}
 	
@@ -226,13 +227,8 @@ public class CommandExec implements CommandExecutor {
 		}
 		String world = selectedWorld.get(sender);		
 		boolean ok = obj.removePermission(world, perm);
-		
-		String type = "";
-		if (obj instanceof User) {
-			type = "player";
-		} else if (obj instanceof Group) {
-			type = "group";
-		}
+
+		String type = getType(obj);
 		if (ok) {
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "Removed permission " + MainPlugin.HIGHLIGHT_COLOR + perm + MainPlugin.TEXT_COLOR + " from " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
 		} else {
@@ -254,13 +250,8 @@ public class CommandExec implements CommandExecutor {
 			return;
 		}
 		boolean ok = obj.removeGroup(world, g);
-		
-		String type = "";
-		if (obj instanceof User) {
-			type = "player";
-		} else if (obj instanceof Group) {
-			type = "group";
-		}
+
+		String type = getType(obj);
 		if (ok) {
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "Removed group " + MainPlugin.HIGHLIGHT_COLOR + g.getName() + MainPlugin.TEXT_COLOR + " from " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
 		} else {
@@ -276,14 +267,76 @@ public class CommandExec implements CommandExecutor {
 		}
 		String world = selectedWorld.get(sender);
 		obj.addPermission(world, "-" + perm);
-		
-		String type = "";
-		if (obj instanceof User) {
-			type = "player";
-		} else if (obj instanceof Group) {
-			type = "group";
-		}
+
+		String type = getType(obj);		
 		sender.sendMessage(MainPlugin.TEXT_COLOR + "Negated permission " + MainPlugin.HIGHLIGHT_COLOR + perm + MainPlugin.TEXT_COLOR + " for " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
+	}
+	
+	private void checkPerm(CommandSender sender, String perm) {
+		// get object
+		PermissionContainer obj = selectedObject.get(sender);
+		if (obj == null) {
+			noObj(sender);
+			return;
+		}
+		
+		// get player if possible
+		Player player = null;
+		if (obj instanceof User) {
+			player = ((User)obj).getPlayer();
+		}
+
+		// get world
+		String world = selectedWorld.get(sender);
+		if ((world == null || world.isEmpty()) && player == null) {
+			sender.sendMessage(MainPlugin.ERROR_COLOR + "You must select a world to check a permission");
+			return;
+		}
+
+		// get type
+		String type = getType(obj);
+		
+		boolean has = false;
+		if (player != null) {
+			has = player.hasPermission(perm);
+		} else {
+			has = obj.has(world, perm);
+		}
+		if (has) {
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " does have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + perm);
+		} else {
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + perm);			
+		}
+	}
+	
+	private void checkGroup(CommandSender sender, String group) {
+		// get object
+		PermissionContainer obj = selectedObject.get(sender);
+		if (obj == null) {
+			noObj(sender);
+			return;
+		}
+
+		// get world
+		String world = selectedWorld.get(sender);
+		
+		// get group
+		Group g = MainPlugin.getGroup(group);
+		if (g == null) {
+			sender.sendMessage(MainPlugin.ERROR_COLOR + "That group does not exist");
+			return;
+		}
+
+		// get type
+		String type = getType(obj);
+		
+		if (obj.inGroup(world, g, false)) {
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " directly inherits " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+		} else if (obj.inGroup(world, g, true)) {
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " indirectly inherits " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+		} else {
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " does not inherit " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+		}
 	}
 	
 	private void delete(CommandSender sender, boolean confirmed, String alias) {
@@ -295,12 +348,7 @@ public class CommandExec implements CommandExecutor {
 		}
 
 		// get type
-		String type = "";
-		if (obj instanceof User) {
-			type = "player";
-		} else if (obj instanceof Group) {
-			type = "group";
-		}
+		String type = getType(obj);
 		
 		// send confirmation message
 		if (!confirmed) {
@@ -318,6 +366,16 @@ public class CommandExec implements CommandExecutor {
 	
 	private void noObj(CommandSender sender) {
 		sender.sendMessage(MainPlugin.TEXT_COLOR + "You have nothing selected!");
+	}
+	
+	private String getType(PermissionContainer obj) {
+		if (obj instanceof User) {
+			return "player";
+		} else if (obj instanceof Group) {
+			return "group";
+		} else {
+			return "";
+		}
 	}
 	
 }

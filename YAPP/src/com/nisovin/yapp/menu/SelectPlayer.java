@@ -1,21 +1,36 @@
 package com.nisovin.yapp.menu;
 
+import org.bukkit.Bukkit;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
-import org.bukkit.conversations.StringPrompt;
+import org.bukkit.entity.Player;
 
-public class SelectPlayer extends StringPrompt {
+import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.User;
+
+public class SelectPlayer extends MenuPrompt {
 
 	@Override
-	public Prompt acceptInput(ConversationContext arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getPromptText(ConversationContext context) {
+		return Menu.TEXT_COLOR + "Please type the player you would like to modify:";
+	}
+	
+	@Override
+	public Prompt accept(ConversationContext context, String input) {
+		Player player = Bukkit.getPlayer(input);
+		if (player == null) {
+			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "That player could not be found");
+			return this;
+		} else {
+			User user = MainPlugin.getPlayerUser(player.getName());
+			context.setSessionData("obj", user);
+			return Menu.MODIFY_OPTIONS;
+		}
 	}
 
 	@Override
-	public String getPromptText(ConversationContext arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public Prompt getPreviousPrompt(ConversationContext context) {
+		return Menu.MAIN_MENU;
 	}
 
 }

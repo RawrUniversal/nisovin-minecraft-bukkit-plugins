@@ -80,7 +80,7 @@ public class SimpleConfig {
 		return getValue(path);
 	}
 	
-	public int getInt(String path) {
+	public int getint(String path) {
 		String val = getValue(path);
 		if (val == null) {
 			return 0;
@@ -107,7 +107,7 @@ public class SimpleConfig {
 		}
 	}
 	
-	public double getDoub(String path) {
+	public double getdouble(String path) {
 		String val = getValue(path);
 		if (val == null) {
 			return 0;
@@ -134,7 +134,7 @@ public class SimpleConfig {
 		}
 	}
 	
-	public boolean getBool(String path) {
+	public boolean getboolean(String path) {
 		String val = getValue(path);
 		if (val == null) {
 			return false;

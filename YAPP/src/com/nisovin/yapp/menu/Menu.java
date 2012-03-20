@@ -20,18 +20,24 @@ public class Menu {
 	// prompts
 	public static final Prompt MAIN_MENU = new MainMenu();
 	public static final Prompt SELECT_PLAYER = new SelectPlayer();
+	public static final Prompt SELECT_OFFLINE_PLAYER = new SelectOfflinePlayer();
 	public static final Prompt SELECT_GROUP = new SelectGroup();
-	public static final Prompt SELECT_WORLD = new SelectWorld();
 	public static final Prompt NEW_GROUP = new NewGroup();
+	public static final Prompt SELECT_WORLD = new SelectWorld();
+	public static final Prompt INVALID_WORLD = new InvalidWorld();
 	public static final Prompt MODIFY_OPTIONS = new ModifyOptions();
 
+	public static void sendLine(Conversable c) {
+		c.sendRawMessage(Menu.TEXT_COLOR + "---------------------------------------------------");
+	}
+	
 	public static class AbandonedListener implements ConversationAbandonedListener {
 
 		@Override
 		public void conversationAbandoned(ConversationAbandonedEvent event) {
 			Conversable c = event.getContext().getForWhom();
 			c.sendRawMessage(Menu.TEXT_COLOR + "Exiting YAPP menu");
-			c.sendRawMessage(Menu.TEXT_COLOR + "---------------------------------------------------");
+			sendLine(c);
 		}
 		
 	}

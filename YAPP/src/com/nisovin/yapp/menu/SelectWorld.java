@@ -1,21 +1,39 @@
 package com.nisovin.yapp.menu;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
-import org.bukkit.conversations.StringPrompt;
 
-public class SelectWorld extends StringPrompt {
+public class SelectWorld extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
-		// TODO Auto-generated method stub
-		return null;
+		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Please type the world you would like to work with");
+		return Menu.TEXT_COLOR + "(enter a space to clear your world selection):";
 	}
 
 	@Override
-	public Prompt acceptInput(ConversationContext context, String input) {
-		// TODO Auto-generated method stub
-		return null;
+	public Prompt accept(ConversationContext context, String input) {
+		input = input.trim();
+		if (input.isEmpty()) {
+			context.setSessionData("world", null);
+			return Menu.MAIN_MENU;
+		}
+		World world = Bukkit.getWorld(input);
+		if (world == null) {
+			context.setSessionData("noworld", input);
+			return Menu.INVALID_WORLD;
+		} else {
+			context.setSessionData("world", world.getName());
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Selected world " + Menu.HIGHLIGHT + world.getName());
+			return Menu.MAIN_MENU;
+		}
+	}
+
+	@Override
+	public Prompt getPreviousPrompt(ConversationContext context) {
+		return Menu.MAIN_MENU;
 	}
 
 }

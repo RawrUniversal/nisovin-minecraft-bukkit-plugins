@@ -3,26 +3,21 @@ package com.nisovin.yapp.menu;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
-import com.nisovin.yapp.Group;
 import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.User;
 
-public class SelectGroup extends MenuPrompt {
+public class SelectOfflinePlayer extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
-		return Menu.TEXT_COLOR + "Please type the group you would like to modify:";
+		return Menu.TEXT_COLOR + "Please type the complete name of the player you would like to modify:";
 	}
-
+	
 	@Override
 	public Prompt accept(ConversationContext context, String input) {
-		Group group = MainPlugin.getGroup(input.trim());
-		if (group != null) {
-			context.setSessionData("obj", group);
-			return Menu.MODIFY_OPTIONS;
-		} else {
-			context.setSessionData("newgroupname", input.trim());
-			return Menu.NEW_GROUP;
-		}
+		User user = MainPlugin.getPlayerUser(input.trim());
+		context.setSessionData("obj", user);
+		return Menu.MODIFY_OPTIONS;
 	}
 
 	@Override

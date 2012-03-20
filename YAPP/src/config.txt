@@ -3,3 +3,4 @@
 debug : false
 default group : default
 use build perm : true
+modal menu : true

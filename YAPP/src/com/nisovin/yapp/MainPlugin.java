@@ -52,14 +52,15 @@ public class MainPlugin extends JavaPlugin {
 			this.saveResource("config.txt", false);
 		}
 		SimpleConfig config = new SimpleConfig(configFile);
-		debug = config.getBool("general.debug");
+		debug = config.getboolean("general.debug");
+		modalMenu = config.getboolean("general.modal menu");
+		String defGroupName = config.getString("general.default group");
 		
 		
 		// load all group data
 		loadGroups();
 		
 		// get default group
-		String defGroupName = config.getString("general.default group");
 		if (defGroupName != null && !defGroupName.isEmpty()) {
 			defaultGroup = getGroup(defGroupName);
 			if (defaultGroup == null) {
@@ -82,7 +83,7 @@ public class MainPlugin extends JavaPlugin {
 		// register listeners
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PermListener(this), this);
-		if (config.getBool("general.use build perm")) {
+		if (config.getboolean("general.use build perm")) {
 			pm.registerEvents(new BuildListener(), this);
 		}
 		

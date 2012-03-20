@@ -6,7 +6,7 @@ softdepend: [Vault]
 commands:
     yapp:
         description: Modify permission settings.
-        aliases: [permissions, permission, perms, perm]
+        aliases: [permissions, permission, perms, perm, p]
         permission: yapp.admin
     yapppromote:
         description: Promotes a player to the next group.
