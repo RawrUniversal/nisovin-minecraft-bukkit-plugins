@@ -1,5 +1,7 @@
 package com.nisovin.yapp;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class User extends PermissionContainer {
@@ -19,6 +21,14 @@ public class User extends PermissionContainer {
 	@Override
 	public String getName() {
 		return realName;
+	}
+	
+	public Player getPlayer() {
+		return Bukkit.getPlayerExact(realName);
+	}
+	
+	public OfflinePlayer getOfflinePlayer() {
+		return Bukkit.getOfflinePlayer(realName);
 	}
 	
 }

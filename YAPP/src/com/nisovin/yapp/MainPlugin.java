@@ -29,6 +29,7 @@ public class MainPlugin extends JavaPlugin {
 
 	private Map<String, Group> groups;
 	private Map<String, User> players;
+	private Group defaultGroup;
 	
 	private Map<String, PermissionAttachment> attachments;
 	
@@ -57,6 +58,19 @@ public class MainPlugin extends JavaPlugin {
 		// load all group data
 		loadGroups();
 		
+		// get default group
+		String defGroupName = config.getString("general.default group");
+		if (defGroupName != null && !defGroupName.isEmpty()) {
+			defaultGroup = getGroup(defGroupName);
+			if (defaultGroup == null) {
+				// create default group
+				defaultGroup = new Group(defGroupName);
+				defaultGroup.addPermission(null, "yapp.build");
+				defaultGroup.save();
+				addGroup(defaultGroup);
+				log("Created default group '" + defGroupName + "'");
+			}
+		}
 		
 		// load logged in players
 		players = new HashMap<String, User>();
@@ -68,6 +82,11 @@ public class MainPlugin extends JavaPlugin {
 		// register listeners
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PermListener(this), this);
+		if (config.getBool("general.use build perm")) {
+			pm.registerEvents(new BuildListener(), this);
+		}
+		
+		// register commands
 		getCommand("yapp").setExecutor(new CommandExec(this));
 		
 		// register vault hook
@@ -80,7 +99,9 @@ public class MainPlugin extends JavaPlugin {
 				.withFirstPrompt(Menu.MAIN_MENU)
 				.withModality(modalMenu)
 				.withEscapeSequence("q")
-				.withTimeout(60);
+				.withTimeout(60)
+				.withLocalEcho(true)
+				.addConversationAbandonedListener(new Menu.AbandonedListener());
 	}
 	
 	@Override
@@ -165,6 +186,11 @@ public class MainPlugin extends JavaPlugin {
 			user = new User(playerName);
 			yapp.players.put(playerName, user);
 			user.loadFromFiles();
+			if (yapp.defaultGroup != null && user.getGroups(null).size() == 0) {
+				user.addGroup(null, yapp.defaultGroup);
+				user.save();
+				debug("Added default group '" + yapp.defaultGroup.getName() + "' to player '" + playerName + "'");
+			}
 		}
 		return user;
 	}

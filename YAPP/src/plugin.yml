@@ -7,3 +7,19 @@ commands:
     yapp:
         description: Modify permission settings.
         aliases: [permissions, permission, perms, perm]
+        permission: yapp.admin
+    yapppromote:
+        description: Promotes a player to the next group.
+        aliases: [promote]
+        permission: yapp.promote
+    yappdemote:
+        description: Demotes a player to the previous group.
+        aliases: [demote]
+        permission: yapp.demote
+permissions:
+    yapp.build:
+        description: Allows the player to build.
+        default: false
+    yapp.admin:
+        description: Modify permission settings.
+        default: op

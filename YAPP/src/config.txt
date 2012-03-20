@@ -1,3 +1,5 @@
 == GENERAL ==
 
 debug : false
+default group : default
+use build perm : true

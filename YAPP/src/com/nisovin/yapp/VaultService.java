@@ -70,7 +70,7 @@ public class VaultService extends net.milkbowl.vault.permission.Permission {
 		if (g == null) {
 			return false;
 		} else {
-			return MainPlugin.getPlayerUser(player).inGroup(world, g);
+			return MainPlugin.getPlayerUser(player).inGroup(world, g, true);
 		}
 	}
 

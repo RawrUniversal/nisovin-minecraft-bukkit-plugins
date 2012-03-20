@@ -1,6 +1,9 @@
 package com.nisovin.yapp.menu;
 
 import org.bukkit.ChatColor;
+import org.bukkit.conversations.Conversable;
+import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.conversations.ConversationAbandonedListener;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.MainPlugin;
@@ -22,4 +25,15 @@ public class Menu {
 	public static final Prompt NEW_GROUP = new NewGroup();
 	public static final Prompt MODIFY_OPTIONS = new ModifyOptions();
 
+	public static class AbandonedListener implements ConversationAbandonedListener {
+
+		@Override
+		public void conversationAbandoned(ConversationAbandonedEvent event) {
+			Conversable c = event.getContext().getForWhom();
+			c.sendRawMessage(Menu.TEXT_COLOR + "Exiting YAPP menu");
+			c.sendRawMessage(Menu.TEXT_COLOR + "---------------------------------------------------");
+		}
+		
+	}
+	
 }

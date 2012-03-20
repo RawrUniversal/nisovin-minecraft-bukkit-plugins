@@ -24,6 +24,7 @@ public class ModifyOptions extends StringPrompt {
 		c.sendRawMessage(Menu.TEXT_COLOR + "  3) " + Menu.KEYLETTER_COLOR + "N" + Menu.KEYWORD_COLOR + "egate " + Menu.TEXT_COLOR + "a permission node");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  4) Add an inherited " + Menu.KEYLETTER_COLOR + "g" + Menu.KEYWORD_COLOR + "roup");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  5) Remove an inherited group (" + Menu.KEYLETTER_COLOR + "u" + Menu.KEYWORD_COLOR + "ngroup" + Menu.TEXT_COLOR + ")");
+		c.sendRawMessage(Menu.TEXT_COLOR + "  6) " + Menu.KEYLETTER_COLOR + "D" + Menu.KEYWORD_COLOR + "elete " + Menu.TEXT_COLOR + "this " + type);
 		return MainPlugin.TEXT_COLOR + "Please type your selection:";
 	}
 

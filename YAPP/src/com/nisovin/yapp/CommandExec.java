@@ -35,6 +35,9 @@ public class CommandExec implements CommandExecutor {
 				sender.sendMessage(MainPlugin.TEXT_COLOR + "YAPP data reloaded");
 			} else if (args[0].equals("?")) {
 				// show status
+			} else if (args[0].equalsIgnoreCase("delete")) {
+				// deleting current object (no confirmation yet)
+				delete(sender, false, alias);
 			} else {
 				// selecting something
 				select(sender, args[0]);
@@ -57,13 +60,13 @@ public class CommandExec implements CommandExecutor {
 			
 			// performing an action
 			if (args[0].equals("+")) {
-				if (args[1].startsWith("p:") || args[1].startsWith("P:")) {
+				if (arg.startsWith("p:") || arg.startsWith("P:") || arg.startsWith("n:") || arg.startsWith("N:")) {
 					// adding a permission
 					addPermission(sender, arg.substring(2));
-				} else if (args[1].startsWith("g:") || args[1].startsWith("G:")) {
+				} else if (arg.startsWith("g:") || arg.startsWith("G:")) {
 					// adding a permission
 					addGroup(sender, arg.substring(2));
-				} else if (args[1].contains(".")) {
+				} else if (arg.contains(".")) {
 					// adding a permission
 					addPermission(sender, arg);
 				} else {
@@ -81,18 +84,36 @@ public class CommandExec implements CommandExecutor {
 			} else if (args[0].equals("--")) {
 				// negating a permission
 				negatePermission(sender, arg);
-			} else if (args[0].equalsIgnoreCase("+p") || args[0].equalsIgnoreCase("p+")) {
+			} else if (args[0].equalsIgnoreCase("+p") || args[0].equalsIgnoreCase("p+") || args[0].equalsIgnoreCase("+n") || args[0].equalsIgnoreCase("n+")) {
 				// adding a permission
 				addPermission(sender, arg);
 			} else if (args[0].equalsIgnoreCase("+g") || args[0].equalsIgnoreCase("g+")) {
 				// adding a group
 				addGroup(sender, arg);
-			} else if (args[0].equalsIgnoreCase("-p") || args[0].equalsIgnoreCase("p-")) {
+			} else if (args[0].equalsIgnoreCase("-p") || args[0].equalsIgnoreCase("p-") || args[0].equalsIgnoreCase("-n") || args[0].equalsIgnoreCase("n-")) {
 				// removing a permission
 				removePermission(sender, arg);
 			} else if (args[0].equalsIgnoreCase("-g") || args[0].equalsIgnoreCase("g-")) {
 				// removing a group
 				removeGroup(sender, arg);
+			} else if (args[0].equalsIgnoreCase("delete") && args[1].equals("CONFIRM")) {
+				// deleting a group or player
+				delete(sender, true, alias);
+			} else if (args[0].equals("?")) {
+				// checking for permission or group
+				char mode;
+				if (arg.startsWith("p:") || arg.startsWith("P:") || arg.startsWith("n:") || arg.startsWith("N:")) {
+					mode = 'p';
+				} else if (arg.startsWith("g:") || arg.startsWith("G:")) {
+					mode = 'g';
+				} else if (arg.contains(".")) {
+					mode = 'p';
+				} else {
+					mode = 'g';
+				}
+				if (mode == 'p') {
+					
+				}
 			}
 		}
 		return true;
@@ -202,7 +223,7 @@ public class CommandExec implements CommandExecutor {
 		if (obj == null) {
 			noObj(sender);
 			return;
-		}		
+		}
 		String world = selectedWorld.get(sender);		
 		boolean ok = obj.removePermission(world, perm);
 		
@@ -224,7 +245,7 @@ public class CommandExec implements CommandExecutor {
 		if (obj == null) {
 			noObj(sender);
 			return;
-		}		
+		}
 		String world = selectedWorld.get(sender);
 
 		Group g = MainPlugin.getGroup(group);
@@ -252,8 +273,8 @@ public class CommandExec implements CommandExecutor {
 		if (obj == null) {
 			noObj(sender);
 			return;
-		}		
-		String world = selectedWorld.get(sender);		
+		}
+		String world = selectedWorld.get(sender);
 		obj.addPermission(world, "-" + perm);
 		
 		String type = "";
@@ -263,6 +284,36 @@ public class CommandExec implements CommandExecutor {
 			type = "group";
 		}
 		sender.sendMessage(MainPlugin.TEXT_COLOR + "Negated permission " + MainPlugin.HIGHLIGHT_COLOR + perm + MainPlugin.TEXT_COLOR + " for " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
+	}
+	
+	private void delete(CommandSender sender, boolean confirmed, String alias) {
+		// get working object
+		PermissionContainer obj = selectedObject.get(sender);
+		if (obj == null) {
+			noObj(sender);
+			return;
+		}
+
+		// get type
+		String type = "";
+		if (obj instanceof User) {
+			type = "player";
+		} else if (obj instanceof Group) {
+			type = "group";
+		}
+		
+		// send confirmation message
+		if (!confirmed) {
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "Are you sure you want to delete the " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + "?");
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "To confirm type: " + MainPlugin.HIGHLIGHT_COLOR + "/" + alias + " delete CONFIRM");
+			return;
+		}
+		
+		if (obj instanceof User) {
+			
+		} else if (obj instanceof Group) {
+			
+		}
 	}
 	
 	private void noObj(CommandSender sender) {

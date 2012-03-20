@@ -105,13 +105,26 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		return false;
 	}
 	
-	public boolean inGroup(String world, Group group) {
+	public boolean inGroup(Group group, boolean recurse) {
+		return inGroup(null, group, recurse);
+	}
+	
+	public boolean inGroup(String world, Group group, boolean recurse) {
 		if (groups.contains(group)) {
 			return true;
 		} else if (world != null && !world.isEmpty()) {
 			List<Group> wgroups = worldGroups.get(world);
 			if (wgroups != null) {
-				return wgroups.contains(group);
+				if (wgroups.contains(group)) {
+					return true;
+				}
+			}
+		}
+		if (recurse) {
+			for (Group g : groups) {
+				if (g.inGroup(world, group, true)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -139,6 +152,10 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 			}
 		}
 		return null;
+	}
+	
+	public boolean addPermission(String permission) {
+		return addPermission(null, permission);
 	}
 	
 	public boolean addPermission(String world, String permission) {
@@ -182,7 +199,12 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}		
 	}
 	
+	public boolean addGroup(Group group) {
+		return addGroup(null, group);
+	}
+	
 	public boolean addGroup(String world, Group group) {
+		// TODO: check for infinite recursion
 		if (world == null || world.isEmpty()) {
 			groups.add(group);
 			dirty = true;

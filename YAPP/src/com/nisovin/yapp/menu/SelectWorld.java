@@ -7,13 +7,13 @@ import org.bukkit.conversations.StringPrompt;
 public class SelectWorld extends StringPrompt {
 
 	@Override
-	public String getPromptText(ConversationContext arg0) {
+	public String getPromptText(ConversationContext context) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Prompt acceptInput(ConversationContext arg0, String arg1) {
+	public Prompt acceptInput(ConversationContext context, String input) {
 		// TODO Auto-generated method stub
 		return null;
 	}
