@@ -1,6 +1,7 @@
 package com.nisovin.yapp;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -29,6 +30,15 @@ public class User extends PermissionContainer {
 	
 	public OfflinePlayer getOfflinePlayer() {
 		return Bukkit.getOfflinePlayer(realName);
+	}
+	
+	@Override
+	public void setColor(ChatColor color) {
+		super.setColor(color);
+		Player p = getPlayer();
+		if (p != null) {
+			MainPlugin.yapp.setPlayerListName(p, this);
+		}
 	}
 	
 }

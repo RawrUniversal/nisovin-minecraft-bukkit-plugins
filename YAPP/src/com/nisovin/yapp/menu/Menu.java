@@ -17,7 +17,7 @@ public class Menu {
 
 	// colors
 	public static final ChatColor TEXT_COLOR = MainPlugin.TEXT_COLOR;
-	public static final ChatColor HIGHLIGHT = MainPlugin.HIGHLIGHT_COLOR;
+	public static final ChatColor HIGHLIGHT_COLOR = MainPlugin.HIGHLIGHT_COLOR;
 	public static final ChatColor KEYWORD_COLOR = ChatColor.DARK_AQUA;
 	public static final ChatColor KEYLETTER_COLOR = ChatColor.AQUA;
 	public static final ChatColor ERROR_COLOR = MainPlugin.ERROR_COLOR;

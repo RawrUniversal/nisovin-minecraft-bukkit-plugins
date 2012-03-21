@@ -25,9 +25,9 @@ public class AddGroup extends MenuPrompt {
 			PermissionContainer obj = getObject(context);
 			String world = getWorld(context);
 			obj.addGroup(world, group);
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT + " " + obj.getName());
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName());
 			if (world != null) {
-				context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT + world);
+				context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world);
 			}
 			return Menu.MODIFY_OPTIONS;
 		}

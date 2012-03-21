@@ -18,9 +18,9 @@ public class RemovePermission extends MenuPrompt {
 		String world = getWorld(context);
 		input = input.trim();
 		obj.removePermission(world, input);
-		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Removed permission " + Menu.HIGHLIGHT + input + Menu.TEXT_COLOR + " from " + getType(context) + Menu.HIGHLIGHT + " " + obj.getName());
+		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Removed permission " + Menu.HIGHLIGHT_COLOR + input + Menu.TEXT_COLOR + " from " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName());
 		if (world != null) {
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT + world);
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world);
 		}
 		return Menu.MODIFY_OPTIONS;
 	}

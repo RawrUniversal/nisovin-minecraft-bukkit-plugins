@@ -10,7 +10,7 @@ public class NewGroup extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
-		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "The group " + Menu.HIGHLIGHT + context.getSessionData("newgroupname") + Menu.TEXT_COLOR + " does not exist, would you like to");
+		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "The group " + Menu.HIGHLIGHT_COLOR + context.getSessionData("newgroupname") + Menu.TEXT_COLOR + " does not exist, would you like to");
 		return Menu.TEXT_COLOR + "create it (" + Menu.KEYLETTER_COLOR + "y" + Menu.KEYWORD_COLOR + "es" + Menu.TEXT_COLOR + "/" + Menu.KEYLETTER_COLOR + "n" + Menu.KEYWORD_COLOR + "o" + Menu.TEXT_COLOR + ")?";
 	}
 

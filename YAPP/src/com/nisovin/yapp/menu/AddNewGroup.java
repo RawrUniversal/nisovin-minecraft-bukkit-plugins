@@ -11,7 +11,7 @@ public class AddNewGroup extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
-		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "The group " + Menu.HIGHLIGHT + context.getSessionData("newgroupname") + Menu.TEXT_COLOR + " does not exist, would you like to");
+		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "The group " + Menu.HIGHLIGHT_COLOR + context.getSessionData("newgroupname") + Menu.TEXT_COLOR + " does not exist, would you like to");
 		return Menu.TEXT_COLOR + "create it (" + Menu.KEYLETTER_COLOR + "y" + Menu.KEYWORD_COLOR + "es" + Menu.TEXT_COLOR + "/" + Menu.KEYLETTER_COLOR + "n" + Menu.KEYWORD_COLOR + "o" + Menu.TEXT_COLOR + ")?";
 	}
 
@@ -27,9 +27,9 @@ public class AddNewGroup extends MenuPrompt {
 			
 			Group group = MainPlugin.newGroup(groupName);
 			obj.addGroup(world, group);
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT + " " + obj.getName());
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName());
 			if (world != null) {
-				context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT + world);
+				context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world);
 			}
 			
 			return Menu.MODIFY_OPTIONS;

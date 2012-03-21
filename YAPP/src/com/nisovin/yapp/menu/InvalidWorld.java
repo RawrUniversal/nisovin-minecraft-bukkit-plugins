@@ -7,7 +7,7 @@ public class InvalidWorld extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
-		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "The world " + Menu.HIGHLIGHT + context.getSessionData("noworld") + Menu.TEXT_COLOR + " is not loaded, would you like to");
+		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "The world " + Menu.HIGHLIGHT_COLOR + context.getSessionData("noworld") + Menu.TEXT_COLOR + " is not loaded, would you like to");
 		return Menu.TEXT_COLOR + "select it anyway (" + Menu.KEYLETTER_COLOR + "y" + Menu.KEYWORD_COLOR + "es" + Menu.TEXT_COLOR + "/" + Menu.KEYLETTER_COLOR + "n" + Menu.KEYWORD_COLOR + "o" + Menu.TEXT_COLOR + ")?";
 	}
 
@@ -18,7 +18,7 @@ public class InvalidWorld extends MenuPrompt {
 			String world = (String)context.getSessionData("noworld");
 			context.setSessionData("noworld", null);
 			setWorld(context, world);
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Selected world " + Menu.HIGHLIGHT + world);
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Selected world " + Menu.HIGHLIGHT_COLOR + world);
 			return Menu.MAIN_MENU;
 		} else if (input.startsWith("n")) {
 			return Menu.SELECT_WORLD;

@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.yapp.menu.Menu;
 
-public class CommandExec implements CommandExecutor {
+public class CommandMain implements CommandExecutor {
 	
 	private Map<CommandSender, PermissionContainer> selectedObject = new HashMap<CommandSender, PermissionContainer>();
 	private Map<CommandSender, String> selectedWorld = new HashMap<CommandSender, String>();

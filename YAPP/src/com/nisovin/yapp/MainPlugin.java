@@ -43,7 +43,7 @@ public class MainPlugin extends JavaPlugin {
 		load();
 		
 		// register commands
-		getCommand("yapp").setExecutor(new CommandExec());
+		getCommand("yapp").setExecutor(new CommandMain());
 		
 		// register vault hook
 		if (getServer().getPluginManager().isPluginEnabled("Vault")) {
@@ -97,7 +97,7 @@ public class MainPlugin extends JavaPlugin {
 		if (config.getboolean("general.use build perm")) {
 			pm.registerEvents(new BuildListener(), this);
 		}
-		if (config.getboolean("general.use chat prefixes")) {
+		if (config.getboolean("general.use chat formatting")) {
 			pm.registerEvents(new ChatListener(), this);
 		}
 		
@@ -253,11 +253,15 @@ public class MainPlugin extends JavaPlugin {
 		player.recalculatePermissions();
 		
 		// set player list color
-		if (updatePlayerList) {
-			player.setPlayerListName(user.getColor() + player.getName());
-		}
+		setPlayerListName(player, user);
 		
 		return user;
+	}
+	
+	public void setPlayerListName(Player player, User user) {
+		if (updatePlayerList) {
+			player.setPlayerListName(user.getColor() + player.getName());
+		}		
 	}
 	
 	public void unloadPlayer(Player player) {

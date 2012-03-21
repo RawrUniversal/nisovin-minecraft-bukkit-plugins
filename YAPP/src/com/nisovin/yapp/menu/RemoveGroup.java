@@ -26,9 +26,9 @@ public class RemoveGroup extends MenuPrompt {
 		String world = getWorld(context);
 		boolean ok = obj.removeGroup(world, group);
 		if (ok) {
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Removed group " + Menu.HIGHLIGHT + input + Menu.TEXT_COLOR + " from " + getType(context) + Menu.HIGHLIGHT + " " + obj.getName());
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Removed group " + Menu.HIGHLIGHT_COLOR + input + Menu.TEXT_COLOR + " from " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName());
 			if (world != null) {
-				context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT + world);
+				context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world);
 			}
 		} else {
 			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Unable to remove group");

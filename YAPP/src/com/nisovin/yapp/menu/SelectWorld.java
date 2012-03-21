@@ -26,7 +26,7 @@ public class SelectWorld extends MenuPrompt {
 			return Menu.INVALID_WORLD;
 		} else {
 			setWorld(context, world.getName());
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Selected world " + Menu.HIGHLIGHT + world.getName());
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Selected world " + Menu.HIGHLIGHT_COLOR + world.getName());
 			return Menu.MAIN_MENU;
 		}
 	}

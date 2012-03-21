@@ -109,6 +109,11 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		return description;
 	}
 	
+	public void setDescription(String desc) {
+		this.description = desc;
+		info.put("description", desc);
+	}
+	
 	public ChatColor getColor() {
 		return getColor(null);
 	}
@@ -132,6 +137,12 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		return cachedColor;
 	}
 	
+	public void setColor(ChatColor color) {
+		this.color = color;
+		info.put("color", color.name().replace("_", " ").toLowerCase());
+		cachedColor = null;
+	}
+	
 	public String getPrefix() {
 		return getPrefix(null);
 	}
@@ -153,6 +164,13 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 		cachedPrefix = "";
 		return cachedPrefix;
+	}
+	
+	public void setPrefix(String prefix) {
+		prefix = prefix.replace("\u00A7$1", "&");
+		this.prefix = prefix;
+		info.put("prefix", prefix);
+		cachedPrefix = null;
 	}
 	
 	private String colorify(String s) {
@@ -402,20 +420,20 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 						val = s[1].trim();
 					}
 					if (key != null && val != null) {
+						key = key.toLowerCase();
 						if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
 							val = val.substring(1, val.length() - 1);
 						}
 						info.put(key, val);
-						String lkey = key.toLowerCase();
-						if (lkey.equals("desc") || lkey.equals("descr") || lkey.equals("description")) {
+						if (key.equals("description")) {
 							description = val;
-						} else if (lkey.equals("color")) {
+						} else if (key.equals("color")) {
 							if (val.length() == 1) {
 								color = ChatColor.getByChar(val);
 							} else {
 								color = ChatColor.valueOf(val.replace(" ", "_").toUpperCase());
 							}
-						} else if (lkey.equals("prefix")) {
+						} else if (key.equals("prefix")) {
 							prefix = val;
 						}
 						MainPlugin.debug("      Added info: " + key + " = " + val);
