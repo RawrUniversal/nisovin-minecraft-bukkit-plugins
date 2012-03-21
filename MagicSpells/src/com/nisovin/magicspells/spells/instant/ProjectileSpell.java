@@ -19,6 +19,8 @@ import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -106,6 +108,8 @@ public class ProjectileSpell extends InstantSpell {
 		
 		if (projectileClass == EnderPearl.class) {
 			registerEvents(new EnderTpListener());
+		} else if (projectileClass == Egg.class) {
+			registerEvents(new EggListener());
 		} else if (projectileClass == ThrownPotion.class) {
 			registerEvents(new PotionListener());
 		}
@@ -265,6 +269,21 @@ public class ProjectileSpell extends InstantSpell {
 				for (Projectile projectile : projectiles.keySet()) {
 					if (projectile.getLocation().equals(event.getTo())) {
 						event.setCancelled(true);
+						return;
+					}
+				}
+			}
+		}
+	}
+	
+	public class EggListener implements Listener {
+		@EventHandler(ignoreCancelled=true)
+		public void onCreatureSpawn(CreatureSpawnEvent event) {
+			if (event.getSpawnReason() == SpawnReason.EGG) {
+				for (Projectile projectile : projectiles.keySet()) {
+					if (projectile.getLocation().equals(event.getLocation())) {
+						event.setCancelled(true);
+						return;
 					}
 				}
 			}
