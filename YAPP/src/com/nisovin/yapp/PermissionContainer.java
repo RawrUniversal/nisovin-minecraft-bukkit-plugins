@@ -112,6 +112,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	public void setDescription(String desc) {
 		this.description = desc;
 		info.put("description", desc);
+		dirty = true;
 	}
 	
 	public ChatColor getColor() {
@@ -141,6 +142,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		this.color = color;
 		info.put("color", color.name().replace("_", " ").toLowerCase());
 		cachedColor = null;
+		dirty = true;
 	}
 	
 	public String getPrefix() {
@@ -171,6 +173,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		this.prefix = prefix;
 		info.put("prefix", prefix);
 		cachedPrefix = null;
+		dirty = true;
 	}
 	
 	private String colorify(String s) {
