@@ -21,13 +21,13 @@ public class PermListener implements Listener {
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		plugin.unloadPlayer(event.getPlayer());
+	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+		plugin.loadPlayerPermissions(event.getPlayer());
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-		plugin.loadPlayerPermissions(event.getPlayer());
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		plugin.unloadPlayer(event.getPlayer());
 	}
 	
 }

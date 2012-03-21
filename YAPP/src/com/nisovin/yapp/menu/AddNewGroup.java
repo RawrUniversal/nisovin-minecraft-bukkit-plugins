@@ -5,8 +5,9 @@ import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
 import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.PermissionContainer;
 
-public class NewGroup extends MenuPrompt {
+public class AddNewGroup extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
@@ -18,13 +19,22 @@ public class NewGroup extends MenuPrompt {
 	public Prompt accept(ConversationContext context, String input) {
 		input = input.toLowerCase();
 		if (input.startsWith("y")) {
-			String groupName = (String)context.getSessionData("newgroupname");
-			context.setSessionData("newgroupname", null);
+			PermissionContainer obj = getObject(context);
+			String world = getWorld(context);
+			
+			String groupName = (String)context.getSessionData("addnewgroupname");
+			context.setSessionData("addnewgroupname", null);
+			
 			Group group = MainPlugin.newGroup(groupName);
-			setObject(context, group);
+			obj.addGroup(world, group);
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT + " " + obj.getName());
+			if (world != null) {
+				context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT + world);
+			}
+			
 			return Menu.MODIFY_OPTIONS;
 		} else if (input.startsWith("n")) {
-			context.setSessionData("newgroupname", null);
+			context.setSessionData("addnewgroupname", null);
 			return Menu.SELECT_GROUP;
 		} else {
 			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "That is not a valid option!");
@@ -34,7 +44,7 @@ public class NewGroup extends MenuPrompt {
 
 	@Override
 	public Prompt getPreviousPrompt(ConversationContext context) {
-		return Menu.SELECT_GROUP;
+		return Menu.ADD_GROUP;
 	}
 
 }

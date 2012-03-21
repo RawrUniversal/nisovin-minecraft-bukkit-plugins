@@ -26,7 +26,9 @@ public class MainPlugin extends JavaPlugin {
 	public static ChatColor ERROR_COLOR = ChatColor.DARK_RED;
 	
 	public static MainPlugin yapp;
-	public static boolean debug = true;
+	
+	private static boolean debug = true;
+	private boolean updatePlayerList = true;
 
 	private Map<String, Group> groups;
 	private Map<String, User> players;
@@ -63,6 +65,7 @@ public class MainPlugin extends JavaPlugin {
 		}
 		SimpleConfig config = new SimpleConfig(configFile);
 		debug = config.getboolean("general.debug");
+		updatePlayerList = config.getboolean("general.update player list");
 		boolean modalMenu = config.getboolean("general.modal menu");
 		String defGroupName = config.getString("general.default group");
 				
@@ -74,10 +77,9 @@ public class MainPlugin extends JavaPlugin {
 			defaultGroup = getGroup(defGroupName);
 			if (defaultGroup == null) {
 				// create default group
-				defaultGroup = new Group(defGroupName);
+				defaultGroup = newGroup(defGroupName);
 				defaultGroup.addPermission(null, "yapp.build");
 				defaultGroup.save();
-				addGroup(defaultGroup);
 				log("Created default group '" + defGroupName + "'");
 			}
 		}
@@ -94,6 +96,9 @@ public class MainPlugin extends JavaPlugin {
 		pm.registerEvents(new PermListener(this), this);
 		if (config.getboolean("general.use build perm")) {
 			pm.registerEvents(new BuildListener(), this);
+		}
+		if (config.getboolean("general.use chat prefixes")) {
+			pm.registerEvents(new ChatListener(), this);
 		}
 		
 		// create converation factory
@@ -219,12 +224,16 @@ public class MainPlugin extends JavaPlugin {
 		return user;
 	}
 	
-	public void loadPlayerPermissions(Player player) {
+	public User loadPlayerPermissions(Player player) {
 		String playerName = player.getName().toLowerCase();
+		String worldName = player.getWorld().getName();
 		debug("Loading player permissions for " + playerName + "...");
 		
 		// prepare user
 		User user = getPlayerUser(playerName);
+		user.resetCachedInfo();
+		user.getColor(worldName);
+		user.getPrefix(worldName);
 		
 		// prepare attachment
 		PermissionAttachment attachment = attachments.get(playerName);
@@ -236,12 +245,19 @@ public class MainPlugin extends JavaPlugin {
 		
 		// load permissions
 		debug("  Adding permissions");
-		List<PermissionNode> nodes = user.getAllPermissions(player.getWorld());
+		List<PermissionNode> nodes = user.getAllPermissions(worldName);
 		for (PermissionNode node : nodes) {
 			node.addTo(attachment);
 			debug("    Added: " + node);
 		}
 		player.recalculatePermissions();
+		
+		// set player list color
+		if (updatePlayerList) {
+			player.setPlayerListName(user.getColor() + player.getName());
+		}
+		
+		return user;
 	}
 	
 	public void unloadPlayer(Player player) {
@@ -259,8 +275,10 @@ public class MainPlugin extends JavaPlugin {
 		}
 	}
 	
-	public static void addGroup(Group group) {
-		yapp.groups.put(group.getName().toLowerCase(), group);
+	public static Group newGroup(String name) {
+		Group group = new Group(name);
+		yapp.groups.put(name.toLowerCase(), group);
+		return group;
 	}
 	
 	public static Group getGroup(String name) {

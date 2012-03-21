@@ -78,8 +78,7 @@ public class VaultService extends net.milkbowl.vault.permission.Permission {
 	public boolean playerAddGroup(String world, String player, String group) {
 		Group g = MainPlugin.getGroup(group);
 		if (g == null) {
-			g = new Group(group);
-			MainPlugin.addGroup(g);
+			g = MainPlugin.newGroup(group);
 		}
 		return MainPlugin.getPlayerUser(player).addGroup(world, g);
 	}

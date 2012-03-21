@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 
 public class PermissionContainer implements Comparable<PermissionContainer> {
@@ -31,6 +32,10 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	private Map<String,String> info = new LinkedHashMap<String,String>();
 	private String description = "";
+	private ChatColor color = null;
+	private String prefix = null;
+	private ChatColor cachedColor = null;
+	private String cachedPrefix = null;
 	
 	public PermissionContainer(String name, String type) {
 		this.name = name;
@@ -43,21 +48,40 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public List<PermissionNode> getAllPermissions(String world) {
-		if (world == null) {
-			return permissions;
-		} else if (cached.containsKey(world)) {
+		if (world == null) world = "";
+		if (cached.containsKey(world)) {
 			return cached.get(world);
 		} else {
 			List<PermissionNode> nodes = new ArrayList<PermissionNode>();
 			
-			// add own perms
-			nodes.addAll(permissions);
-			
 			// add world perms
-			if (worldPermissions.containsKey(world)) {
-				for (PermissionNode node : worldPermissions.get(world)) {
-					if (!nodes.contains(node)) {
-						nodes.add(node);
+			if (!world.isEmpty()) {
+				if (worldPermissions.containsKey(world)) {
+					for (PermissionNode node : worldPermissions.get(world)) {
+						if (!nodes.contains(node)) {
+							nodes.add(node);
+						}
+					}
+				}
+			}
+			
+			// add own perms
+			for (PermissionNode node : permissions) {
+				if (!nodes.contains(node)) {
+					nodes.add(node);
+				}
+			}
+			
+			// add world group perms
+			if (!world.isEmpty()) {
+				if (worldGroups.containsKey(world)) {
+					for (Group group : worldGroups.get(world)) {
+						List<PermissionNode> groupNodes = group.getAllPermissions(world);
+						for (PermissionNode node : groupNodes) {
+							if (!nodes.contains(node)) {
+								nodes.add(node);
+							}
+						}
 					}
 				}
 			}
@@ -68,18 +92,6 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				for (PermissionNode node : groupNodes) {
 					if (!nodes.contains(node)) {
 						nodes.add(node);
-					}
-				}
-			}
-			
-			// add world group perms
-			if (worldGroups.containsKey(world)) {
-				for (Group group : worldGroups.get(world)) {
-					List<PermissionNode> groupNodes = group.getAllPermissions(world);
-					for (PermissionNode node : groupNodes) {
-						if (!nodes.contains(node)) {
-							nodes.add(node);
-						}
 					}
 				}
 			}
@@ -95,6 +107,64 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	public String getDescription() {
 		return description;
+	}
+	
+	public ChatColor getColor() {
+		return getColor(null);
+	}
+	
+	public ChatColor getColor(String world) {
+		if (cachedColor != null) {
+			return cachedColor;
+		} else if (color != null) {
+			cachedColor = color;
+			return cachedColor;
+		} else {
+			Group group = getPrimaryGroup(world);
+			if (group != null) {
+				cachedColor = group.getColor(world);
+				if (cachedColor != null) {
+					return cachedColor;
+				}
+			}
+		}
+		cachedColor = ChatColor.WHITE;
+		return cachedColor;
+	}
+	
+	public String getPrefix() {
+		return getPrefix(null);
+	}
+	
+	public String getPrefix(String world) {
+		if (cachedPrefix != null) {
+			return cachedPrefix;
+		} else if (prefix != null) {
+			cachedPrefix = colorify(prefix);
+			return cachedPrefix;
+		} else {
+			Group group = getPrimaryGroup(world);
+			if (group != null) {
+				cachedPrefix = group.getPrefix(world);
+				if (cachedPrefix != null) {
+					return cachedPrefix;
+				}
+			}
+		}
+		cachedPrefix = "";
+		return cachedPrefix;
+	}
+	
+	private String colorify(String s) {
+		return s.replaceAll("&([0-9a-fk])", "\u00A7$1");
+	}
+	
+	public List<PermissionNode> getActualPermissionList() {
+		return permissions;
+	}
+	
+	public List<Group> getActualGroupList() {
+		return groups;
 	}
 	
 	public boolean has(String world, String permission) {
@@ -145,13 +215,15 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public Group getPrimaryGroup(String world) {
-		if (groups.size() > 0) {
-			return groups.get(0);
-		} else if (world != null && !world.isEmpty()) {
+		if (world != null && !world.isEmpty()) {
 			List<Group> wgroups = worldGroups.get(world);
 			if (wgroups != null && wgroups.size() > 0) {
 				return wgroups.get(0);
+			} else if (groups.size() > 0) {
+				return groups.get(0);
 			}
+		} else if (groups.size() > 0) {
+			return groups.get(0);
 		}
 		return null;
 	}
@@ -245,6 +317,12 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	public void clearCache() {
 		cached.clear();
+		resetCachedInfo();
+	}
+	
+	public void resetCachedInfo() {
+		cachedColor = null;
+		cachedPrefix = null;
 	}
 	
 	public void loadFromFiles() {
@@ -325,12 +403,20 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 					}
 					if (key != null && val != null) {
 						if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
-							val = val.substring(0, val.length() - 2);
+							val = val.substring(1, val.length() - 1);
 						}
 						info.put(key, val);
 						String lkey = key.toLowerCase();
 						if (lkey.equals("desc") || lkey.equals("descr") || lkey.equals("description")) {
 							description = val;
+						} else if (lkey.equals("color")) {
+							if (val.length() == 1) {
+								color = ChatColor.getByChar(val);
+							} else {
+								color = ChatColor.valueOf(val.replace(" ", "_").toUpperCase());
+							}
+						} else if (lkey.equals("prefix")) {
+							prefix = val;
 						}
 						MainPlugin.debug("      Added info: " + key + " = " + val);
 					} else {

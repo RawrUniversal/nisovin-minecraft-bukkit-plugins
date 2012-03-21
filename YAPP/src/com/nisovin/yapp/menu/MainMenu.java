@@ -26,13 +26,10 @@ public class MainMenu extends MenuPrompt {
 	public Prompt accept(ConversationContext context, String input) {
 		input = input.toLowerCase();
 		if (input.equals("1") || input.startsWith("p")) {
-			context.setSessionData("type", "player");
 			return Menu.SELECT_PLAYER;
 		} else if (input.equals("2") || input.startsWith("o")) {
-			context.setSessionData("type", "player");
 			return Menu.SELECT_OFFLINE_PLAYER;
 		} else if (input.equals("3") || input.startsWith("g")) {
-			context.setSessionData("type", "group");
 			return Menu.SELECT_GROUP;
 		} else if (input.equals("4") || input.startsWith("w")) {
 			return Menu.SELECT_WORLD;

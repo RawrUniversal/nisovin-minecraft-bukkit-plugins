@@ -41,7 +41,7 @@ public class SimpleConfig {
 						continue;
 					}
 					if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
-						val = val.substring(1, val.length() - 2);
+						val = val.substring(1, val.length() - 1);
 					}
 					Map<String,String> secdata = values.get(section);
 					if (secdata == null) {

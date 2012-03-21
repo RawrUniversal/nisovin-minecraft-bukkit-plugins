@@ -18,8 +18,12 @@ public class ModifyOptions extends MenuPrompt {
 		String world = getWorld(context);
 		
 		Conversable c = context.getForWhom();
-		c.sendRawMessage(Menu.TEXT_COLOR + "What would you like to do with the " + type + " " + Menu.HIGHLIGHT + obj.getName() + Menu.TEXT_COLOR + 
-				(world != null ? "(on world " + Menu.HIGHLIGHT + world + Menu.TEXT_COLOR + ")" : "") + "?");
+		c.sendRawMessage(Menu.TEXT_COLOR + "What would you like to do with the " + type + " " + Menu.HIGHLIGHT + obj.getName());
+		if (world == null) {
+			c.sendRawMessage(Menu.TEXT_COLOR + "(with no world selected)?");
+		} else {
+			c.sendRawMessage(Menu.TEXT_COLOR + "(on world " + Menu.HIGHLIGHT + world + Menu.TEXT_COLOR + ")?");
+		}
 		c.sendRawMessage(Menu.TEXT_COLOR + "  1) Add a " + Menu.KEYLETTER_COLOR + "p" + Menu.KEYWORD_COLOR + "ermission " + Menu.TEXT_COLOR + "node");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  2) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "emove " + Menu.TEXT_COLOR + "a permission node");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  3) " + Menu.KEYLETTER_COLOR + "N" + Menu.KEYWORD_COLOR + "egate " + Menu.TEXT_COLOR + "a permission node");
@@ -27,7 +31,7 @@ public class ModifyOptions extends MenuPrompt {
 		c.sendRawMessage(Menu.TEXT_COLOR + "  5) Remove an inherited group (" + Menu.KEYLETTER_COLOR + "u" + Menu.KEYWORD_COLOR + "ngroup" + Menu.TEXT_COLOR + ")");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  6) Check if it " + Menu.KEYLETTER_COLOR + "h" + Menu.KEYWORD_COLOR + "as " + Menu.TEXT_COLOR + "a permission");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  7) Check if it " + Menu.KEYLETTER_COLOR + "i" + Menu.KEYWORD_COLOR + "nherits " + Menu.TEXT_COLOR + "a group");
-		c.sendRawMessage(Menu.TEXT_COLOR + "  8) " + Menu.KEYLETTER_COLOR + "D" + Menu.KEYWORD_COLOR + "elete" + Menu.TEXT_COLOR + " this " + type);
+		//c.sendRawMessage(Menu.TEXT_COLOR + "  8) Show " + Menu.KEYLETTER_COLOR + "m" + Menu.KEYWORD_COLOR + "ore " + Menu.TEXT_COLOR + "options");
 		return MainPlugin.TEXT_COLOR + "Please type your selection:";
 	}
 
@@ -40,8 +44,20 @@ public class ModifyOptions extends MenuPrompt {
 			return Menu.REMOVE_PERMISSION;
 		} else if (input.equals("3") || input.startsWith("n")) {
 			return Menu.NEGATE_PERMISSION;
+		} else if (input.equals("4") || input.startsWith("g")) {
+			return Menu.ADD_GROUP;
+		} else if (input.equals("5") || input.startsWith("u")) {
+			return Menu.REMOVE_GROUP;
+		} else if (input.equals("6") || input.startsWith("h")) {
+			return Menu.HAS_PERMISSION;
+		} else if (input.equals("7") || input.startsWith("i")) {
+			return Menu.HAS_GROUP;
+		} else if (input.equals("8") || input.startsWith("m")) {
+			return Menu.MODIFY_OPTIONS_MORE;
+		} else {
+			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Invalid selection");
+			return this;
 		}
-		return END_OF_CONVERSATION;
 	}
 
 	@Override

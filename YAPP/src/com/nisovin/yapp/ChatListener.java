@@ -1,0 +1,17 @@
+package com.nisovin.yapp;
+
+import org.bukkit.ChatColor;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChatEvent;
+
+public class ChatListener implements Listener {
+
+	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
+	public void onPlayerChat(PlayerChatEvent event) {
+		User user = MainPlugin.getPlayerUser(event.getPlayer().getName());
+		event.setFormat(user.getPrefix() + "<" + user.getColor() + "%1$s" + ChatColor.WHITE + "> %2$s");
+	}
+	
+}

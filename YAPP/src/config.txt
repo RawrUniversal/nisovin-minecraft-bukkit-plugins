@@ -4,3 +4,5 @@ debug : false
 default group : default
 use build perm : true
 modal menu : true
+update player list : true
+use chat prefixes : true

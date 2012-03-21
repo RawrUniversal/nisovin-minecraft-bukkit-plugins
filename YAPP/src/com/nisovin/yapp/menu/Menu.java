@@ -16,11 +16,11 @@ import com.nisovin.yapp.MainPlugin;
 public class Menu {
 
 	// colors
-	public static ChatColor TEXT_COLOR = MainPlugin.TEXT_COLOR;
-	public static ChatColor HIGHLIGHT = MainPlugin.HIGHLIGHT_COLOR;
-	public static ChatColor KEYWORD_COLOR = ChatColor.DARK_AQUA;
-	public static ChatColor KEYLETTER_COLOR = ChatColor.AQUA;
-	public static ChatColor ERROR_COLOR = MainPlugin.ERROR_COLOR;
+	public static final ChatColor TEXT_COLOR = MainPlugin.TEXT_COLOR;
+	public static final ChatColor HIGHLIGHT = MainPlugin.HIGHLIGHT_COLOR;
+	public static final ChatColor KEYWORD_COLOR = ChatColor.DARK_AQUA;
+	public static final ChatColor KEYLETTER_COLOR = ChatColor.AQUA;
+	public static final ChatColor ERROR_COLOR = MainPlugin.ERROR_COLOR;
 	
 	// prompts
 	public static final Prompt MAIN_MENU = new MainMenu();
@@ -29,12 +29,19 @@ public class Menu {
 	public static final Prompt SELECT_GROUP = new SelectGroup();
 	public static final Prompt NEW_GROUP = new NewGroup();
 	public static final Prompt SELECT_WORLD = new SelectWorld();
-	public static final Prompt INVALID_WORLD = new InvalidWorld();	
+	public static final Prompt INVALID_WORLD = new InvalidWorld();
 	public static final Prompt MODIFY_OPTIONS = new ModifyOptions();
+	public static final Prompt MODIFY_OPTIONS_MORE = new ModifyOptionsMore();
 	public static final Prompt ADD_PERMISSION = new AddPermission();
 	public static final Prompt REMOVE_PERMISSION = new RemovePermission();
 	public static final Prompt NEGATE_PERMISSION = new NegatePermission();
+	public static final Prompt ADD_GROUP = new AddGroup();
+	public static final Prompt ADD_NEW_GROUP = new AddNewGroup();
+	public static final Prompt REMOVE_GROUP = new RemoveGroup();
+	public static final Prompt HAS_PERMISSION = new HasPermission();
+	public static final Prompt HAS_GROUP = new HasGroup();
 	
+	// conversation management
 	private static Map<Conversable,Conversation> conversations = new HashMap<Conversable, Conversation>();
 	private static ConversationFactory menuFactory;
 	

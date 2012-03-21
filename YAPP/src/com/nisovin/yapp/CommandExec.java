@@ -157,8 +157,7 @@ public class CommandExec implements CommandExecutor {
 		} else if (mode == 'g') {
 			Group group = MainPlugin.getGroup(search);
 			if (group == null) {
-				group = new Group(search);
-				MainPlugin.addGroup(group);
+				group = MainPlugin.newGroup(search);
 				sender.sendMessage(MainPlugin.TEXT_COLOR + "New group " + MainPlugin.HIGHLIGHT_COLOR + search + MainPlugin.TEXT_COLOR + " created");
 			}
 			selectedObject.put(sender, group);
@@ -199,8 +198,7 @@ public class CommandExec implements CommandExecutor {
 		String world = selectedWorld.get(sender);
 		Group g = MainPlugin.getGroup(group);
 		if (g == null) {
-			g = new Group(group);
-			MainPlugin.addGroup(g);
+			g = MainPlugin.newGroup(group);
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "New group " + MainPlugin.HIGHLIGHT_COLOR + group + MainPlugin.TEXT_COLOR + " created");
 		}
 		obj.addGroup(world, g);
