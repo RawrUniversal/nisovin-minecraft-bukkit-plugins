@@ -1,8 +1,13 @@
 == GENERAL ==
 
-debug : false
-default group : default
-use build perm : true
-modal menu : true
-update player list : true
+debug               : false
+
+default group       : default
+use build perm      : true
+modal menu          : true
+
+update player list  : true
 use chat formatting : true
+
+set group perm      : false
+set player metadata : false

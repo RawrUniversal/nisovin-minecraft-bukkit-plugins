@@ -138,9 +138,27 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		return cachedColor;
 	}
 	
+	public void setColor(String color) {
+		if (color == null || color.length() == 0) {
+			setColor((ChatColor)null);
+		} else if (color.length() == 1) {
+			setColor(ChatColor.getByChar(color));
+		} else {
+			try {
+				setColor(ChatColor.valueOf(color.replace(" ", "_").toUpperCase()));
+			} catch (IllegalArgumentException e) {
+				setColor((ChatColor)null);
+			}
+		}
+	}
+	
 	public void setColor(ChatColor color) {
 		this.color = color;
-		info.put("color", color.name().replace("_", " ").toLowerCase());
+		if (color != null) {
+			info.put("color", color.name().replace("_", " ").toLowerCase());
+		} else {
+			info.remove("color");
+		}
 		cachedColor = null;
 		dirty = true;
 	}
@@ -169,11 +187,41 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public void setPrefix(String prefix) {
-		prefix = prefix.replace("\u00A7$1", "&");
-		this.prefix = prefix;
-		info.put("prefix", prefix);
+		if (prefix != null && !prefix.isEmpty()) {
+			prefix = prefix.replace("\u00A7$1", "&");
+			this.prefix = prefix;
+			info.put("prefix", prefix);
+		} else {
+			this.prefix = null;
+			info.remove("prefix");
+		}
 		cachedPrefix = null;
 		dirty = true;
+	}
+	
+	public String getInfo(String key) {
+		return info.get(key.toLowerCase());
+	}
+	
+	public void setInfo(String key, String value) {
+		key = key.toLowerCase();
+		if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+			value = value.substring(1, value.length() - 1);
+		}
+		if (key.equals("color")) {
+			setColor(value);
+		} else if (key.equals("prefix")) {
+			setPrefix(value);
+		} else if (key.equals("description")) {
+			setDescription(value);
+		} else {
+			if (value != null && !value.isEmpty()) {
+				info.put(key, value);
+			} else {
+				info.remove(key);
+			}
+			dirty = true;
+		}
 	}
 	
 	private String colorify(String s) {
@@ -186,6 +234,14 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	public List<Group> getActualGroupList() {
 		return groups;
+	}
+	
+	public String getActualPrefix() {
+		return prefix;
+	}
+	
+	public ChatColor getActualColor() {
+		return color;
 	}
 	
 	public boolean has(String world, String permission) {
@@ -247,6 +303,30 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 			return groups.get(0);
 		}
 		return null;
+	}
+	
+	public boolean setPrimaryGroup(Group group) {
+		return setPrimaryGroup(null, group);
+	}
+	
+	public boolean setPrimaryGroup(String world, Group group) {
+		if (world != null && !world.isEmpty()) {
+			List<Group> wgroups = worldGroups.get(world);
+			if (wgroups != null && wgroups.size() > 0) {
+				if (wgroups.contains(group)) {
+					wgroups.remove(group);
+					wgroups.add(0, group);
+					dirty = true;
+					return true;
+				}
+			}
+		} else if (groups.contains(group)) {
+			groups.remove(group);
+			groups.add(0, group);
+			dirty = true;
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean addPermission(String permission) {
@@ -525,7 +605,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		file.newLine();
 		file.newLine();
 		for (String key : info.keySet()) {
-			file.write(key + " : " + info.get(key));
+			file.write(key + " : \"" + info.get(key) + "\"");
 			file.newLine();
 		}
 		file.newLine();

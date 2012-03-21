@@ -30,14 +30,19 @@ public class Menu {
 	public static final Prompt NEW_GROUP = new NewGroup();
 	public static final Prompt SELECT_WORLD = new SelectWorld();
 	public static final Prompt INVALID_WORLD = new InvalidWorld();
+	
 	public static final Prompt MODIFY_OPTIONS = new ModifyOptions();
 	public static final Prompt MODIFY_OPTIONS_MORE = new ModifyOptionsMore();
+	
 	public static final Prompt ADD_PERMISSION = new AddPermission();
 	public static final Prompt REMOVE_PERMISSION = new RemovePermission();
 	public static final Prompt NEGATE_PERMISSION = new NegatePermission();
 	public static final Prompt ADD_GROUP = new AddGroup();
 	public static final Prompt ADD_NEW_GROUP = new AddNewGroup();
 	public static final Prompt REMOVE_GROUP = new RemoveGroup();
+	public static final Prompt SET_COLOR = new SetColor();
+	public static final Prompt SET_PREFIX = new SetPrefix();
+	
 	public static final Prompt HAS_PERMISSION = new HasPermission();
 	public static final Prompt HAS_GROUP = new HasGroup();
 	

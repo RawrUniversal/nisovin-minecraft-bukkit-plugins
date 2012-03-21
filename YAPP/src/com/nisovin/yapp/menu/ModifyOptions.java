@@ -28,7 +28,7 @@ public class ModifyOptions extends MenuPrompt {
 		c.sendRawMessage(Menu.TEXT_COLOR + "  2) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "emove " + Menu.TEXT_COLOR + "a permission node");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  3) " + Menu.KEYLETTER_COLOR + "N" + Menu.KEYWORD_COLOR + "egate " + Menu.TEXT_COLOR + "a permission node");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  4) Add an inherited " + Menu.KEYLETTER_COLOR + "g" + Menu.KEYWORD_COLOR + "roup");
-		c.sendRawMessage(Menu.TEXT_COLOR + "  5) Set the primary (" + Menu.KEYLETTER_COLOR + "f" + Menu.KEYWORD_COLOR + "irst" + Menu.TEXT_COLOR + ") group");
+		c.sendRawMessage(Menu.TEXT_COLOR + "  5) Set the " + Menu.KEYWORD_COLOR + "primar" + Menu.KEYLETTER_COLOR + "y" + Menu.TEXT_COLOR + " group");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  6) Remove an inherited group (" + Menu.KEYLETTER_COLOR + "u" + Menu.KEYWORD_COLOR + "ngroup" + Menu.TEXT_COLOR + ")");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  7) Set the " + Menu.KEYWORD_COLOR + "chat prefi" + Menu.KEYLETTER_COLOR + "x");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  8) Set the name " + Menu.KEYLETTER_COLOR + "c" + Menu.KEYWORD_COLOR + "olor");
@@ -47,14 +47,14 @@ public class ModifyOptions extends MenuPrompt {
 			return Menu.NEGATE_PERMISSION;
 		} else if (input.equals("4") || input.startsWith("g")) {
 			return Menu.ADD_GROUP;
-		} else if (input.equals("5") || input.startsWith("f") || input.startsWith("pri")) {
+		} else if (input.equals("5") || input.startsWith("y") || input.startsWith("pri")) {
 			return END_OF_CONVERSATION;
 		} else if (input.equals("6") || input.startsWith("u")) {
 			return Menu.REMOVE_GROUP;
 		} else if (input.equals("7") || input.startsWith("ch") || input.startsWith("pre") || input.equals("x")) {
 			return END_OF_CONVERSATION;
 		} else if (input.equals("8") || input.startsWith("c")) {
-			return END_OF_CONVERSATION;
+			return Menu.SET_COLOR;
 		} else if (input.equals("9") || input.startsWith("m")) {
 			return Menu.MODIFY_OPTIONS_MORE;
 		} else {

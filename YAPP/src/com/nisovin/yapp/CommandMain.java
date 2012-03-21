@@ -49,19 +49,11 @@ public class CommandMain implements CommandExecutor {
 			}
 		} else if (args.length > 1 && args[0].matches("^[puxogwPUXOGW]:.*")) {
 			// selecting something with multiple words
-			String search = "";
-			for (String a : args) {
-				if (!search.isEmpty()) search += " ";
-				search += a;
-			}
+			String search = arrayJoin(args, 0);
 			select(sender, search);
 		} else if (args.length >= 2) {
 			// get full arg
-			String arg = "";
-			for (int i = 1; i < args.length; i++) {
-				if (!arg.isEmpty()) arg += " ";
-				arg += args[i];
-			}
+			String arg = arrayJoin(args, 1);
 			
 			// performing an action
 			if (args[0].equals("+")) {
@@ -115,9 +107,22 @@ public class CommandMain implements CommandExecutor {
 				} else {
 					checkGroup(sender, arg);
 				}
+			} else if (args[0].equals("=")) {
+				set(sender, args[1], arrayJoin(args, 2));
+			} else if (args[1].equals("=")) {
+				set(sender, args[0], arrayJoin(args, 2));
 			}
 		}
 		return true;
+	}
+	
+	private String arrayJoin(String[] array, int start) {
+		String s = "";
+		for (int i = start; i < array.length; i++) {
+			if (!s.isEmpty()) s += " ";
+			s += array[i];
+		}
+		return s;
 	}
 	
 	private void select(CommandSender sender, String search) {
@@ -320,6 +325,30 @@ public class CommandMain implements CommandExecutor {
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " indirectly inherits " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
 		} else {
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not inherit " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+		}
+	}
+	
+	private void set(CommandSender sender, String key, String value) {
+		// get object
+		PermissionContainer obj = selectedObject.get(sender);
+		if (obj == null) {
+			noObj(sender);
+			return;
+		}
+		
+		// get type
+		String type = getType(obj);
+		
+		// set the info
+		obj.setInfo(key, value);
+		value = obj.getInfo(key);
+		
+		if (value != null) {
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + "'s " + 
+					MainPlugin.HIGHLIGHT_COLOR + key + MainPlugin.TEXT_COLOR + " has been set to: " + ChatColor.WHITE + value);
+		} else {
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + "'s " + 
+				MainPlugin.HIGHLIGHT_COLOR + key + MainPlugin.TEXT_COLOR + " is empty");
 		}
 	}
 	

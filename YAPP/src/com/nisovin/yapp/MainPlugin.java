@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
@@ -29,6 +30,8 @@ public class MainPlugin extends JavaPlugin {
 	
 	private static boolean debug = true;
 	private boolean updatePlayerList = true;
+	private boolean setPlayerGroupPerm = false;
+	private boolean setPlayerMetadata = false;
 
 	private Map<String, Group> groups;
 	private Map<String, User> players;
@@ -66,6 +69,8 @@ public class MainPlugin extends JavaPlugin {
 		SimpleConfig config = new SimpleConfig(configFile);
 		debug = config.getboolean("general.debug");
 		updatePlayerList = config.getboolean("general.update player list");
+		setPlayerGroupPerm = config.getboolean("general.set group perm");
+		setPlayerMetadata = config.getboolean("general.set player metadata");
 		boolean modalMenu = config.getboolean("general.modal menu");
 		String defGroupName = config.getString("general.default group");
 				
@@ -234,6 +239,7 @@ public class MainPlugin extends JavaPlugin {
 		user.resetCachedInfo();
 		user.getColor(worldName);
 		user.getPrefix(worldName);
+		Group primaryGroup = user.getPrimaryGroup(player.getWorld().getName());
 		
 		// prepare attachment
 		PermissionAttachment attachment = attachments.get(playerName);
@@ -245,6 +251,9 @@ public class MainPlugin extends JavaPlugin {
 		
 		// load permissions
 		debug("  Adding permissions");
+		if (setPlayerGroupPerm && primaryGroup != null) {
+			attachment.setPermission("group." + primaryGroup.getName(), true);
+		}
 		List<PermissionNode> nodes = user.getAllPermissions(worldName);
 		for (PermissionNode node : nodes) {
 			node.addTo(attachment);
@@ -254,6 +263,14 @@ public class MainPlugin extends JavaPlugin {
 		
 		// set player list color
 		setPlayerListName(player, user);
+		
+		// set metadata
+		if (setPlayerMetadata) {
+			if (primaryGroup != null) {
+				player.removeMetadata("group", this);
+				player.setMetadata("group", new FixedMetadataValue(this, primaryGroup.getName()));
+			}
+		}
 		
 		return user;
 	}
