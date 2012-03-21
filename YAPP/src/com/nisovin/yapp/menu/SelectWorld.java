@@ -17,7 +17,7 @@ public class SelectWorld extends MenuPrompt {
 	public Prompt accept(ConversationContext context, String input) {
 		input = input.trim();
 		if (input.isEmpty()) {
-			context.setSessionData("world", null);
+			setWorld(context, null);
 			return Menu.MAIN_MENU;
 		}
 		World world = Bukkit.getWorld(input);
@@ -25,7 +25,7 @@ public class SelectWorld extends MenuPrompt {
 			context.setSessionData("noworld", input);
 			return Menu.INVALID_WORLD;
 		} else {
-			context.setSessionData("world", world.getName());
+			setWorld(context, world.getName());
 			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Selected world " + Menu.HIGHLIGHT + world.getName());
 			return Menu.MAIN_MENU;
 		}

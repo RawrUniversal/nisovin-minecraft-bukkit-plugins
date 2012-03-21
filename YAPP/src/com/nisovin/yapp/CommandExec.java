@@ -14,24 +14,14 @@ import org.bukkit.entity.Player;
 import com.nisovin.yapp.menu.Menu;
 
 public class CommandExec implements CommandExecutor {
-
-	private MainPlugin plugin;
 	
-	private Map<CommandSender, PermissionContainer> selectedObject;
-	private Map<CommandSender, String> selectedWorld;
-	
-	public CommandExec(MainPlugin plugin) {
-		this.plugin = plugin;
-		
-		selectedObject = new HashMap<CommandSender, PermissionContainer>();
-		selectedWorld = new HashMap<CommandSender, String>();
-	}
+	private Map<CommandSender, PermissionContainer> selectedObject = new HashMap<CommandSender, PermissionContainer>();
+	private Map<CommandSender, String> selectedWorld = new HashMap<CommandSender, String>();
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
 		if (args.length == 0 && sender instanceof Conversable) {
-			Menu.sendLine((Conversable)sender);
-			plugin.getMenuFactory().buildConversation((Conversable)sender).begin();
+			Menu.openMenu((Conversable)sender);
 		} else if (args.length == 1) {
 			if (args[0].equals("@") || args[0].equalsIgnoreCase("reload")) {
 				// reload data
@@ -288,10 +278,6 @@ public class CommandExec implements CommandExecutor {
 
 		// get world
 		String world = selectedWorld.get(sender);
-		if ((world == null || world.isEmpty()) && player == null) {
-			sender.sendMessage(MainPlugin.ERROR_COLOR + "You must select a world to check a permission");
-			return;
-		}
 
 		// get type
 		String type = getType(obj);
@@ -335,7 +321,7 @@ public class CommandExec implements CommandExecutor {
 		} else if (obj.inGroup(world, g, true)) {
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " indirectly inherits " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
 		} else {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " does not inherit " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not inherit " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
 		}
 	}
 	

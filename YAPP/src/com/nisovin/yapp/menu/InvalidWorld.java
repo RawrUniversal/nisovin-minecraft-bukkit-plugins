@@ -16,8 +16,8 @@ public class InvalidWorld extends MenuPrompt {
 		input = input.toLowerCase();
 		if (input.startsWith("y")) {
 			String world = (String)context.getSessionData("noworld");
-			context.setSessionData("world", world);
 			context.setSessionData("noworld", null);
+			setWorld(context, world);
 			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Selected world " + Menu.HIGHLIGHT + world);
 			return Menu.MAIN_MENU;
 		} else if (input.startsWith("n")) {

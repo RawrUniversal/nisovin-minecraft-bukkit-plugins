@@ -17,7 +17,7 @@ public class SelectGroup extends MenuPrompt {
 	public Prompt accept(ConversationContext context, String input) {
 		Group group = MainPlugin.getGroup(input.trim());
 		if (group != null) {
-			context.setSessionData("obj", group);
+			setObject(context, group);
 			return Menu.MODIFY_OPTIONS;
 		} else {
 			context.setSessionData("newgroupname", input.trim());

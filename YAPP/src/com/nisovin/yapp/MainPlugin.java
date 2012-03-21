@@ -2,13 +2,14 @@ package com.nisovin.yapp;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.PermissionAttachment;
@@ -33,13 +34,22 @@ public class MainPlugin extends JavaPlugin {
 	
 	private Map<String, PermissionAttachment> attachments;
 	
-	private boolean modalMenu = true;
-	private ConversationFactory menuFactory;
-	
 	@Override
 	public void onEnable() {
 		yapp = this;
 		
+		load();
+		
+		// register commands
+		getCommand("yapp").setExecutor(new CommandExec());
+		
+		// register vault hook
+		if (getServer().getPluginManager().isPluginEnabled("Vault")) {
+			getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, new VaultService(), this, ServicePriority.Highest);
+		}
+	}
+	
+	private void load() {
 		// get data folder
 		File folder = getDataFolder();
 		if (!folder.exists()) {
@@ -53,10 +63,9 @@ public class MainPlugin extends JavaPlugin {
 		}
 		SimpleConfig config = new SimpleConfig(configFile);
 		debug = config.getboolean("general.debug");
-		modalMenu = config.getboolean("general.modal menu");
+		boolean modalMenu = config.getboolean("general.modal menu");
 		String defGroupName = config.getString("general.default group");
-		
-		
+				
 		// load all group data
 		loadGroups();
 		
@@ -87,26 +96,11 @@ public class MainPlugin extends JavaPlugin {
 			pm.registerEvents(new BuildListener(), this);
 		}
 		
-		// register commands
-		getCommand("yapp").setExecutor(new CommandExec(this));
-		
-		// register vault hook
-		if (pm.isPluginEnabled("Vault")) {
-			getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, new VaultService(), this, ServicePriority.Highest);
-		}
-		
-		// load menu data
-		menuFactory = new ConversationFactory(this)
-				.withFirstPrompt(Menu.MAIN_MENU)
-				.withModality(modalMenu)
-				.withEscapeSequence("q")
-				.withTimeout(60)
-				.withLocalEcho(true)
-				.addConversationAbandonedListener(new Menu.AbandonedListener());
+		// create converation factory
+		Menu.initializeFactory(this, modalMenu);
 	}
 	
-	@Override
-	public void onDisable() {
+	private void unload() {
 		saveAll();
 		
 		groups.clear();
@@ -121,14 +115,43 @@ public class MainPlugin extends JavaPlugin {
 		attachments = null;
 		
 		HandlerList.unregisterAll(this);
+	}
+	
+	@Override
+	public void onDisable() {
+		unload();
+		
 		getServer().getServicesManager().unregisterAll(this);
+		Menu.closeAllMenus();
 		
 		yapp = null;
 	}
 	
 	public void reload() {
-		onDisable();
-		onEnable();
+		unload();
+		load();
+	}
+	
+	public void cleanup() {
+		Iterator<Map.Entry<String,User>> iter = players.entrySet().iterator();
+		Map.Entry<String,User> entry;
+		while (iter.hasNext()) {
+			entry = iter.next();
+			if (entry.getValue().getPlayer() == null) {
+				entry.getValue().save();
+				iter.remove();
+			}
+		}
+		
+		Iterator<Map.Entry<String,PermissionAttachment>> iter2 = attachments.entrySet().iterator();
+		Map.Entry<String,PermissionAttachment> entry2;
+		while (iter2.hasNext()) {
+			entry2 = iter2.next();
+			if (Bukkit.getPlayerExact(entry2.getKey()) == null) {
+				entry2.getValue().remove();
+				iter2.remove();
+			}
+		}
 	}
 	
 	public void loadGroups() {
@@ -221,14 +244,10 @@ public class MainPlugin extends JavaPlugin {
 		player.recalculatePermissions();
 	}
 	
-	public ConversationFactory getMenuFactory() {
-		return menuFactory;
-	}
-	
 	public void unloadPlayer(Player player) {
 		String playerName = player.getName().toLowerCase();
 		players.remove(playerName).save();
-		attachments.remove(playerName);
+		attachments.remove(playerName).remove();
 	}
 	
 	public void saveAll() {

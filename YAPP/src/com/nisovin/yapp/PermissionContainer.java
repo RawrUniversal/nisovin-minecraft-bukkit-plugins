@@ -43,7 +43,9 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public List<PermissionNode> getAllPermissions(String world) {
-		if (cached.containsKey(world)) {
+		if (world == null) {
+			return permissions;
+		} else if (cached.containsKey(world)) {
 			return cached.get(world);
 		} else {
 			List<PermissionNode> nodes = new ArrayList<PermissionNode>();

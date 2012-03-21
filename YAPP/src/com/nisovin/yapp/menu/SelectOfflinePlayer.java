@@ -16,7 +16,7 @@ public class SelectOfflinePlayer extends MenuPrompt {
 	@Override
 	public Prompt accept(ConversationContext context, String input) {
 		User user = MainPlugin.getPlayerUser(input.trim());
-		context.setSessionData("obj", user);
+		setObject(context, user);
 		return Menu.MODIFY_OPTIONS;
 	}
 

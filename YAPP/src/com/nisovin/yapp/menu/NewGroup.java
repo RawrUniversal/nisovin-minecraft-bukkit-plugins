@@ -19,9 +19,10 @@ public class NewGroup extends MenuPrompt {
 		input = input.toLowerCase();
 		if (input.startsWith("y")) {
 			String groupName = (String)context.getSessionData("newgroupname");
+			context.setSessionData("newgroupname", null);
 			Group group = new Group(groupName);
 			MainPlugin.addGroup(group);
-			context.setSessionData("what", group);
+			setObject(context, group);
 			return Menu.MODIFY_OPTIONS;
 		} else if (input.startsWith("n")) {
 			return Menu.SELECT_GROUP;

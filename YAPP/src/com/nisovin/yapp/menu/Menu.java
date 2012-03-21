@@ -1,9 +1,14 @@
 package com.nisovin.yapp.menu;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.Conversable;
+import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.conversations.ConversationAbandonedListener;
+import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.MainPlugin;
@@ -24,11 +29,41 @@ public class Menu {
 	public static final Prompt SELECT_GROUP = new SelectGroup();
 	public static final Prompt NEW_GROUP = new NewGroup();
 	public static final Prompt SELECT_WORLD = new SelectWorld();
-	public static final Prompt INVALID_WORLD = new InvalidWorld();
+	public static final Prompt INVALID_WORLD = new InvalidWorld();	
 	public static final Prompt MODIFY_OPTIONS = new ModifyOptions();
+	public static final Prompt ADD_PERMISSION = new AddPermission();
+	public static final Prompt REMOVE_PERMISSION = new RemovePermission();
+	public static final Prompt NEGATE_PERMISSION = new NegatePermission();
+	
+	private static Map<Conversable,Conversation> conversations = new HashMap<Conversable, Conversation>();
+	private static ConversationFactory menuFactory;
+	
+	public static void initializeFactory(MainPlugin plugin, boolean modal) {
+		menuFactory = new ConversationFactory(plugin)
+			.withFirstPrompt(Menu.MAIN_MENU)
+			.withModality(modal)
+			.withEscapeSequence("q")
+			.withTimeout(60)
+			.withLocalEcho(true)
+			.addConversationAbandonedListener(new AbandonedListener());
+	}
+	
+	public static void openMenu(Conversable conversable) {
+		sendLine(conversable);
+		Conversation conversation = menuFactory.buildConversation(conversable);
+		conversation.begin();
+		conversations.put(conversable, conversation);
+	}
+	
+	public static void closeAllMenus() {
+		for (Conversation conversation : conversations.values()) {
+			conversation.abandon();
+		}
+		conversations.clear();
+	}
 
 	public static void sendLine(Conversable c) {
-		c.sendRawMessage(Menu.TEXT_COLOR + "---------------------------------------------------");
+		c.sendRawMessage(TEXT_COLOR + "---------------------------------------------------");
 	}
 	
 	public static class AbandonedListener implements ConversationAbandonedListener {
@@ -38,6 +73,7 @@ public class Menu {
 			Conversable c = event.getContext().getForWhom();
 			c.sendRawMessage(Menu.TEXT_COLOR + "Exiting YAPP menu");
 			sendLine(c);
+			conversations.remove(c);
 		}
 		
 	}

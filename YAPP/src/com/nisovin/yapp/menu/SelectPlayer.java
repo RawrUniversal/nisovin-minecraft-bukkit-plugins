@@ -23,7 +23,7 @@ public class SelectPlayer extends MenuPrompt {
 			return this;
 		} else {
 			User user = MainPlugin.getPlayerUser(player.getName());
-			context.setSessionData("obj", user);
+			setObject(context, user);
 			return Menu.MODIFY_OPTIONS;
 		}
 	}
