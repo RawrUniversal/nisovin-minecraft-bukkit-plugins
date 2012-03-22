@@ -15,17 +15,17 @@ public class PermListener implements Listener {
 		this.plugin = plugin;
 	}
 	
-	@EventHandler(priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		plugin.loadPlayerPermissions(event.getPlayer());
 	}
 
-	@EventHandler(priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
 		plugin.loadPlayerPermissions(event.getPlayer());
 	}
 
-	@EventHandler(priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		plugin.unloadPlayer(event.getPlayer());
 	}
