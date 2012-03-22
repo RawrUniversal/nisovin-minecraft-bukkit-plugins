@@ -52,7 +52,7 @@ public class ModifyOptions extends MenuPrompt {
 		} else if (input.equals("6") || input.startsWith("u")) {
 			return Menu.REMOVE_GROUP;
 		} else if (input.equals("7") || input.startsWith("ch") || input.startsWith("pre") || input.equals("x")) {
-			return END_OF_CONVERSATION;
+			return Menu.SET_PREFIX;
 		} else if (input.equals("8") || input.startsWith("c")) {
 			return Menu.SET_COLOR;
 		} else if (input.equals("9") || input.startsWith("m")) {

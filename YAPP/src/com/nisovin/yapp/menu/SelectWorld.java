@@ -10,13 +10,13 @@ public class SelectWorld extends MenuPrompt {
 	@Override
 	public String getPromptText(ConversationContext context) {
 		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Please type the world you would like to work with");
-		return Menu.TEXT_COLOR + "(enter a space to clear your world selection):";
+		return Menu.TEXT_COLOR + "(enter a dash to clear your world selection):";
 	}
 
 	@Override
 	public Prompt accept(ConversationContext context, String input) {
 		input = input.trim();
-		if (input.isEmpty()) {
+		if (input.equals("-")) {
 			setWorld(context, null);
 			return Menu.MAIN_MENU;
 		}

@@ -237,7 +237,11 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public String getActualPrefix() {
-		return prefix;
+		if (prefix == null) {
+			return null;
+		} else {
+			return colorify(prefix);
+		}
 	}
 	
 	public ChatColor getActualColor() {

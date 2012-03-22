@@ -19,26 +19,29 @@ public class SetPrefix extends MenuPrompt {
 			prefix = ChatColor.WHITE + prefix;
 		}
 		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "The " + type + " " + Menu.HIGHLIGHT_COLOR + obj.getName() + Menu.TEXT_COLOR + "'s prefix is currently: " + prefix);
-		return Menu.TEXT_COLOR + "Please type what you want to set it to (type a space to clear it):";
+		return Menu.TEXT_COLOR + "Please type the new prefix (or a dash to clear it):";
 	}
 
 	@Override
 	public Prompt accept(ConversationContext context, String input) {
+		input = input.trim();
 		PermissionContainer obj = getObject(context);
-		if (input.trim().isEmpty()) {
+		if (input.equals("-")) {
 			obj.setPrefix(null);
 		} else {
+			if ((input.startsWith("\"") && input.endsWith("\"")) || (input.startsWith("'") && input.endsWith("'"))) {
+				input = input.substring(1, input.length() - 1);
+			}
 			obj.setPrefix(input);
-		}
+		}		
 
 		String prefix = obj.getActualPrefix();
 		if (prefix == null || prefix.isEmpty()) {
 			prefix = "(empty/inherited)";
 		} else {
-			prefix = ChatColor.WHITE + prefix;
+			prefix = ChatColor.WHITE + obj.getActualPrefix();
 		}
-		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Prefix has been set to: " + prefix);
-		return Menu.MODIFY_OPTIONS;
+		return showMessage(context, Menu.TEXT_COLOR + "Prefix has been set to: " + prefix, Menu.MODIFY_OPTIONS);
 	}
 
 	@Override

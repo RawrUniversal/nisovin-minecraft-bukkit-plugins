@@ -69,5 +69,11 @@ public abstract class MenuPrompt extends StringPrompt {
 	protected void setWorld(ConversationContext context, String world) {
 		context.setSessionData("world", world);
 	}
+	
+	protected Prompt showMessage(ConversationContext context, String message, Prompt nextPrompt) {
+		context.setSessionData("message", message);
+		context.setSessionData("nextprompt", nextPrompt);
+		return Menu.MESSAGE;
+	}
 
 }

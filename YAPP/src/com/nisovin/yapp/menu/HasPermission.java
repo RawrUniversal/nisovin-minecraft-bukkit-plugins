@@ -36,11 +36,10 @@ public class HasPermission extends MenuPrompt {
 			has = obj.has(world, input);
 		}
 		if (has) {
-			context.getForWhom().sendRawMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " does have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + input);
+			return showMessage(context, MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " does have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + input, Menu.MODIFY_OPTIONS_MORE);
 		} else {
-			context.getForWhom().sendRawMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + input);			
+			return showMessage(context, MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + input, Menu.MODIFY_OPTIONS_MORE);			
 		}
-		return Menu.MODIFY_OPTIONS;
 	}
 
 	@Override

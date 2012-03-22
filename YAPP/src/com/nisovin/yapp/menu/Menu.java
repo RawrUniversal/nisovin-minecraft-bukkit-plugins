@@ -23,6 +23,7 @@ public class Menu {
 	public static final ChatColor ERROR_COLOR = MainPlugin.ERROR_COLOR;
 	
 	// prompts
+	public static final Prompt MESSAGE = new MessagePrompt();
 	public static final Prompt MAIN_MENU = new MainMenu();
 	public static final Prompt SELECT_PLAYER = new SelectPlayer();
 	public static final Prompt SELECT_OFFLINE_PLAYER = new SelectOfflinePlayer();
