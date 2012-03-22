@@ -5,6 +5,7 @@ import java.util.Set;
 import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -31,5 +32,7 @@ public interface CraftBukkitHandle {
 	public void pressPressurePlate(Block block);
 	
 	public void removeMobEffect(LivingEntity entity, PotionEffectType type);
+	
+	public void collectItem(Player player, Item item);
 	
 }

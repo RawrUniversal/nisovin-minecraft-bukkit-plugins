@@ -386,6 +386,7 @@ public class ScrollSpell extends CommandSpell {
 			int slot = inv.firstEmpty();
 			if (slot >= 0) {
 				inv.setItem(slot, item);
+				MagicSpells.getVolatileCodeHandler().collectItem(event.getPlayer(), event.getItem());
 				event.getItem().remove();
 			}
 		}

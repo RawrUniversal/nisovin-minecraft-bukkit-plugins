@@ -6,6 +6,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -63,6 +64,10 @@ public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	public void removeMobEffect(LivingEntity entity, PotionEffectType type) {
 		entity.addPotionEffect(new PotionEffect(type, 1, 0), true);
 		entity.removePotionEffect(type);
+	}
+
+	@Override
+	public void collectItem(Player player, Item item) {
 	}
 
 }

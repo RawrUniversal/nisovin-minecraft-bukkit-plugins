@@ -10,6 +10,7 @@ import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.MobEffect;
 import net.minecraft.server.Packet103SetSlot;
+import net.minecraft.server.Packet22Collect;
 import net.minecraft.server.Packet40EntityMetadata;
 import net.minecraft.server.Packet42RemoveMobEffect;
 
@@ -20,6 +21,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -151,6 +153,12 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
         } catch (Exception e) {
             e.printStackTrace();
         }
+	}
+
+	@Override
+	public void collectItem(Player player, Item item) {
+		Packet22Collect packet = new Packet22Collect(item.getEntityId(), player.getEntityId());
+		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
 	}
 	
 	/*private class PathfinderGoalUseOwnerTarget extends PathfinderGoalTarget {
