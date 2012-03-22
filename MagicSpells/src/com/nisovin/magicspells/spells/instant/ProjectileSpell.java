@@ -267,7 +267,7 @@ public class ProjectileSpell extends InstantSpell {
 		public void onPlayerTeleport(PlayerTeleportEvent event) {
 			if (event.getCause() == TeleportCause.ENDER_PEARL) {
 				for (Projectile projectile : projectiles.keySet()) {
-					if (projectile.getLocation().equals(event.getTo())) {
+					if (locationsEqual(projectile.getLocation(), event.getTo())) {
 						event.setCancelled(true);
 						return;
 					}
@@ -281,7 +281,7 @@ public class ProjectileSpell extends InstantSpell {
 		public void onCreatureSpawn(CreatureSpawnEvent event) {
 			if (event.getSpawnReason() == SpawnReason.EGG) {
 				for (Projectile projectile : projectiles.keySet()) {
-					if (projectile.getLocation().equals(event.getLocation())) {
+					if (locationsEqual(projectile.getLocation(), event.getLocation())) {
 						event.setCancelled(true);
 						return;
 					}
@@ -297,6 +297,13 @@ public class ProjectileSpell extends InstantSpell {
 				event.setCancelled(true);
 			}
 		}
+	}
+	
+	private boolean locationsEqual(Location loc1, Location loc2) {
+		return 
+				Math.abs(loc1.getX() - loc2.getX()) < 0.1
+				&& Math.abs(loc1.getY() - loc2.getY()) < 0.1
+				&& Math.abs(loc1.getZ() - loc2.getZ()) < 0.1;
 	}
 	
 	private class ProjectileInfo {
