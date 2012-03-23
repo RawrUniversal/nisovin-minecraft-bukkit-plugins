@@ -1226,7 +1226,7 @@ spells:
         drop-block: false
         drop-normal: true
         effects:
-            - target breakblock
+            - target blockbreak
         check-plugins: true
         range: 15
         cost:

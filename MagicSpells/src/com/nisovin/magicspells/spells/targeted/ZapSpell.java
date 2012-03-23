@@ -72,7 +72,7 @@ public class ZapSpell extends TargetedSpell {
 				
 				// check for protection
 				if (checkPlugins) {
-					BlockBreakEvent event = new BlockBreakEvent(target, player);
+					BlockBreakEvent event = new BlockBreakEvent(target, player, new ArrayList<ItemStack>(target.getDrops()));
 					MagicSpells.plugin.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						// a plugin cancelled the event
