@@ -248,7 +248,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	private String colorify(String s) {
-		return s.replaceAll("&([0-9a-fk])", "\u00A7$1");
+		return s.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
 	}
 	
 	public List<PermissionNode> getActualPermissionList() {
