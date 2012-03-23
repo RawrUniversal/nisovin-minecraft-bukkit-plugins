@@ -25,15 +25,19 @@ public class RemoveGroup extends MenuPrompt {
 		PermissionContainer obj = getObject(context);
 		String world = getWorld(context);
 		boolean ok = obj.removeGroup(world, group);
+		String msg;
 		if (ok) {
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Removed group " + Menu.HIGHLIGHT_COLOR + input + Menu.TEXT_COLOR + " from " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName());
+			msg = Menu.TEXT_COLOR + "Removed group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " from " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
 			if (world != null) {
-				context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world);
+				msg += "\n" + Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
 			}
 		} else {
-			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Unable to remove group");
+			msg = Menu.ERROR_COLOR + "The " + getType(context) + " " + Menu.HIGHLIGHT_COLOR + obj.getName() + Menu.ERROR_COLOR + " does not have the group " + Menu.HIGHLIGHT_COLOR + group.getName();
+			if (world != null) {
+				msg += "\n" + Menu.ERROR_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
+			}
 		}
-		return Menu.MODIFY_OPTIONS;
+		return showMessage(context, msg, Menu.MODIFY_OPTIONS);
 	}
 
 	@Override

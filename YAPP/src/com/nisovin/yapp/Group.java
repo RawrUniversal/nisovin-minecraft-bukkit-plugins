@@ -8,6 +8,10 @@ public class Group extends PermissionContainer {
 		super(name, "group");
 	}
 	
+	public Group(Group group, String name) {
+		super(group, name);
+	}
+	
 	public void addPlayer(Player player) {
 		addPlayer(player.getName());
 	}

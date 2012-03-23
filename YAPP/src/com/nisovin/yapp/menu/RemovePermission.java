@@ -18,17 +18,16 @@ public class RemovePermission extends MenuPrompt {
 		String world = getWorld(context);
 		input = input.trim();
 		obj.removePermission(world, input);
-		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Removed permission " + Menu.HIGHLIGHT_COLOR + input + Menu.TEXT_COLOR + " from " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName());
+		String msg = Menu.TEXT_COLOR + "Removed permission " + Menu.HIGHLIGHT_COLOR + input + Menu.TEXT_COLOR + " from " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
 		if (world != null) {
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world);
+			msg += "\n" + Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
 		}
-		return Menu.MODIFY_OPTIONS;
+		return showMessage(context, msg, Menu.MODIFY_OPTIONS);
 	}
 
 	@Override
 	public Prompt getPreviousPrompt(ConversationContext context) {
-		// TODO Auto-generated method stub
-		return null;
+		return Menu.MODIFY_OPTIONS;
 	}
 
 }

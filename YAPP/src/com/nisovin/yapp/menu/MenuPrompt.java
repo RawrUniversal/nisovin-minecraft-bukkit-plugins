@@ -13,9 +13,13 @@ public abstract class MenuPrompt extends StringPrompt {
 	@Override
 	public final Prompt acceptInput(ConversationContext context, String input) {
 		if (input.equals("<")) {
+			cleanup(context);
 			return getPreviousPrompt(context);
 		} else if (input.equals("!")) {
+			cleanup(context);
 			return Menu.MAIN_MENU;
+		} else if (input.equals("?")) {
+			return showHelp(context);
 		} else if (input.toLowerCase().equals("quit")) {
 			return END_OF_CONVERSATION;
 		} else {
@@ -26,6 +30,13 @@ public abstract class MenuPrompt extends StringPrompt {
 	public abstract Prompt accept(ConversationContext context, String input);
 	
 	public abstract Prompt getPreviousPrompt(ConversationContext context);
+	
+	public void cleanup(ConversationContext context) {
+	}
+	
+	public String getHelp(ConversationContext context) {
+		return null;
+	}
 	
 	protected PermissionContainer getObject(ConversationContext context) {
 		Object o = context.getSessionData("obj");
@@ -68,6 +79,33 @@ public abstract class MenuPrompt extends StringPrompt {
 	
 	protected void setWorld(ConversationContext context, String world) {
 		context.setSessionData("world", world);
+	}
+	
+	private Prompt showHelp(ConversationContext context) {
+		// get data
+		PermissionContainer obj = getObject(context);
+		String world = getWorld(context);
+		
+		// prepare message
+		String msg;
+		if (obj != null) {
+			msg = Menu.TEXT_COLOR + "You have currently selected the " + getType(context) + " " + Menu.HIGHLIGHT_COLOR + obj.getName() + "\n";
+			if (world == null) {
+				msg += Menu.TEXT_COLOR + "with no world selected";
+			} else {
+				msg += Menu.TEXT_COLOR + "with the world " + Menu.HIGHLIGHT_COLOR + world + Menu.TEXT_COLOR + " selected";
+			}
+		} else if (world != null) {
+			msg = Menu.TEXT_COLOR + "You have selected world " + Menu.HIGHLIGHT_COLOR + world;
+		} else {
+			msg = Menu.TEXT_COLOR + "You have nothing selected";
+		}
+		String helpMsg = getHelp(context);
+		if (helpMsg != null && !helpMsg.isEmpty()) {
+			msg += "\n" + helpMsg;
+		}
+		
+		return showMessage(context, msg, this);
 	}
 	
 	protected Prompt showMessage(ConversationContext context, String message, Prompt nextPrompt) {

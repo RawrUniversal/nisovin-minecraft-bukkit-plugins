@@ -57,12 +57,15 @@ public class CommandMain implements CommandExecutor {
 			
 			// performing an action
 			if (args[0].equals("+")) {
-				if (arg.startsWith("p:") || arg.startsWith("P:") || arg.startsWith("n:") || arg.startsWith("N:")) {
+				if (arg.startsWith("n:") || arg.startsWith("N:")) {
 					// adding a permission
 					addPermission(sender, arg.substring(2));
 				} else if (arg.startsWith("g:") || arg.startsWith("G:")) {
 					// adding a permission
 					addGroup(sender, arg.substring(2));
+				} else if (arg.startsWith("p:") || arg.startsWith("P:")) {
+					// adding a player to a group
+					// TODO
 				} else if (arg.contains(".")) {
 					// adding a permission
 					addPermission(sender, arg);
@@ -81,13 +84,13 @@ public class CommandMain implements CommandExecutor {
 			} else if (args[0].equals("--")) {
 				// negating a permission
 				negatePermission(sender, arg);
-			} else if (args[0].equalsIgnoreCase("+p") || args[0].equalsIgnoreCase("p+") || args[0].equalsIgnoreCase("+n") || args[0].equalsIgnoreCase("n+")) {
+			} else if (args[0].equalsIgnoreCase("+n") || args[0].equalsIgnoreCase("n+")) {
 				// adding a permission
 				addPermission(sender, arg);
 			} else if (args[0].equalsIgnoreCase("+g") || args[0].equalsIgnoreCase("g+")) {
 				// adding a group
 				addGroup(sender, arg);
-			} else if (args[0].equalsIgnoreCase("-p") || args[0].equalsIgnoreCase("p-") || args[0].equalsIgnoreCase("-n") || args[0].equalsIgnoreCase("n-")) {
+			} else if (args[0].equalsIgnoreCase("-n") || args[0].equalsIgnoreCase("n-")) {
 				// removing a permission
 				removePermission(sender, arg);
 			} else if (args[0].equalsIgnoreCase("-g") || args[0].equalsIgnoreCase("g-")) {

@@ -24,11 +24,9 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	private List<Group> groups = new ArrayList<Group>();
 	private List<PermissionNode> permissions = new ArrayList<PermissionNode>();
-	private Map<String,List<PermissionNode>> worldPermissions = new HashMap<String,List<PermissionNode>>();
 	private Map<String,List<Group>> worldGroups = new HashMap<String,List<Group>>();
-	
+	private Map<String,List<PermissionNode>> worldPermissions = new HashMap<String,List<PermissionNode>>();	
 	private Map<String,List<PermissionNode>> cached = new HashMap<String,List<PermissionNode>>();
-	private boolean dirty = false;
 	
 	private Map<String,String> info = new LinkedHashMap<String,String>();
 	private String description = "";
@@ -37,9 +35,34 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	private ChatColor cachedColor = null;
 	private String cachedPrefix = null;
 	
+	private boolean dirty = false;
+	
 	public PermissionContainer(String name, String type) {
 		this.name = name;
 		this.type = type;
+		this.dirty = true;
+	}
+	
+	public PermissionContainer(PermissionContainer other, String name) {
+		this.name = name;
+		this.type = other.type;
+		
+		this.groups = new ArrayList<Group>(other.groups);
+		this.permissions = new ArrayList<PermissionNode>(other.permissions);
+		this.worldGroups = new HashMap<String,List<Group>>();
+		for (String s : other.worldGroups.keySet()) {
+			this.worldGroups.put(s, new ArrayList<Group>(other.worldGroups.get(s)));
+		}
+		this.worldPermissions = new HashMap<String,List<PermissionNode>>();
+		for (String s : other.worldPermissions.keySet()) {
+			this.worldPermissions.put(s, new ArrayList<PermissionNode>(other.worldPermissions.get(s)));
+		}
+		
+		this.info = new LinkedHashMap<String,String>(other.info);
+		this.description = other.description;
+		this.color = other.color;
+		this.prefix = other.prefix;
+		
 		this.dirty = true;
 	}
 	
@@ -279,6 +302,16 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 					return true;
 				}
 			}
+			if (world != null && !world.isEmpty()) {
+				List<Group> wgroups = worldGroups.get(world);
+				if (wgroups != null) {
+					for (Group g : wgroups) {
+						if (g.inGroup(world, group, true)) {
+							return true;
+						}
+					}
+				}
+			}
 		}
 		return false;
 	}
@@ -420,6 +453,29 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
+	public void replaceGroup(Group oldGroup, Group newGroup) {
+		int index = groups.indexOf(oldGroup);
+		if (index >= 0) {
+			if (newGroup != null) {
+				groups.set(index, newGroup);
+			} else {
+				groups.remove(index);
+			}
+			dirty = true;
+		}
+		for (List<Group> wgroups : worldGroups.values()) {
+			index = wgroups.indexOf(oldGroup);
+			if (index >= 0) {
+				if (newGroup != null) {
+					wgroups.set(index, newGroup);
+				} else {
+					wgroups.remove(index);
+				}
+				dirty = true;
+			}
+		}
+	}
+	
 	public void clearCache() {
 		cached.clear();
 		resetCachedInfo();
@@ -552,7 +608,11 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public void save() {
-		if (dirty) {
+		save(false);
+	}
+	
+	public void save(boolean force) {
+		if (dirty || force) {
 			dirty = false;
 			
 			BufferedWriter file = null;

@@ -87,6 +87,7 @@ public class Menu {
 			c.sendRawMessage(Menu.TEXT_COLOR + "Exiting YAPP menu");
 			sendLine(c);
 			conversations.remove(c);
+			MainPlugin.yapp.reload();
 		}
 		
 	}

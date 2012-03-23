@@ -27,18 +27,16 @@ public class AddNewGroup extends MenuPrompt {
 			
 			Group group = MainPlugin.newGroup(groupName);
 			obj.addGroup(world, group);
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName());
+			String msg = Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
 			if (world != null) {
-				context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world);
+				msg += "\n" + Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
 			}
-			
-			return Menu.MODIFY_OPTIONS;
+			return showMessage(context, msg, Menu.MODIFY_OPTIONS);
 		} else if (input.startsWith("n")) {
 			context.setSessionData("addnewgroupname", null);
 			return Menu.SELECT_GROUP;
 		} else {
-			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "That is not a valid option!");
-			return this;
+			return showMessage(context, Menu.ERROR_COLOR + "That is not a valid option!", this);
 		}
 	}
 

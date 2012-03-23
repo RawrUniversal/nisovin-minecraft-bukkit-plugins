@@ -18,11 +18,11 @@ public class NegatePermission extends MenuPrompt {
 		String world = getWorld(context);
 		input = input.trim();
 		obj.addPermission(world, "-" + input);
-		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "Negated permission " + Menu.HIGHLIGHT_COLOR + input + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName());
+		String msg = Menu.TEXT_COLOR + "Negated permission " + Menu.HIGHLIGHT_COLOR + input + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
 		if (world != null) {
-			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world);
+			msg += "\n" + Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
 		}
-		return Menu.MODIFY_OPTIONS;
+		return showMessage(context, msg, Menu.MODIFY_OPTIONS);
 	}
 
 	@Override

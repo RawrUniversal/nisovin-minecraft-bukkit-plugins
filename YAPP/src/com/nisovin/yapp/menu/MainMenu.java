@@ -11,8 +11,10 @@ public class MainMenu extends MenuPrompt {
 	@Override
 	public String getPromptText(ConversationContext context) {
 		Conversable c = context.getForWhom();
-		c.sendRawMessage(Menu.TEXT_COLOR + "Welcome to the YAPP menu! At any time you can type " + Menu.KEYLETTER_COLOR + "<" + Menu.TEXT_COLOR + " to");
-		c.sendRawMessage(Menu.TEXT_COLOR + "return to the previous menu, " + Menu.KEYLETTER_COLOR + "!" + Menu.TEXT_COLOR + " to return to this menu, or");
+		c.sendRawMessage(Menu.TEXT_COLOR + "Welcome to the YAPP menu! At any time you can type ");
+		c.sendRawMessage(Menu.KEYLETTER_COLOR + "<" + Menu.TEXT_COLOR + " to return to the previous menu,");
+		c.sendRawMessage(Menu.KEYLETTER_COLOR + "!" + Menu.TEXT_COLOR + " to return to this menu, ");
+		c.sendRawMessage(Menu.KEYLETTER_COLOR + "?" + Menu.TEXT_COLOR + " to view your current selection and get help, or");
 		c.sendRawMessage(Menu.KEYLETTER_COLOR + "q" + Menu.KEYWORD_COLOR + "uit" + Menu.TEXT_COLOR + " to exit the YAPP menu. What would you like to do?");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  1) Modify a " + Menu.KEYLETTER_COLOR + "p" + Menu.KEYWORD_COLOR + "layer");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  2) Modify an " + Menu.KEYLETTER_COLOR + "o" + Menu.KEYWORD_COLOR + "ffline player");

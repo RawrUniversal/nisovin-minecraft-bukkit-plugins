@@ -275,6 +275,72 @@ public class MainPlugin extends JavaPlugin {
 		return user;
 	}
 	
+	private void loadAllUsers() {
+		File playersFolder = new File(getDataFolder(), "players");
+		String fileName, playerName;
+		for (File file : playersFolder.listFiles()) {
+			fileName = file.getName().toLowerCase();
+			if (fileName.endsWith(".txt")) {
+				playerName = fileName.replace(".txt", "");
+				User user = getPlayerUser(playerName);
+				players.put(playerName, user);
+			}
+		}
+	}
+	
+	public void renameOrRemoveGroup(Group group, String newName) {
+		// create new group as copy of old
+		Group newGroup = null;
+		if (newName != null && !newName.isEmpty()) {
+			newGroup = new Group(group, newName);
+			newGroup.save();
+		}
+		
+		// replace group in groups
+		for (Group g : groups.values()) {
+			g.replaceGroup(group, newGroup);
+		}
+		
+		// replace group in players
+		loadAllUsers();
+		for (User u : players.values()) {
+			u.replaceGroup(group, newGroup);
+		}
+		
+		// save and clean up
+		saveAll();
+		cleanup();
+		
+		// remove old group
+		String oldName = group.getName();
+		groups.remove(oldName.toLowerCase());
+		File file = new File(getDataFolder(), "groups" + File.separator + oldName + ".txt");
+		if (file.exists()) {
+			file.delete();
+		}
+		File worldsFolder = new File(getDataFolder(), "worlds");
+		if (worldsFolder.exists()) {
+			for (File f : worldsFolder.listFiles()) {
+				if (f.isDirectory()) {
+					file = new File(f, oldName + ".txt");
+					if (file.exists()) {
+						file.delete();
+					}
+				}
+			}
+		}
+		
+		// finally add new group
+		if (newGroup != null) {
+			groups.put(newName.toLowerCase(), newGroup);
+		}
+		
+		reload();
+	}
+	
+	public void deleteGroup(Group group) {
+	}
+	
 	public void setPlayerListName(Player player, User user) {
 		if (updatePlayerList) {
 			player.setPlayerListName(user.getColor() + player.getName());
