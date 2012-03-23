@@ -1,0 +1,18 @@
+lock-inventory-size: 27
+lock-title: Code Entry
+buttons: [ 
+    260, 340, 263, 
+    264, 344, 61, 
+    20, 291, 265 ]
+button-positions: [ 
+    3, 4, 5, 
+    12, 13, 14, 
+    21, 22, 23 ]
+letter-codes: [ 
+    A, B, C, 
+    D, E, F, 
+    G, H, I ]
+auto-door-close: 100
+str-locked: "Locked with code: "
+str-removed: "Removed lock."
+str-bypass: "Bypassed lock."

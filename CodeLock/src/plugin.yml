@@ -1,0 +1,8 @@
+name: CodeLock
+main: com.nisovin.codelock.CodeLock
+version: 1.0
+author: nisovin
+permissions:
+    codelock.bypass:
+        description: Bypass code locks
+        default: op
