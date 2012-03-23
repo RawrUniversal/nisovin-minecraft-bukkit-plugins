@@ -626,7 +626,7 @@ public class MagicSpells extends JavaPlugin {
 	 */
 	static public void sendMessage(Player player, String message) {
 		if (message != null && !message.equals("")) {
-			String [] msgs = message.replaceAll("&([0-9a-f])", "\u00A7$1").split("\n");
+			String [] msgs = message.replaceAll("&([0-9a-fk-or])", "\u00A7$1").split("\n");
 			for (String msg : msgs) {
 				if (!msg.equals("")) {
 					player.sendMessage(MagicSpells.textColor + msg);
