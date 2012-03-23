@@ -13,6 +13,6 @@ letter-codes: [
     D, E, F, 
     G, H, I ]
 auto-door-close: 100
+check-build-perms: true
 str-locked: "Locked with code: "
 str-removed: "Removed lock."
-str-bypass: "Bypassed lock."

@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -45,10 +46,10 @@ public class CodeLock extends JavaPlugin implements Listener {
 	};
 	
 	private int autoDoorClose = 100;
+	private boolean checkBuildPerms = true;
 	
 	private String strLocked = "Locked with code: ";
 	private String strRemoved = "Removed lock.";
-	private String strBypass = "Bypassed lock.";
 	
 	private HashMap<String,String> locks = new HashMap<String,String>();
 	
@@ -88,9 +89,9 @@ public class CodeLock extends JavaPlugin implements Listener {
 			}
 		}
 		autoDoorClose = config.getInt("aut-door-close", autoDoorClose);
+		checkBuildPerms = config.getBoolean("check-build-perms", checkBuildPerms);
 		strLocked = config.getString("str-locked", strLocked);
 		strRemoved = config.getString("str-removed", strRemoved);
-		strBypass = config.getString("str-bypass", strBypass);
 		
 		// load locks
 		load();
@@ -122,7 +123,15 @@ public class CodeLock extends JavaPlugin implements Listener {
 				}
 			} else if (player.isSneaking()) {
 				// trying to lock
-				action = PlayerAction.LOCKING;
+				if (checkBuildPerms) {
+					BlockPlaceEvent evt = new BlockPlaceEvent(block, block.getState(), block.getRelative(BlockFace.DOWN), player.getItemInHand(), player, true);
+					Bukkit.getPluginManager().callEvent(evt);
+					if (!evt.isCancelled()) {
+						action = PlayerAction.LOCKING;
+					}
+				} else {
+					action = PlayerAction.LOCKING;
+				}
 			}
 			if (action != null) {
 				event.setCancelled(true);
@@ -151,7 +160,6 @@ public class CodeLock extends JavaPlugin implements Listener {
 				playerStatuses.remove(event.getWhoClicked());
 				if (status.getAction() == PlayerAction.UNLOCKING) {
 					final Block block = status.getBlock();
-					System.out.println(block.getState());
 					if (block.getState() instanceof InventoryHolder) {
 						Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 							public void run() {
