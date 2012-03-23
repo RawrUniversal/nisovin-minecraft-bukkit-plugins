@@ -33,6 +33,8 @@ public class BookWorm extends JavaPlugin {
 
 	protected static String STACK_BY_DATA_FN = "a";
 	
+	protected static boolean ENABLE_STAT_COLLECTION = true;
+	
 	protected static ChatColor TEXT_COLOR = ChatColor.GREEN;
 	protected static ChatColor TEXT_COLOR_2 = ChatColor.WHITE;
 	protected static boolean ENABLE_COLORS = true;
@@ -199,7 +201,9 @@ public class BookWorm extends JavaPlugin {
 		}
 		
 		// setup metrics
-		setupMetrics();
+		if (ENABLE_STAT_COLLECTION) {
+			setupMetrics();
+		}
 		
 		// prevent book stacking
 		try {
@@ -364,6 +368,8 @@ public class BookWorm extends JavaPlugin {
 		Configuration config = getConfig();
 		
 		STACK_BY_DATA_FN = config.getString("general.stack-by-data-fn", STACK_BY_DATA_FN);
+		
+		ENABLE_STAT_COLLECTION = config.getBoolean("general.enable-usage-stat-collection", true);
 		
 		TEXT_COLOR = ChatColor.getByChar(config.getString("general.text-color", TEXT_COLOR.getChar()+""));
 		TEXT_COLOR_2 = ChatColor.getByChar(config.getString("general.text-color-2", TEXT_COLOR_2.getChar()+""));
