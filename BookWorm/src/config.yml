@@ -1,5 +1,5 @@
 general:
-    enable-stat-collection: true
+    enable-usage-stat-collection: true
     text-color: a
     text-color-2: f
     enable-color-codes: true

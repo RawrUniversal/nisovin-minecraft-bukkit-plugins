@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -308,7 +307,11 @@ public class Book {
 		
 		try {
 			// write book file
-			PrintWriter writer = new PrintWriter(new FileWriter(new File(BookWorm.plugin.getDataFolder(), fileName + ".txt"), false));
+			File file = new File(BookWorm.plugin.getDataFolder(), fileName + ".txt");
+			if (file.exists()) {
+				file.delete();
+			}
+			PrintWriter writer = new PrintWriter(file, "UTF-16");
 			writer.println(id);
 			writer.println(title);
 			writer.println(author);
