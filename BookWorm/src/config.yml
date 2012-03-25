@@ -22,6 +22,7 @@ formatting:
     indent-size: 4
     line-length: 55
     page-length: 6
+    charset: UTF-8
     
 strings:
     must-hold-book: You must be holding a single book to write.

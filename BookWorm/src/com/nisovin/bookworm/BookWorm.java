@@ -43,6 +43,7 @@ public class BookWorm extends JavaPlugin {
 	protected static int PAGE_LENGTH = 6;
 	protected static String INDENT = "    ";
 	protected static String NEW_PARA = "::";
+	protected static String CHARSET = "UTF-8";
 	
 	protected static boolean SHOW_TITLE_ON_HELD_CHANGE = true;
 	protected static boolean REQUIRE_BOOK_TO_COPY = false;
@@ -364,7 +365,10 @@ public class BookWorm extends JavaPlugin {
 	}
 	
 	protected void loadConfig() {
-		saveDefaultConfig();
+		File file = new File(getDataFolder(), "config.yml");
+		if (!file.exists()) {
+			saveDefaultConfig();
+		}
 		Configuration config = getConfig();
 		
 		STACK_BY_DATA_FN = config.getString("general.stack-by-data-fn", STACK_BY_DATA_FN);
@@ -396,7 +400,8 @@ public class BookWorm extends JavaPlugin {
 		INDENT = "";
 		for (int i = 0; i < indent; i++) {
 			INDENT += " ";
-		}		
+		}
+		CHARSET = config.getString("formatting.charset", CHARSET);
 		
 		S_MUST_HOLD_BOOK = config.getString("strings.must-hold-book", S_MUST_HOLD_BOOK);
 		S_USAGE_START = config.getString("strings.usage-start", S_USAGE_START);
