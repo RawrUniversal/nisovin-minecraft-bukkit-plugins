@@ -1203,7 +1203,10 @@ spells:
         enabled: false
         description: Fly through the air.
         cast-item: 280
-        cancel-on-land: true
+        launch-speed: 1
+        cancel-on-land: false
+        cancel-on-logout: true
+        cancel-on-teleport: true
         duration: 120
         cost:
             - 331 3
