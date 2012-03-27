@@ -259,6 +259,14 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		return groups;
 	}
 	
+	public List<Group> getActualGroupList(String world) {
+		if (world == null || world.isEmpty()) {
+			return getActualGroupList();
+		} else {
+			return worldGroups.get(world);
+		}
+	}
+	
 	public String getActualPrefix() {
 		if (prefix == null) {
 			return null;

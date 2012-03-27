@@ -32,6 +32,11 @@ public class User extends PermissionContainer {
 		return Bukkit.getOfflinePlayer(realName);
 	}
 	
+	public boolean isOnline() {
+		Player p = getPlayer();
+		return p != null && p.isOnline();
+	}
+	
 	@Override
 	public void setColor(ChatColor color) {
 		super.setColor(color);

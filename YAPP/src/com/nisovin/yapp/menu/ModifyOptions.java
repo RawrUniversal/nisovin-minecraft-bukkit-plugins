@@ -48,7 +48,7 @@ public class ModifyOptions extends MenuPrompt {
 		} else if (input.equals("4") || input.startsWith("g")) {
 			return Menu.ADD_GROUP;
 		} else if (input.equals("5") || input.startsWith("y") || input.startsWith("pri")) {
-			return END_OF_CONVERSATION;
+			return Menu.SET_PRIMARY_GROUP;
 		} else if (input.equals("6") || input.startsWith("u")) {
 			return Menu.REMOVE_GROUP;
 		} else if (input.equals("7") || input.startsWith("ch") || input.startsWith("pre") || input.equals("x")) {

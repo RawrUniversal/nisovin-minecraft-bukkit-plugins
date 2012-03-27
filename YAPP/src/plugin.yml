@@ -1,7 +1,7 @@
 name: YAPP
 description: Yet Another Permission Plugin
 author: nisovin
-version: 0.1
+version: 0.2
 main: com.nisovin.yapp.MainPlugin
 softdepend: [Vault]
 commands:
@@ -11,10 +11,12 @@ commands:
         permission: yapp.admin
     yapppromote:
         description: Promotes a player to the next group.
+        usage: /<command> [o:]<player> [world]
         aliases: [promote]
         permission: yapp.promote
     yappdemote:
         description: Demotes a player to the previous group.
+        usage: /<command> [o:]<player> [world]
         aliases: [demote]
         permission: yapp.demote
 permissions:
@@ -23,4 +25,16 @@ permissions:
         default: false
     yapp.admin:
         description: Modify permission settings.
+        default: op
+    yapp.promote:
+        description: General permission to promote players.
+        default: op
+    yapp.demote:
+        description: General permission to demote players.
+        default: op
+    yapp.promote.*:
+        description: Promote players on any ladder.
+        default: op
+    yapp.demote.*:
+        description: Demote players on any ladder.
         default: op

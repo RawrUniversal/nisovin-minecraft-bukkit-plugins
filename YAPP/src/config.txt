@@ -11,3 +11,8 @@ use chat formatting : true
 
 set group perm      : false
 set player metadata : false
+
+
+== LADDERS ==
+
+main : default, vips, mods, admins

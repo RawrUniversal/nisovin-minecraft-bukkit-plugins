@@ -1,6 +1,7 @@
 package com.nisovin.yapp;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.TreeMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -36,6 +38,7 @@ public class MainPlugin extends JavaPlugin {
 	private Map<String, Group> groups;
 	private Map<String, User> players;
 	private Group defaultGroup;
+	private Map<String, List<Group>> ladders;
 	
 	private Map<String, PermissionAttachment> attachments;
 	
@@ -47,6 +50,9 @@ public class MainPlugin extends JavaPlugin {
 		
 		// register commands
 		getCommand("yapp").setExecutor(new CommandMain());
+		CommandPromoteDemote cpd = new CommandPromoteDemote(this);
+		getCommand("yapppromote").setExecutor(cpd);
+		getCommand("yappdemote").setExecutor(cpd);
 		
 		// register vault hook
 		if (getServer().getPluginManager().isPluginEnabled("Vault")) {
@@ -86,6 +92,29 @@ public class MainPlugin extends JavaPlugin {
 				defaultGroup.addPermission(null, "yapp.build");
 				defaultGroup.save();
 				log("Created default group '" + defGroupName + "'");
+			}
+		}
+		
+		// get promotion ladders
+		ladders = new HashMap<String, List<Group>>();
+		Set<String> keys = config.getKeys("ladders");
+		if (keys != null) {
+			for (String key : keys) {
+				List<String> groupList = config.getStringList("ladders." + key);
+				List<Group> ladderGroups = new ArrayList<Group>();
+				for (String s : groupList) {
+					Group g = getGroup(s);
+					if (g != null) {
+						ladderGroups.add(g);
+					} else {
+						error("Group '" + s + "' in ladder '" + key + "' does not exist, ignoring this ladder");
+						ladderGroups = null;
+						break;
+					}
+				}
+				if (ladderGroups != null) {
+					ladders.put(key, ladderGroups);
+				}
 			}
 		}
 		
@@ -288,7 +317,7 @@ public class MainPlugin extends JavaPlugin {
 		}
 	}
 	
-	public void renameOrRemoveGroup(Group group, String newName) {
+	public void renameOrDeleteGroup(Group group, String newName) {
 		// create new group as copy of old
 		Group newGroup = null;
 		if (newName != null && !newName.isEmpty()) {
@@ -338,9 +367,56 @@ public class MainPlugin extends JavaPlugin {
 		reload();
 	}
 	
-	public void deleteGroup(Group group) {
+	public boolean promote(User user, String world, CommandSender sender) {
+		List<Group> groups;
+		if (world == null) {
+			groups = user.getActualGroupList();
+		} else {
+			groups = user.getActualGroupList(world);
+		}
+		if (groups == null || groups.size() == 0) {
+			return false;
+		} else {
+			Group group = groups.get(0);
+			for (String ladderName : ladders.keySet()) {
+				if (sender.hasPermission("yapp.promote.*") || sender.hasPermission("yapp.promote." + ladderName)) {
+					List<Group> ladder = ladders.get(ladderName);
+					int index = ladder.indexOf(group) + 1;
+					if (index > 0 && index < ladder.size()) {
+						user.replaceGroup(group, ladder.get(index));
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 	
+	public boolean demote(User user, String world, CommandSender sender) {
+		List<Group> groups;
+		if (world == null) {
+			groups = user.getActualGroupList();
+		} else {
+			groups = user.getActualGroupList(world);
+		}
+		if (groups == null || groups.size() == 0) {
+			return false;
+		} else {
+			Group group = groups.get(0);
+			for (String ladderName : ladders.keySet()) {
+				if (sender.hasPermission("yapp.demote.*") || sender.hasPermission("yapp.demote." + ladderName)) {
+					List<Group> ladder = ladders.get(ladderName);
+					int index = ladder.indexOf(group) - 1;
+					if (index >= 0) {
+						user.replaceGroup(group, ladder.get(index));
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
+		
 	public void setPlayerListName(Player player, User user) {
 		if (updatePlayerList) {
 			player.setPlayerListName(user.getColor() + player.getName());

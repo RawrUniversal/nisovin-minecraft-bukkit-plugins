@@ -43,6 +43,7 @@ public class Menu {
 	public static final Prompt REMOVE_GROUP = new RemoveGroup();
 	public static final Prompt SET_COLOR = new SetColor();
 	public static final Prompt SET_PREFIX = new SetPrefix();
+	public static final Prompt SET_PRIMARY_GROUP = new SetPrimaryGroup();
 	
 	public static final Prompt HAS_PERMISSION = new HasPermission();
 	public static final Prompt HAS_GROUP = new HasGroup();

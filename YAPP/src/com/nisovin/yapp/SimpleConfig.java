@@ -2,9 +2,12 @@ package com.nisovin.yapp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 public class SimpleConfig {
 
@@ -161,6 +164,29 @@ public class SimpleConfig {
 			} else {
 				return null;
 			}
+		}
+	}
+	
+	public List<String> getStringList(String path) {
+		String val = getValue(path);
+		if (val == null) {
+			return null;
+		} else {
+			List<String> list = new ArrayList<String>();
+			String[] values = val.split(",");
+			for (String v : values) {
+				list.add(v.trim());
+			}
+			return list;
+		}
+	}
+	
+	public Set<String> getKeys(String section) {
+		Map<String,String> vals = values.get(section);
+		if (vals == null) {
+			return null;
+		} else {
+			return vals.keySet();
 		}
 	}
 	
