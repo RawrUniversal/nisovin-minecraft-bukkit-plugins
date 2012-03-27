@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -269,8 +270,11 @@ public class CodeLock extends JavaPlugin implements Listener {
 			block = block.getRelative(BlockFace.DOWN);
 			data = block.getData();
 		}
-		data = (byte) (data | 0x4);
-		block.setData(data, true);
+		if (isDoorClosed(block)) {
+			data = (byte) (data | 0x4);
+			block.setData(data, true);
+			block.getWorld().playEffect(block.getLocation(), Effect.DOOR_TOGGLE, 0);
+		}
 	}
 	
 	private void closeDoor(Block block) {
@@ -279,8 +283,11 @@ public class CodeLock extends JavaPlugin implements Listener {
 			block = block.getRelative(BlockFace.DOWN);
 			data = block.getData();
 		}
-		data = (byte) (data & 0xb);
-		block.setData(data, true);
+		if (!isDoorClosed(block)) {
+			data = (byte) (data & 0xb);
+			block.setData(data, true);
+			block.getWorld().playEffect(block.getLocation(), Effect.DOOR_TOGGLE, 0);
+		}
 	}
 	
 	private void load() {
