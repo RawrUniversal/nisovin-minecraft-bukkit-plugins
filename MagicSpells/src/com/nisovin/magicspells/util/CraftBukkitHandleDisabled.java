@@ -3,6 +3,7 @@ package com.nisovin.magicspells.util;
 import java.util.Set;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -68,6 +69,16 @@ public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 
 	@Override
 	public void collectItem(Player player, Item item) {
+	}
+
+	@Override
+	public boolean simulateTnt(Location target, float explosionSize) {
+		return false;
+	}
+
+	@Override
+	public boolean createExplosionByPlayer(Player player, Location location, float size) {
+		return location.getWorld().createExplosion(location, size);
 	}
 
 }

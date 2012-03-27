@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -21,6 +22,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	
 	private int explosionSize;
 	private int backfireChance;
+	private boolean simulateTnt;
 	private boolean preventBlockDamage;
 	private boolean preventPlayerDamage;
 	private float damageMultiplier;
@@ -35,6 +37,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		
 		explosionSize = getConfigInt("explosion-size", 4);
 		backfireChance = getConfigInt("backfire-chance", 0);
+		simulateTnt = getConfigBoolean("simulate-tnt", true);
 		preventBlockDamage = getConfigBoolean("prevent-block-damage", false);
 		preventPlayerDamage = getConfigBoolean("prevent-player-damage", false);
 		damageMultiplier = getConfigFloat("damage-multiplier", 0);
@@ -69,6 +72,13 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	}
 	
 	private boolean explode(Player player, Location target, float power) {
+		// check plugins
+		if (simulateTnt) {
+			boolean cancelled = MagicSpells.getVolatileCodeHandler().simulateTnt(target, explosionSize * power);
+			if (cancelled) {
+				return false;
+			}
+		}
 		// backfire chance
 		if (backfireChance > 0) {
 			Random rand = new Random();
@@ -76,9 +86,11 @@ public class ExplodeSpell extends TargetedLocationSpell {
 				target = player.getLocation();
 			}					
 		}
+		// save current explosion data
 		currentTick = Bukkit.getWorlds().get(0).getFullTime();
 		currentPower = power;
-		boolean ret = target.getWorld().createExplosion(target, explosionSize * power);
+		// cause explosion
+		boolean ret = MagicSpells.getVolatileCodeHandler().createExplosionByPlayer(player, target, explosionSize * power);
 		if (ret) {
 			playGraphicalEffects(player, target);
 		}

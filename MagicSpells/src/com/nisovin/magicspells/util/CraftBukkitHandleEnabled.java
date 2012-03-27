@@ -8,6 +8,7 @@ import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.EntityTNTPrimed;
 import net.minecraft.server.MobEffect;
 import net.minecraft.server.Packet103SetSlot;
 import net.minecraft.server.Packet22Collect;
@@ -16,14 +17,18 @@ import net.minecraft.server.Packet42RemoveMobEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
@@ -159,6 +164,20 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	public void collectItem(Player player, Item item) {
 		Packet22Collect packet = new Packet22Collect(item.getEntityId(), player.getEntityId());
 		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
+	}
+
+	@Override
+	public boolean simulateTnt(Location target, float explosionSize) {
+        EntityTNTPrimed e = new EntityTNTPrimed(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ());
+        CraftTNTPrimed c = new CraftTNTPrimed((CraftServer)Bukkit.getServer(), e);
+        ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize, false);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        return event.isCancelled();
+	}
+
+	@Override
+	public boolean createExplosionByPlayer(Player player, Location location, float size) {
+		return !((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftPlayer)player).getHandle(), location.getX(), location.getY(), location.getZ(), size, false).wasCanceled;
 	}
 	
 	/*private class PathfinderGoalUseOwnerTarget extends PathfinderGoalTarget {

@@ -1200,7 +1200,7 @@ spells:
     windwalk:
         spell-class: ".buff.WindwalkSpell"
         name: windwalk
-        enabled: false
+        enabled: true
         description: Fly through the air.
         cast-item: 280
         launch-speed: 1
