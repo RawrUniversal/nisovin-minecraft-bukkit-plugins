@@ -38,12 +38,12 @@ public class BookWorm extends JavaPlugin {
 	protected static ChatColor TEXT_COLOR = ChatColor.GREEN;
 	protected static ChatColor TEXT_COLOR_2 = ChatColor.WHITE;
 	protected static boolean ENABLE_COLORS = true;
+	protected static String CHARSET = "UTF-8";
 	
 	protected static int LINE_LENGTH = 55;
 	protected static int PAGE_LENGTH = 6;
 	protected static String INDENT = "    ";
 	protected static String NEW_PARA = "::";
-	protected static String CHARSET = "UTF-8";
 	
 	protected static boolean SHOW_TITLE_ON_HELD_CHANGE = true;
 	protected static boolean REQUIRE_BOOK_TO_COPY = false;
@@ -373,11 +373,12 @@ public class BookWorm extends JavaPlugin {
 		
 		STACK_BY_DATA_FN = config.getString("general.stack-by-data-fn", STACK_BY_DATA_FN);
 		
-		ENABLE_STAT_COLLECTION = config.getBoolean("general.enable-usage-stat-collection", true);
+		ENABLE_STAT_COLLECTION = config.getBoolean("general.enable-usage-stat-collection", ENABLE_STAT_COLLECTION);
 		
 		TEXT_COLOR = ChatColor.getByChar(config.getString("general.text-color", TEXT_COLOR.getChar()+""));
 		TEXT_COLOR_2 = ChatColor.getByChar(config.getString("general.text-color-2", TEXT_COLOR_2.getChar()+""));
 		ENABLE_COLORS = config.getBoolean("general.enable-color-codes", ENABLE_COLORS);
+		CHARSET = config.getString("general.charset", CHARSET);
 		
 		SHOW_TITLE_ON_HELD_CHANGE = config.getBoolean("general.show-title-on-held-change", SHOW_TITLE_ON_HELD_CHANGE);
 		REQUIRE_BOOK_TO_COPY = config.getBoolean("general.require-book-to-copy", REQUIRE_BOOK_TO_COPY);
@@ -401,7 +402,6 @@ public class BookWorm extends JavaPlugin {
 		for (int i = 0; i < indent; i++) {
 			INDENT += " ";
 		}
-		CHARSET = config.getString("formatting.charset", CHARSET);
 		
 		S_MUST_HOLD_BOOK = config.getString("strings.must-hold-book", S_MUST_HOLD_BOOK);
 		S_USAGE_START = config.getString("strings.usage-start", S_USAGE_START);

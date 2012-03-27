@@ -3,6 +3,7 @@ general:
     text-color: a
     text-color-2: f
     enable-color-codes: true
+    charset: UTF-8
     show-title-on-held-change: true
     require-book-to-copy: false
     make-real-copy: false
@@ -22,7 +23,6 @@ formatting:
     indent-size: 4
     line-length: 55
     page-length: 6
-    charset: UTF-8
     
 strings:
     must-hold-book: You must be holding a single book to write.
