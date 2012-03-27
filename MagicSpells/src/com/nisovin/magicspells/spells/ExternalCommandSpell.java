@@ -24,6 +24,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 	private List<String> temporaryPermissions;
 	private boolean requirePlayerTarget;
 	private boolean executeAsTargetInstead;
+	private boolean executeOnConsoleInstead;
 	private boolean obeyLos;
 	private String strCantUseCommand;
 	private String strNoTarget;
@@ -40,6 +41,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 		temporaryPermissions = getConfigStringList("temporary-permissions", null);
 		requirePlayerTarget = getConfigBoolean("require-player-target", false);
 		executeAsTargetInstead = getConfigBoolean("execute-as-target-instead", false);
+		executeOnConsoleInstead = getConfigBoolean("execute-on-console-instead", false);
 		obeyLos = getConfigBoolean("obey-los", true);
 		strCantUseCommand = config.getString("spells." + spellName + ".str-cant-use-command", "&4You don't have permission to do that.");
 		strNoTarget = getConfigString("str-no-target", "No target found.");
@@ -91,10 +93,12 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 			if (target != null) {
 				comm = comm.replace("%t", target.getName());
 			}
-			if (!executeAsTargetInstead) {
-				player.performCommand(comm);
-			} else {
+			if (executeAsTargetInstead) {
 				target.performCommand(comm);
+			} else if (executeOnConsoleInstead) {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
+			} else {
+				player.performCommand(comm);
 			}
 		}
 		// effects
@@ -177,10 +181,12 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 					if (target != null) {
 						comm = comm.replace("%t", target.getName());
 					}
-					if (!executeAsTargetInstead) {
-						player.performCommand(comm);
-					} else {
+					if (executeAsTargetInstead) {
 						target.performCommand(comm);
+					} else if (executeOnConsoleInstead) {
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
+					} else {
+						player.performCommand(comm);
 					}
 				}
 			}
