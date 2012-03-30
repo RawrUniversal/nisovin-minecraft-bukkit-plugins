@@ -1,6 +1,5 @@
 package com.nisovin.magicspells.spells.buff;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -82,7 +81,7 @@ public class ReachSpell extends BuffSpell {
 						return;
 					}
 					// call break event
-					BlockBreakEvent evt = new BlockBreakEvent(targetBlock, player, new ArrayList<ItemStack>(targetBlock.getDrops()));
+					BlockBreakEvent evt = new BlockBreakEvent(targetBlock, player);
 					Bukkit.getPluginManager().callEvent(evt);
 					if (!evt.isCancelled()) {
 						// remove block
