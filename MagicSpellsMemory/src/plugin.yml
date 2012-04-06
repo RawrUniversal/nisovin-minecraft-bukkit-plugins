@@ -1,5 +1,5 @@
 name: MagicSpellsMemory
-version: 1.1
+version: 1.2
 main: com.nisovin.magicspells.memory.MagicSpellsMemory
 depend: [MagicSpells]
 commands:

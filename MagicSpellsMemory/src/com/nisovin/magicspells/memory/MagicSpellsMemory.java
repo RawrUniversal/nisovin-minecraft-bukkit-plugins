@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.memory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class MagicSpellsMemory extends JavaPlugin {
 
@@ -29,12 +31,16 @@ public class MagicSpellsMemory extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		File file = new File(getDataFolder(), "config.yml");
+		if (!file.exists()) {
+			saveDefaultConfig();
+		}
 		Configuration config = getConfig();
-		config.options().copyDefaults(true);
 		
 		strOutOfMemory = config.getString("str-out-of-memory");
 		strMemoryUsage = config.getString("str-memory-usage");
 		
+		// get max memory amounts
 		maxMemoryDefault = config.getInt("max-memory-default");
 		ConfigurationSection permsSec = config.getConfigurationSection("max-memory-perms");
 		if (permsSec != null) {
@@ -47,17 +53,34 @@ public class MagicSpellsMemory extends JavaPlugin {
 			}
 		}
 		
+		// get spell mem requirements from mem config
 		ConfigurationSection reqSec = config.getConfigurationSection("memory-requirements");
 		if (reqSec != null) {
+			MagicSpells.log("You should move your MagicSpellsMemory memory");
+			MagicSpells.log("requirements to the main MagicSpells config file.");
+			MagicSpells.log("You can add a memory option to each spell in the");
+			MagicSpells.log("main MagicSpells config file.");
 			Set<String> spells = reqSec.getKeys(false);
 			if (spells != null) {
 				for (String spell : spells) {
-					memoryRequirements.put(spell, reqSec.getInt(spell));
+					int mem = reqSec.getInt(spell);
+					memoryRequirements.put(spell, mem);
+					MagicSpells.debug("Memory requirement for '" + spell + "' spell set to " + mem);
 				}
 			}
 		}
 		
-		saveConfig();
+		// get spell mem requirements from magicspells config
+		MagicConfig magicConfig = new MagicConfig(new File(MagicSpells.plugin.getDataFolder(), "config.yml"));
+		if (magicConfig.isLoaded()) {
+			for (String spell : magicConfig.getSpellKeys()) {
+				if (magicConfig.contains("spells." + spell + ".memory")) {
+					int mem = magicConfig.getInt("spells." + spell + ".memory", 0);
+					memoryRequirements.put(spell, mem);
+					MagicSpells.debug("Memory requirement for '" + spell + "' spell set to " + mem);
+				}
+			}
+		}
 		
 		getServer().getPluginManager().registerEvents(new MemorySpellListener(this), this);
 	}
@@ -105,7 +128,7 @@ public class MagicSpellsMemory extends JavaPlugin {
 	
 	public int getMaxMemory(Player player) {
 		for (int i = 0; i < maxMemoryPerms.size(); i++) {
-			if (player.hasPermission("magicspells.memory." + maxMemoryPerms.get(i))) {
+			if (player.hasPermission("magicspells.rank." + maxMemoryPerms.get(i))) {
 				return maxMemoryAmounts.get(i);
 			}
 		}
