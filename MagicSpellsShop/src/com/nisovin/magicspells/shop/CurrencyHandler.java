@@ -57,8 +57,10 @@ public class CurrencyHandler {
 		
 		if (c == null) {
 			return false;
-		} else if (c.equals("vault") && economy != null) {
+		} else if (c.equalsIgnoreCase("vault") && economy != null) {
 			return economy.has(player.getName(), amount);
+		} else if (c.equalsIgnoreCase("levels")) {
+			return player.getLevel() >= (int)amount;
 		} else if (c.matches("^[0-9]+$")) {
 			return inventoryContains(player.getInventory(), new ItemStack(Integer.parseInt(c), (int)amount));
 		} else if (c.matches("^[0-9]+:[0-9]+$")) {
@@ -81,8 +83,9 @@ public class CurrencyHandler {
 		if (c == null) c = currencies.get(defaultCurrency);
 		
 		if (c.equalsIgnoreCase("vault") && economy != null) {
-			System.out.println("vault");
 			economy.withdrawPlayer(player.getName(), amount);
+		} else if (c.equalsIgnoreCase("levels")) {
+			player.setLevel(player.getLevel() - (int)amount);
 		} else if (c.matches("^[0-9]+$")) {
 			removeFromInventory(player.getInventory(), new ItemStack(Integer.parseInt(c), (int)amount));
 			player.updateInventory();

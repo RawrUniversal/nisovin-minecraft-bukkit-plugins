@@ -3,6 +3,7 @@ require-teach-perm: true
 
 currencies:
     money: "vault"
+    levels: "levels"
     gold: "266"
     cocoa: "351:3"
 
