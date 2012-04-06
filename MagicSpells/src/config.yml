@@ -380,6 +380,7 @@ spells:
         prevent-block-damage: false
         prevent-player-damage: false
         damage-multiplier: 10
+        simulate-tnt: true
         ignore-canceled: false
         cost:
             - 331 5

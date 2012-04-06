@@ -34,6 +34,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String description;
 	protected CastItem castItem;
 	protected boolean bindable;
+	protected boolean requireCastItemOnCommand;
 	protected HashSet<CastItem> bindableItems;
 	protected ItemStack spellIcon;
 	protected int broadcastRange;
@@ -84,8 +85,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		// general options
 		this.description = config.getString(section + "." + spellName + ".description", "");
-		this.castItem = new CastItem(config.getString(section + "." + spellName + ".cast-item", "280"));
+		this.castItem = new CastItem(config.getString(section + "." + spellName + ".cast-item", "-1"));
 		this.bindable = config.getBoolean(section + "." + spellName + ".bindable", true);
+		this.requireCastItemOnCommand = config.getBoolean(section + "." + spellName + ".require-cast-item-on-command", false);
 		List<String> bindables = config.getStringList(section + "." + spellName + ".bindable-items", null);
 		if (bindables != null) {
 			bindableItems = new HashSet<CastItem>();
@@ -296,8 +298,17 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			MagicSpells.debug("    Spell canceled");
 			return new SpellCastResult(SpellCastState.CANT_CAST, PostCastAction.HANDLE_NORMALLY);
 		} else {
-			power = event.getPower();
 			cooldown = event.getCooldown();
+			power = event.getPower();
+			if (event.haveReagentsChanged()) {
+				reagents = event.getReagents();
+				if (!hasReagents(player, reagents)) {
+					state = SpellCastState.MISSING_REAGENTS;
+				}
+			}
+			if (event.hasSpellCastStateChanged()) {
+				state = event.getSpellCastState();
+			}
 		}
 		
 		// cast spell
@@ -372,6 +383,16 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	public abstract boolean canCastWithItem();
 	
 	public abstract boolean canCastByCommand();
+	
+	public boolean isValidItemForCastCommand(ItemStack item) {
+		if (!requireCastItemOnCommand || castItem == null) {
+			return true;
+		} else if (item == null && castItem.getItemTypeId() == 0) {
+			return true;
+		} else {
+			return castItem.equals(item);
+		}
+	}
 	
 	public boolean canBind(CastItem item) {
 		if (!bindable) {
@@ -462,6 +483,16 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 */
 	protected boolean hasReagents(Player player) {
 		return hasReagents(player, cost, healthCost, manaCost, hungerCost, experienceCost, levelsCost);
+	}
+	
+	/**
+	 * Checks if a player has the reagents required to cast this spell
+	 * @param player the player to check
+	 * @param reagents the reagents to check for
+	 * @return true if the player has the reagents, false otherwise
+	 */
+	protected boolean hasReagents(Player player, SpellReagents reagents) {
+		return hasReagents(player, reagents.getItemsAsArray(), reagents.getHealth(), reagents.getMana(), reagents.getHunger(), reagents.getExperience(), reagents.getLevels());
 	}
 	
 	/**
