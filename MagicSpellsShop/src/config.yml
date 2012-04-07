@@ -10,6 +10,7 @@ currencies:
 first-line: [SPELL SHOP]
 str-already-known: You already know that spell.
 str-cant-afford: You cannot afford that spell.
+str-cant-learn: You are not able to buy that spell.
 str-purchased: You have purchased the %s spell.
 
 first-line-scroll: [SCROLL SHOP]

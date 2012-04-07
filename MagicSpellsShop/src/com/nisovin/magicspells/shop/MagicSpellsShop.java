@@ -31,6 +31,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 	private String firstLine;
 	private String strAlreadyKnown;
 	private String strCantAfford;
+	private String strCantLearn;
 	private String strPurchased;
 	
 	private String firstLineScroll;
@@ -62,6 +63,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		firstLine = config.getString("first-line", "[SPELL SHOP]");
 		strAlreadyKnown = config.getString("str-already-known", "You already know that spell.");
 		strCantAfford = config.getString("str-cant-afford", "You cannot afford that spell.");
+		strCantLearn = config.getString("str-cant-learn", "You are not able to buy that spell.");
 		strPurchased = config.getString("str-purchased", "You have purchased the %s spell.");
 		
 		firstLineScroll = config.getString("first-line-scroll", "[SCROLL SHOP]");
@@ -131,6 +133,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		// attempt to teach
 		boolean taught = MagicSpells.teachSpell(player, spellName);
 		if (!taught) {
+			MagicSpells.sendMessage(player, strCantLearn, "%s", spellName);
 			return;
 		}
 		
