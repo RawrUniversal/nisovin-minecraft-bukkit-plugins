@@ -63,6 +63,7 @@ general:
         show-mana-on-use: false
         show-mana-on-regen: false
         show-mana-on-wood-tool: true
+        show-mana-on-experience-bar: false
         tool-slot: 8
         mana-potion-cooldown: 30
         str-mana-potion-on-cooldown: You cannot use another mana potion yet (%c seconds).

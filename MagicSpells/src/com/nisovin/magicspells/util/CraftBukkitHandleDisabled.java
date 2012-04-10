@@ -81,4 +81,10 @@ public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 		return location.getWorld().createExplosion(location, size);
 	}
 
+	@Override
+	public void setExperienceBar(Player player, int level, float percent) {
+		player.setLevel(level);
+		player.setExp(percent);
+	}
+
 }

@@ -14,6 +14,7 @@ import net.minecraft.server.Packet103SetSlot;
 import net.minecraft.server.Packet22Collect;
 import net.minecraft.server.Packet40EntityMetadata;
 import net.minecraft.server.Packet42RemoveMobEffect;
+import net.minecraft.server.Packet43SetExperience;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -178,6 +179,12 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	@Override
 	public boolean createExplosionByPlayer(Player player, Location location, float size) {
 		return !((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftPlayer)player).getHandle(), location.getX(), location.getY(), location.getZ(), size, false).wasCanceled;
+	}
+
+	@Override
+	public void setExperienceBar(Player player, int level, float percent) {
+		Packet43SetExperience packet = new Packet43SetExperience(percent, player.getTotalExperience(), level);
+		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
 	}
 	
 	/*private class PathfinderGoalUseOwnerTarget extends PathfinderGoalTarget {

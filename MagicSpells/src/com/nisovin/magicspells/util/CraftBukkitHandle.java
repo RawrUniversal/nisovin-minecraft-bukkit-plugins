@@ -40,4 +40,6 @@ public interface CraftBukkitHandle {
 	
 	public boolean createExplosionByPlayer(Player player, Location location, float size);
 	
+	public void setExperienceBar(Player player, int level, float percent);
+	
 }

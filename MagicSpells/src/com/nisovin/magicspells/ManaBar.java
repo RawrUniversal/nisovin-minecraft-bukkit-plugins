@@ -77,6 +77,10 @@ public class ManaBar {
 		}
 	}
 	
+	public void showOnExperienceBar(Player player) {
+		MagicSpells.getVolatileCodeHandler().setExperienceBar(player, mana, (float)mana/(float)maxMana);
+	}
+	
 	public void callManaChangeEvent(Player player) {
 		ManaChangeEvent event = new ManaChangeEvent(player, mana, maxMana);
 		Bukkit.getPluginManager().callEvent(event);
