@@ -530,7 +530,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		if (hungerCost > 0 && player.getFoodLevel() < hungerCost) {
 			return false;
 		}
-		if (experienceCost > 0 && player.getTotalExperience() < experienceCost) {
+		if (experienceCost > 0 && !ExperienceUtils.hasExp(player, experienceCost)) {
 			return false;
 		}
 		if (levelsCost > 0 && player.getLevel() < levelsCost) {
@@ -592,7 +592,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			player.setFoodLevel(player.getFoodLevel() - hungerCost);
 		}
 		if (experienceCost > 0) {
-			ExperienceUtils.awardExperience(player, -experienceCost);
+			ExperienceUtils.changeExp(player, -experienceCost);
 		}
 		if (levelsCost > 0) {
 			int lvl = player.getLevel() - levelsCost;
