@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.graphicaleffects.GraphicalEffect;
 import com.nisovin.magicspells.util.CastItem;
+import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
 
@@ -591,7 +592,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			player.setFoodLevel(player.getFoodLevel() - hungerCost);
 		}
 		if (experienceCost > 0) {
-			player.setTotalExperience(player.getTotalExperience() - experienceCost);
+			ExperienceUtils.awardExperience(player, -experienceCost);
 		}
 		if (levelsCost > 0) {
 			int lvl = player.getLevel() - levelsCost;
