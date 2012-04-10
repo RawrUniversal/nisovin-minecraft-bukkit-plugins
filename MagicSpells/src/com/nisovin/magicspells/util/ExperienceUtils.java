@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.bukkit.entity.Player;
 
 /**
- * @author desht
+ * Original credit to desht
  *
  */
 public class ExperienceUtils {
@@ -23,7 +23,6 @@ public class ExperienceUtils {
 		for (int i = 1; i < xpTotalToReachLevel.length; i++) {
 			xpRequiredForNextLevel[i - 1] = incr;
 			xpTotalToReachLevel[i] = xpTotalToReachLevel[i - 1] + incr;
-			System.out.println("Level " + (i-1) + " - total req = " + xpTotalToReachLevel[i-1] + " ; to level " + (i) + ": " + xpRequiredForNextLevel[i-1]);
 			incr += (i % 2 == 0) ? 4 : 3;
 		}
 	}
@@ -33,7 +32,7 @@ public class ExperienceUtils {
 		if (xp < 0) xp = 0;
 		
 		int curLvl = player.getLevel();
-		int newLvl = getCurrentLevel(xp);
+		int newLvl = getLevelFromExp(xp);
 		if (curLvl != newLvl) {
 			player.setLevel(newLvl);
 		}
@@ -51,7 +50,7 @@ public class ExperienceUtils {
 		return getCurrentExp(player) >= amt;
 	}
 	
-	public static int getCurrentLevel(int exp) {
+	public static int getLevelFromExp(int exp) {
 		if (exp <= 0) return 0;
 		int pos = Arrays.binarySearch(xpTotalToReachLevel, exp);
 		return pos < 0 ? -pos - 2 : pos;
