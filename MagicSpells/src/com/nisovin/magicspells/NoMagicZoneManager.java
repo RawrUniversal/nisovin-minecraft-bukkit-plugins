@@ -28,7 +28,9 @@ public class NoMagicZoneManager implements NoMagicZoneHandler {
 				String message = zoneConfig.getString("message", "You are in a no-magic zone.");
 				List<String> allowedSpells = zoneConfig.getStringList("allowed-spells");
 				if (type.equalsIgnoreCase("worldguard")) {
-					zones.add(new NoMagicZone(worldName, zoneConfig.getString("region"), message, allowedSpells));
+					zones.add(new NoMagicZone(worldName, zoneConfig.getString("region"), message, allowedSpells, NoMagicZone.Type.WORLDGUARD));
+				} else if (type.equalsIgnoreCase("residence")) {
+					zones.add(new NoMagicZone(worldName, zoneConfig.getString("region"), message, allowedSpells, NoMagicZone.Type.RESIDENCE));
 				} else if (type.equalsIgnoreCase("cuboid")) {
 					try {
 						String[] p1 = zoneConfig.getString("point1").split(",");
