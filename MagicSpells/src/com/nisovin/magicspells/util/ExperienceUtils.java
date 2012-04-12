@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
  *
  */
 public class ExperienceUtils {
-	public static final int MAX_LEVEL_SUPPORTED = 150;
+	public static final int MAX_LEVEL_SUPPORTED = 200;
 
 	private static final int xpRequiredForNextLevel[] = new int[MAX_LEVEL_SUPPORTED];
 	private static final int xpTotalToReachLevel[] = new int[MAX_LEVEL_SUPPORTED];
@@ -31,9 +31,10 @@ public class ExperienceUtils {
 		int xp = getCurrentExp(player) + amt;
 		if (xp < 0) xp = 0;
 		
-		int curLvl = player.getLevel();
 		int newLvl = getLevelFromExp(xp);
-		if (curLvl != newLvl) {
+		if (newLvl >= MAX_LEVEL_SUPPORTED) {
+			return;
+		} else if (player.getLevel() != newLvl) {
 			player.setLevel(newLvl);
 		}
 		
@@ -47,6 +48,7 @@ public class ExperienceUtils {
 	}
 	
 	public static boolean hasExp(Player player, int amt) {
+		if (player.getLevel() >= MAX_LEVEL_SUPPORTED) return false;
 		return getCurrentExp(player) >= amt;
 	}
 	

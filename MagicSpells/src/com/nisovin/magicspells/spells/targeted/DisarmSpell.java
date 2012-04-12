@@ -1,6 +1,5 @@
 package com.nisovin.magicspells.spells.targeted;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,9 +32,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 	public DisarmSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		disarmable = new ArrayList<Integer>();
-		disarmable.add(280);
-		disarmable = getConfigIntList("disarmable-items", disarmable);
+		disarmable = getConfigIntList("disarmable-items", null);
 		
 		disarmDuration = getConfigInt("disarm-duration", 100);
 		dontDrop = getConfigBoolean("dont-drop", false);
@@ -79,7 +76,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 	
 	private boolean disarm(final Player target) {
 		final ItemStack inHand = target.getItemInHand();
-		if (disarmable.contains(inHand.getTypeId())) {
+		if (disarmable == null || disarmable.contains(inHand.getTypeId())) {
 			if (dontDrop) {
 				// hide item
 				target.setItemInHand(null);

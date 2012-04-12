@@ -49,8 +49,13 @@ public class BuildSpell extends TargetedSpell {
 			}
 			
 			// get target
-			List<Block> lastBlocks = player.getLastTwoTargetBlocks(null, range);
-			if (lastBlocks.size() < 2 || lastBlocks.get(1).getType() == Material.AIR) {
+			List<Block> lastBlocks = null;
+			try {
+				lastBlocks = player.getLastTwoTargetBlocks(null, range);
+			} catch (IllegalStateException e) {
+				lastBlocks = null;
+			}
+			if (lastBlocks == null || lastBlocks.size() < 2 || lastBlocks.get(1).getType() == Material.AIR) {
 				// fail
 				sendMessage(player, strCantBuild);
 				fizzle(player);
