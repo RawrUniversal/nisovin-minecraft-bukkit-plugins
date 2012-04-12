@@ -16,6 +16,10 @@ public class ManaBar {
 		this.mana = maxMana;
 	}
 	
+	public void setMaxMana(int maxMana) {
+		this.maxMana = maxMana;
+	}
+	
 	public boolean has(int amount) {
 		return (mana >= amount);
 	}

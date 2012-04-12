@@ -55,6 +55,14 @@ public class ManaBarManager extends ManaHandler {
 	}
 	
 	@Override
+	public void setMaxMana(Player player, int amount) {
+		ManaBar manaBar = manaBars.get(player.getName());
+		if (manaBar != null) {
+			manaBar.setMaxMana(amount);
+		}
+	}
+	
+	@Override
 	public boolean hasMana(Player player, int amount) {
 		if (!manaBars.containsKey(player.getName())) {
 			return false;
