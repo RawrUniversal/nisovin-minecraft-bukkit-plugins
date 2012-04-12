@@ -155,6 +155,7 @@ spells:
         str-usage: You must specify a spell name.
         str-no-spell: You do not know a spell by that name.
         str-cant-bind-spell: That spell cannot be bound to an item.
+        str-not-bound: That spell is not bound to that item.
 
 
     blind:

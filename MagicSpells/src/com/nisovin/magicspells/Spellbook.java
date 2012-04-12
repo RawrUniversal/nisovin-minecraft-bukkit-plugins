@@ -4,8 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,7 +29,7 @@ public class Spellbook {
 	private TreeSet<Spell> allSpells = new TreeSet<Spell>();
 	private HashMap<CastItem,ArrayList<Spell>> itemSpells = new HashMap<CastItem,ArrayList<Spell>>();
 	private HashMap<CastItem,Integer> activeSpells = new HashMap<CastItem,Integer>();
-	private HashMap<Spell,CastItem> customBindings = new HashMap<Spell,CastItem>();
+	private HashMap<Spell,Set<CastItem>> customBindings = new HashMap<Spell,Set<CastItem>>();
 	
 	public Spellbook(Player player, MagicSpells plugin) {
 		this.plugin = plugin;
@@ -95,8 +97,13 @@ public class Spellbook {
 					} else {
 						String[] data = line.split(":",2);
 						Spell spell = MagicSpells.spells.get(data[0]);
+						String[] s = data[1].split(",");
+						CastItem[] items = new CastItem[s.length];
+						for (int i = 0; i < s.length; i++) {
+							items[i] = new CastItem(s[i]);
+						}
 						if (spell != null && data[1].matches("^-?[0-9:]+$")) {
-							addSpell(spell, new CastItem(data[1]));
+							addSpell(spell, items);
 						}
 					}
 				}
@@ -263,30 +270,36 @@ public class Spellbook {
 	}
 	
 	public void addSpell(Spell spell) {
-		addSpell(spell, null);
+		addSpell(spell, (CastItem[])null);
 	}
 	
 	public void addSpell(Spell spell, CastItem castItem) {
+		addSpell(spell, new CastItem[] {castItem});
+	}
+	
+	public void addSpell(Spell spell, CastItem[] castItems) {
 		if (spell == null) return;
 		MagicSpells.debug("    Added spell: " + spell.getInternalName());
 		allSpells.add(spell);
 		if (spell.canCastWithItem()) {
-			CastItem item = spell.getCastItem();
-			if (castItem != null) {
-				item = castItem;
-				customBindings.put(spell, castItem);
+			CastItem[] items = spell.getCastItems();
+			if (castItems != null && castItems.length > 0) {
+				items = castItems;
+				customBindings.put(spell, new HashSet<CastItem>(Arrays.asList(items)));
 			} else if (MagicSpells.ignoreDefaultBindings) {
 				return; // no cast item provided and ignoring default, so just stop here
 			}
-			MagicSpells.debug("        Cast item: " + item + (castItem!=null?" (custom)":" (default)"));
-			ArrayList<Spell> temp = itemSpells.get(item);
-			if (temp != null) {
-				temp.add(spell);
-			} else {
-				temp = new ArrayList<Spell>();
-				temp.add(spell);
-				itemSpells.put(item, temp);
-				activeSpells.put(item, MagicSpells.allowCycleToNoSpell ? -1 : 0);
+			MagicSpells.debug("        Cast item: " + items + (castItems!=null?" (custom)":" (default)"));
+			for (CastItem i : items) {
+				ArrayList<Spell> temp = itemSpells.get(i);
+				if (temp != null) {
+					temp.add(spell);
+				} else {
+					temp = new ArrayList<Spell>();
+					temp.add(spell);
+					itemSpells.put(i, temp);
+					activeSpells.put(i, MagicSpells.allowCycleToNoSpell ? -1 : 0);
+				}
 			}
 		}
 		// remove any spells that this spell replaces
@@ -305,21 +318,70 @@ public class Spellbook {
 		if (spell instanceof BuffSpell) {
 			((BuffSpell)spell).turnOff(player);
 		}
-		CastItem item = spell.getCastItem();
+		CastItem[] items = spell.getCastItems();
 		if (customBindings.containsKey(spell)) {
-			item = customBindings.remove(spell);
+			items = customBindings.remove(spell).toArray(new CastItem[]{});
 		}
-		ArrayList<Spell> temp = itemSpells.get(item);
-		if (temp != null) {
-			temp.remove(spell);
-			if (temp.size() == 0) {
-				itemSpells.remove(item);
-				activeSpells.remove(item);
-			} else {
-				activeSpells.put(item, -1);
+		for (CastItem item : items) {
+			ArrayList<Spell> temp = itemSpells.get(item);
+			if (temp != null) {
+				temp.remove(spell);
+				if (temp.size() == 0) {
+					itemSpells.remove(item);
+					activeSpells.remove(item);
+				} else {
+					activeSpells.put(item, -1);
+				}
 			}
 		}
 		allSpells.remove(spell);
+	}
+	
+	public void addCastItem(Spell spell, CastItem castItem) {
+		// add to custom bindings
+		Set<CastItem> bindings = customBindings.get(spell);
+		if (bindings == null) {
+			bindings = new HashSet<CastItem>();
+			customBindings.put(spell, bindings);
+		}
+		if (!bindings.contains(castItem)) {
+			bindings.add(castItem);
+		}
+		
+		// add to item bindings
+		ArrayList<Spell> bindList = itemSpells.get(castItem);
+		if (bindList == null) {
+			bindList = new ArrayList<Spell>();
+			itemSpells.put(castItem, bindList);
+		}
+		bindList.add(spell);
+	}
+	
+	public boolean removeCastItem(Spell spell, CastItem castItem) {
+		boolean removed = false;
+		
+		// remove from custom bindings
+		Set<CastItem> bindings = customBindings.get(spell);
+		if (bindings != null) {
+			removed = bindings.remove(castItem);
+			if (bindings.size() == 0) {
+				bindings.add(new CastItem(-1));
+			}
+		}
+		
+		// remove from active bindings
+		ArrayList<Spell> bindList = itemSpells.get(castItem);
+		if (bindList != null) {
+			removed = bindList.remove(castItem) || removed;
+			if (bindList.size() == 0) {
+				itemSpells.remove(castItem);
+				activeSpells.remove(castItem);
+			} else {
+				activeSpells.put(castItem, -1);
+			}
+		}
+		
+		return removed;
 	}
 	
 	public void removeAllSpells() {
@@ -356,7 +418,12 @@ public class Spellbook {
 			for (Spell spell : allSpells) {
 				writer.append(spell.getInternalName());
 				if (customBindings.containsKey(spell)) {
-					writer.append(":" + customBindings.get(spell));
+					Set<CastItem> items = customBindings.get(spell);
+					String s = "";
+					for (CastItem i : items) {
+						s += (s.isEmpty()?"":",") + i;
+					}
+					writer.append(":" + s);
 				}
 				writer.newLine();
 			}

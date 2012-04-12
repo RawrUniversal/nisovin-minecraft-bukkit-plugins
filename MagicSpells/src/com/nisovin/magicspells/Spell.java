@@ -33,9 +33,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String[] aliases;
 	
 	protected String description;
-	protected CastItem castItem;
-	protected boolean bindable;
+	protected CastItem[] castItems;
 	protected boolean requireCastItemOnCommand;
+	protected boolean bindable;
 	protected HashSet<CastItem> bindableItems;
 	protected ItemStack spellIcon;
 	protected int broadcastRange;
@@ -86,9 +86,13 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		// general options
 		this.description = config.getString(section + "." + spellName + ".description", "");
-		this.castItem = new CastItem(config.getString(section + "." + spellName + ".cast-item", "-1"));
-		this.bindable = config.getBoolean(section + "." + spellName + ".bindable", true);
+		String[] sItems = config.getString(section + "." + spellName + ".cast-item", "-5").trim().replace(" ", "").split(",");
+		this.castItems = new CastItem[sItems.length];
+		for (int i = 0; i < sItems.length; i++) {
+			this.castItems[i] = new CastItem(sItems[i]);
+		}
 		this.requireCastItemOnCommand = config.getBoolean(section + "." + spellName + ".require-cast-item-on-command", false);
+		this.bindable = config.getBoolean(section + "." + spellName + ".bindable", true);
 		List<String> bindables = config.getStringList(section + "." + spellName + ".bindable-items", null);
 		if (bindables != null) {
 			bindableItems = new HashSet<CastItem>();
@@ -386,12 +390,17 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	public abstract boolean canCastByCommand();
 	
 	public boolean isValidItemForCastCommand(ItemStack item) {
-		if (!requireCastItemOnCommand || castItem == null) {
+		if (!requireCastItemOnCommand || castItems == null) {
 			return true;
-		} else if (item == null && castItem.getItemTypeId() == 0) {
+		} else if (item == null && castItems.length == 1 && castItems[0].getItemTypeId() == 0) {
 			return true;
 		} else {
-			return castItem.equals(item);
+			for (CastItem castItem : castItems) {
+				if (castItem.equals(item)) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 	
@@ -838,7 +847,15 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	public CastItem getCastItem() {
-		return this.castItem;
+		if (this.castItems.length == 1) {
+			return this.castItems[0];
+		} else {
+			return null;
+		}
+	}
+	
+	public CastItem[] getCastItems() {
+		return this.castItems;
 	}
 	
 	public String getDescription() {

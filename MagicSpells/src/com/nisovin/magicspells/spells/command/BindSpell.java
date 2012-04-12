@@ -76,8 +76,7 @@ public class BindSpell extends CommandSpell {
 						return PostCastAction.ALREADY_HANDLED;
 					} else {
 						MagicSpells.debug("    Performing bind...");
-						spellbook.removeSpell(spell);
-						spellbook.addSpell(spell, castItem);
+						spellbook.addCastItem(spell, castItem);
 						spellbook.save();
 						MagicSpells.debug("    Bind successful.");
 						sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
