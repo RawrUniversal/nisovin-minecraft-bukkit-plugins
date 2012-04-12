@@ -382,6 +382,7 @@ spells:
         prevent-block-damage: false
         prevent-player-damage: false
         damage-multiplier: 10
+        add-fire: false
         simulate-tnt: true
         ignore-canceled: false
         cost:

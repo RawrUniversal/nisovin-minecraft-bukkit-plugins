@@ -26,6 +26,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	private boolean preventBlockDamage;
 	private boolean preventPlayerDamage;
 	private float damageMultiplier;
+	private boolean addFire;
 	private boolean ignoreCanceled;
 	private String strNoTarget;
 	
@@ -41,6 +42,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		preventBlockDamage = getConfigBoolean("prevent-block-damage", false);
 		preventPlayerDamage = getConfigBoolean("prevent-player-damage", false);
 		damageMultiplier = getConfigFloat("damage-multiplier", 0);
+		addFire = getConfigBoolean("add-fire", false);
 		ignoreCanceled = getConfigBoolean("ignore-canceled", false);
 		strNoTarget = getConfigString("str-no-target", "Cannot explode there.");
 		
@@ -74,7 +76,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	private boolean explode(Player player, Location target, float power) {
 		// check plugins
 		if (simulateTnt) {
-			boolean cancelled = MagicSpells.getVolatileCodeHandler().simulateTnt(target, explosionSize * power);
+			boolean cancelled = MagicSpells.getVolatileCodeHandler().simulateTnt(target, explosionSize * power, addFire);
 			if (cancelled) {
 				return false;
 			}
@@ -90,7 +92,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		currentTick = Bukkit.getWorlds().get(0).getFullTime();
 		currentPower = power;
 		// cause explosion
-		boolean ret = MagicSpells.getVolatileCodeHandler().createExplosionByPlayer(player, target, explosionSize * power);
+		boolean ret = MagicSpells.getVolatileCodeHandler().createExplosionByPlayer(player, target, explosionSize * power, addFire);
 		if (ret) {
 			playGraphicalEffects(player, target);
 		}

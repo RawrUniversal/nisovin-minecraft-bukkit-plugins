@@ -36,9 +36,9 @@ public interface CraftBukkitHandle {
 	
 	public void collectItem(Player player, Item item);
 	
-	public boolean simulateTnt(Location target, float explosionSize);
+	public boolean simulateTnt(Location target, float explosionSize, boolean fire);
 	
-	public boolean createExplosionByPlayer(Player player, Location location, float size);
+	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire);
 	
 	public void setExperienceBar(Player player, int level, float percent);
 	

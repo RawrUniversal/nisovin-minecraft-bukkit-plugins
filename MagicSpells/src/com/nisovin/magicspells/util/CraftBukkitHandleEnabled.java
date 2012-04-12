@@ -168,17 +168,17 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	}
 
 	@Override
-	public boolean simulateTnt(Location target, float explosionSize) {
+	public boolean simulateTnt(Location target, float explosionSize, boolean fire) {
         EntityTNTPrimed e = new EntityTNTPrimed(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ());
         CraftTNTPrimed c = new CraftTNTPrimed((CraftServer)Bukkit.getServer(), e);
-        ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize, false);
+        ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize, fire);
         Bukkit.getServer().getPluginManager().callEvent(event);
         return event.isCancelled();
 	}
 
 	@Override
-	public boolean createExplosionByPlayer(Player player, Location location, float size) {
-		return !((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftPlayer)player).getHandle(), location.getX(), location.getY(), location.getZ(), size, false).wasCanceled;
+	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire) {
+		return !((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftPlayer)player).getHandle(), location.getX(), location.getY(), location.getZ(), size, fire).wasCanceled;
 	}
 
 	@Override

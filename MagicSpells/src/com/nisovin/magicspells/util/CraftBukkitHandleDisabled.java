@@ -72,13 +72,13 @@ public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	}
 
 	@Override
-	public boolean simulateTnt(Location target, float explosionSize) {
+	public boolean simulateTnt(Location target, float explosionSize, boolean fire) {
 		return false;
 	}
 
 	@Override
-	public boolean createExplosionByPlayer(Player player, Location location, float size) {
-		return location.getWorld().createExplosion(location, size);
+	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire) {
+		return location.getWorld().createExplosion(location, size, fire);
 	}
 
 	@Override
