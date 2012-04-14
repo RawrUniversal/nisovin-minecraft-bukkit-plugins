@@ -30,7 +30,6 @@ public class GeyserSpell extends TargetedEntitySpell {
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
-	private String strNoTarget;
 
 	public GeyserSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -49,7 +48,6 @@ public class GeyserSpell extends TargetedEntitySpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
 
 	@Override
@@ -59,6 +57,7 @@ public class GeyserSpell extends TargetedEntitySpell {
 			if (target == null) {
 				// fail -- no target
 				sendMessage(player, strNoTarget);
+				fizzle(player);
 				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 			}
 			

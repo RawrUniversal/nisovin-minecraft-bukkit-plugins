@@ -23,7 +23,6 @@ public class EntombSpell extends TargetedEntitySpell {
 	private int tombDuration;
 	private boolean closeTopAndBottom;
 	private boolean allowBreaking;
-	private String strNoTarget;
 	
 	private HashSet<Block> blocks;
 	
@@ -36,7 +35,6 @@ public class EntombSpell extends TargetedEntitySpell {
 		tombDuration = config.getInt("spells." + spellName + ".tomb-duration", 20);
 		closeTopAndBottom = config.getBoolean("spells." + spellName + ".close-top-and-bottom", true);
 		allowBreaking = config.getBoolean("spells." + spellName + ".allow-breaking", true);
-		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "");
 		
 		blocks = new HashSet<Block>();
 	}

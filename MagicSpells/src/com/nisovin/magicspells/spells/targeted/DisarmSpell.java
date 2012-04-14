@@ -22,9 +22,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 	private int disarmDuration;
 	private boolean dontDrop;
 	private boolean preventTheft;
-	private boolean obeyLos;
-	
-	private String strNoTarget;
+	private boolean obeyLos;	
 	private String strInvalidItem;
 	
 	private HashMap<Item, Player> disarmedItems;
@@ -38,7 +36,6 @@ public class DisarmSpell extends TargetedEntitySpell {
 		dontDrop = getConfigBoolean("dont-drop", false);
 		preventTheft = getConfigBoolean("prevent-theft", true);
 		obeyLos = getConfigBoolean("obey-los", true);
-		strNoTarget = getConfigString("str-no-target", "No target found.");
 		strInvalidItem = getConfigString("str-invalid-item", "Your target could not be disarmed.");
 		
 		if (dontDrop) preventTheft = false;

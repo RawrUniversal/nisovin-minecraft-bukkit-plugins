@@ -18,7 +18,6 @@ public class ForcetossSpell extends TargetedEntitySpell {
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
-	private String strNoTarget;
 	
 	public ForcetossSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -29,7 +28,6 @@ public class ForcetossSpell extends TargetedEntitySpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		strNoTarget = getConfigString("str-no-target", "");
 	}
 
 	@Override

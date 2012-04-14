@@ -22,7 +22,6 @@ public class CombustSpell extends TargetedEntitySpell {
 	private boolean preventImmunity;
 	private boolean obeyLos;
 	private boolean checkPlugins;
-	private String strNoTarget;
 	
 	private HashMap<Integer, CombustData> combusting = new HashMap<Integer, CombustData>();
 	
@@ -35,7 +34,6 @@ public class CombustSpell extends TargetedEntitySpell {
 		preventImmunity = getConfigBoolean("prevent-immunity", true);
 		obeyLos = getConfigBoolean("obey-los", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		strNoTarget = getConfigString("str-no-target", "");
 	}
 	
 	@Override

@@ -17,7 +17,6 @@ public class PainSpell extends TargetedEntitySpell {
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
-	private String strNoTarget;
 	
 	public PainSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -27,7 +26,6 @@ public class PainSpell extends TargetedEntitySpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
 
 	@Override

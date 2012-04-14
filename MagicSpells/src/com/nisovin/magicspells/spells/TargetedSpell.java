@@ -23,6 +23,7 @@ public abstract class TargetedSpell extends InstantSpell {
 	protected boolean alwaysActivate;
 	protected boolean playFizzleSound;
 	protected String strCastTarget;
+	protected String strNoTarget;
 
 	public TargetedSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -31,6 +32,7 @@ public abstract class TargetedSpell extends InstantSpell {
 		alwaysActivate = getConfigBoolean("always-activate", false);
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
 		strCastTarget = getConfigString("str-cast-target", "");
+		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
 
 	protected void sendMessageToTarget(Player caster, Player target) {

@@ -37,7 +37,6 @@ public class FireballSpell extends TargetedSpell {
 	private int noExplosionDamage;
 	private int noExplosionDamageRange;
 	private boolean noFire;
-	private String strNoTarget;
 	
 	private HashMap<Fireball,Float> fireballs;
 	
@@ -55,7 +54,6 @@ public class FireballSpell extends TargetedSpell {
 		noExplosionDamage = getConfigInt("no-explosion-damage", 5);
 		noExplosionDamageRange = getConfigInt("no-explosion-damage-range", 3);
 		noFire = config.getBoolean("spells." + spellName + ".no-fire", false);
-		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You cannot throw a fireball there.");
 		
 		fireballs = new HashMap<Fireball,Float>();
 	}

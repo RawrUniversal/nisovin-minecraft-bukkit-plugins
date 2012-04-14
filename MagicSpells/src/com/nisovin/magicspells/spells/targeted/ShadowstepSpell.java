@@ -15,7 +15,6 @@ public class ShadowstepSpell extends TargetedEntitySpell {
 
 	private boolean targetPlayers;
 	private boolean obeyLos;
-	private String strNoTarget;
 	private String strNoLandingSpot;
 	
 	public ShadowstepSpell(MagicConfig config, String spellName) {
@@ -23,7 +22,6 @@ public class ShadowstepSpell extends TargetedEntitySpell {
 		
 		targetPlayers = getConfigBoolean("target-players", false);
 		obeyLos = getConfigBoolean("obey-los", true);
-		strNoTarget = getConfigString("str-no-target", "No target found.");
 		strNoLandingSpot = getConfigString("str-no-landing-spot", "Cannot shadowstep there.");
 	}
 

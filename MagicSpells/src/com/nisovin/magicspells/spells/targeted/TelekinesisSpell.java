@@ -12,16 +12,12 @@ import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class TelekinesisSpell extends TargetedLocationSpell {
-
-	private String strNoTarget;
 	
 	private HashSet<Byte> transparent;
 	
 	public TelekinesisSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
-		
-		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "You must target a switch or button.");
-		
+				
 		transparent = new HashSet<Byte>();
 		transparent.add((byte)Material.AIR.getId());
 		transparent.add((byte)Material.REDSTONE_WIRE.getId());

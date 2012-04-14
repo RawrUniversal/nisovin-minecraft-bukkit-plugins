@@ -15,7 +15,6 @@ public class VolleySpell extends TargetedLocationSpell {
 	private int arrows;
 	private int speed;
 	private int spread;
-	private String strNoTarget;
 	
 	public VolleySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -23,7 +22,6 @@ public class VolleySpell extends TargetedLocationSpell {
 		arrows = config.getInt("spells." + spellName + ".arrows", 10);
 		speed = config.getInt("spells." + spellName + ".speed", 20);
 		spread = config.getInt("spells." + spellName + ".spread", 150);
-		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No target found.");
 	}
 	
 	@Override

@@ -30,7 +30,6 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 	private boolean obeyLos;
 	private boolean targetPlayers;
 	private boolean checkPlugins;
-	private String strNoTarget;
 	
 	public DrainlifeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -45,7 +44,6 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		strNoTarget = getConfigString("str-no-target", "");
 	}
 	
 	@Override

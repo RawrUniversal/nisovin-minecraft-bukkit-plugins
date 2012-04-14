@@ -11,7 +11,6 @@ public class HealSpell extends TargetedEntitySpell {
 	private int healAmount;
 	private boolean cancelIfFull;
 	private boolean obeyLos;
-	private String strNoTarget;
 	private String strMaxHealth;
 
 	public HealSpell(MagicConfig config, String spellName) {
@@ -20,7 +19,6 @@ public class HealSpell extends TargetedEntitySpell {
 		healAmount = getConfigInt("heal-amount", 10);
 		cancelIfFull = getConfigBoolean("cancel-if-full", true);
 		obeyLos = getConfigBoolean("obey-los", true);
-		strNoTarget = getConfigString("str-no-target", "No target to heal.");
 		strMaxHealth = getConfigString("str-max-health", "%t is already at max health.");
 	}
 

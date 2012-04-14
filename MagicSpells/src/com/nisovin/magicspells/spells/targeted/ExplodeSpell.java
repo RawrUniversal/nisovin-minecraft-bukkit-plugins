@@ -28,7 +28,6 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	private float damageMultiplier;
 	private boolean addFire;
 	private boolean ignoreCanceled;
-	private String strNoTarget;
 	
 	private long currentTick = 0;
 	private float currentPower = 0;
@@ -44,7 +43,6 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		damageMultiplier = getConfigFloat("damage-multiplier", 0);
 		addFire = getConfigBoolean("add-fire", false);
 		ignoreCanceled = getConfigBoolean("ignore-canceled", false);
-		strNoTarget = getConfigString("str-no-target", "Cannot explode there.");
 		
 	}
 	

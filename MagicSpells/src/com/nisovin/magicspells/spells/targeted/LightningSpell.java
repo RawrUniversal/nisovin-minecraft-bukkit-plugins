@@ -23,7 +23,6 @@ public class LightningSpell extends TargetedLocationSpell {
 	private int additionalDamage;
 	private boolean noDamage;
 	private String strCastFail;
-	private String strNoTarget;
 	
 	public LightningSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -35,7 +34,6 @@ public class LightningSpell extends TargetedLocationSpell {
 		additionalDamage = getConfigInt("additional-damage", 0);
 		noDamage = config.getBoolean("spells." + spellName + ".no-damage", false);		
 		strCastFail = config.getString("spells." + spellName + ".str-cast-fail", "");
-		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "Unable to find target.");
 	}
 	
 	@Override

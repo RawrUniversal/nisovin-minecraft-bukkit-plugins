@@ -14,7 +14,6 @@ public class CrippleSpell extends TargetedEntitySpell {
 	private int duration;
 	private boolean targetPlayers;
 	private boolean obeyLos;
-	private String strNoTarget;
 	
 	public CrippleSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -23,7 +22,6 @@ public class CrippleSpell extends TargetedEntitySpell {
 		duration = getConfigInt("effect-duration", 100);
 		targetPlayers = getConfigBoolean("target-players", false);
 		obeyLos = getConfigBoolean("obey-los", true);
-		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
 
 	@Override

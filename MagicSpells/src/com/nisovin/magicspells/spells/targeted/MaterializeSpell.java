@@ -20,7 +20,6 @@ public class MaterializeSpell extends TargetedLocationSpell {
 	private byte data;
 	private boolean applyPhysics;
 	private boolean checkPlugins;
-	private String strNoTarget;
 	private String strFailed;
 	
 	public MaterializeSpell(MagicConfig config, String spellName) {
@@ -37,7 +36,6 @@ public class MaterializeSpell extends TargetedLocationSpell {
 		}
 		applyPhysics = getConfigBoolean("apply-physics", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		strNoTarget = getConfigString("str-no-target", "No target.");
 		strFailed = getConfigString("str-failed", "");
 	}
 
