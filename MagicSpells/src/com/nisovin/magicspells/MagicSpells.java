@@ -441,15 +441,19 @@ public class MagicSpells extends JavaPlugin {
 				Player player = (Player)sender;
 				Spellbook spellbook = getSpellbook(player);
 				Spell spell = getSpellByInGameName(args[0]);
-				if (spell != null && spell.canCastByCommand() && spell.isValidItemForCastCommand(player.getItemInHand()) && spellbook.hasSpell(spell)) {
-					String[] spellArgs = null;
-					if (args.length > 1) {
-						spellArgs = new String[args.length-1];
-						for (int i = 1; i < args.length; i++) {
-							spellArgs[i-1] = args[i];
+				if (spell != null && spell.canCastByCommand() && spellbook.hasSpell(spell)) {
+					if (spell.isValidItemForCastCommand(player.getItemInHand())) {
+						String[] spellArgs = null;
+						if (args.length > 1) {
+							spellArgs = new String[args.length-1];
+							for (int i = 1; i < args.length; i++) {
+								spellArgs[i-1] = args[i];
+							}
 						}
+						spell.cast(player, spellArgs);
+					} else {
+						sendMessage(player, spell.getStrWrongCastItem());
 					}
-					spell.cast(player, spellArgs);
 				} else {
 					sendMessage(player, strUnknownSpell);
 				}

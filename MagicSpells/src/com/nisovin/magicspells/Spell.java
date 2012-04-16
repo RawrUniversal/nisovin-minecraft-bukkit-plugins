@@ -65,6 +65,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String strCantCast;
 	protected String strCantBind;
 	protected String strWrongWorld;
+	protected String strWrongCastItem;
 	
 	private HashMap<String, Long> lastCast;
 	
@@ -210,6 +211,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strCantCast = config.getString(section + "." + spellName + ".str-cant-cast", MagicSpells.strCantCast);
 		this.strCantBind = config.getString(section + "." + spellName + ".str-cant-bind", null);
 		this.strWrongWorld = config.getString(section + "." + spellName + ".str-wrong-world", MagicSpells.strWrongWorld);
+		this.strWrongCastItem = config.getString(section + "." + spellName + ".str-wrong-cast-item", strCantCast);
 	}
 	
 	/**
@@ -888,6 +890,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	public String getConsoleName() {
 		return MagicSpells.strConsoleName;
+	}
+	
+	public String getStrWrongCastItem() {
+		return strWrongCastItem;
 	}
 	
 	/**

@@ -45,7 +45,6 @@ public class ItemSprayEffect extends GraphicalEffect {
 				}
 			}
 		}
-		System.out.println(type + " " + num + " " + duration + " " + force);
 		
 		// spawn items
 		Random rand = new Random();
