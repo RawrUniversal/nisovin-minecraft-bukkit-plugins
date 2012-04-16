@@ -81,6 +81,11 @@ public class ManaBar {
 		}
 	}
 	
+	public void showOnHungerBar(Player player) {
+		player.setFoodLevel(Math.round(((float)mana/(float)maxMana) * 20));
+		player.setSaturation(20);
+	}
+	
 	public void showOnExperienceBar(Player player) {
 		MagicSpells.getVolatileCodeHandler().setExperienceBar(player, mana, (float)mana/(float)maxMana);
 	}

@@ -23,7 +23,8 @@ public class ManaBarManager extends ManaHandler {
 	private boolean showManaOnUse;
 	private boolean showManaOnRegen;
 	private boolean showManaOnWoodTool;
-	private boolean showManaAsExperience;
+	private boolean showManaOnHungerBar;
+	private boolean showManaOnExperienceBar;
 	
 	private Map<String,ManaBar> manaBars;
 	private int taskId = -1;
@@ -41,7 +42,8 @@ public class ManaBarManager extends ManaHandler {
 		showManaOnUse = config.getBoolean("general.mana.show-mana-on-use", false);
 		showManaOnRegen = config.getBoolean("general.mana.show-mana-on-regen", false);
 		showManaOnWoodTool = config.getBoolean("general.mana.show-mana-on-wood-tool", true);
-		showManaAsExperience = config.getBoolean("general.mana.show-mana-on-experience-bar", false);
+		showManaOnHungerBar = config.getBoolean("general.mana.show-mana-on-hunger-bar", true);
+		showManaOnExperienceBar = config.getBoolean("general.mana.show-mana-on-experience-bar", false);
 		
 		manaBars = new HashMap<String,ManaBar>();
 		startRegenerator();
@@ -107,7 +109,10 @@ public class ManaBarManager extends ManaHandler {
 			if (showManaOnWoodTool) {
 				bar.showOnTool(player);
 			}
-			if (showManaAsExperience) {
+			if (showManaOnHungerBar) {
+				bar.showOnHungerBar(player);
+			}
+			if (showManaOnExperienceBar) {
 				bar.showOnExperienceBar(player);
 			}
 			// send event
@@ -148,7 +153,10 @@ public class ManaBarManager extends ManaHandler {
 						if (showManaOnWoodTool) {
 							bar.showOnTool(player);
 						}
-						if (showManaAsExperience) {
+						if (showManaOnHungerBar) {
+							bar.showOnHungerBar(player);
+						}
+						if (showManaOnExperienceBar) {
 							bar.showOnExperienceBar(player);
 						}
 					}
