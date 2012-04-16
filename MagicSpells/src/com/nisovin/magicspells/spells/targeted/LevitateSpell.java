@@ -36,9 +36,7 @@ public class LevitateSpell extends TargetedEntitySpell {
 		} else if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, range, true, true);
 			if (target == null) {
-				// no target
-				sendMessage(player, strNoTarget);
-				return PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			}
 			
 			levitate(player, target, power);
@@ -89,7 +87,7 @@ public class LevitateSpell extends TargetedEntitySpell {
 				Vector casterLocation = caster.getEyeLocation().toVector();
 				Vector targetLocation = target.getLocation().toVector();
 				Vector wantedLocation = casterLocation.add(caster.getLocation().getDirection().multiply(distance));
-				Vector v = wantedLocation.subtract(targetLocation).multiply(.25);
+				Vector v = wantedLocation.subtract(targetLocation).multiply(tickRate/25F + .1);
 				target.setVelocity(v);
 				counter++;
 				if (counter > duration) {

@@ -63,6 +63,7 @@ general:
         show-mana-on-use: false
         show-mana-on-regen: false
         show-mana-on-wood-tool: true
+        show-mana-on-hunger-bar: false
         show-mana-on-experience-bar: false
         tool-slot: 8
         mana-potion-cooldown: 30
@@ -158,6 +159,22 @@ spells:
         str-not-bound: That spell is not bound to that item.
 
 
+    armor:
+        spell-class: ".buff.ArmorSpell"
+        name: armor
+        cast-item: 280
+        duration: 30
+        num-uses: 15
+        helmet: 314 protection_explosions:1 oxygen:1
+        chestplate: 315 protection_projectile:1
+        leggings: 316 protection_fire:1
+        boots: 317 protection_fall:1
+        cost:
+            - 331 1
+            - 371 1
+        str-cost: 1 redstone and 1 gold nugget
+        str-cast-self: You have conjured some magic armor!
+        str-has-armor: You cannot cast this spell if you are already wearing armor.
     blind:
         spell-class: ".targeted.PotionEffectSpell"
         name: blind
@@ -728,6 +745,21 @@ spells:
         str-cost: 2 redstone dust
         str-cast-self: You leap forward.
         str-cast-others: "%a leaps forward."
+    levitate:
+        spell-class: ".targeted.LevitateSpell"
+        name: levitate
+        description: Cause your target to fly through the air.
+        cast-item: 280
+        tick-rate: 5
+        duration: 15
+        cooldown: 30
+        range: 12
+        cost:
+            - 331 2
+            - 288 1
+        str-cost: 2 redstone and 1 feather
+        str-cast-self: You are levitating %t!
+        str-cast-target: "%a is levitating you!"
     lifewalk:
         spell-class: ".buff.LifewalkSpell"
         name: lifewalk
@@ -1038,6 +1070,19 @@ spells:
         str-cost: 2 redstone dust
         str-no-target: No target.
         str-no-landing-spot: Cannot shadowstep there.
+    silence:
+        spell-class: ".targeted.SilenceSpell"
+        name: silence
+        description: Prevent a player from casting spells for a time.
+        cast-item: 280
+        range: 10
+        duration: 10
+        cost:
+            - 331 2
+        str-cost: 2 redstone dust
+        str-cast-self: You have silenced %t.
+        str-cast-target: "%a has silenced you."
+        str-silenced: You are silenced.
     stealth:
         spell-class: ".buff.StealthSpell"
         name: stealth
@@ -1067,6 +1112,22 @@ spells:
         str-cost: 4 redstone dust, 2 stone and 2 glass
         str-cast-self: You can see through stone!
         str-fade: You can no longer see through stone.
+    storm:
+        spell-class: ".targeted.AreaEffectSpell"
+        name: storm
+        description: Strike lightning upon all nearby enemies.
+        cast-item: 280
+        horizontal-radius: 10
+        vertical-radius: 5
+        point-blank: true
+        fail-if-no-targets: true
+        spells:
+            - lightning
+        cooldown: 15
+        cost:
+            - 331 5
+        str-cost: 5 redstone dust
+        str-cast-self: You call down a lightning storm!
     summon:
         spell-class: ".channeled.SummonSpell"
         name: summon

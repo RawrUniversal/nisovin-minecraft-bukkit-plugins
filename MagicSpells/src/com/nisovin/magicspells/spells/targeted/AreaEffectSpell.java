@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spells.targeted;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -84,8 +86,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 				}
 			}
 			if (loc == null) {
-				sendMessage(player, strNoTarget);
-				return PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			}
 			
 			// cast spells on nearby entities
@@ -93,7 +94,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 			
 			// check if no targets
 			if (!done && failIfNoTargets) {
-				return PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			}
 			
 		}
@@ -108,14 +109,21 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		List<Entity> nearbyEntities = center.getNearbyEntities(radius, verticalRadius, radius);
 		for (Entity e : nearbyEntities) {
 			if (e instanceof LivingEntity && !((LivingEntity)e).isDead()) {
-				LivingEntity le = (LivingEntity)e;
+				LivingEntity target = (LivingEntity)e;
+				SpellTargetEvent event = new SpellTargetEvent(this, player, target);
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					continue;
+				} else {
+					target = event.getTarget();
+				}
 				for (TargetedSpell spell : spells) {
 					if (spell instanceof TargetedEntitySpell) {
-						((TargetedEntitySpell)spell).castAtEntity(player, le, power);
-						playGraphicalEffects(player, le);
+						((TargetedEntitySpell)spell).castAtEntity(player, target, power);
+						playGraphicalEffects(player, target);
 					} else if (spell instanceof TargetedLocationSpell) {
-						((TargetedLocationSpell)spell).castAtLocation(player, le.getLocation(), power);
-						playGraphicalEffects(player, le);
+						((TargetedLocationSpell)spell).castAtLocation(player, target.getLocation(), power);
+						playGraphicalEffects(player, target);
 					}
 				}
 				count++;

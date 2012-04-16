@@ -80,6 +80,17 @@ public abstract class TargetedSpell extends InstantSpell {
 	}
 	
 	/**
+	 * This should be called if a target should not be found. It sends the no target message
+	 * and returns the appropriate return value.
+	 * @param player the casting player
+	 * @return the appropriate PostcastAction value
+	 */
+	protected PostCastAction noTarget(Player player) {
+		sendMessage(player, strNoTarget);
+		return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+	}
+	
+	/**
 	 * Gets the living entity a player is currently looking at
 	 * @param player player to get target for
 	 * @param range the maximum range to check

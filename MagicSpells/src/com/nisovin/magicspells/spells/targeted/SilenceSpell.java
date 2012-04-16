@@ -31,15 +31,13 @@ public class SilenceSpell extends TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, range, true, false, obeyLos);
-			if (target == null || !(target instanceof Player)) {
-				// no target
-				sendMessage(player, strNoTarget);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+			Player target = getTargetedPlayer(player, range, obeyLos);
+			if (target == null) {
+				return noTarget(player);
 			}
 						
 			// silence player
-			silence((Player)target, power);
+			silence(target, power);
 			
 			sendMessages(player, target);
 			return PostCastAction.NO_MESSAGES;
