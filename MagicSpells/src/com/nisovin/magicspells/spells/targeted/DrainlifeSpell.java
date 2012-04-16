@@ -16,6 +16,7 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class DrainlifeSpell extends TargetedEntitySpell {
@@ -110,11 +111,9 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 		} else if (takeType.equals("experience")) {
 			if (target instanceof Player) {
 				Player p = (Player)target;
-				int exp = p.getTotalExperience();
+				int exp = ExperienceUtils.getCurrentExp(p);
 				if (give > exp) give = exp;
-				exp -= take;
-				if (exp < 0) exp = 0;
-				p.setTotalExperience(exp);
+				ExperienceUtils.changeExp(p, -take);
 			}
 		}
 		
@@ -127,13 +126,11 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 			MagicSpells.getManaHandler().addMana(player, give);
 		} else if (takeType.equals("hunger")) {
 			int food = player.getFoodLevel();
-			food += take;
+			food += give;
 			if (food > 20) food = 20;
 			player.setFoodLevel(food);
 		} else if (takeType.equals("experience")) {
-			int exp = player.getTotalExperience();
-			exp += take;
-			player.setTotalExperience(exp);
+			ExperienceUtils.changeExp(player, give);
 		}
 		
 		playGraphicalEffects(player, target);
