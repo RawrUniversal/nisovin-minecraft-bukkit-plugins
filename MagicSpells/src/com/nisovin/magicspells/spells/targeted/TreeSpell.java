@@ -23,7 +23,6 @@ public class TreeSpell extends TargetedLocationSpell {
 
 	private TreeType treeType;
 	private int speed;
-	private boolean requireDirtOrGrass;
 	
 	public TreeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -38,7 +37,7 @@ public class TreeSpell extends TargetedLocationSpell {
 		if (state == SpellCastState.NORMAL) {
 			// get target block
 			Block target = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
-			if (target == null || target.getType() == Material.AIR || (requireDirtOrGrass && target.getType() != Material.DIRT && target.getType() != Material.GRASS)) {
+			if (target == null || target.getType() == Material.AIR) {
 				return noTarget(player);
 			}
 			

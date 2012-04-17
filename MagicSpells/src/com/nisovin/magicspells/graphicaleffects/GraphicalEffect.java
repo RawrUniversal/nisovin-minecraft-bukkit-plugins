@@ -67,6 +67,7 @@ public abstract class GraphicalEffect {
 		effects.put("cloud", new CloudEffect());
 		effects.put("ender", new EnderSignalEffect());
 		effects.put("explosion", new ExplosionEffect());
+		effects.put("hearts", new HeartsEffect());
 		effects.put("itemspray", new ItemSprayEffect());
 		effects.put("lightning", new LightningEffect());
 		effects.put("potion", new PotionEffect());
