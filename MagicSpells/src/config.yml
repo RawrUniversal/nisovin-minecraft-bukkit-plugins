@@ -1196,6 +1196,17 @@ spells:
         str-cant-learn: You cannot learn the spell in this tome.
         str-learned: You have learned the %s spell.
         str-cast-self: You have created a spell tome.
+    tree:
+        spell-class: ".targeted.TreeSpell"
+        name: tree
+        range: 15
+        cooldown: 5
+        tree-type: tree
+        animation-speed: 20
+        cost:
+            - 6 1
+        str-cost: 1 sapling
+        str-no-target: You cannot grow a tree there.
     volley:
         spell-class: ".targeted.VolleySpell"
         name: volley
