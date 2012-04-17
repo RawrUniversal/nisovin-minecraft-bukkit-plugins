@@ -124,7 +124,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 			return;
 		}
 		
-		if (event.getEntity() == null && currentTick == Bukkit.getWorlds().get(0).getFullTime()) {
+		if (currentTick == Bukkit.getWorlds().get(0).getFullTime()) {
 			event.blockList().clear();
 			event.setYield(0);
 		}
