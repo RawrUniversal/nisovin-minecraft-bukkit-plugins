@@ -23,7 +23,7 @@ public class SilenceSpell extends TargetedEntitySpell {
 	public SilenceSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		duration = getConfigInt("duration", 10);
+		duration = getConfigInt("duration", 200);
 		obeyLos = getConfigBoolean("obey-los", true);
 		strSilenced = getConfigString("str-silenced", "You are silenced!");
 		

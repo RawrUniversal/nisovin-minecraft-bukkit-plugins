@@ -275,7 +275,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	public final SpellCastResult cast(Player player, String[] args) {
-		MagicSpells.debug("Player " + player.getName() + " is trying to cast " + internalName);
+		MagicSpells.debug(1, "Player " + player.getName() + " is trying to cast " + internalName);
 		
 		// get spell state
 		SpellCastState state;
@@ -293,7 +293,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			state = SpellCastState.NORMAL;
 		}
 		
-		MagicSpells.debug("    Spell cast state: " + state);
+		MagicSpells.debug(2, "    Spell cast state: " + state);
 		
 		// call events
 		float power = 1.0F;
@@ -302,7 +302,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		SpellCastEvent event = new SpellCastEvent(this, player, state, power, args, cooldown, reagents);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
-			MagicSpells.debug("    Spell canceled");
+			MagicSpells.debug(2, "    Spell canceled");
 			return new SpellCastResult(SpellCastState.CANT_CAST, PostCastAction.HANDLE_NORMALLY);
 		} else {
 			cooldown = event.getCooldown();
@@ -319,18 +319,18 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		// cast spell
-		MagicSpells.debug("    Power: " + power);
-		MagicSpells.debug("    Cooldown: " + cooldown);
+		MagicSpells.debug(3, "    Power: " + power);
+		MagicSpells.debug(3, "    Cooldown: " + cooldown);
 		if (MagicSpells.debug && args != null && args.length > 0) {
 			StringBuilder sb = new StringBuilder();
 			for (String arg : args) {
 				if (sb.length() > 0) sb.append(",");
 				sb.append(arg);
 			}
-			MagicSpells.debug("    Args: {" + sb.toString() + "}");
+			MagicSpells.debug(3, "    Args: {" + sb.toString() + "}");
 		}
 		PostCastAction action = castSpell(player, state, power, args);
-		MagicSpells.debug("    Post-cast action: " + action);
+		MagicSpells.debug(3, "    Post-cast action: " + action);
 		
 		// perform post-cast action
 		if (action != null && action != PostCastAction.ALREADY_HANDLED) {

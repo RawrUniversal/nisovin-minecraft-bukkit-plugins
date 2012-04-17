@@ -417,7 +417,7 @@ public class ScrollSpell extends CommandSpell {
 	
 	private void save() {
 		if (dirtyData) {
-			MagicSpells.debug("Saving scrolls...");
+			MagicSpells.debug(2, "Saving scrolls...");
 			File file = new File(MagicSpells.plugin.getDataFolder(), "scrolls.txt");
 			if (file.exists()) {
 				file.delete();
@@ -426,7 +426,7 @@ public class ScrollSpell extends CommandSpell {
 			String data;
 			for (short i : scrollSpells.keySet()) {
 				data = scrollSpells.get(i).getInternalName() + "|" + scrollUses.get(i);
-				MagicSpells.debug("    " + i + " : " + data);
+				MagicSpells.debug(3, "    " + i + " : " + data);
 				c.set(i+"", data);
 			}
 			try {
@@ -440,7 +440,7 @@ public class ScrollSpell extends CommandSpell {
 	private void load() {
 		File file = new File(MagicSpells.plugin.getDataFolder(), "scrolls.txt");
 		if (file.exists()) {
-			MagicSpells.debug("Loading scrolls...");
+			MagicSpells.debug(2, "Loading scrolls...");
 			YamlConfiguration c = new YamlConfiguration();
 			try {
 				c.load(file);
@@ -452,13 +452,13 @@ public class ScrollSpell extends CommandSpell {
 			for (String s : keys) {
 				short id = Short.parseShort(s);
 				String[] data = c.getString(s).split("\\|");
-				MagicSpells.debug("    Raw data: " + c.getString(s));
+				MagicSpells.debug(3, "    Raw data: " + c.getString(s));
 				Spell spell = MagicSpells.getSpellByInternalName(data[0]);
 				int uses = Integer.parseInt(data[1]);
 				if (spell != null) {
 					scrollSpells.put(id, spell);
 					scrollUses.put(id, uses);
-					MagicSpells.debug("        Loaded scroll: " + id + " - " + spell.getInternalName() + " - " + uses);
+					MagicSpells.debug(3, "        Loaded scroll: " + id + " - " + spell.getInternalName() + " - " + uses);
 				}
 			}
 			dirtyData = false;

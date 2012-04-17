@@ -36,7 +36,7 @@ public class Spellbook {
 		this.player = player;
 		this.playerName = player.getName();
 
-		MagicSpells.debug("Loading player spell list: " + playerName);
+		MagicSpells.debug(1, "Loading player spell list: " + playerName);
 		load();
 	}
 	
@@ -50,7 +50,7 @@ public class Spellbook {
 		
 		// give all spells to ops
 		if (player.isOp() && MagicSpells.opsHaveAllSpells) {
-			MagicSpells.debug("  Op, granting all spells...");
+			MagicSpells.debug(2, "  Op, granting all spells...");
 			for (Spell spell : MagicSpells.spellsOrdered) {
 				if (!allSpells.contains(spell)) {
 					addSpell(spell);
@@ -74,7 +74,7 @@ public class Spellbook {
 	
 	private void loadFromFile(World playerWorld) {
 		try {
-			MagicSpells.debug("  Loading spells from player file...");
+			MagicSpells.debug(2, "  Loading spells from player file...");
 			File file;
 			if (MagicSpells.separatePlayerSpellsPerWorld) {
 				File folder = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName());
@@ -114,10 +114,10 @@ public class Spellbook {
 	}
 	
 	public void addGrantedSpells() {
-		MagicSpells.debug("  Adding granted spells...");
+		MagicSpells.debug(2, "  Adding granted spells...");
 		boolean added = false;
 		for (Spell spell : MagicSpells.spellsOrdered) {
-			MagicSpells.debug("    Checking spell " + spell.getInternalName() + "...");
+			MagicSpells.debug(3, "    Checking spell " + spell.getInternalName() + "...");
 			if (!hasSpell(spell, false)) {
 				if (player.hasPermission("magicspells.grant." + spell.getInternalName())) {
 					addSpell(spell);
@@ -260,7 +260,7 @@ public class Spellbook {
 		if (has) {
 			return true;
 		} else if (checkGranted && player.hasPermission("magicspells.grant." + spell.getInternalName())) {
-			MagicSpells.debug("Adding granted spell for " + player.getName() + ": " + spell.getName());
+			MagicSpells.debug(2, "Adding granted spell for " + player.getName() + ": " + spell.getName());
 			addSpell(spell);
 			save();
 			return true;
@@ -279,7 +279,7 @@ public class Spellbook {
 	
 	public void addSpell(Spell spell, CastItem[] castItems) {
 		if (spell == null) return;
-		MagicSpells.debug("    Added spell: " + spell.getInternalName());
+		MagicSpells.debug(3, "    Added spell: " + spell.getInternalName());
 		allSpells.add(spell);
 		if (spell.canCastWithItem()) {
 			CastItem[] items = spell.getCastItems();
@@ -290,7 +290,7 @@ public class Spellbook {
 				return; // no cast item provided and ignoring default, so just stop here
 			}
 			for (CastItem i : items) {
-				MagicSpells.debug("        Cast item: " + i + (castItems!=null?" (custom)":" (default)"));
+				MagicSpells.debug(3, "        Cast item: " + i + (castItems!=null?" (custom)":" (default)"));
 			}
 			for (CastItem i : items) {
 				ArrayList<Spell> temp = itemSpells.get(i);
@@ -309,7 +309,7 @@ public class Spellbook {
 			for (String spellName : spell.replaces) {
 				Spell sp = MagicSpells.getSpellByInternalName(spellName);
 				if (sp != null) {
-					MagicSpells.debug("        Removing replaced spell: " + sp.getInternalName());
+					MagicSpells.debug(3, "        Removing replaced spell: " + sp.getInternalName());
 					removeSpell(sp);
 				}
 			}
@@ -400,7 +400,7 @@ public class Spellbook {
 	}
 	
 	public void reload() {
-		MagicSpells.debug("Reloading player spell list: " + playerName);
+		MagicSpells.debug(1, "Reloading player spell list: " + playerName);
 		removeAllSpells();
 		load();
 	}
@@ -431,7 +431,7 @@ public class Spellbook {
 				writer.newLine();
 			}
 			writer.close();
-			MagicSpells.debug("Saved spellbook file: " + playerName.toLowerCase());
+			MagicSpells.debug(2, "Saved spellbook file: " + playerName.toLowerCase());
 		} catch (Exception e) {
 			plugin.getServer().getLogger().severe("Error saving player spellbook: " + playerName);
 		}		

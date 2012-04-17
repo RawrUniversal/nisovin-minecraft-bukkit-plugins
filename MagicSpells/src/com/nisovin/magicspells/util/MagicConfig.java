@@ -57,7 +57,7 @@ public class MagicConfig {
 						mainConfig.set("spells." + name + "." + key, conf.get(key));
 					}
 				} catch (Exception e) {
-					MagicSpells.debug("Error reading spell config file: " + file.getName());
+					MagicSpells.error("Error reading spell config file: " + file.getName());
 					e.printStackTrace();
 				}
 			}

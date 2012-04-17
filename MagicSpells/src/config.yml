@@ -1,5 +1,6 @@
 general:
     debug: false
+    debug-level: 3
     enable-volatile-features: true
     alt-config: altConfig.yml
     str-cast-usage: |
@@ -1076,7 +1077,7 @@ spells:
         description: Prevent a player from casting spells for a time.
         cast-item: 280
         range: 10
-        duration: 10
+        duration: 200
         cost:
             - 331 2
         str-cost: 2 redstone dust

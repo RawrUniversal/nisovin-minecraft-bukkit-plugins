@@ -62,7 +62,7 @@ public class BindSpell extends CommandSpell {
 					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					CastItem castItem = new CastItem(player.getItemInHand());
-					MagicSpells.debug("Trying to bind spell '" + spell.getInternalName() + "' to cast item " + castItem.toString() + "...");
+					MagicSpells.debug(3, "Trying to bind spell '" + spell.getInternalName() + "' to cast item " + castItem.toString() + "...");
 					if (castItem.getItemTypeId() == 0 && !allowBindToFist) {
 						sendMessage(player, strCantBindItem);
 						return PostCastAction.ALREADY_HANDLED;
@@ -75,10 +75,10 @@ public class BindSpell extends CommandSpell {
 						sendMessage(player, msg);
 						return PostCastAction.ALREADY_HANDLED;
 					} else {
-						MagicSpells.debug("    Performing bind...");
+						MagicSpells.debug(3, "    Performing bind...");
 						spellbook.addCastItem(spell, castItem);
 						spellbook.save();
-						MagicSpells.debug("    Bind successful.");
+						MagicSpells.debug(3, "    Bind successful.");
 						sendMessage(player, formatMessage(strCastSelf, "%s", spell.getName()));
 						return PostCastAction.NO_MESSAGES;
 					}

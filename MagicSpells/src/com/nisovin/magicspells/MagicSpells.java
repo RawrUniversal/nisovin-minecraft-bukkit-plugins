@@ -46,6 +46,7 @@ public class MagicSpells extends JavaPlugin {
 	static CraftBukkitHandle craftbukkit;
 	
 	static boolean debug;
+	static int debugLevel;
 	static ChatColor textColor;
 	static int broadcastRange;
 	
@@ -127,6 +128,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		debug = config.getBoolean("general.debug", false);
+		debugLevel = config.getInt("general.debug-level", 3);
 		textColor = ChatColor.getByChar(config.getString("general.text-color", ChatColor.DARK_AQUA.getChar() + ""));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		
@@ -334,7 +336,7 @@ public class MagicSpells extends JavaPlugin {
 					permTeachChildren.put("magicspells.teach." + spellName, true);
 					
 					// done
-					debug("Loaded spell: " + spellName);
+					debug(2, "Loaded spell: " + spellName);
 					
 				} catch (ClassNotFoundException e) {
 					error("Unable to load spell " + spellName + " (missing class " + className + ")");
@@ -376,7 +378,7 @@ public class MagicSpells extends JavaPlugin {
 					permCastChildren.put("magicspells.cast." + spellName, true);
 					permTeachChildren.put("magicspells.teach." + spellName, true);
 					// load complete
-					debug("Loaded multi-spell: " + spellName);
+					debug(2, "Loaded multi-spell: " + spellName);
 				}
 			}
 		}
@@ -641,10 +643,20 @@ public class MagicSpells extends JavaPlugin {
 	
 	/**
 	 * Writes a debug message to the console if the debug option is enabled.
+	 * Uses debug level 2.
 	 * @param message the message to write to the console
 	 */
 	public static void debug(String message) {
-		if (MagicSpells.debug) {
+		debug(2, message);
+	}
+	
+	/**
+	 * Writes a debug message to the console if the debug option is enabled.
+	 * @param level the debug level to log with
+	 * @param message the message to write to the console
+	 */
+	public static void debug(int level, String message) {
+		if (MagicSpells.debug && level <= debugLevel) {
 			log(Level.INFO, message);
 		}
 	}

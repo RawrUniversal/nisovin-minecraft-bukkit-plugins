@@ -86,7 +86,7 @@ public class GateSpell extends InstantSpell {
 			}
 			location.setX(location.getX()+.5);
 			location.setZ(location.getZ()+.5);
-			MagicSpells.debug("Gate location: " + location.toString());
+			MagicSpells.debug(3, "Gate location: " + location.toString());
 			
 			// check for landing point
 			Block b = location.getBlock();
