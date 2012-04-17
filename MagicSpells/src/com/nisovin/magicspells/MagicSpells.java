@@ -9,6 +9,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class MagicSpells extends JavaPlugin {
 	static boolean allowCastWithFist;
 	static boolean ignoreDefaultBindings;
 	static boolean showStrCostOnMissingReagents;
-	static List<Integer> losTransparentBlocks;
+	static HashSet<Byte> losTransparentBlocks;
 	static List<Integer> ignoreCastItemDurability;
 	static HashMap<EntityType, String> entityNames;
 	static int globalCooldown;
@@ -138,22 +139,21 @@ public class MagicSpells extends JavaPlugin {
 		allowCastWithFist = config.getBoolean("general.allow-cast-with-fist", false);
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
 		showStrCostOnMissingReagents = config.getBoolean("general.show-str-cost-on-missing-reagents", true);
-		losTransparentBlocks = config.getIntList("general.los-transparent-blocks", null);
-		if (losTransparentBlocks == null || losTransparentBlocks.size() == 0) {
-			losTransparentBlocks = new ArrayList<Integer>();
-			losTransparentBlocks.add(Material.AIR.getId());
-			losTransparentBlocks.add(Material.TORCH.getId());
-			losTransparentBlocks.add(Material.REDSTONE_WIRE.getId());
-			losTransparentBlocks.add(Material.REDSTONE_TORCH_ON.getId());
-			losTransparentBlocks.add(Material.REDSTONE_TORCH_OFF.getId());
-			losTransparentBlocks.add(Material.YELLOW_FLOWER.getId());
-			losTransparentBlocks.add(Material.RED_ROSE.getId());
-			losTransparentBlocks.add(Material.BROWN_MUSHROOM.getId());
-			losTransparentBlocks.add(Material.RED_MUSHROOM.getId());
-			losTransparentBlocks.add(Material.LONG_GRASS.getId());
-			losTransparentBlocks.add(Material.DEAD_BUSH.getId());
-			losTransparentBlocks.add(Material.DIODE_BLOCK_ON.getId());
-			losTransparentBlocks.add(Material.DIODE_BLOCK_OFF.getId());
+		losTransparentBlocks = new HashSet<Byte>(config.getByteList("general.los-transparent-blocks", new ArrayList<Byte>()));
+		if (losTransparentBlocks.size() == 0) {
+			losTransparentBlocks.add((byte)Material.AIR.getId());
+			losTransparentBlocks.add((byte)Material.TORCH.getId());
+			losTransparentBlocks.add((byte)Material.REDSTONE_WIRE.getId());
+			losTransparentBlocks.add((byte)Material.REDSTONE_TORCH_ON.getId());
+			losTransparentBlocks.add((byte)Material.REDSTONE_TORCH_OFF.getId());
+			losTransparentBlocks.add((byte)Material.YELLOW_FLOWER.getId());
+			losTransparentBlocks.add((byte)Material.RED_ROSE.getId());
+			losTransparentBlocks.add((byte)Material.BROWN_MUSHROOM.getId());
+			losTransparentBlocks.add((byte)Material.RED_MUSHROOM.getId());
+			losTransparentBlocks.add((byte)Material.LONG_GRASS.getId());
+			losTransparentBlocks.add((byte)Material.DEAD_BUSH.getId());
+			losTransparentBlocks.add((byte)Material.DIODE_BLOCK_ON.getId());
+			losTransparentBlocks.add((byte)Material.DIODE_BLOCK_OFF.getId());
 		}
 		ignoreCastItemDurability = config.getIntList("general.ignore-cast-item-durability", new ArrayList<Integer>());
 		globalCooldown = config.getInt("general.global-cooldown", 500);
@@ -535,7 +535,7 @@ public class MagicSpells extends JavaPlugin {
 	 * Gets a list of blocks that are considered transparent
 	 * @return list of block types
 	 */
-	public static List<Integer> getTransparentBlocks() {
+	public static HashSet<Byte> getTransparentBlocks() {
 		return losTransparentBlocks;
 	}
 	

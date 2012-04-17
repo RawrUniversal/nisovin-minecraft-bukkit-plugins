@@ -26,6 +26,8 @@ public class SilenceSpell extends TargetedEntitySpell {
 		duration = getConfigInt("duration", 10);
 		obeyLos = getConfigBoolean("obey-los", true);
 		strSilenced = getConfigString("str-silenced", "You are silenced!");
+		
+		silenced = new HashMap<String,Unsilencer>();
 	}
 
 	@Override

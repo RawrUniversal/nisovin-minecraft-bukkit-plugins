@@ -130,6 +130,18 @@ public class MagicConfig {
 		return def;
 	}
 	
+	public List<Byte> getByteList(String path, List<Byte> def) {
+		if (altConfig != null && altConfig.contains(path)) {
+			return altConfig.getByteList(path);
+		} else if (mainConfig.contains(path)) {
+			List<Byte> l = mainConfig.getByteList(path);
+			if (l != null) {
+				return l;
+			}
+		}
+		return def;
+	}
+	
 	public List<String> getStringList(String path, List<String> def) {
 		if (altConfig != null && altConfig.contains(path)) {
 			return altConfig.getStringList(path);

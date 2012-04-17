@@ -42,7 +42,7 @@ public class ManaBarManager extends ManaHandler {
 		showManaOnUse = config.getBoolean("general.mana.show-mana-on-use", false);
 		showManaOnRegen = config.getBoolean("general.mana.show-mana-on-regen", false);
 		showManaOnWoodTool = config.getBoolean("general.mana.show-mana-on-wood-tool", true);
-		showManaOnHungerBar = config.getBoolean("general.mana.show-mana-on-hunger-bar", true);
+		showManaOnHungerBar = config.getBoolean("general.mana.show-mana-on-hunger-bar", false);
 		showManaOnExperienceBar = config.getBoolean("general.mana.show-mana-on-experience-bar", false);
 		
 		manaBars = new HashMap<String,ManaBar>();

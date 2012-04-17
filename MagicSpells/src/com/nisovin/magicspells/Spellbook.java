@@ -289,7 +289,9 @@ public class Spellbook {
 			} else if (MagicSpells.ignoreDefaultBindings) {
 				return; // no cast item provided and ignoring default, so just stop here
 			}
-			MagicSpells.debug("        Cast item: " + items + (castItems!=null?" (custom)":" (default)"));
+			for (CastItem i : items) {
+				MagicSpells.debug("        Cast item: " + i + (castItems!=null?" (custom)":" (default)"));
+			}
 			for (CastItem i : items) {
 				ArrayList<Spell> temp = itemSpells.get(i);
 				if (temp != null) {
@@ -353,6 +355,7 @@ public class Spellbook {
 		if (bindList == null) {
 			bindList = new ArrayList<Spell>();
 			itemSpells.put(castItem, bindList);
+			activeSpells.put(castItem, MagicSpells.allowCycleToNoSpell ? -1 : 0);
 		}
 		bindList.add(spell);
 	}

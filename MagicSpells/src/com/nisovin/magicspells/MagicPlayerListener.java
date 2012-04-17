@@ -44,6 +44,7 @@ class MagicPlayerListener implements Listener {
 		MagicSpells.spellbooks.remove(event.getPlayer().getName());
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {		
 		// first check if player is interacting with a special block
@@ -113,6 +114,7 @@ class MagicPlayerListener implements Listener {
 								inHand.setAmount(inHand.getAmount()-1);
 							}
 							player.setItemInHand(inHand);
+							player.updateInventory();
 						}
 					}
 				}
