@@ -108,7 +108,6 @@ public class ExplodeSpell extends TargetedLocationSpell {
 				&& !event.isCancelled() 
 				&& event.getCause() == DamageCause.BLOCK_EXPLOSION
 				&& event instanceof EntityDamageByBlockEvent
-				&& ((EntityDamageByBlockEvent)event).getDamager() == null
 				&& currentTick == Bukkit.getWorlds().get(0).getFullTime()) {
 			if (preventPlayerDamage && event.getEntity() instanceof Player) {
 				event.setCancelled(true);
