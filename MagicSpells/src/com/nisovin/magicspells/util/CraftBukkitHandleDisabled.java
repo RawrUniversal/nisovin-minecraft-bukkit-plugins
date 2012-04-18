@@ -29,10 +29,6 @@ public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	}
 
 	@Override
-	public void makeMinion(LivingEntity entity, Player master) {
-	}
-
-	@Override
 	public void queueChunksForUpdate(Player player, Set<Chunk> chunks) {
 	}
 

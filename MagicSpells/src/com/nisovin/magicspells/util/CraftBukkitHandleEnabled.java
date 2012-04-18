@@ -6,6 +6,7 @@ import java.util.Set;
 
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.DataWatcher;
+import net.minecraft.server.EntityCreature;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.EntityTNTPrimed;
@@ -22,6 +23,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftCreature;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
@@ -75,14 +77,8 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 
 	@Override
 	public void entityPathTo(LivingEntity creature, LivingEntity target) {
-		//EntityCreature entity = ((CraftCreature)creature).getHandle();
-		//entity.pathEntity = entity.world.findPath(entity, ((CraftLivingEntity)target).getHandle(), 16.0F);
-	}
-
-	@Override
-	public void makeMinion(LivingEntity entity, Player master) {
-		// TODO Auto-generated method stub
-		
+		EntityCreature entity = ((CraftCreature)creature).getHandle();
+		entity.pathEntity = entity.world.findPath(entity, ((CraftLivingEntity)target).getHandle(), 16.0F, true, false, false, false);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -186,60 +182,5 @@ public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 		Packet43SetExperience packet = new Packet43SetExperience(percent, player.getTotalExperience(), level);
 		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
 	}
-	
-	/*private class PathfinderGoalUseOwnerTarget extends PathfinderGoalTarget {
-		
-		EntityHuman master;
-		EntityLiving target;
-		
-		public PathfinderGoalUseOwnerTarget(EntityLiving creature, EntityHuman master) {
-			super(creature, 32.0F, false);
-			this.master = master;
-		}
-
-		@Override
-		public boolean a() {
-			this.target = master.ao();
-			return this.a(target, false);
-		}
-		
-		@Override
-		public void c() {
-			this.c.b(target);
-			super.c();
-		}
-		
-	}
-	
-	private class PathfinderGoalFollowMaster extends PathfinderGoal {
-		
-		LivingEntity creature;
-		Player master;
-		
-		float speed = 0.3F;
-		float distanceFollow = 10F;
-		float distanceCaughtUpSquared = 2F * 2F;
-		
-		public PathfinderGoalFollowMaster(LivingEntity creature, Player master) {
-			this.creature = creature;
-			this.master = master;
-			this.a(3);
-		}
-		
-		@Override
-		public boolean a() { // apply goal check ?
-			if (creature.getLocation().distanceSquared(master.getLocation()) < distanceFollow*distanceFollow) {
-				return false;
-			} else {
-				return true;
-			}
-		}
-		
-		@Override
-		public boolean b() { // terminate goal processing ?
-			if (creature.getLocation().distanceSquared(master.getLocation()) < distanceCaughtUpSquared
-		}
-		
-	}*/
 
 }

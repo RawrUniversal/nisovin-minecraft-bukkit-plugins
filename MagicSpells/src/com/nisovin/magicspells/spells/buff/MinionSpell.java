@@ -69,10 +69,7 @@ public class MinionSpell extends BuffSpell {
 	
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		player.sendMessage("That spell is currently disabled.");
-		return PostCastAction.ALREADY_HANDLED;
-		
-		/*if (minions.containsKey(player.getName())) {
+		if (minions.containsKey(player.getName())) {
 			LivingEntity minion = minions.get(player.getName());
 			if (!minion.isDead()) { // don't toggle off if the minion is dead
 				turnOff(player);
@@ -92,7 +89,7 @@ public class MinionSpell extends BuffSpell {
 				}
 			}
 			if (creatureType != null) {
-				// get spawn location TODO: improve this
+				// get spawn location
 				Location loc = null;
 				loc = player.getLocation();
 				loc.setX(loc.getX()-1);
@@ -113,13 +110,13 @@ public class MinionSpell extends BuffSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
-		return PostCastAction.HANDLE_NORMALLY;*/
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@EventHandler
 	public void onEntityTarget(EntityTargetEvent event) {
 		if (!event.isCancelled() && minions.size() > 0 ) {	
-			if (event.getTarget() instanceof Player) {
+			if (event.getTarget() != null && event.getTarget() instanceof Player) {
 				// a monster is trying to target a player
 				Player player = (Player)event.getTarget();
 				LivingEntity minion = minions.get(player.getName());
@@ -156,7 +153,7 @@ public class MinionSpell extends BuffSpell {
 				} else if (!targetPlayers && minions.containsValue(event.getEntity())) {
 					// player doesn't own minion, but it is an owned minion and pvp is off, so cancel
 					event.setCancelled(true);
-				}				
+				}
 			} else if (event.getReason() == TargetReason.FORGOT_TARGET && minions.containsValue(event.getEntity())) {
 				// forgetting target but it's a minion, don't let them do that! (probably a spider going passive)
 				event.setCancelled(true);
@@ -168,6 +165,7 @@ public class MinionSpell extends BuffSpell {
 	public void onEntityDeath(EntityDeathEvent event) {
 		if (minions.containsValue(event.getEntity())) {
 			event.setDroppedExp(0);
+			event.getDrops().clear();
 		}
 	}
 
