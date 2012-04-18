@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class BookWormBlockListener implements Listener {
+class BookWormBlockListener implements Listener {
 
 	private BookWorm plugin;
 	

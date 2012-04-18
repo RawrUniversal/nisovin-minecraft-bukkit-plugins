@@ -5,7 +5,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldSaveEvent;
 
-public class BookWormWorldListener implements Listener {
+class BookWormWorldListener implements Listener {
 
 	private BookWorm plugin;
 	

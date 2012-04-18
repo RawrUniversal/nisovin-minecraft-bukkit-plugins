@@ -5,9 +5,7 @@ import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
-public class BookMapRenderer extends MapRenderer {
-
-	
+class BookMapRenderer extends MapRenderer {
 	
 	@Override
 	public void render(MapView view, MapCanvas canvas, Player player) {

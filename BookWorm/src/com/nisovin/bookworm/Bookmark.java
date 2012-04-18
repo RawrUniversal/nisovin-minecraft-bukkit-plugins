@@ -2,7 +2,7 @@ package com.nisovin.bookworm;
 
 import org.bukkit.entity.Player;
 
-public class Bookmark {
+class Bookmark {
 	
 	protected Book book;
 	protected int page;

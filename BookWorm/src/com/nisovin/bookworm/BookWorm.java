@@ -278,10 +278,20 @@ public class BookWorm extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Gets the book a player is holding, if the player is holding a BookWorm book.
+	 * @param player the player
+	 * @return the book the player is holding, or null if the player is not holding a BookWorm book
+	 */
 	public static Book getBook(Player player) {
 		return getBook(player.getItemInHand());
 	}
 	
+	/**
+	 * Gets the BookWorm book from an ItemStack.
+	 * @param item the item
+	 * @return the book, or null if it is not a BookWorm book
+	 */
 	public static Book getBook(ItemStack item) {
 		if (item == null || item.getType() != Material.BOOK || item.getDurability() == 0) {
 			return null;
@@ -290,10 +300,20 @@ public class BookWorm extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Gets the book contained in a bookshelf, if there is one.
+	 * @param block the bookshelf block
+	 * @return the book, or null if there is no book there
+	 */
 	public static Book getBook(Block block) {
 		return getBook(block.getLocation());
 	}
 	
+	/**
+	 * Gets the book contained in a bookshelf, if there is one.
+	 * @param location the location of the bookshelf block
+	 * @return the book, or null if there is no book there
+	 */
 	public static Book getBook(Location location) {
 		String locStr = location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
 		Short id = plugin.bookshelves.get(locStr);
@@ -304,10 +324,21 @@ public class BookWorm extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Gets the book with the specified id number.
+	 * @param id the book id
+	 * @return the book, or null if no book with that id exists
+	 */
 	public static Book getBook(short id) {
 		return plugin.getBookById(id);
 	}
 	
+	/**
+	 * Creates a new BookWorm book.
+	 * @param author the new book's author
+	 * @param title the new book's title
+	 * @return the newly created book, or null if something went wrong
+	 */
 	public static Book createBook(String author, String title) {
 		short bookId = plugin.getNextBookId();
 		if (bookId == -1) {
@@ -353,6 +384,10 @@ public class BookWorm extends JavaPlugin {
 		getServer().getPluginManager().callEvent(event);
 	}
 	
+	/**
+	 * Gets the BookWorm permission handler
+	 * @return the permission handler
+	 */
 	public static PermissionManager getPermissions() {
 		return plugin.perms;
 	}

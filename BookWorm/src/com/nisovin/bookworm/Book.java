@@ -87,15 +87,27 @@ public class Book {
 		this.pages = (this.contents.length-1)/BookWorm.PAGE_LENGTH + 1;
 	}
 	
+	/**
+	 * Gets the id number of this book.
+	 * @return the id number
+	 */
 	public short getId() {
 		return id;
 	}
 	
+	/**
+	 * Gets the author of this book.
+	 * @return the author
+	 */
 	public String getAuthor() {
 		if (!loaded) load();
 		return author;
 	}
 	
+	/**
+	 * Gets the displayed author of this book.
+	 * @return the displayed author
+	 */
 	public String getDisplayAuthor() {
 		if (!loaded) load();
 		String auth = getHiddenData("Author");
@@ -108,6 +120,10 @@ public class Book {
 		return auth;
 	}
 	
+	/**
+	 * Gets the title of this book.
+	 * @return the title
+	 */
 	public String getTitle() {
 		if (!loaded) load();
 		if (BookWorm.ENABLE_COLORS) {
@@ -117,6 +133,10 @@ public class Book {
 		}
 	}
 	
+	/**
+	 * Sets the title of this book.
+	 * @param title the new title
+	 */
 	public void setTitle(String title) {
 		// delete old file
 		File f = getFile();
@@ -134,24 +154,48 @@ public class Book {
 		}
 	}
 	
+	/**
+	 * Gets the full contents of this book as a single string.
+	 * @return the contents
+	 */
 	public String getContents() {
 		if (!loaded) load();
 		return text;
 	}
 	
+	/**
+	 * Checks if this book has hidden data defined with the specified key.
+	 * @param key the key to check
+	 * @return whether the data exists
+	 */
 	public boolean hasHiddenData(String key) {
 		return hiddenData.containsKey(key);
 	}
 	
+	/**
+	 * Adds hidden data to this book.
+	 * @param key the key of the data
+	 * @param value the actual data
+	 */
 	public void addHiddenData(String key, String value) {
 		hiddenData.put(key, value);
 		unsaved = true;
 	}
 	
+	/**
+	 * Gets the hidden data for the specified key.
+	 * @param key the data key
+	 * @return the hidden data, or null if there is no data for that key
+	 */
 	public String getHiddenData(String key) {
 		return hiddenData.get(key);
 	}
 	
+	/**
+	 * Removes the hidden data for the specified key.
+	 * @param key the data key
+	 * @return the hidden data that was removed, or null if there wasn't any data
+	 */
 	public String removeHiddenData(String key) {
 		if (hiddenData.containsKey(key)) {
 			unsaved = true;
@@ -161,6 +205,11 @@ public class Book {
 		}
 	}
 	
+	/**
+	 * Writes text into this book.
+	 * @param text the text to write
+	 * @return the text that was written
+	 */
 	public String write(String text) {
 		BookWorm.metricWrites++;
 		lastText = this.text;
@@ -173,7 +222,12 @@ public class Book {
 			return text.trim();
 		}
 	}
-	
+
+	/**
+	 * Writes text into this book.
+	 * @param text the text to write
+	 * @return the text that was written
+	 */
 	public String write(String[] text) {
 		BookWorm.metricWrites++;
 		lastText = this.text;
@@ -191,6 +245,11 @@ public class Book {
 		}
 	}
 	
+	/**
+	 * Replaces text in the book with other text.
+	 * @param s the replacement, in the format: old text -> new text
+	 * @return whether text was replaced
+	 */
 	public boolean replace(String s) {
 		if (!s.contains("->")) {
 			return false;
@@ -205,18 +264,30 @@ public class Book {
 		return true;
 	}
 	
+	/**
+	 * Removes the specified text from the contents of this book.
+	 * @param s the text to erase
+	 */
 	public void erase(String s) {
 		lastText = text;
 		text = text.replace(s, "");
 		unsaved = true;
 	}
 	
+	/**
+	 * Erases all of the content of this book.
+	 */
 	public void eraseAll() {
 		lastText = text;
 		text = "";
 		unsaved = true;
 	}
 	
+	/**
+	 * Undoes the last modification to this book.
+	 * There is only one undo level.
+	 * @return whether the undo was successful
+	 */
 	public boolean undo() {
 		if (lastText != null && !lastText.equals("")) {
 			text = lastText;
@@ -228,14 +299,27 @@ public class Book {
 		}
 	}
 	
+	/**
+	 * Checks whether the contents of this book have been loaded.
+	 * @return whether the contents are loaded
+	 */
 	public boolean isLoaded() {
 		return loaded;
 	}
 	
+	/**
+	 * Checks whether this book has unsaved changes.
+	 * @return true if there are no unsaved changes, false otherwise
+	 */
 	public boolean isSaved() {
 		return !unsaved;
 	}
 	
+	/**
+	 * Sends the contents of a specified page to a player.
+	 * @param player the player to send the page to
+	 * @param page the page number
+	 */
 	public void read(Player player, int page) {
 		// page is 0-based
 		
@@ -266,6 +350,11 @@ public class Book {
 		}
 	}
 	
+	/**
+	 * Gets the contents of a specific page.
+	 * @param page the page number
+	 * @return the lines on that page
+	 */
 	public String[] getPage(int page) {
 		if (!loaded) {
 			load();
@@ -290,10 +379,17 @@ public class Book {
 		return lines;
 	}
 	
+	/**
+	 * Gets the number of pages in this book.
+	 * @return the number of pages
+	 */
 	public int pageCount() {
 		return pages;
 	}
 	
+	/**
+	 * Saves the book to disk.
+	 */
 	public void save() {
 		generateContents();
 		
@@ -333,7 +429,11 @@ public class Book {
 		}
 		unsaved = false;
 	}
-		
+	
+	/**
+	 * Loads the book from disk.
+	 * @return whether it was loaded successfully
+	 */
 	public boolean load() {
 		try {
 			// get correct file
@@ -376,6 +476,10 @@ public class Book {
 		}
 	}
 	
+	/**
+	 * Deletes this book, and opens its id number for a new book.
+	 * @return whether the book was deleted successfully
+	 */
 	public boolean delete() {
 		try {
 			unload();
@@ -408,6 +512,9 @@ public class Book {
 		return bookFile;
 	}
 	
+	/**
+	 * Unloads this book from memory.
+	 */
 	public void unload() {
 		title = null;
 		author = null;

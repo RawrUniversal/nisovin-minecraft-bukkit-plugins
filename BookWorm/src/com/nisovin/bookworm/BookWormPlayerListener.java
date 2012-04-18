@@ -24,7 +24,7 @@ import com.nisovin.bookworm.event.BookModifyEvent.ModifyType;
 import com.nisovin.bookworm.event.BookPlaceEvent;
 import com.nisovin.bookworm.event.BookReadEvent;
 
-public class BookWormPlayerListener implements Listener {
+class BookWormPlayerListener implements Listener {
 	
 	private BookWorm plugin;
 	

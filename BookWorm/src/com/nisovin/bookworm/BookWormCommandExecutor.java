@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import com.nisovin.bookworm.event.BookModifyEvent;
 import com.nisovin.bookworm.event.BookModifyEvent.ModifyType;
 
-public class BookWormCommandExecutor implements CommandExecutor {
+class BookWormCommandExecutor implements CommandExecutor {
 
 	private BookWorm plugin;
 	

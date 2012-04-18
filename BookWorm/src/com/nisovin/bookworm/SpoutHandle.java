@@ -12,7 +12,7 @@ import org.getspout.spoutapi.gui.Widget;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-public class SpoutHandle {	
+class SpoutHandle {	
 	public static void setBookName(short id, String title) {
 		new SpoutBookItem(id).setName(BookWorm.S_READ_BOOK + ": " + title);
 	}

@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
-public class BookWormSpoutScreenListener implements Listener {
+class BookWormSpoutScreenListener implements Listener {
 
 	private BookWorm plugin;
 	

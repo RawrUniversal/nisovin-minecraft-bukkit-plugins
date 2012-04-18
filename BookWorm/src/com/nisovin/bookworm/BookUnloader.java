@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import org.bukkit.entity.Player;
 
-public class BookUnloader implements Runnable {
+class BookUnloader implements Runnable {
 
 	private BookWorm plugin;
 	

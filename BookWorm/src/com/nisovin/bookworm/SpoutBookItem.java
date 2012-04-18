@@ -3,7 +3,7 @@ package com.nisovin.bookworm;
 import org.getspout.spoutapi.material.MaterialData;
 import org.getspout.spoutapi.material.item.GenericItem;
 
-public class SpoutBookItem extends GenericItem {
+class SpoutBookItem extends GenericItem {
 
 	private short id;
 	
