@@ -1,6 +1,6 @@
 name: BookWorm
 main: com.nisovin.bookworm.BookWorm
-version: 1.13
+version: 1.14
 softdepend: [Spout]
 commands:
     bookworm:

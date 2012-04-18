@@ -6,18 +6,15 @@ import org.bukkit.event.HandlerList;
 
 import com.nisovin.bookworm.Book;
 
-public class BookPlaceEvent extends BookEvent {
+public class BookCopyEvent extends BookEvent {
 
     private static final HandlerList handlers = new HandlerList();
 
 	private Player player;
 	private Location location;
 	
-	public BookPlaceEvent(Player player, Book book, Location location) {
+	public BookCopyEvent(Player player, Book book, Location location) {
 		super(book);
-		
-		this.player = player;
-		this.location = location;
 	}
 
 	public Player getPlayer() {

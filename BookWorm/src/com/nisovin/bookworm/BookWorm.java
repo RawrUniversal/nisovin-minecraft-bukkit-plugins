@@ -26,6 +26,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.Configuration;
 
+import com.nisovin.bookworm.Metrics.Graph.Type;
 import com.nisovin.bookworm.event.*;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
@@ -71,6 +72,7 @@ public class BookWorm extends JavaPlugin {
 	protected static String S_USAGE_READ = "Right click to read.";
 	protected static String S_NEW_BOOK_CREATED = "New book created: %t";
 	protected static String S_CANNOT_DESTROY = "You can't destroy someone else's bookshelf!";
+	protected static String S_NO_BOOK = "";
 	
 	protected static String S_COMM_HELP = "help";
 	protected static String S_COMM_GET = "get";
@@ -248,7 +250,8 @@ public class BookWorm extends JavaPlugin {
 				}				
 			}).length;
 			
-			metrics.addCustomData(this, new Metrics.Plotter("Book Count") {
+			Metrics.Graph graph = metrics.createGraph(this, Type.Line, "Book Count");			
+			graph.addPlotter(new Metrics.Plotter("Book Count") {
 				public int getValue() {
 					return metricBookCount;
 				}
@@ -303,6 +306,20 @@ public class BookWorm extends JavaPlugin {
 	
 	public static Book getBook(short id) {
 		return plugin.getBookById(id);
+	}
+	
+	public static Book createBook(String author, String title) {
+		short bookId = plugin.getNextBookId();
+		if (bookId == -1) {
+			return null;
+		}
+		
+		// setup book
+		Book book = new Book(bookId, title, author);
+		plugin.books.put(bookId, book);
+		BookWorm.metricBookCount++;
+		
+		return book;
 	}
 	
 	protected Book getBookById(short id) {
@@ -409,6 +426,7 @@ public class BookWorm extends JavaPlugin {
 		S_USAGE_READ = config.getString("strings.usage-read", S_USAGE_READ);
 		S_NEW_BOOK_CREATED = config.getString("strings.new-book-created", S_NEW_BOOK_CREATED);
 		S_CANNOT_DESTROY = config.getString("strings.cannot-destroy", S_CANNOT_DESTROY);
+		S_NO_BOOK = config.getString("strings.no-book-in-bookshelf", S_NO_BOOK);
 		
 		S_COMM_HELP = config.getString("strings.command-help", S_COMM_HELP);
 		S_COMM_GET = config.getString("strings.command-get", S_COMM_GET);

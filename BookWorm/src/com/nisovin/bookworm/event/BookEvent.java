@@ -28,6 +28,6 @@ public abstract class BookEvent extends Event implements Cancellable {
 		this.cancelled = cancel;
 	}
 
-	// TODO: onBookCreate, onBookCopy, onBookRemove, onBookDestroy, onBookDelete
+	// TODO: onBookCreate, onBookRemove, onBookDestroy, onBookDelete
 
 }

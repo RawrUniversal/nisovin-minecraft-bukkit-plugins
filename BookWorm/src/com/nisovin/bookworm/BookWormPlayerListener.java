@@ -1,5 +1,6 @@
 package com.nisovin.bookworm;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,6 +18,9 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.bookworm.event.BookCopyEvent;
+import com.nisovin.bookworm.event.BookModifyEvent;
+import com.nisovin.bookworm.event.BookModifyEvent.ModifyType;
 import com.nisovin.bookworm.event.BookPlaceEvent;
 import com.nisovin.bookworm.event.BookReadEvent;
 
@@ -35,9 +39,15 @@ public class BookWormPlayerListener implements Listener {
 		if (plugin.chatModed.contains(player.getName()) && player.getItemInHand().getType() == Material.BOOK) {
 			Book book = BookWorm.getBook(player);
 			if (book != null && plugin.perms.canModifyBook(player, book)) {
-				String line = book.write(event.getMessage());
-				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_WRITE_DONE.replace("%t", BookWorm.TEXT_COLOR_2 + line));
-				event.setCancelled(true);
+				BookModifyEvent evt = new BookModifyEvent(player, book, ModifyType.NEW_TEXT_WRITTEN, event.getMessage());
+				Bukkit.getPluginManager().callEvent(evt);
+				if (evt.isCancelled()) {
+					return;
+				} else {
+					String line = book.write(evt.getContent());
+					player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_WRITE_DONE.replace("%t", BookWorm.TEXT_COLOR_2 + line));
+					event.setCancelled(true);
+				}
 			}
 		}
 	}
@@ -90,6 +100,16 @@ public class BookWormPlayerListener implements Listener {
 				if (!player.isSneaking() && plugin.perms.canCopyBook(player, book) && ((!BookWorm.REQUIRE_BOOK_TO_COPY && inHand.getType() == Material.AIR) || (inHand != null && inHand.getType() == Material.BOOK && inHand.getDurability() == 0))) {				
 					// copy book if allowed
 					short copyId = bookId;
+					
+					// check listeners
+					BookCopyEvent evt = new BookCopyEvent(player, book, l);
+					Bukkit.getPluginManager().callEvent(evt);
+					if (evt.isCancelled()) {
+						event.setCancelled(true);
+						return;
+					}
+					
+					// copy book
 					if (BookWorm.MAKE_REAL_COPY) {
 						Book copy = plugin.copyBook(book);
 						if (copy == null) return;
@@ -102,6 +122,7 @@ public class BookWormPlayerListener implements Listener {
 					}
 					player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COPIED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 					event.setCancelled(true);
+					
 				} else if (player.isSneaking() && plugin.perms.canRemoveBook(player, book) && inHand.getType() == Material.AIR) {
 					// remove book if allowed
 					player.setItemInHand(new ItemStack(Material.BOOK, 1, bookId));
@@ -111,6 +132,10 @@ public class BookWormPlayerListener implements Listener {
 					event.setCancelled(true);
 				}					
 			}
+			
+		} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK && !BookWorm.S_NO_BOOK.isEmpty()) {
+			// reading from empty bookshelf
+			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_BOOK);
 			
 		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK && inHand != null && inHand.getType() == Material.BOOK && inHand.getDurability() != 0) {
 			// placing book
@@ -210,12 +235,11 @@ public class BookWormPlayerListener implements Listener {
 		ItemStack cursor = event.getCursor();
 		
 		if (clicked != null && clicked.getType() == Material.BOOK && clicked.getDurability() != 0) {
-			if (cursor != null && cursor.getType() == Material.BOOK && event.isLeftClick() && !event.isShiftClick() && clicked.getDurability() != cursor.getDurability()) {
+			if (cursor != null && cursor.getType() == Material.BOOK && clicked.getDurability() != cursor.getDurability()) {
 				// trying to stack different scrolls - prevent it
 				event.setCancelled(true);
 				event.setCursor(clicked.clone());
 				event.setCurrentItem(cursor.clone());
-			} else if (cursor != null && cursor.getType() == Material.AIR && event.isRightClick()) {
 			} else if (event.isShiftClick()) {
 				// trying to shift move
 				event.setCancelled(true);

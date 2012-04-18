@@ -39,6 +39,7 @@ strings:
     removed-book: 'Removed book:'
     cannot-destroy: You can't destroy someone else's bookshelf!
     placed-book-fail: You cannot put a book here.
+    no-book-in-bookshelf: ""
     command-invalid: Invalid command.
     no-permission: You do not have permission to do that.
     

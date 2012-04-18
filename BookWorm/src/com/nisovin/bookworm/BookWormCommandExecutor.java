@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,6 +14,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import com.nisovin.bookworm.event.BookModifyEvent;
+import com.nisovin.bookworm.event.BookModifyEvent.ModifyType;
 
 public class BookWormCommandExecutor implements CommandExecutor {
 
@@ -83,8 +87,18 @@ public class BookWormCommandExecutor implements CommandExecutor {
 				} else {
 					// just writing
 					if (plugin.perms.canModifyBook(player, book)) {
-						String line = book.write(args);
-						player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_WRITE_DONE.replace("%t", BookWorm.TEXT_COLOR_2 + line));
+						String text = "";
+						for (String arg : args) {
+							text += arg + " ";
+						}
+						BookModifyEvent evt = new BookModifyEvent(player, book, ModifyType.NEW_TEXT_WRITTEN, text.trim());
+						Bukkit.getPluginManager().callEvent(evt);
+						if (!evt.isCancelled()) {
+							String line = book.write(evt.getContent());
+							player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_WRITE_DONE.replace("%t", BookWorm.TEXT_COLOR_2 + line));
+						} else {
+							player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_WRITE_FAIL);
+						}
 					} else {
 						player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_WRITE_FAIL);
 					}
@@ -323,8 +337,14 @@ public class BookWormCommandExecutor implements CommandExecutor {
 			for (int i = 1; i < args.length; i++) {
 				title += args[i] + " ";
 			}
-			book.setTitle(title.trim());
-			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_TITLE_DONE + BookWorm.TEXT_COLOR_2 + book.getTitle());
+			BookModifyEvent evt = new BookModifyEvent(player, book, ModifyType.TITLE_CHANGE, title.trim());
+			Bukkit.getPluginManager().callEvent(evt);
+			if (!evt.isCancelled()) {
+				book.setTitle(evt.getContent());
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_TITLE_DONE + BookWorm.TEXT_COLOR_2 + book.getTitle());
+			} else {
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);
+			}
 		} else {
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);
 		}		
@@ -336,8 +356,13 @@ public class BookWormCommandExecutor implements CommandExecutor {
 			for (int i = 1; i < args.length; i++) {
 				author += args[i] + " ";
 			}
-			book.addHiddenData("Author", author.trim());
-			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_AUTHOR_DONE + BookWorm.TEXT_COLOR_2 + book.getDisplayAuthor());
+			BookModifyEvent evt = new BookModifyEvent(player, book, ModifyType.DISPLAY_AUTHOR_CHANGE, author.trim());
+			if (!evt.isCancelled()) {
+				book.addHiddenData("Author", evt.getContent());
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_COMM_AUTHOR_DONE + BookWorm.TEXT_COLOR_2 + book.getDisplayAuthor());
+			} else {
+				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);
+			}
 		} else {
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);
 		}
