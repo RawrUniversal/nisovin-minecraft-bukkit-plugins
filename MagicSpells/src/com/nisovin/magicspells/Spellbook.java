@@ -97,11 +97,14 @@ public class Spellbook {
 					} else {
 						String[] data = line.split(":",2);
 						Spell spell = MagicSpells.spells.get(data[0]);
-						if (spell != null && data[1].matches("^(-?[0-9:]+)(,(-?[0-9:]+))*$")) {
-							String[] s = data[1].split(",");
-							CastItem[] items = new CastItem[s.length];
-							for (int i = 0; i < s.length; i++) {
-								items[i] = new CastItem(s[i]);
+						if (spell != null) {
+							CastItem[] items = null;
+							if (data[1].matches("^(-?[0-9]+(:-?[0-9]+)?)(,(-?[0-9]+(:-?[0-9]+)?))*$")) { // ^(-?[0-9:]+)(,(-?[0-9:]+))*$
+								String[] s = data[1].split(",");
+								items = new CastItem[s.length];
+								for (int i = 0; i < s.length; i++) {
+									items[i] = new CastItem(s[i]);
+								}
 							}
 							addSpell(spell, items);
 						}
