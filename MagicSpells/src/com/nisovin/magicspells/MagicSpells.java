@@ -33,11 +33,7 @@ import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spells.*;
-import com.nisovin.magicspells.util.CraftBukkitHandle;
-import com.nisovin.magicspells.util.CraftBukkitHandleDisabled;
-import com.nisovin.magicspells.util.CraftBukkitHandleEnabled;
 import com.nisovin.magicspells.util.MagicConfig;
-import com.nisovin.magicspells.util.Metrics;
 
 public class MagicSpells extends JavaPlugin {
 

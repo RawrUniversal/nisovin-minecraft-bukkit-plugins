@@ -10,7 +10,6 @@ import com.nisovin.magicspells.Spell;
 /**
  * This event is fired whenever a TargetedSpell is trying to target an entity.
  * Cancelling this event will prevent the spell from targeting the entity.
- * @author Justin.Baker
  *
  */
 public class SpellTargetEvent extends SpellEvent implements Cancellable {

@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.util;
+package com.nisovin.magicspells;
 
 import java.util.Set;
 
@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class CraftBukkitHandleDisabled implements CraftBukkitHandle {
+class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 
 	@Override
 	public void playPotionEffect(Player player, Entity entity, int color, int duration) {

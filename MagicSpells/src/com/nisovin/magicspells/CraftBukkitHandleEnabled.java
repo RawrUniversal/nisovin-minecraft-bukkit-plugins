@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.util;
+package com.nisovin.magicspells;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -35,9 +35,8 @@ import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
-import com.nisovin.magicspells.MagicSpells;
 
-public class CraftBukkitHandleEnabled implements CraftBukkitHandle {
+class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 
 	@Override
 	public void playPotionEffect(final Player player, final Entity entity, int color, int duration) {
