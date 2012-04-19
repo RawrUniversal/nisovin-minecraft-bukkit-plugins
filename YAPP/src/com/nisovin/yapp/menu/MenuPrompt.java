@@ -1,5 +1,8 @@
 package com.nisovin.yapp.menu;
 
+import java.util.List;
+
+import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
@@ -112,6 +115,35 @@ public abstract class MenuPrompt extends StringPrompt {
 		context.setSessionData("message", message);
 		context.setSessionData("nextprompt", nextPrompt);
 		return Menu.MESSAGE;
+	}
+	
+	protected void showCurrentGroupInfo(ConversationContext context) {
+		PermissionContainer obj = getObject(context);
+		String world = getWorld(context);
+		String type = getType(context);
+		List<Group> groups = obj.getActualGroupList(world);
+		
+		Conversable c = context.getForWhom();
+		if (groups == null) {
+			c.sendRawMessage(Menu.TEXT_COLOR + "The " + type + " " + Menu.HIGHLIGHT_COLOR + obj.getName() + Menu.TEXT_COLOR + " currently has no groups defined" + (world != null ? " on world " + Menu.HIGHLIGHT_COLOR + world + Menu.TEXT_COLOR : ""));
+		} else {
+			c.sendRawMessage(Menu.TEXT_COLOR + "The " + type + " " + Menu.HIGHLIGHT_COLOR + obj.getName() + Menu.TEXT_COLOR + " currently inherits the following groups" + (world != null ? " on world " + Menu.HIGHLIGHT_COLOR + world + Menu.TEXT_COLOR : "") + ":");
+			String s = "";
+			for (Group g : groups) {
+				if (!s.isEmpty()) {
+					s += Menu.TEXT_COLOR + ", ";					
+				}
+				s += Menu.HIGHLIGHT_COLOR + g.getName();
+				if (s.length() > 40) {
+					c.sendRawMessage("   " + s);
+					s = "";
+				}
+			}
+			if (s.length() > 0) {
+				c.sendRawMessage("   " + s);
+			}
+			c.sendRawMessage(Menu.TEXT_COLOR + "The primary group is " + Menu.HIGHLIGHT_COLOR + groups.get(0).getName());
+		}
 	}
 
 }

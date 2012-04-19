@@ -265,7 +265,7 @@ public class MainPlugin extends JavaPlugin {
 		
 		// prepare user
 		User user = getPlayerUser(playerName);
-		user.resetCachedInfo();
+		user.clearCache();
 		user.getColor(worldName);
 		user.getPrefix(worldName);
 		Group primaryGroup = user.getPrimaryGroup(player.getWorld().getName());

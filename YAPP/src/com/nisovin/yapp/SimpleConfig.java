@@ -181,6 +181,42 @@ public class SimpleConfig {
 		}
 	}
 	
+	public List<Integer> getIntegerList(String path) {
+		String val = getValue(path);
+		if (val == null) {
+			return null;
+		} else {
+			List<Integer> list = new ArrayList<Integer>();
+			String[] values = val.split(",");
+			for (String v : values) {
+				try {
+					list.add(Integer.parseInt(v.trim()));
+				} catch (NumberFormatException e) {
+					return null;
+				}
+			}
+			return list;
+		}
+	}
+	
+	public List<Double> getDoubleList(String path) {
+		String val = getValue(path);
+		if (val == null) {
+			return null;
+		} else {
+			List<Double> list = new ArrayList<Double>();
+			String[] values = val.split(",");
+			for (String v : values) {
+				try {
+					list.add(Double.parseDouble(v.trim()));
+				} catch (NumberFormatException e) {
+					return null;
+				}
+			}
+			return list;
+		}
+	}
+	
 	public Set<String> getKeys(String section) {
 		Map<String,String> vals = values.get(section);
 		if (vals == null) {

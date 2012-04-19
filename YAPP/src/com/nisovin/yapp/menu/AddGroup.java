@@ -11,6 +11,7 @@ public class AddGroup extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
+		showCurrentGroupInfo(context);
 		return Menu.TEXT_COLOR + "Please type the group you want to add:";
 	}
 
@@ -35,8 +36,7 @@ public class AddGroup extends MenuPrompt {
 
 	@Override
 	public Prompt getPreviousPrompt(ConversationContext context) {
-		// TODO Auto-generated method stub
-		return null;
+		return Menu.MODIFY_OPTIONS;
 	}
 
 }

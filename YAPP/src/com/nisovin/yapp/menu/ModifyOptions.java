@@ -32,7 +32,7 @@ public class ModifyOptions extends MenuPrompt {
 		c.sendRawMessage(Menu.TEXT_COLOR + "  6) Remove an inherited group (" + Menu.KEYLETTER_COLOR + "u" + Menu.KEYWORD_COLOR + "ngroup" + Menu.TEXT_COLOR + ")");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  7) Set the " + Menu.KEYWORD_COLOR + "chat prefi" + Menu.KEYLETTER_COLOR + "x");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  8) Set the name " + Menu.KEYLETTER_COLOR + "c" + Menu.KEYWORD_COLOR + "olor");
-		c.sendRawMessage(Menu.TEXT_COLOR + "  9) Show " + Menu.KEYLETTER_COLOR + "m" + Menu.KEYWORD_COLOR + "ore " + Menu.TEXT_COLOR + "options");
+		c.sendRawMessage(Menu.TEXT_COLOR + "  0) Show " + Menu.KEYLETTER_COLOR + "m" + Menu.KEYWORD_COLOR + "ore " + Menu.TEXT_COLOR + "options");
 		return MainPlugin.TEXT_COLOR + "Please type your selection:";
 	}
 
@@ -55,7 +55,7 @@ public class ModifyOptions extends MenuPrompt {
 			return Menu.SET_PREFIX;
 		} else if (input.equals("8") || input.startsWith("c")) {
 			return Menu.SET_COLOR;
-		} else if (input.equals("9") || input.startsWith("m")) {
+		} else if (input.equals("0") || input.startsWith("m")) {
 			return Menu.MODIFY_OPTIONS_MORE;
 		} else {
 			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Invalid selection");
@@ -69,7 +69,11 @@ public class ModifyOptions extends MenuPrompt {
 		if (obj == null) {
 			return Menu.MAIN_MENU;
 		} else if (obj instanceof User) {
-			return Menu.SELECT_PLAYER;
+			if (((User)obj).isOnline()) {
+				return Menu.SELECT_PLAYER;
+			} else {
+				return Menu.SELECT_OFFLINE_PLAYER;
+			}
 		} else if (obj instanceof Group) {
 			return Menu.SELECT_GROUP;
 		} else {

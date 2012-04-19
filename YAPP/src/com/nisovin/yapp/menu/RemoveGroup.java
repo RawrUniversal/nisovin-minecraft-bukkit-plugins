@@ -11,7 +11,8 @@ public class RemoveGroup extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
-		return Menu.TEXT_COLOR + "Please type the permission node you want to remove:";
+		showCurrentGroupInfo(context);
+		return Menu.TEXT_COLOR + "Please type the group you want to remove:";
 	}
 
 	@Override

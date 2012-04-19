@@ -24,14 +24,16 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	private List<Group> groups = new ArrayList<Group>();
 	private List<PermissionNode> permissions = new ArrayList<PermissionNode>();
-	private Map<String,List<Group>> worldGroups = new HashMap<String,List<Group>>();
-	private Map<String,List<PermissionNode>> worldPermissions = new HashMap<String,List<PermissionNode>>();	
-	private Map<String,List<PermissionNode>> cached = new HashMap<String,List<PermissionNode>>();
+	private Map<String, List<Group>> worldGroups = new HashMap<String, List<Group>>();
+	private Map<String, List<PermissionNode>> worldPermissions = new HashMap<String, List<PermissionNode>>();	
 	
-	private Map<String,String> info = new LinkedHashMap<String,String>();
+	private Map<String, String> info = new LinkedHashMap<String, String>();
 	private String description = "";
 	private ChatColor color = null;
 	private String prefix = null;
+	
+	private Map<String, List<PermissionNode>> cachedPermissions = new HashMap<String, List<PermissionNode>>();
+	private Map<String, Group> cachedPrimaryGroup = new HashMap<String,Group>();
 	private ChatColor cachedColor = null;
 	private String cachedPrefix = null;
 	
@@ -72,8 +74,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	public List<PermissionNode> getAllPermissions(String world) {
 		if (world == null) world = "";
-		if (cached.containsKey(world)) {
-			return cached.get(world);
+		if (cachedPermissions.containsKey(world)) {
+			return cachedPermissions.get(world);
 		} else {
 			List<PermissionNode> nodes = new ArrayList<PermissionNode>();
 			
@@ -119,7 +121,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				}
 			}
 			
-			cached.put(world, nodes);
+			cachedPermissions.put(world, nodes);
 			return nodes;
 		}
 	}
@@ -485,11 +487,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public void clearCache() {
-		cached.clear();
-		resetCachedInfo();
-	}
-	
-	public void resetCachedInfo() {
+		cachedPermissions.clear();
+		cachedPrimaryGroup.clear();
 		cachedColor = null;
 		cachedPrefix = null;
 	}
