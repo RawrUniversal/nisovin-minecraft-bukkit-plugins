@@ -38,13 +38,13 @@ public class RecallSpell extends InstantSpell {
 		super(config, spellName);
 		
 		markSpellName = getConfigString("mark-spell", "mark");
-		allowCrossWorld = config.getBoolean("spells." + spellName + ".allow-cross-world", true);
-		maxRange = config.getInt("spells." + spellName + ".max-range", 0);
+		allowCrossWorld = getConfigBoolean("allow-cross-world", true);
+		maxRange = getConfigInt("max-range", 0);
 		castTime = getConfigInt("cast-time", 0);
 		useBedLocation = getConfigBoolean("use-bed-location", false);
-		strNoMark = config.getString("spells." + spellName + ".str-no-mark", "You have no mark to recall to.");
-		strOtherWorld = config.getString("spells." + spellName + ".str-other-world", "Your mark is in another world.");
-		strTooFar = config.getString("spells." + spellName + ".str-too-far", "You mark is too far away.");
+		strNoMark = getConfigString("str-no-mark", "You have no mark to recall to.");
+		strOtherWorld = getConfigString("str-other-world", "Your mark is in another world.");
+		strTooFar = getConfigString("str-too-far", "You mark is too far away.");
 		strCastDone = getConfigString("str-cast-done", "");
 		strCastInterrupted = getConfigString("str-cast-interrupted", "");
 		strRecallFailed = getConfigString("str-recall-failed", "Could not recall.");

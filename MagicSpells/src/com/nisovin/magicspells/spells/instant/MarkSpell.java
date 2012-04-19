@@ -25,7 +25,7 @@ public class MarkSpell extends InstantSpell {
 	public MarkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		permanentMarks = config.getBoolean("spells." + spellName + ".permanent-marks", true);
+		permanentMarks = getConfigBoolean("permanent-marks", true);
 		
 		marks = new HashMap<String,MagicLocation>();
 		

@@ -32,8 +32,8 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 	public ExternalCommandSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		castWithItem = config.getBoolean("spells." + spellName + ".can-cast-with-item", true);
-		castByCommand = config.getBoolean("spells." + spellName + ".can-cast-by-command", true);
+		castWithItem = getConfigBoolean("can-cast-with-item", true);
+		castByCommand = getConfigBoolean("can-cast-by-command", true);
 		commandToExecute = getConfigStringList("command-to-execute", null);
 		commandToExecuteLater = getConfigStringList("command-to-execute-later", null);
 		commandDelay = getConfigInt("command-delay", 0);
@@ -43,7 +43,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 		executeAsTargetInstead = getConfigBoolean("execute-as-target-instead", false);
 		executeOnConsoleInstead = getConfigBoolean("execute-on-console-instead", false);
 		obeyLos = getConfigBoolean("obey-los", true);
-		strCantUseCommand = config.getString("spells." + spellName + ".str-cant-use-command", "&4You don't have permission to do that.");
+		strCantUseCommand = getConfigString("str-cant-use-command", "&4You don't have permission to do that.");
 		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
 

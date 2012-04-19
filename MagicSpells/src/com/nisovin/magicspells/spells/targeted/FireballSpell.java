@@ -53,7 +53,7 @@ public class FireballSpell extends TargetedSpell {
 		noExplosionEffect = getConfigBoolean("no-explosion-effect", true);
 		noExplosionDamage = getConfigInt("no-explosion-damage", 5);
 		noExplosionDamageRange = getConfigInt("no-explosion-damage-range", 3);
-		noFire = config.getBoolean("spells." + spellName + ".no-fire", false);
+		noFire = getConfigBoolean("no-fire", false);
 		
 		fireballs = new HashMap<Fireball,Float>();
 	}

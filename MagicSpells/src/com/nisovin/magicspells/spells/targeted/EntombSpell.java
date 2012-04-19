@@ -29,12 +29,12 @@ public class EntombSpell extends TargetedEntitySpell {
 	public EntombSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 
-		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
-		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
-		tombBlockType = config.getInt("spells." + spellName + ".tomb-block-type", Material.GLASS.getId());
-		tombDuration = config.getInt("spells." + spellName + ".tomb-duration", 20);
-		closeTopAndBottom = config.getBoolean("spells." + spellName + ".close-top-and-bottom", true);
-		allowBreaking = config.getBoolean("spells." + spellName + ".allow-breaking", true);
+		targetPlayers = getConfigBoolean("target-players", false);
+		obeyLos = getConfigBoolean("obey-los", true);
+		tombBlockType = getConfigInt("tomb-block-type", Material.GLASS.getId());
+		tombDuration = getConfigInt("tomb-duration", 20);
+		closeTopAndBottom = getConfigBoolean("close-top-and-bottom", true);
+		allowBreaking = getConfigBoolean("allow-breaking", true);
 		
 		blocks = new HashSet<Block>();
 	}

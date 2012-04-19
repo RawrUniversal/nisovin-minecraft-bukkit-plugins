@@ -37,7 +37,7 @@ public class MinionSpell extends BuffSpell {
 	public MinionSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		List<String> c = config.getStringList("spells." + spellName + ".mob-chances", null);
+		List<String> c = getConfigStringList("mob-chances", null);
 		if (c == null) {
 			c = new ArrayList<String>();
 		}
@@ -59,8 +59,8 @@ public class MinionSpell extends BuffSpell {
 			creatureTypes[i] = creatureType;
 			chances[i] = chance;
 		}
-		preventCombust = config.getBoolean("spells." + spellName + ".prevent-sun-burn", true);
-		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
+		preventCombust = getConfigBoolean("prevent-sun-burn", true);
+		targetPlayers = getConfigBoolean("target-players", false);
 		
 		minions = new HashMap<String,LivingEntity>();
 		targets = new HashMap<String,LivingEntity>();

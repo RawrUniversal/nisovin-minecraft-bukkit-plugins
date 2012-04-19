@@ -19,9 +19,9 @@ public class VolleySpell extends TargetedLocationSpell {
 	public VolleySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		arrows = config.getInt("spells." + spellName + ".arrows", 10);
-		speed = config.getInt("spells." + spellName + ".speed", 20);
-		spread = config.getInt("spells." + spellName + ".spread", 150);
+		arrows = getConfigInt("arrows", 10);
+		speed = getConfigInt("speed", 20);
+		spread = getConfigInt("spread", 150);
 	}
 	
 	@Override

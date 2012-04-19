@@ -13,8 +13,8 @@ public class PrayerSpell extends InstantSpell {
 	public PrayerSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		amountHealed = config.getInt("spells." + spellName + ".amount-healed", 10);
-		strAtFullHealth = config.getString("spells." + spellName + ".str-at-full-health", "You are already at full health.");
+		amountHealed = getConfigInt("amount-healed", 10);
+		strAtFullHealth = getConfigString("str-at-full-health", "You are already at full health.");
 	}
 
 	@Override

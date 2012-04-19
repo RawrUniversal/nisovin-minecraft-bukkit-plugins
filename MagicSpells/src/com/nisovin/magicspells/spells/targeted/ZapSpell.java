@@ -47,7 +47,7 @@ public class ZapSpell extends TargetedSpell {
 				disallowedBlockTypes.add(Integer.parseInt(s));
 			}
 		}
-		dropBlock = config.getBoolean("spells." + spellName + ".drop-block", false);
+		dropBlock = getConfigBoolean("drop-block", false);
 		dropNormal = getConfigBoolean("drop-normal", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 	}

@@ -23,8 +23,8 @@ public class BlinkSpell extends TargetedLocationSpell {
 		super(config, spellName);
 		
 		passThroughCeiling = getConfigBoolean("pass-through-ceiling", false);
-		smokeTrail = config.getBoolean("spells." + spellName + ".smoke-trail", true);
-		strCantBlink = config.getString("spells." + spellName + ".str-cant-blink", "You can't blink there.");
+		smokeTrail = getConfigBoolean("smoke-trail", true);
+		strCantBlink = getConfigString("str-cant-blink", "You can't blink there.");
 	}
 	
 	@Override

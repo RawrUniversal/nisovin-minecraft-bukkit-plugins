@@ -28,13 +28,13 @@ public class LightningSpell extends TargetedLocationSpell {
 	public LightningSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		requireEntityTarget = config.getBoolean("spells." + spellName + ".require-entity-target", false);
-		obeyLos = config.getBoolean("spells." + spellName + ".obey-los", true);
-		targetPlayers = config.getBoolean("spells." + spellName + ".target-players", false);
-		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
+		requireEntityTarget = getConfigBoolean("require-entity-target", false);
+		obeyLos = getConfigBoolean("obey-los", true);
+		targetPlayers = getConfigBoolean("target-players", false);
+		checkPlugins = getConfigBoolean("check-plugins", true);
 		additionalDamage = getConfigInt("additional-damage", 0);
-		noDamage = config.getBoolean("spells." + spellName + ".no-damage", false);		
-		strCastFail = config.getString("spells." + spellName + ".str-cast-fail", "");
+		noDamage = getConfigBoolean("no-damage", false);		
+		strCastFail = getConfigString("str-cast-fail", "");
 	}
 	
 	@Override

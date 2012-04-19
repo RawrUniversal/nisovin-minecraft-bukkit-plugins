@@ -32,10 +32,10 @@ public class CarpetSpell extends BuffSpell {
 	public CarpetSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		platformBlock = config.getInt("spells." + spellName + ".platform-block", Material.GLASS.getId());
-		size = config.getInt("spells." + spellName + ".size", 2);
-		cancelOnLogout = config.getBoolean("spells." + spellName + ".cancel-on-logout", true);
-		cancelOnTeleport = config.getBoolean("spells." + spellName + ".cancel-on-teleport", true);
+		platformBlock = getConfigInt("platform-block", Material.GLASS.getId());
+		size = getConfigInt("size", 2);
+		cancelOnLogout = getConfigBoolean("cancel-on-logout", true);
+		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
 		
 		windwalkers = new HashMap<String,BlockPlatform>();
 		falling = new HashSet<Player>();

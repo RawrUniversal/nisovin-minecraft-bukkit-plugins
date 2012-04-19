@@ -29,13 +29,13 @@ public class TeachSpell extends CommandSpell {
 		super(config, spellName);
 		
 		requireKnownSpell = getConfigBoolean("require-known-spell", true);
-		strUsage = config.getString("spells." + spellName + ".str-usage", "Usage: /cast teach <target> <spell>");
-		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No such player.");
-		strNoSpell = config.getString("spells." + spellName + ".str-no-spell", "You do not know a spell by that name.");
-		strCantTeach = config.getString("spells." + spellName + ".str-cant-teach", "You can't teach that spell.");
-		strCantLearn = config.getString("spells." + spellName + ".str-cant-learn", "That person cannot learn that spell.");
-		strAlreadyKnown = config.getString("spells." + spellName + ".str-already-known", "That person already knows that spell.");
-		strCastTarget = config.getString("spells." + spellName + ".str-cast-target", "%a has taught you the %s spell.");
+		strUsage = getConfigString("str-usage", "Usage: /cast teach <target> <spell>");
+		strNoTarget = getConfigString("str-no-target", "No such player.");
+		strNoSpell = getConfigString("str-no-spell", "You do not know a spell by that name.");
+		strCantTeach = getConfigString("str-cant-teach", "You can't teach that spell.");
+		strCantLearn = getConfigString("str-cant-learn", "That person cannot learn that spell.");
+		strAlreadyKnown = getConfigString("str-already-known", "That person already knows that spell.");
+		strCastTarget = getConfigString("str-cast-target", "%a has taught you the %s spell.");
 	}
 	
 	@Override

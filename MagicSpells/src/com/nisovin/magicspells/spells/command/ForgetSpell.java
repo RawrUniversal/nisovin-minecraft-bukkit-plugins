@@ -27,11 +27,11 @@ public class ForgetSpell extends CommandSpell {
 		super(config, spellName);
 		
 		allowSelfForget = getConfigBoolean("allow-self-forget", true);
-		strUsage = config.getString("spells." + spellName + ".str-usage", "Usage: /cast forget <target> <spell>");
-		strNoTarget = config.getString("spells." + spellName + ".str-no-target", "No such player.");
-		strNoSpell = config.getString("spells." + spellName + ".str-no-spell", "You do not know a spell by that name.");
-		strDoesntKnow = config.getString("spells." + spellName + ".str-doesnt-know", "That person does not know that spell.");
-		strCastTarget = config.getString("spells." + spellName + ".str-cast-target", "%a has made you forget the %s spell.");
+		strUsage = getConfigString("str-usage", "Usage: /cast forget <target> <spell>");
+		strNoTarget = getConfigString("str-no-target", "No such player.");
+		strNoSpell = getConfigString("str-no-spell", "You do not know a spell by that name.");
+		strDoesntKnow = getConfigString("str-doesnt-know", "That person does not know that spell.");
+		strCastTarget = getConfigString("str-cast-target", "%a has made you forget the %s spell.");
 		strCastSelfTarget = getConfigString("str-cast-self-target", "You have forgotten the %s spell.");
 		strResetTarget = getConfigString("str-reset-target", "You have reset %t's spellbook.");
 		strResetSelf = getConfigString("str-reset-self", "You have forgotten all of your spells.");

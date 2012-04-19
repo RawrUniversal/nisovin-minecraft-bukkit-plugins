@@ -25,16 +25,16 @@ public class BuildSpell extends TargetedSpell {
 	public BuildSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		slot = config.getInt("spells." + spellName + ".slot", 0);
-		consumeBlock = config.getBoolean("spells." + spellName + ".consume-block", true);
-		String[] allowed = config.getString("spells." + spellName + ".allowed-types", "1,2,3,4,5,12,13,17,20,22,24,35,41,42,43,44,45,47,48,49,50,53,57,65,67,80,85,87,88,89,91,92").split(",");
+		slot = getConfigInt("slot", 0);
+		consumeBlock = getConfigBoolean("consume-block", true);
+		String[] allowed = getConfigString("allowed-types", "1,2,3,4,5,12,13,17,20,22,24,35,41,42,43,44,45,47,48,49,50,53,57,65,67,80,85,87,88,89,91,92").split(",");
 		allowedTypes = new int[allowed.length];
 		for (int i = 0; i < allowed.length; i++) {
 			allowedTypes[i] = Integer.parseInt(allowed[i]);
 		}
-		checkPlugins = config.getBoolean("spells." + spellName + ".check-plugins", true);
-		strInvalidBlock = config.getString("spells." + spellName + "str-invalid-block", "You can't build that block.");
-		strCantBuild = config.getString("spells." + spellName + "str-cant-build", "You can't build there.");
+		checkPlugins = getConfigBoolean("check-plugins", true);
+		strInvalidBlock = getConfigString("str-invalid-block", "You can't build that block.");
+		strCantBuild = getConfigString("str-cant-build", "You can't build there.");
 	}
 	
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {

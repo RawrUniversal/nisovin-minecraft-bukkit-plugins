@@ -35,7 +35,7 @@ public abstract class BuffSpell extends Spell {
 	public BuffSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		List<String> costList = config.getStringList("spells." + spellName + ".use-cost", null);
+		List<String> costList = getConfigStringList("use-cost", null);
 		if (costList != null && costList.size() > 0) {
 			useCost = new ItemStack [costList.size()];
 			for (int i = 0; i < costList.size(); i++) {
@@ -65,12 +65,12 @@ public abstract class BuffSpell extends Spell {
 			useCost = null;
 		}
 		reagents = new SpellReagents(useCost, manaCost, healthCost, hungerCost, experienceCost, levelsCost);
-		useCostInterval = config.getInt("spells." + spellName + ".use-cost-interval", 0);
-		numUses = config.getInt("spells." + spellName + ".num-uses", 0);
-		duration = config.getInt("spells." + spellName + ".duration", 0);
-		cancelOnRecast = config.getBoolean("spells." + spellName + ".cancel-on-recast", true);
+		useCostInterval = getConfigInt("use-cost-interval", 0);
+		numUses = getConfigInt("num-uses", 0);
+		duration = getConfigInt("duration", 0);
+		cancelOnRecast = getConfigBoolean("cancel-on-recast", true);
 		
-		strFade = config.getString("spells." + spellName + ".str-fade", "");
+		strFade = getConfigString("str-fade", "");
 		
 		if (numUses > 0 || (useCost != null && useCostInterval > 0)) {
 			useCounter = new HashMap<String,Integer>();
@@ -79,8 +79,8 @@ public abstract class BuffSpell extends Spell {
 			durationStartTime = new HashMap<String,Long>();
 		}
 		
-		castWithItem = config.getBoolean("spells." + spellName + ".can-cast-with-item", true);
-		castByCommand = config.getBoolean("spells." + spellName + ".can-cast-by-command", true);
+		castWithItem = getConfigBoolean("can-cast-with-item", true);
+		castByCommand = getConfigBoolean("can-cast-by-command", true);
 	}
 	
 	public boolean canCastWithItem() {

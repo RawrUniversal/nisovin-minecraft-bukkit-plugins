@@ -31,10 +31,10 @@ public class GateSpell extends InstantSpell {
 	public GateSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		world = config.getString("spells." + spellName + ".world", "CURRENT");
-		coords = config.getString("spells." + spellName + ".coordinates", "SPAWN");
+		world = getConfigString("world", "CURRENT");
+		coords = getConfigString("coordinates", "SPAWN");
 		castTime = getConfigInt("cast-time", 0);
-		strGateFailed = config.getString("spells." + spellName + ".str-gate-failed", "Unable to teleport.");
+		strGateFailed = getConfigString("str-gate-failed", "Unable to teleport.");
 		strCastDone = getConfigString("str-cast-done", "");
 		strCastInterrupted = getConfigString("str-cast-interrupted", "");
 		
