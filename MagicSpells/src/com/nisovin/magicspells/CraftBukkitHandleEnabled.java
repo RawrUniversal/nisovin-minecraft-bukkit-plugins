@@ -13,7 +13,6 @@ import net.minecraft.server.EntityTNTPrimed;
 import net.minecraft.server.MobEffect;
 import net.minecraft.server.Packet103SetSlot;
 import net.minecraft.server.Packet22Collect;
-import net.minecraft.server.Packet40EntityMetadata;
 import net.minecraft.server.Packet42RemoveMobEffect;
 import net.minecraft.server.Packet43SetExperience;
 
@@ -27,7 +26,6 @@ import org.bukkit.craftbukkit.entity.CraftCreature;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -37,25 +35,6 @@ import org.bukkit.potion.PotionEffectType;
 
 
 class CraftBukkitHandleEnabled implements CraftBukkitHandle {
-
-	@Override
-	public void playPotionEffect(final Player player, final Entity entity, int color, int duration) {
-		final DataWatcher dw = new DataWatcher();
-		dw.a(8, Integer.valueOf(0));
-		dw.watch(8, Integer.valueOf(color));
-		
-		Packet40EntityMetadata packet = new Packet40EntityMetadata(entity.getEntityId(), dw);
-		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
-		
-		Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
-			public void run() {
-				DataWatcher dwReal = ((CraftLivingEntity)entity).getHandle().getDataWatcher();
-				dw.watch(8, dwReal.getInt(8));
-				Packet40EntityMetadata packet = new Packet40EntityMetadata(entity.getEntityId(), dw);
-				((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
-			}
-		}, duration);
-	}
 
 	@Override
 	public void addPotionGraphicalEffect(LivingEntity entity, int color, int duration) {

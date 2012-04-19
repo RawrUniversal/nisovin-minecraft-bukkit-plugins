@@ -97,12 +97,12 @@ public class Spellbook {
 					} else {
 						String[] data = line.split(":",2);
 						Spell spell = MagicSpells.spells.get(data[0]);
-						String[] s = data[1].split(",");
-						CastItem[] items = new CastItem[s.length];
-						for (int i = 0; i < s.length; i++) {
-							items[i] = new CastItem(s[i]);
-						}
-						if (spell != null && data[1].matches("^-?[0-9:]+$")) {
+						if (spell != null && data[1].matches("^(-?[0-9:]+)(,(-?[0-9:]+))*$")) {
+							String[] s = data[1].split(",");
+							CastItem[] items = new CastItem[s.length];
+							for (int i = 0; i < s.length; i++) {
+								items[i] = new CastItem(s[i]);
+							}
 							addSpell(spell, items);
 						}
 					}
@@ -375,7 +375,7 @@ public class Spellbook {
 		// remove from active bindings
 		ArrayList<Spell> bindList = itemSpells.get(castItem);
 		if (bindList != null) {
-			removed = bindList.remove(castItem) || removed;
+			removed = bindList.remove(spell) || removed;
 			if (bindList.size() == 0) {
 				itemSpells.remove(castItem);
 				activeSpells.remove(castItem);

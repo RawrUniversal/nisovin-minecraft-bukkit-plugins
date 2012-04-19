@@ -6,7 +6,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,10 +14,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 class CraftBukkitHandleDisabled implements CraftBukkitHandle {
-
-	@Override
-	public void playPotionEffect(Player player, Entity entity, int color, int duration) {
-	}
 
 	@Override
 	public void addPotionGraphicalEffect(LivingEntity entity, int color, int duration) {

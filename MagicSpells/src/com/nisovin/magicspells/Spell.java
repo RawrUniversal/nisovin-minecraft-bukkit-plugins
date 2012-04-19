@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -815,17 +814,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Plays the magic-swirly potion effect on an entity for the player. The effect will only appear for the specified player.
-	 * @param player the player to show the effect to
-	 * @param entity the entity the effect will be on
-	 * @param color the color of the swirls
-	 * @param duration how long the effect will last, in ticks
-	 */
-	protected void playPotionEffect(final Player player, final LivingEntity entity, int color, int duration) {
-		MagicSpells.craftbukkit.playPotionEffect(player, entity, color, duration);
 	}
 	
 	public String getInternalName() {
