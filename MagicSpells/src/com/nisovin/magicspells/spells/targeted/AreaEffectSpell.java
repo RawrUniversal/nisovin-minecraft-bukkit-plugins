@@ -26,6 +26,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 	private int verticalRadius;
 	private boolean pointBlank;
 	private boolean failIfNoTargets;
+	private boolean targetPlayers;
 	private List<String> spellNames;
 	private List<TargetedSpell> spells;
 	
@@ -36,6 +37,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		verticalRadius = getConfigInt("vertical-radius", 5);
 		pointBlank = getConfigBoolean("point-blank", true);
 		failIfNoTargets = getConfigBoolean("fail-if-no-targets", true);
+		targetPlayers = getConfigBoolean("target-players", false);
 		spellNames = getConfigStringList("spells", null);
 	}
 	
@@ -108,7 +110,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		
 		List<Entity> nearbyEntities = center.getNearbyEntities(radius, verticalRadius, radius);
 		for (Entity e : nearbyEntities) {
-			if (e instanceof LivingEntity && !((LivingEntity)e).isDead()) {
+			if (e instanceof LivingEntity && !((LivingEntity)e).isDead() && !e.equals(player) && (targetPlayers || !(e instanceof Player))) {
 				LivingEntity target = (LivingEntity)e;
 				SpellTargetEvent event = new SpellTargetEvent(this, player, target);
 				Bukkit.getPluginManager().callEvent(event);
