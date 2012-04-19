@@ -24,6 +24,7 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.SpellReagents;
 
 public class ScrollSpell extends CommandSpell {
 
@@ -148,28 +149,14 @@ public class ScrollSpell extends CommandSpell {
 			
 			// get additional reagent cost
 			if (chargeReagentsForSpellPerCharge && uses > 0) {
-				ItemStack[] spellReagents = spell.getReagentCost();
-				ItemStack[] reagents = new ItemStack[spellReagents.length];
-				for (int i = 0; i < reagents.length; i++) {
-					ItemStack item = spellReagents[i];
-					if (item != null) {
-						item = item.clone();
-						item.setAmount(item.getAmount() * uses);
-					}
-					reagents[i] = item;
-				}
-				int manaCost = spell.getManaCost() * uses;
-				int healthCost = spell.getHealthCost() * uses;
-				int hungerCost = spell.getHungerCost() * uses;
-				int experienceCost = spell.getExperienceCost() * uses;
-				int levelsCost = spell.getLevelsCost() * uses;
-				if (!hasReagents(player, reagents, healthCost, manaCost, hungerCost, experienceCost, levelsCost)) {
+				SpellReagents reagents = spell.getReagents().multiply(uses);
+				if (!hasReagents(player, reagents)) {
 					// missing reagents
 					sendMessage(player, strMissingReagents);
 					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					// has reagents, so just remove them
-					removeReagents(player, reagents, healthCost, manaCost, hungerCost, experienceCost, levelsCost);
+					removeReagents(player, reagents);
 				}
 			}
 			

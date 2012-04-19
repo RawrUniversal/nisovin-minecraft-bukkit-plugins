@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.SpellReagents;
 
 public abstract class BuffSpell extends Spell {
 	
@@ -19,6 +20,7 @@ public abstract class BuffSpell extends Spell {
 	protected int hungerCost = 0;
 	protected int experienceCost = 0;
 	protected int levelsCost = 0;
+	protected SpellReagents reagents;
 	protected int useCostInterval;
 	protected int numUses;
 	protected int duration;
@@ -62,6 +64,7 @@ public abstract class BuffSpell extends Spell {
 		} else {
 			useCost = null;
 		}
+		reagents = new SpellReagents(useCost, manaCost, healthCost, hungerCost, experienceCost, levelsCost);
 		useCostInterval = config.getInt("spells." + spellName + ".use-cost-interval", 0);
 		numUses = config.getInt("spells." + spellName + ".num-uses", 0);
 		duration = config.getInt("spells." + spellName + ".duration", 0);
@@ -160,8 +163,8 @@ public abstract class BuffSpell extends Spell {
 		if (useCost != null && useCostInterval > 0 && useCounter != null && useCounter.containsKey(player.getName())) {
 			int uses = useCounter.get(player.getName());
 			if (uses % useCostInterval == 0) {
-				if (hasReagents(player, useCost, healthCost, manaCost, hungerCost, experienceCost, levelsCost)) {
-					removeReagents(player, useCost, healthCost, manaCost, hungerCost, experienceCost, levelsCost);
+				if (hasReagents(player, reagents)) {
+					removeReagents(player, reagents);
 					return true;
 				} else {
 					turnOff(player);

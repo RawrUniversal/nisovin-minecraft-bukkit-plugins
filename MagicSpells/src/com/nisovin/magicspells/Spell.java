@@ -41,13 +41,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected int experience;
 	protected HashMap<Integer, List<String>> graphicalEffects;
 	
-	protected ItemStack[] cost;
-	protected int healthCost = 0;
-	protected int manaCost = 0;
-	protected int hungerCost = 0;
-	protected int experienceCost = 0;
-	protected int levelsCost = 0;
-	
+	protected SpellReagents reagents;
 	protected int cooldown;
 	protected HashMap<Spell, Integer> sharedCooldowns;
 	protected boolean ignoreGlobalCooldown;
@@ -141,9 +135,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		// cost
+		reagents = new SpellReagents();
 		List<String> costList = config.getStringList(section + "." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
-			cost = new ItemStack [costList.size()];
+			//cost = new ItemStack [costList.size()];
 			String[] data, subdata;
 			for (int i = 0; i < costList.size(); i++) {
 				String costVal = costList.get(i);
@@ -157,24 +152,22 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				// parse cost data
 				data = costVal.split(" ");
 				if (data[0].equalsIgnoreCase("health")) {
-					healthCost = Integer.parseInt(data[1]);
+					reagents.setHealth(Integer.parseInt(data[1]));
 				} else if (data[0].equalsIgnoreCase("mana")) {
-					manaCost = Integer.parseInt(data[1]);
+					reagents.setMana(Integer.parseInt(data[1]));
 				} else if (data[0].equalsIgnoreCase("hunger")) {
-					hungerCost = Integer.parseInt(data[1]);
+					reagents.setHunger(Integer.parseInt(data[1]));
 				} else if (data[0].equalsIgnoreCase("experience")) {
-					experienceCost = Integer.parseInt(data[1]);
+					reagents.setExperience(Integer.parseInt(data[1]));
 				} else if (data[0].equalsIgnoreCase("levels")) {
-					levelsCost = Integer.parseInt(data[1]);
+					reagents.setLevels(Integer.parseInt(data[1]));
 				} else if (data[0].contains(":")) {
 					subdata = data[0].split(":");
-					cost[i] = new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1]));
+					reagents.addItem(new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1])));
 				} else {
-					cost[i] = new ItemStack(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+					reagents.addItem(new ItemStack(Integer.parseInt(data[0]), Integer.parseInt(data[1])));
 				}
 			}
-		} else {
-			cost = null;
 		}
 		
 		// cooldowns
@@ -297,7 +290,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		// call events
 		float power = 1.0F;
 		int cooldown = this.cooldown;
-		SpellReagents reagents = new SpellReagents(cost, manaCost, healthCost, hungerCost, experienceCost, levelsCost);
+		SpellReagents reagents = this.reagents.clone();
 		SpellCastEvent event = new SpellCastEvent(this, player, state, power, args, cooldown, reagents);
 		Bukkit.getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled()) {
@@ -338,7 +331,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					setCooldown(player, cooldown);
 				}
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.REAGENTS_ONLY || action == PostCastAction.NO_MESSAGES || action == PostCastAction.NO_COOLDOWN) {
-					removeReagents(player, reagents.getItemsAsArray(), reagents.getHealth(), reagents.getMana(), reagents.getHunger(), reagents.getExperience(), reagents.getLevels());
+					removeReagents(player, reagents);
 				}
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.MESSAGES_ONLY || action == PostCastAction.NO_COOLDOWN || action == PostCastAction.NO_REAGENTS) {
 					sendMessage(player, strCastSelf);
@@ -493,7 +486,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @return true if the player has the reagents, false otherwise
 	 */
 	protected boolean hasReagents(Player player) {
-		return hasReagents(player, cost, healthCost, manaCost, hungerCost, experienceCost, levelsCost);
+		return hasReagents(player, reagents);
 	}
 	
 	/**
@@ -524,7 +517,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param manaCost the mana cost
 	 * @return true if the player has all the reagents, false otherwise
 	 */
-	protected boolean hasReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost, int hungerCost, int experienceCost, int levelsCost) {
+	private boolean hasReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost, int hungerCost, int experienceCost, int levelsCost) {
 		if (player.hasPermission("magicspells.noreagents")) {
 			return true;
 		}
@@ -560,7 +553,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param player the player to remove reagents from
 	 */
 	protected void removeReagents(Player player) {
-		removeReagents(player, cost, healthCost, manaCost, hungerCost, experienceCost, levelsCost);
+		removeReagents(player, reagents);
 	}
 	
 	/**
@@ -573,6 +566,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		removeReagents(player, reagents, 0, 0, 0, 0, 0);
 	}
 	
+	protected void removeReagents(Player player, SpellReagents reagents) {
+		removeReagents(player, reagents.getItemsAsArray(), reagents.getHealth(), reagents.getMana(), reagents.getHunger(), reagents.getExperience(), reagents.getLevels());
+	}
+	
 	/**
 	 * Removes the specified reagents, including health and mana, from the player's inventory.
 	 * This does not check if the player has the reagents, use hasReagents() for that.
@@ -581,7 +578,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param healthCost the health to remove
 	 * @param manaCost the mana to remove
 	 */
-	protected void removeReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost, int hungerCost, int experienceCost, int levelsCost) {
+	private void removeReagents(Player player, ItemStack[] reagents, int healthCost, int manaCost, int hungerCost, int experienceCost, int levelsCost) {
 		if (player.hasPermission("magicspells.noreagents")) {
 			return;
 		}
@@ -852,28 +849,56 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return this.description;
 	}
 	
+	public SpellReagents getReagents() {
+		return this.reagents;
+	}
+	
+	@Deprecated
+	/**
+	 * Use getReagents() instead.
+	 */
 	public ItemStack[] getReagentCost() {
-		return this.cost;
+		return this.reagents.getItemsAsArray();
 	}
-	
+
+	@Deprecated
+	/**
+	 * Use getReagents() instead.
+	 */
 	public int getManaCost() {
-		return this.manaCost;
+		return this.reagents.getMana();
 	}
-	
+
+	@Deprecated
+	/**
+	 * Use getReagents() instead.
+	 */
 	public int getHealthCost() {
-		return this.healthCost;
+		return this.reagents.getHealth();
 	}
-	
+
+	@Deprecated
+	/**
+	 * Use getReagents() instead.
+	 */
 	public int getHungerCost() {
-		return this.hungerCost;
+		return this.reagents.getHunger();
 	}
-	
+
+	@Deprecated
+	/**
+	 * Use getReagents() instead.
+	 */
 	public int getExperienceCost() {
-		return this.experienceCost;
+		return this.reagents.getExperience();
 	}
-	
+
+	@Deprecated()
+	/**
+	 * Use getReagents() instead.
+	 */
 	public int getLevelsCost() {
-		return this.levelsCost;
+		return this.reagents.getLevels();
 	}
 	
 	public String getConsoleName() {
