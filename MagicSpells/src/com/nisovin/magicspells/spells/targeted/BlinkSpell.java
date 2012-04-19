@@ -4,11 +4,11 @@ import java.util.HashSet;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -49,7 +49,7 @@ public class BlinkSpell extends TargetedLocationSpell {
 			if (iter != null) {
 				while (iter.hasNext()) {
 					b = iter.next();
-					if (b.getType() == Material.AIR) {
+					if (MagicSpells.getTransparentBlocks().contains((byte)b.getTypeId())) {
 						prev = b;
 						if (smokeTrail) {
 							smokes.add(b.getLocation());

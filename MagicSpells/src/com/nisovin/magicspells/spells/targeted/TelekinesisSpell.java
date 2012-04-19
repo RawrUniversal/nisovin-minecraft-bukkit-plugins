@@ -17,13 +17,12 @@ public class TelekinesisSpell extends TargetedLocationSpell {
 	
 	public TelekinesisSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
-				
-		transparent = new HashSet<Byte>();
-		transparent.add((byte)Material.AIR.getId());
-		transparent.add((byte)Material.REDSTONE_WIRE.getId());
-		transparent.add((byte)Material.REDSTONE_TORCH_ON.getId());
-		transparent.add((byte)Material.REDSTONE_TORCH_OFF.getId());
-		transparent.add((byte)Material.TORCH.getId());
+		
+		transparent = new HashSet<Byte>(MagicSpells.getTransparentBlocks());
+		transparent.remove((byte)Material.LEVER.getId());
+		transparent.remove((byte)Material.STONE_PLATE.getId());
+		transparent.remove((byte)Material.WOOD_PLATE.getId());
+		transparent.remove((byte)Material.STONE_BUTTON.getId());
 	}
 	
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {

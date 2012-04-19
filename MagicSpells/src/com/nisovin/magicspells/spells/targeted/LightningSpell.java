@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -49,7 +50,7 @@ public class LightningSpell extends TargetedLocationSpell {
 			Block target = null;
 			LivingEntity entityTarget = null;
 			if (requireEntityTarget) {
-				entityTarget = getTargetedEntity(player, range>0?range:100, targetPlayers, obeyLos);
+				entityTarget = getTargetedEntity(player, range, targetPlayers, obeyLos);
 				if (entityTarget != null && entityTarget instanceof Player && checkPlugins) {
 					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entityTarget, DamageCause.ENTITY_ATTACK, 0);
 					Bukkit.getServer().getPluginManager().callEvent(event);
@@ -69,7 +70,7 @@ public class LightningSpell extends TargetedLocationSpell {
 				}
 			} else {
 				try {
-					target = player.getTargetBlock(null, range);
+					target = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
 				} catch (IllegalStateException e) {	
 					target = null;
 				}
