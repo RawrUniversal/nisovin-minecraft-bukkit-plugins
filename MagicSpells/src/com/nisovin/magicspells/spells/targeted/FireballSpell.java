@@ -66,17 +66,13 @@ public class FireballSpell extends TargetedSpell {
 			if (requireEntityTarget) {
 				LivingEntity entity = getTargetedEntity(player, range, targetPlayers, obeyLos);
 				if (entity == null) {
-					sendMessage(player, strNoTarget);
-					fizzle(player);
-					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+					return noTarget(player);
 				} else if (entity instanceof Player && checkPlugins) {
 					// run a pvp damage check
 					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, 1);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
-						sendMessage(player, strNoTarget);
-						fizzle(player);
-						return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+						return noTarget(player);
 					}
 				}
 				if (entity.equals(player)) {

@@ -44,9 +44,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 			}
 			if (target == null) {
 				// fail no target
-				sendMessage(player, strNoTarget);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			}
 			
 			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier));

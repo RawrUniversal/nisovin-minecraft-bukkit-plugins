@@ -53,14 +53,11 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
 				// fail: no target
-				sendMessage(player, strNoTarget);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			} else {
 				boolean drained = drain(player, target, power);
 				if (!drained) {
-					sendMessage(player, strNoTarget);
-					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+					return noTarget(player);
 				} else {
 					sendMessages(player, target);
 					return PostCastAction.NO_MESSAGES;

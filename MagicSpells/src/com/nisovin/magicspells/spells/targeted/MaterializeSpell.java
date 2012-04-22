@@ -51,15 +51,11 @@ public class MaterializeSpell extends TargetedLocationSpell {
 			if (lastTwo != null && lastTwo.size() == 2 && lastTwo.get(1).getType() != Material.AIR && lastTwo.get(0).getType() == Material.AIR) {
 				boolean done = materialize(player, lastTwo.get(0), lastTwo.get(1));
 				if (!done) {
-					sendMessage(player, strFailed);
-					fizzle(player);
-					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+					return noTarget(player);
 				}
 			} else {
 				// fail no target
-				sendMessage(player, strNoTarget);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

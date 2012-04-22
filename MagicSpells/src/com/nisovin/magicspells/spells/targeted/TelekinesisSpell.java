@@ -35,15 +35,11 @@ public class TelekinesisSpell extends TargetedLocationSpell {
 			}
 			if (target == null) {
 				// fail
-				sendMessage(player, strNoTarget);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			} else {
 				boolean activated = activate(target);
 				if (!activated) {
-					sendMessage(player, strNoTarget);
-					fizzle(player);
-					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+					return noTarget(player);
 				} else {
 					playGraphicalEffects(player, target.getLocation());
 				}

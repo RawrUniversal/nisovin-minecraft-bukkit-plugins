@@ -65,9 +65,7 @@ public class ZapSpell extends TargetedSpell {
 			if (target != null) {
 				// check for disallowed block
 				if (disallowedBlockTypes.contains(target.getTypeId()) || (allowedBlockTypes.size() > 0 && !allowedBlockTypes.contains(target.getTypeId()))) {
-					sendMessage(player, strCantZap);
-					fizzle(player);
-					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+					return noTarget(player, strCantZap);
 				}
 				
 				// check for protection
@@ -76,9 +74,7 @@ public class ZapSpell extends TargetedSpell {
 					MagicSpells.plugin.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						// a plugin cancelled the event
-						sendMessage(player, strCantZap);
-						fizzle(player);
-						return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+						return noTarget(player, strCantZap);
 					}
 				}
 				
@@ -99,9 +95,7 @@ public class ZapSpell extends TargetedSpell {
 				target.setType(Material.AIR);
 				
 			} else {
-				sendMessage(player, strCantZap);
-				fizzle(player);
-				return PostCastAction.ALREADY_HANDLED;
+				return noTarget(player, strCantZap);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

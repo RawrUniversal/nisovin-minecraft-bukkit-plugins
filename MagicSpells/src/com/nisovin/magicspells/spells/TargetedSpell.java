@@ -86,8 +86,20 @@ public abstract class TargetedSpell extends InstantSpell {
 	 * @return the appropriate PostcastAction value
 	 */
 	protected PostCastAction noTarget(Player player) {
-		sendMessage(player, strNoTarget);
-		return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+		return noTarget(player, strNoTarget);
+	}
+	
+	/**
+	 * This should be called if a target should not be found. It sends the provided message
+	 * and returns the appropriate return value.
+	 * @param player the casting player
+	 * @param message the message to send
+	 * @return
+	 */
+	protected PostCastAction noTarget(Player player, String message) {
+		fizzle(player);
+		sendMessage(player, message);
+		return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;		
 	}
 	
 	/**

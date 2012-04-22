@@ -84,14 +84,10 @@ public class BlinkSpell extends TargetedLocationSpell {
 					loc.setYaw(player.getLocation().getYaw());
 					teleport(player, loc, smokes);
 				} else {
-					sendMessage(player, strCantBlink);
-					fizzle(player);
-					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+					return noTarget(player, strCantBlink);
 				}
 			} else {
-				sendMessage(player, strCantBlink);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player, strCantBlink);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

@@ -43,9 +43,7 @@ public class BuildSpell extends TargetedSpell {
 			ItemStack item = player.getInventory().getItem(slot);
 			if (item == null || !isAllowed(item.getType())) {
 				// fail
-				sendMessage(player, strInvalidBlock);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player, strCantBuild);
 			}
 			
 			// get target
@@ -57,9 +55,7 @@ public class BuildSpell extends TargetedSpell {
 			}
 			if (lastBlocks == null || lastBlocks.size() < 2 || lastBlocks.get(1).getType() == Material.AIR) {
 				// fail
-				sendMessage(player, strCantBuild);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player, strCantBuild);
 			} else {
 				// check plugins
 				Block b = lastBlocks.get(0);
@@ -70,9 +66,7 @@ public class BuildSpell extends TargetedSpell {
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled() && b.getType() == item.getType()) {
 						blockState.update(true);
-						sendMessage(player, strCantBuild);
-						fizzle(player);
-						return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+						return noTarget(player, strCantBuild);
 					}
 				}
 				playGraphicalEffects(2, b.getLocation(), item.getTypeId()+"");

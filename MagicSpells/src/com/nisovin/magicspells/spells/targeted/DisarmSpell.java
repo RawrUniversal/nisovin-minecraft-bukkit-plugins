@@ -51,9 +51,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 			Player target = getTargetedPlayer(player, range, obeyLos);
 			if (target == null) {
 				// fail
-				sendMessage(player, strNoTarget);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			}
 			
 			boolean disarmed = disarm(target);
@@ -64,8 +62,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 				return PostCastAction.NO_MESSAGES;
 			} else {
 				// fail
-				sendMessage(player, strInvalidItem);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player, strInvalidItem);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

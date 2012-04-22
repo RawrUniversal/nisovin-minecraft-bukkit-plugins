@@ -56,9 +56,7 @@ public class EntombSpell extends TargetedEntitySpell {
 				sendMessages(player, target);
 				return PostCastAction.NO_MESSAGES;
 			} else {
-				sendMessage(player, strNoTarget);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			}
 		}		
 		return PostCastAction.HANDLE_NORMALLY;

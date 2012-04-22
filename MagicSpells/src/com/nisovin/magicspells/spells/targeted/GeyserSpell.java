@@ -56,9 +56,7 @@ public class GeyserSpell extends TargetedEntitySpell {
 			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
 				// fail -- no target
-				sendMessage(player, strNoTarget);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			}
 			
 			int dam = Math.round(damage*power);
@@ -68,8 +66,7 @@ public class GeyserSpell extends TargetedEntitySpell {
 				EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.CUSTOM, dam);
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled()) {
-					sendMessage(player, strNoTarget);
-					return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+					return noTarget(player);
 				}
 				dam = event.getDamage();
 			}

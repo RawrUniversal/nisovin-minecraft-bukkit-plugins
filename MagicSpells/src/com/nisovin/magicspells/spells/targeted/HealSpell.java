@@ -27,19 +27,14 @@ public class HealSpell extends TargetedEntitySpell {
 		if (state == SpellCastState.NORMAL) {
 			Player target = getTargetedPlayer(player, range, obeyLos);
 			if (target == null) {
-				sendMessage(player, strNoTarget);
-				fizzle(player);
+				return noTarget(player);
 			} else if (cancelIfFull && target.getHealth() == 20) {
-				sendMessage(player, formatMessage(strMaxHealth, "%t", target.getName()));
+				return noTarget(player, formatMessage(strMaxHealth, "%t", target.getName()));
 			} else {
-				heal(player, target, power);
-				
-				sendMessages(player, target);
-				
+				heal(player, target, power);				
+				sendMessages(player, target);				
 				return PostCastAction.NO_MESSAGES;
 			}
-
-			return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}

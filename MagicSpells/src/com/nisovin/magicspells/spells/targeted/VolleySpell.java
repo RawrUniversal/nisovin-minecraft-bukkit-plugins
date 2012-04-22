@@ -35,9 +35,7 @@ public class VolleySpell extends TargetedLocationSpell {
 				target = null;
 			}
 			if (target == null || target.getType() == Material.AIR) {
-				sendMessage(player, strNoTarget);
-				fizzle(player);
-				return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			} else {
 				volley(player, target.getLocation(), power);
 			}
