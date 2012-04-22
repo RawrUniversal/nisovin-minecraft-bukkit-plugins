@@ -171,9 +171,9 @@ spells:
         leggings: 316 protection_fire:1
         boots: 317 protection_fall:1
         cost:
-            - 331 1
+            - 331 2
             - 371 1
-        str-cost: 1 redstone and 1 gold nugget
+        str-cost: 2 redstone and 1 gold nugget
         str-cast-self: You have conjured some magic armor!
         str-has-armor: You cannot cast this spell if you are already wearing armor.
     blind:
@@ -755,6 +755,7 @@ spells:
         duration: 15
         cooldown: 30
         range: 12
+        cancel-on-item-switch: true
         cost:
             - 331 2
             - 288 1
@@ -1078,6 +1079,9 @@ spells:
         cast-item: 280
         range: 10
         duration: 200
+        allowed-spells:
+            - list
+            - help
         cost:
             - 331 2
         str-cost: 2 redstone dust
@@ -1122,6 +1126,7 @@ spells:
         vertical-radius: 5
         point-blank: true
         fail-if-no-targets: true
+        target-players: false
         spells:
             - lightning
         cooldown: 15

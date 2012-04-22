@@ -6,6 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -16,6 +19,7 @@ public class LevitateSpell extends TargetedEntitySpell {
 
 	private int tickRate;
 	private int duration;
+	private boolean cancelOnItemSwitch;
 	
 	private HashMap<Player,Levitator> levitating;
 	
@@ -24,8 +28,17 @@ public class LevitateSpell extends TargetedEntitySpell {
 		
 		tickRate = getConfigInt("tick-rate", 5);
 		duration = getConfigInt("duration", 10);
+		cancelOnItemSwitch = getConfigBoolean("cancel-on-item-switch", true);
 		
 		levitating = new HashMap<Player,Levitator>();
+	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+		if (cancelOnItemSwitch) {
+			registerEvents(new ItemSwitchListener());
+		}
 	}
 
 	@Override
@@ -48,7 +61,7 @@ public class LevitateSpell extends TargetedEntitySpell {
 	
 	private void levitate(Player player, Entity target, float power) {
 		double distance = player.getLocation().distance(target.getLocation());
-		int duration = Math.round(this.duration * (20F/tickRate) * power);
+		int duration = this.duration > 0 ? Math.round(this.duration * (20F/tickRate) * power) : 0;
 		Levitator lev = new Levitator(player, target, duration, distance);
 		levitating.put(player, lev);
 		playGraphicalEffects(player, target);
@@ -58,6 +71,23 @@ public class LevitateSpell extends TargetedEntitySpell {
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
 		levitate(caster, target, power);
 		return true;
+	}
+	
+	public class ItemSwitchListener implements Listener {
+		@EventHandler
+		public void onItemSwitch(PlayerItemHeldEvent event) {
+			if (levitating.containsKey(event.getPlayer())) {
+				levitating.remove(event.getPlayer()).stop();
+			}
+		}
+	}
+	
+	@Override
+	public void turnOff() {
+		for (Levitator l : levitating.values()) {
+			l.stop();
+		}
+		levitating.clear();
 	}
 	
 	private class Levitator implements Runnable {
@@ -90,7 +120,7 @@ public class LevitateSpell extends TargetedEntitySpell {
 				Vector v = wantedLocation.subtract(targetLocation).multiply(tickRate/25F + .1);
 				target.setVelocity(v);
 				counter++;
-				if (counter > duration) {
+				if (duration > 0 && counter > duration) {
 					stop();
 				}
 			}
