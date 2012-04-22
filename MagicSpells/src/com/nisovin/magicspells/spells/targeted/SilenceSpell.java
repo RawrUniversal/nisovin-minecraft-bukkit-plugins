@@ -1,6 +1,9 @@
 package com.nisovin.magicspells.spells.targeted;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -8,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -16,6 +20,8 @@ public class SilenceSpell extends TargetedEntitySpell {
 
 	private int duration;
 	private boolean obeyLos;
+	private List<String> allowedSpellNames;
+	private Set<Spell> allowedSpells;
 	private String strSilenced;
 	
 	private HashMap<String,Unsilencer> silenced;
@@ -25,9 +31,29 @@ public class SilenceSpell extends TargetedEntitySpell {
 		
 		duration = getConfigInt("duration", 200);
 		obeyLos = getConfigBoolean("obey-los", true);
+		allowedSpellNames = getConfigStringList("allowed-spells", null);
 		strSilenced = getConfigString("str-silenced", "You are silenced!");
 		
 		silenced = new HashMap<String,Unsilencer>();
+	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+		
+		if (allowedSpellNames != null && allowedSpellNames.size() > 0) {
+			allowedSpells = new HashSet<Spell>();
+			for (String spellName : allowedSpellNames) {
+				Spell spell = MagicSpells.getSpellByInternalName(spellName);
+				if (spell != null) {
+					allowedSpells.add(spell);
+				} else {
+					MagicSpells.error("Invalid allowed spell specified on silence spell '" + this.internalName + "': '" + spellName + "'");
+				}
+			}
+			allowedSpellNames.clear();
+		}
+		allowedSpellNames = null;
 	}
 
 	@Override
@@ -69,7 +95,7 @@ public class SilenceSpell extends TargetedEntitySpell {
 	
 	@EventHandler(ignoreCancelled=true)
 	public void onSpellCast(SpellCastEvent event) {
-		if (silenced.containsKey(event.getCaster().getName())) {
+		if (silenced.containsKey(event.getCaster().getName()) && (allowedSpells == null || !allowedSpells.contains(event.getSpell()))) {
 			event.setCancelled(true);
 			sendMessage(event.getCaster(), strSilenced);
 		}
