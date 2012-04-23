@@ -110,7 +110,8 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		
 		List<Entity> nearbyEntities = center.getNearbyEntities(radius, verticalRadius, radius);
 		for (Entity e : nearbyEntities) {
-			if (e instanceof LivingEntity && !((LivingEntity)e).isDead() && !e.equals(player) && (targetPlayers || !(e instanceof Player))) {
+			boolean isPlayer = (e instanceof Player);
+			if (e instanceof LivingEntity && !((LivingEntity)e).isDead() && !(isPlayer && ((Player)e).getName().equals(player.getName())) && (targetPlayers || !isPlayer)) {
 				LivingEntity target = (LivingEntity)e;
 				SpellTargetEvent event = new SpellTargetEvent(this, player, target);
 				Bukkit.getPluginManager().callEvent(event);
