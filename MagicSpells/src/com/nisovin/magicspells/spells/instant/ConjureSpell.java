@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -33,30 +34,35 @@ public class ConjureSpell extends InstantSpell {
 			itemChances = new int[list.size()];
 			
 			for (int i = 0; i < list.size(); i++) {
-				String[] data = list.get(i).split(" ");
-				String[] typeData = data[0].split(":");
-				String[] quantityData = data[1].split("-");
-				
-				if (typeData.length == 1) {
-					itemTypes[i] = Integer.parseInt(typeData[0]);
-					itemDatas[i] = 0;
+				if (list.get(i).matches("^[0-9]+(:[0-9]+)? [0-9]+(-[0-9]+)?( [0-9]+%?)?$")) {
+					String[] data = list.get(i).split(" ");
+					String[] typeData = data[0].split(":");
+					String[] quantityData = data[1].split("-");
+					
+					if (typeData.length == 1) {
+						itemTypes[i] = Integer.parseInt(typeData[0]);
+						itemDatas[i] = 0;
+					} else {
+						itemTypes[i] = Integer.parseInt(typeData[0]);
+						itemDatas[i] = Integer.parseInt(typeData[1]);
+					}
+					
+					if (quantityData.length == 1) {
+						itemMinQuantities[i] = Integer.parseInt(quantityData[0]);
+						itemMaxQuantities[i] = itemMinQuantities[i];
+					} else {
+						itemMinQuantities[i] = Integer.parseInt(quantityData[0]);
+						itemMaxQuantities[i] = Integer.parseInt(quantityData[1]);	
+					}
+					
+					if (data.length > 2) {
+						itemChances[i] = Integer.parseInt(data[2].replace("%", ""));
+					} else {
+						itemChances[i] = 100;
+					}
 				} else {
-					itemTypes[i] = Integer.parseInt(typeData[0]);
-					itemDatas[i] = Integer.parseInt(typeData[1]);
-				}
-				
-				if (quantityData.length == 1) {
-					itemMinQuantities[i] = Integer.parseInt(quantityData[0]);
-					itemMaxQuantities[i] = itemMinQuantities[i];
-				} else {
-					itemMinQuantities[i] = Integer.parseInt(quantityData[0]);
-					itemMaxQuantities[i] = Integer.parseInt(quantityData[1]);	
-				}
-				
-				if (data.length > 2) {
-					itemChances[i] = Integer.parseInt(data[2].replace("%", ""));
-				} else {
-					itemChances[i] = 100;
+					itemTypes[i] = 0;
+					MagicSpells.error("Conjure spell '" + spellName + "' has specified invalid item: " + list.get(i));
 				}
 			}
 		}
@@ -69,13 +75,15 @@ public class ConjureSpell extends InstantSpell {
 			Random rand = new Random();
 			List<ItemStack> items = new ArrayList<ItemStack>();
 			for (int i = 0; i < itemTypes.length; i++) {
-				if (rand.nextInt(100) < itemChances[i]) {
+				if (itemTypes[i] != 0 && rand.nextInt(100) < itemChances[i]) {
 					int quant = itemMinQuantities[i];
 					if (itemMaxQuantities[i] > itemMinQuantities[i]) {
 						quant = rand.nextInt(itemMaxQuantities[i] - itemMinQuantities[i]) + itemMinQuantities[i];
 					}
-					ItemStack item = new ItemStack(itemTypes[i], quant, (short)itemDatas[i]);
-					items.add(item);
+					if (quant > 0) {
+						ItemStack item = new ItemStack(itemTypes[i], quant, (short)itemDatas[i]);
+						items.add(item);
+					}
 				}
 			}
 			

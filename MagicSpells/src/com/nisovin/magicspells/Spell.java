@@ -311,6 +311,12 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		// cast spell
+		PostCastAction action = handleCast(player, state, power, cooldown, reagents, args);
+		
+		return new SpellCastResult(state, action);
+	}
+	
+	private PostCastAction handleCast(Player player, SpellCastState state, float power, int cooldown, SpellReagents reagents, String[] args) {
 		MagicSpells.debug(3, "    Power: " + power);
 		MagicSpells.debug(3, "    Cooldown: " + cooldown);
 		if (MagicSpells.debug && args != null && args.length > 0) {
@@ -324,7 +330,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		PostCastAction action = castSpell(player, state, power, args);
 		MagicSpells.debug(3, "    Post-cast action: " + action);
 		
-		// perform post-cast action
 		if (action != null && action != PostCastAction.ALREADY_HANDLED) {
 			if (state == SpellCastState.NORMAL) {
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.COOLDOWN_ONLY || action == PostCastAction.NO_MESSAGES || action == PostCastAction.NO_REAGENTS) {
@@ -356,7 +361,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			}
 		}
 		
-		return new SpellCastResult(state, action);
+		return action;
 	}
 
 	/**
@@ -969,5 +974,26 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			this.action = action;
 		}
 	}
+	
+	/*private class DelayedSpellCast implements Runnable {
+		private Player player;
+		private Location location;
+		private Spell spell;
+		private int cooldown;
+		private SpellReagents reagents;
+		
+		public DelayedSpellCast(Player player, Spell spell, int cooldown, SpellReagents reagents) {
+			this.player = player;
+			this.location = player.getLocation().clone();
+			this.spell = spell;
+			this.cooldown = cooldown;
+			this.reagents = reagents;
+		}
+		
+		@Override
+		public void run() {
+			spell.handleCast(player, state, power, cooldown, reagents, args)
+		}
+	}*/
 
 }
