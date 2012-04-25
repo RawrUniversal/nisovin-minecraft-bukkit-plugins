@@ -11,7 +11,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;

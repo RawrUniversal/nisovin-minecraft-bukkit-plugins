@@ -43,7 +43,7 @@ public class BuildSpell extends TargetedSpell {
 			ItemStack item = player.getInventory().getItem(slot);
 			if (item == null || !isAllowed(item.getType())) {
 				// fail
-				return noTarget(player, strCantBuild);
+				return noTarget(player, strInvalidBlock);
 			}
 			
 			// get target

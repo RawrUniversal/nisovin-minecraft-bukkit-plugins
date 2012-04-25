@@ -38,7 +38,7 @@ public class ShadowstepSpell extends TargetedEntitySpell {
 			
 			boolean done = shadowstep(player, target);
 			if (!done) {
-				return noTarget(player);
+				return noTarget(player, strNoLandingSpot);
 			} else {
 				sendMessages(player, target);
 				return PostCastAction.NO_MESSAGES;

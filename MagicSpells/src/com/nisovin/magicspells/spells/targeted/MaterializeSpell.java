@@ -51,7 +51,7 @@ public class MaterializeSpell extends TargetedLocationSpell {
 			if (lastTwo != null && lastTwo.size() == 2 && lastTwo.get(1).getType() != Material.AIR && lastTwo.get(0).getType() == Material.AIR) {
 				boolean done = materialize(player, lastTwo.get(0), lastTwo.get(1));
 				if (!done) {
-					return noTarget(player);
+					return noTarget(player, strFailed);
 				}
 			} else {
 				// fail no target
