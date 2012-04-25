@@ -1127,6 +1127,7 @@ spells:
         point-blank: true
         fail-if-no-targets: true
         target-players: false
+        target-non-players: true
         spells:
             - lightning
         cooldown: 15
