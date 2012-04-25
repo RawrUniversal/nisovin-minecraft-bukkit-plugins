@@ -132,6 +132,7 @@ public class ProjectileSpell extends InstantSpell {
 			} else if (projectileClass == ThrownPotion.class) {
 				registerEvents(new PotionListener());
 			}
+			registerEvents(new ProjectileListener());
 		} else if (projectileItem != null) {
 			registerEvents(new PickupListener());
 		}
@@ -227,46 +228,7 @@ public class ProjectileSpell extends InstantSpell {
 		}
 		return true;
 	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onEntityDamage(EntityDamageByEntityEvent event) {
-		if (!(event.getDamager() instanceof Projectile)) return;
 		
-		Projectile projectile = (Projectile)event.getDamager();
-		ProjectileInfo info = projectiles.get(projectile);
-		if (info == null || event.isCancelled()) return;
-		
-		if (!(event.getEntity() instanceof LivingEntity)) {
-			return;
-		}
-		
-		boolean ok = projectileHitEntity(projectile, (LivingEntity)event.getEntity(), info);		
-		
-		if (ok && cancelDamage) {
-			event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler
-	public void onProjectileHit(ProjectileHitEvent event) {
-		final Projectile projectile = (Projectile)event.getEntity();
-		ProjectileInfo info = projectiles.get(projectile);
-		if (info != null) {
-			projectileHitLocation(projectile, info);
-			
-			// remove it from world
-			if (removeProjectile) {
-				projectile.remove();
-			}
-			// remove it at end of tick
-			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
-				public void run() {
-					projectiles.remove(projectile);
-				}
-			}, 0);
-		}
-	}
-	
 	private void aoe(Entity projectile, ProjectileInfo info) {
 		playGraphicalEffects(4, projectile.getLocation());
 		List<Entity> entities = projectile.getNearbyEntities(aoeRadius, aoeRadius, aoeRadius);
@@ -301,6 +263,48 @@ public class ProjectileSpell extends InstantSpell {
 			}
 		}
 		sendMessage(info.player, strHitCaster);
+	}
+	
+	public class ProjectileListener implements Listener {
+		
+		@EventHandler(priority=EventPriority.HIGHEST)
+		public void onEntityDamage(EntityDamageByEntityEvent event) {
+			if (!(event.getDamager() instanceof Projectile)) return;
+			
+			Projectile projectile = (Projectile)event.getDamager();
+			ProjectileInfo info = projectiles.get(projectile);
+			if (info == null || event.isCancelled()) return;
+			
+			if (!(event.getEntity() instanceof LivingEntity)) {
+				return;
+			}
+			
+			boolean ok = projectileHitEntity(projectile, (LivingEntity)event.getEntity(), info);		
+			
+			if (ok && cancelDamage) {
+				event.setCancelled(true);
+			}
+		}
+		
+		@EventHandler
+		public void onProjectileHit(ProjectileHitEvent event) {
+			final Projectile projectile = (Projectile)event.getEntity();
+			ProjectileInfo info = projectiles.get(projectile);
+			if (info != null) {
+				projectileHitLocation(projectile, info);
+				
+				// remove it from world
+				if (removeProjectile) {
+					projectile.remove();
+				}
+				// remove it at end of tick
+				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+					public void run() {
+						projectiles.remove(projectile);
+					}
+				}, 0);
+			}
+		}
 	}
 	
 	public class EnderTpListener implements Listener {
