@@ -25,6 +25,10 @@ public class PhaseSpell extends InstantSpell {
 		maxDistance = getConfigInt("max-distance", 15);
 		allowedPassThru = getConfigIntList("allowed-pass-thru-blocks", null);
 		strCantPhase = getConfigString("str-cant-phase", "Unable to find place to phase to.");
+		
+		if (allowedPassThru != null && allowedPassThru.size() == 0) {
+			allowedPassThru = null;
+		}
 	}
 
 	@Override

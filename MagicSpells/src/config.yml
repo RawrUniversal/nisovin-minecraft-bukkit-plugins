@@ -882,6 +882,7 @@ spells:
         cooldown: 10
         range: 5
         max-distance: 15
+        allowed-pass-thru-blocks: []
         cost:
             - 331 2
         str-cost: 2 redstone dust
