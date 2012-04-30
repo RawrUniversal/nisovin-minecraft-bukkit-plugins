@@ -10,7 +10,7 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 
-public class ItemSprayEffect extends GraphicalEffect {
+class ItemSprayEffect extends GraphicalEffect {
 
 	@Override
 	public void playEffect(Location location, String param) {

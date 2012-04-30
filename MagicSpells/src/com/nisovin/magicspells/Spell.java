@@ -29,7 +29,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	protected String internalName;
 	protected String name;
-	protected String[] aliases;
+	protected String[] aliases;	
+	protected List<String> incantations;
 	
 	protected String description;
 	protected CastItem[] castItems;
@@ -45,7 +46,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected int cooldown;
 	protected HashMap<Spell, Integer> sharedCooldowns;
 	protected boolean ignoreGlobalCooldown;
-	
+
 	protected List<String> prerequisites;
 	protected List<String> replaces;
 	protected List<String> worldRestrictions;
@@ -77,6 +78,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			aliases = new String[temp.size()];
 			aliases = temp.toArray(aliases);
 		}
+		incantations = config.getStringList(section + "." + spellName + ".incantations", null);
 		
 		// general options
 		this.description = config.getString(section + "." + spellName + ".description", "");
@@ -836,6 +838,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	public String[] getAliases() {
 		return this.aliases;
+	}
+	
+	public List<String> getIncantations() {
+		return this.incantations;
 	}
 	
 	public CastItem getCastItem() {

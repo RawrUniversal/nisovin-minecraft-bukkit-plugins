@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.SpellAnimation;
 
-public class NovaEffect extends GraphicalEffect {
+class NovaEffect extends GraphicalEffect {
 
 	@Override
 	public void playEffect(Location location, String param) {

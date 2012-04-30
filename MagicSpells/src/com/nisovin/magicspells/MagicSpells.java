@@ -81,6 +81,7 @@ public class MagicSpells extends JavaPlugin {
 	static HashMap<String,Spell> spellNames; // map configured names to spells
 	static ArrayList<Spell> spellsOrdered; // spells in loaded order
 	static HashMap<String,Spellbook> spellbooks; // player spellbooks
+	static HashMap<String,Spell> incantations; // map incantation strings to spells
 	
 	static ManaHandler mana;
 	static HashMap<Player,Long> manaPotionCooldowns;
@@ -92,17 +93,15 @@ public class MagicSpells extends JavaPlugin {
 		load();
 	}
 	
-	private void load() {
-		// load listeners
+	private void load() {		
 		PluginManager pm = plugin.getServer().getPluginManager();
-		pm.registerEvents(new MagicPlayerListener(this), this);
-		pm.registerEvents(new MagicSpellListener(this), this);
 		
 		// create storage stuff
 		spells = new HashMap<String,Spell>();
 		spellNames = new HashMap<String,Spell>();
 		spellsOrdered = new ArrayList<Spell>();
 		spellbooks = new HashMap<String,Spellbook>();
+		incantations = new HashMap<String,Spell>();
 		
 		// make sure directories are created
 		this.getDataFolder().mkdir();
@@ -217,7 +216,7 @@ public class MagicSpells extends JavaPlugin {
 		advancedPermChildren.put("magicspells.advanced.scroll", true);
 		addPermission(pm, "advanced.*", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP, advancedPermChildren);
 		
-		// load in-game spell names and initialize spells
+		// load in-game spell names, incantations, and initialize spells
 		for (Spell spell : spells.values()) {
 			spellNames.put(spell.getName(), spell);
 			String[] aliases = spell.getAliases();
@@ -226,6 +225,12 @@ public class MagicSpells extends JavaPlugin {
 					if (!spellNames.containsKey(alias)) {
 						spellNames.put(alias, spell);
 					}
+				}
+			}
+			List<String> incs = spell.getIncantations();
+			if (incs != null && incs.size() > 0) {
+				for (String s : incs) {
+					incantations.put(s.toLowerCase(), spell);
 				}
 			}
 			spell.initialize();
@@ -266,6 +271,13 @@ public class MagicSpells extends JavaPlugin {
 		noMagicZones = new NoMagicZoneManager(config);
 		if (noMagicZones.zoneCount() == 0) {
 			noMagicZones = null;
+		}
+		
+		// load listeners
+		pm.registerEvents(new MagicPlayerListener(this), this);
+		pm.registerEvents(new MagicSpellListener(this), this);
+		if (incantations.size() > 0) {
+			pm.registerEvents(new MagicChatListener(this), this);
 		}
 		
 		// set up metrics

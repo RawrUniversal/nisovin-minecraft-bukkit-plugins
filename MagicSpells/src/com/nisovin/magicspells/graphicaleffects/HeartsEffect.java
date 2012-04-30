@@ -7,7 +7,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Tameable;
 
-public class HeartsEffect extends GraphicalEffect {
+class HeartsEffect extends GraphicalEffect {
 	
 	@Override
 	public void playEffect(Entity entity, String param) {
