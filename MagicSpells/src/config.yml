@@ -1043,6 +1043,7 @@ spells:
         left-click-cast: false
         ignore-cast-perm: false
         set-unstackable: true
+        remove-scroll-when-depleted: true
         charge-reagents-for-spell-per-charge: false
         require-teach-perm: true
         require-scroll-cast-perm-on-use: true
