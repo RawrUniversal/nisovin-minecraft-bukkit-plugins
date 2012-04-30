@@ -598,7 +598,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			player.setHealth(player.getHealth() - healthCost);
 		}
 		if (manaCost > 0) {
-			MagicSpells.mana.removeMana(player, manaCost);
+			MagicSpells.mana.removeMana(player, manaCost, ManaChangeReason.SPELL_COST);
 		}
 		if (hungerCost > 0) {
 			player.setFoodLevel(player.getFoodLevel() - hungerCost);

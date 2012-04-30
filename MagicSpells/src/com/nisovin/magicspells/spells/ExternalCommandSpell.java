@@ -73,11 +73,11 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 			for (String perm : temporaryPermissions) {
 				if (!executeAsTargetInstead) {
 					if (!player.hasPermission(perm)) {
-						player.addAttachment(MagicSpells.plugin, perm, true, 5);
+						player.addAttachment(MagicSpells.plugin, perm.trim(), true, 5);
 					}
 				} else {
 					if (!target.hasPermission(perm)) {
-						target.addAttachment(MagicSpells.plugin, perm, true, 5);
+						target.addAttachment(MagicSpells.plugin, perm.trim(), true, 5);
 					}
 				}
 			}

@@ -52,7 +52,7 @@ public class ManaBarManager extends ManaHandler {
 	@Override
 	public void createManaBar(Player player) {
 		if (!manaBars.containsKey(player.getName())) {
-			manaBars.put(player.getName(), new ManaBar(maxMana));
+			manaBars.put(player.getName(), new ManaBar(player, maxMana));
 		}
 	}
 	
@@ -74,11 +74,11 @@ public class ManaBarManager extends ManaHandler {
 	}
 	
 	@Override
-	public boolean removeMana(Player player, int amount) {
+	public boolean removeMana(Player player, int amount, ManaChangeReason reason) {
 		if (!manaBars.containsKey(player.getName())) {
 			return false;
 		} else {
-			boolean r = manaBars.get(player.getName()).remove(amount);
+			boolean r = manaBars.get(player.getName()).remove(amount, reason);
 			if (r) {
 				showMana(player);
 			}
@@ -87,11 +87,11 @@ public class ManaBarManager extends ManaHandler {
 	}
 	
 	@Override
-	public boolean addMana(Player player, int amount) {
+	public boolean addMana(Player player, int amount, ManaChangeReason reason) {
 		if (!manaBars.containsKey(player.getName())) {
 			return false;
 		} else {
-			boolean r = manaBars.get(player.getName()).add(amount);
+			boolean r = manaBars.get(player.getName()).add(amount, reason);
 			if (r) {
 				showMana(player);
 			}
@@ -104,19 +104,17 @@ public class ManaBarManager extends ManaHandler {
 		ManaBar bar = manaBars.get(player.getName());
 		if (bar != null) {
 			if (forceShowInChat || showManaOnUse) {
-				bar.showInChat(player);
+				bar.showInChat();
 			}
 			if (showManaOnWoodTool) {
-				bar.showOnTool(player);
+				bar.showOnTool();
 			}
 			if (showManaOnHungerBar) {
-				bar.showOnHungerBar(player);
+				bar.showOnHungerBar();
 			}
 			if (showManaOnExperienceBar) {
-				bar.showOnExperienceBar(player);
+				bar.showOnExperienceBar();
 			}
-			// send event
-			bar.callManaChangeEvent(player);
 		}
 	}
 	
@@ -143,24 +141,23 @@ public class ManaBarManager extends ManaHandler {
 		public void run() {
 			for (String p: manaBars.keySet()) {
 				ManaBar bar = manaBars.get(p);
-				boolean regenerated = bar.add(manaRegenAmount);
+				boolean regenerated = bar.add(manaRegenAmount, ManaChangeReason.REGEN);
 				if (regenerated) {
 					Player player = Bukkit.getServer().getPlayer(p);
 					if (player != null && player.isOnline()) {
 						if (showManaOnRegen) {
-							bar.showInChat(player);
+							bar.showInChat();
 						}
 						if (showManaOnWoodTool) {
-							bar.showOnTool(player);
+							bar.showOnTool();
 						}
 						if (showManaOnHungerBar) {
-							bar.showOnHungerBar(player);
+							bar.showOnHungerBar();
 						}
 						if (showManaOnExperienceBar) {
-							bar.showOnExperienceBar(player);
+							bar.showOnExperienceBar();
 						}
 					}
-					bar.callManaChangeEvent(player);
 				}
 			}
 		}

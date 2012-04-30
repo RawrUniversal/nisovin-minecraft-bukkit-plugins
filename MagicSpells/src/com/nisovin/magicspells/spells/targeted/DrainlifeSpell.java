@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.ManaChangeReason;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -91,7 +92,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 			}
 		} else if (takeType.equals("mana")) {
 			if (target instanceof Player) {
-				boolean removed = MagicSpells.getManaHandler().removeMana((Player)target, take);
+				boolean removed = MagicSpells.getManaHandler().removeMana((Player)target, take, ManaChangeReason.OTHER);
 				if (!removed) {
 					give = 0;
 				}
@@ -120,7 +121,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 			if (h>20) h=20;
 			player.setHealth(h);
 		} else if (giveType.equals("mana")) {
-			MagicSpells.getManaHandler().addMana(player, give);
+			MagicSpells.getManaHandler().addMana(player, give, ManaChangeReason.OTHER);
 		} else if (takeType.equals("hunger")) {
 			int food = player.getFoodLevel();
 			food += give;

@@ -10,9 +10,9 @@ public abstract class ManaHandler {
 	
 	public abstract boolean hasMana(Player player, int amount);
 	
-	public abstract boolean removeMana(Player player, int amount);
+	public abstract boolean removeMana(Player player, int amount, ManaChangeReason reason);
 	
-	public abstract boolean addMana(Player player, int amount);
+	public abstract boolean addMana(Player player, int amount, ManaChangeReason reason);
 	
 	public void showMana(Player player) {
 		showMana(player, false);

@@ -40,7 +40,7 @@ class MagicPlayerListener implements Listener {
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onPlayerQuit(PlayerQuitEvent event) {		
+	public void onPlayerQuit(PlayerQuitEvent event) {
 		MagicSpells.spellbooks.remove(event.getPlayer().getName());
 	}
 
@@ -101,7 +101,7 @@ class MagicPlayerListener implements Listener {
 						}
 						// add mana
 						int amt = MagicSpells.manaPotions.get(item);
-						boolean added = MagicSpells.mana.addMana(player, amt);
+						boolean added = MagicSpells.mana.addMana(player, amt, ManaChangeReason.POTION);
 						if (added) {
 							// set cooldown
 							if (MagicSpells.manaPotionCooldown > 0) {
