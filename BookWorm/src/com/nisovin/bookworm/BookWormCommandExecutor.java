@@ -347,7 +347,7 @@ class BookWormCommandExecutor implements CommandExecutor {
 			}
 		} else {
 			player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_NO_PERMISSION);
-		}		
+		}
 	}
 	
 	private void author(Player player, Book book, String[] args) {

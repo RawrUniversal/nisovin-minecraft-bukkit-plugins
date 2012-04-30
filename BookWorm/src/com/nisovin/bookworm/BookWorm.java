@@ -250,22 +250,22 @@ public class BookWorm extends JavaPlugin {
 				}				
 			}).length;
 			
-			Metrics.Graph graph = metrics.createGraph(this, Type.Line, "Book Count");			
-			graph.addPlotter(new Metrics.Plotter("Book Count") {
+			Metrics.Graph bookCountGraph = metrics.createGraph(this, Type.Line, "Book Count");			
+			bookCountGraph.addPlotter(new Metrics.Plotter("Book Count") {
 				public int getValue() {
 					return metricBookCount;
 				}
 			});
 			
-			metrics.addCustomData(this, new Metrics.Plotter("Pages Read") {
+			Metrics.Graph actionsGraph = metrics.createGraph(this, Type.Line, "Actions");
+			actionsGraph.addPlotter(new Metrics.Plotter("Pages Read") {
 				public int getValue() {
 					int reads = metricReads;
 					metricReads = 0;
 					return reads;
 				}
-			});
-			
-			metrics.addCustomData(this, new Metrics.Plotter("Lines Written") {
+			});			
+			actionsGraph.addPlotter(new Metrics.Plotter("Lines Written") {
 				public int getValue() {
 					int writes = metricWrites;
 					metricWrites = 0;
