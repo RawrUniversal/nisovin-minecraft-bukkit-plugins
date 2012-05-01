@@ -1292,6 +1292,7 @@ spells:
         cancel-on-land: false
         cancel-on-logout: true
         cancel-on-teleport: true
+        cancel-on-damage: false
         duration: 120
         cost:
             - 331 3
