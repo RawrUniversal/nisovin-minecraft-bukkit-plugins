@@ -157,7 +157,11 @@ public class CodeLock extends JavaPlugin implements Listener {
 			status.handleClick(event);
 			if (status.getAction() != PlayerAction.LOCKING && status.isCodeComplete()) {
 				// code is complete
-				event.getWhoClicked().closeInventory();
+				Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+					public void run() {
+						event.getWhoClicked().closeInventory();
+					}
+				});
 				playerStatuses.remove(event.getWhoClicked());
 				if (status.getAction() == PlayerAction.UNLOCKING) {
 					final Block block = status.getBlock();
@@ -167,7 +171,7 @@ public class CodeLock extends JavaPlugin implements Listener {
 								Inventory inv = ((InventoryHolder)block.getState()).getInventory();
 								event.getWhoClicked().openInventory(inv);
 							}
-						}, 1);
+						}, 3);
 					} else if (block.getType() == Material.WOODEN_DOOR || block.getType() == Material.IRON_DOOR_BLOCK) {
 						openDoor(block);
 						if (autoDoorClose > 0) {
