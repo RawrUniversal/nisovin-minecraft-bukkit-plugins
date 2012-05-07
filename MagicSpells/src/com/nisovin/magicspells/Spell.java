@@ -376,6 +376,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 */
 	public abstract PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args);
 	
+	public String tabComplete(CommandSender sender, String partial) {
+		return null;
+	}
+	
 	/**
 	 * This method is called when the spell is cast from the console.
 	 * @param sender the console sender.

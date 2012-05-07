@@ -8,14 +8,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.events.SpellSelectionChangedEvent;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.CastItem;
 
@@ -158,16 +161,64 @@ public class Spellbook {
 	}
 	
 	public Spell getSpellByName(String spellName) {
-		for (Spell spell : allSpells) {
-			if (spell.getName().equalsIgnoreCase(spellName)) {
-				return spell;
-			}
+		Spell spell = MagicSpells.getSpellByInGameName(spellName);
+		if (spell != null && hasSpell(spell)) {
+			return spell;
+		} else {
+			return null;
 		}
-		return null;
 	}
 	
 	public Set<Spell> getSpells() {
 		return this.allSpells;
+	}
+	
+	public String tabComplete(String partial) {
+		if (!partial.contains(" ")) {
+			// complete spell name
+			List<String> options = new ArrayList<String>();
+			for (Spell spell : allSpells) {
+				if (spell.getName().toLowerCase().startsWith(partial)) {
+					options.add(spell.getName());
+				} else {
+					String[] aliases = spell.getAliases();
+					if (aliases != null && aliases.length > 0) {
+						for (String alias : aliases) {
+							if (alias.toLowerCase().startsWith(partial)) {
+								options.add(alias);
+							}
+						}
+					}
+				}
+			}
+			if (options.size() == 1) {
+				return options.get(0);
+			} else if (options.size() > 1) {
+				Collections.sort(options);
+				String s = "";
+				for (String option : options) {
+					s += option + " ";
+				}
+				MagicSpells.sendMessage(player, s.trim());
+				return null;
+			} else {
+				return null;
+			}
+		} else {
+			// complete spell params
+			String[] data = partial.split(" ", 2);
+			Spell spell = getSpellByName(data[0]);
+			if (spell == null) {
+				return null;
+			} else {
+				String ret = spell.tabComplete(player, data[1]);
+				if (ret == null) {
+					return null;
+				} else {
+					return data[0] + " " + ret;
+				}
+			}
+		}
 	}
 	
 	protected Spell nextSpell(ItemStack item) {
@@ -187,6 +238,7 @@ public class Spellbook {
 					if (i >= spells.size()) {
 						if (MagicSpells.allowCycleToNoSpell) {
 							activeSpells.put(castItem, -1);
+							Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(null, player, castItem));
 							MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
 							return null;
 						} else {
@@ -195,6 +247,7 @@ public class Spellbook {
 					}
 					if (!MagicSpells.onlyCycleToCastableSpells || canCast(spells.get(i))) {
 						activeSpells.put(castItem, i);
+						Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(spells.get(i), player, castItem));
 						return spells.get(i);
 					}
 				}
@@ -224,6 +277,7 @@ public class Spellbook {
 					if (i < 0) {
 						if (MagicSpells.allowCycleToNoSpell && i == -1) {
 							activeSpells.put(castItem, -1);
+							Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(null, player, castItem));
 							MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
 							return null;
 						} else {
@@ -232,6 +286,7 @@ public class Spellbook {
 					}
 					if (!MagicSpells.onlyCycleToCastableSpells || canCast(spells.get(i))) {
 						activeSpells.put(castItem, i);
+						Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(spells.get(i), player, castItem));
 						return spells.get(i);
 					}
 				}
