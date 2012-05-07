@@ -14,7 +14,6 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -51,18 +50,17 @@ public class WindwalkSpell extends BuffSpell {
 	public void initialize() {
 		super.initialize();
 		
-		PluginManager pm = Bukkit.getPluginManager();
 		if (cancelOnLand) {
-			pm.registerEvents(new SneakListener(), MagicSpells.plugin);
+			registerEvents(new SneakListener());
 		}
 		if (cancelOnLogout) {
-			pm.registerEvents(new QuitListener(), MagicSpells.plugin);
+			registerEvents(new QuitListener());
 		}
 		if (cancelOnTeleport) {
-			pm.registerEvents(new TeleportListener(), MagicSpells.plugin);
+			registerEvents(new TeleportListener());
 		}
 		if (cancelOnDamage) {
-			pm.registerEvents(new DamageListener(), MagicSpells.plugin);
+			registerEvents(new DamageListener());
 		}
 	}
 

@@ -238,7 +238,7 @@ public class Spellbook {
 					if (i >= spells.size()) {
 						if (MagicSpells.allowCycleToNoSpell) {
 							activeSpells.put(castItem, -1);
-							Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(null, player, castItem));
+							Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(null, player, castItem, this));
 							MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
 							return null;
 						} else {
@@ -247,7 +247,7 @@ public class Spellbook {
 					}
 					if (!MagicSpells.onlyCycleToCastableSpells || canCast(spells.get(i))) {
 						activeSpells.put(castItem, i);
-						Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(spells.get(i), player, castItem));
+						Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(spells.get(i), player, castItem, this));
 						return spells.get(i);
 					}
 				}
@@ -277,7 +277,7 @@ public class Spellbook {
 					if (i < 0) {
 						if (MagicSpells.allowCycleToNoSpell && i == -1) {
 							activeSpells.put(castItem, -1);
-							Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(null, player, castItem));
+							Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(null, player, castItem, this));
 							MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
 							return null;
 						} else {
@@ -286,7 +286,7 @@ public class Spellbook {
 					}
 					if (!MagicSpells.onlyCycleToCastableSpells || canCast(spells.get(i))) {
 						activeSpells.put(castItem, i);
-						Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(spells.get(i), player, castItem));
+						Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(spells.get(i), player, castItem, this));
 						return spells.get(i);
 					}
 				}
