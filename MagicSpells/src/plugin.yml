@@ -12,7 +12,3 @@ commands:
         description: Show mana bar
         usage: /<command>
         aliases: [mana]
-permissions:
-    magicspells.silent:
-        description: Cast spells without spell text messages
-        default: false

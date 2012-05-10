@@ -137,6 +137,11 @@ public class TeachSpell extends CommandSpell {
 		return true;
 	}
 	
+	@Override
+	public String tabComplete(CommandSender sender, String partial) {
+		return null;
+	}
+	
 	private boolean callEvent(Spell spell, Player learner, Object teacher) {
 		SpellLearnEvent event = new SpellLearnEvent(spell, learner, LearnSource.TEACH, teacher);
 		Bukkit.getServer().getPluginManager().callEvent(event);

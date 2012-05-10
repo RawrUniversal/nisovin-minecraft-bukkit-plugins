@@ -182,10 +182,11 @@ public class MagicSpells extends JavaPlugin {
 		manaPotionCooldown = config.getInt("general.mana.mana-potion-cooldown", 30);
 		strManaPotionOnCooldown = config.getString("general.mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
 				
-		// init spell permissions
-		addPermission(pm, "noreagents", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP);
-		addPermission(pm, "nocooldown", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP);
-		addPermission(pm, "notarget", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP);
+		// init permissions
+		addPermission(pm, "noreagents", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP, "Allows casting without needing reagents");
+		addPermission(pm, "nocooldown", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP, "Allows casting without being affected by cooldowns");
+		addPermission(pm, "notarget", PermissionDefault.FALSE, "Prevents being targeted by any targeted spells");
+		addPermission(pm, "silent", PermissionDefault.FALSE, "Prevents cast messages from being broadcast to players");
 		HashMap<String, Boolean> permGrantChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permLearnChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permCastChildren = new HashMap<String,Boolean>();
@@ -393,12 +394,24 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault) {
-		addPermission(pm, perm, permDefault, null);
+		addPermission(pm, perm, permDefault, null, null);
+	}
+	
+	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault, String description) {
+		addPermission(pm, perm, permDefault, null, description);
 	}
 	
 	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault, Map<String,Boolean> children) {
+		addPermission(pm, perm, permDefault, children, null);
+	}
+	
+	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault, Map<String,Boolean> children, String description) {
 		if (pm.getPermission("magicspells." + perm) == null) {
-			pm.addPermission(new Permission("magicspells." + perm, permDefault, children));
+			if (description == null) {
+				pm.addPermission(new Permission("magicspells." + perm, permDefault, children));
+			} else {
+				pm.addPermission(new Permission("magicspells." + perm, description, permDefault, children));
+			}
 		}
 	}
 	
