@@ -279,9 +279,9 @@ public class ProjectileSpell extends InstantSpell {
 				return;
 			}
 			
-			boolean ok = projectileHitEntity(projectile, (LivingEntity)event.getEntity(), info);		
+			projectileHitEntity(projectile, (LivingEntity)event.getEntity(), info);		
 			
-			if (ok && cancelDamage) {
+			if (cancelDamage) {
 				event.setCancelled(true);
 			}
 		}

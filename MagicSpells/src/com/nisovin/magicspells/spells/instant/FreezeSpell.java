@@ -28,6 +28,8 @@ public class FreezeSpell extends InstantSpell {
 	private boolean playBowSound;
 	private boolean targetPlayers;
 	
+	private float identifier;
+	
 	public FreezeSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
@@ -39,6 +41,8 @@ public class FreezeSpell extends InstantSpell {
 		slowDuration = getConfigInt("slow-duration", 40);
 		playBowSound = getConfigBoolean("play-bow-sound", true);
 		targetPlayers = getConfigBoolean("target-players", false);
+		
+		identifier = (float)Math.random() * 20F;
 	}
 
 	@Override
@@ -48,7 +52,7 @@ public class FreezeSpell extends InstantSpell {
 			Vector mod;
 			for (int i = 0; i < snowballs; i++) {
 				Snowball snowball = player.launchProjectile(Snowball.class);
-				snowball.setFallDistance(10.2F); // tag the snowballs
+				snowball.setFallDistance(identifier); // tag the snowballs
 				mod = new Vector((rand.nextDouble() - .5) * horizSpread, (rand.nextDouble() - .5) * vertSpread, (rand.nextDouble() - .5) * horizSpread);
 				snowball.setVelocity(snowball.getVelocity().add(mod));
 			}
@@ -64,7 +68,7 @@ public class FreezeSpell extends InstantSpell {
 		if (damage <= 0 || event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) return;
 		
 		EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
-		if (!(evt.getDamager() instanceof Snowball) || evt.getDamager().getFallDistance() != 10.2F) return;
+		if (!(evt.getDamager() instanceof Snowball) || evt.getDamager().getFallDistance() != identifier) return;
 		
 		if (targetPlayers || !(event.getEntity() instanceof Player)) {
 			event.setDamage(damage);
@@ -77,7 +81,7 @@ public class FreezeSpell extends InstantSpell {
 		if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) return;
 		
 		EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
-		if (!(evt.getDamager() instanceof Snowball) || evt.getDamager().getFallDistance() != 10.2F) return;
+		if (!(evt.getDamager() instanceof Snowball) || evt.getDamager().getFallDistance() != identifier) return;
 		
 		if (event.getDamage() == damage) {
 			((LivingEntity)event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, slowDuration, slowAmount), true);

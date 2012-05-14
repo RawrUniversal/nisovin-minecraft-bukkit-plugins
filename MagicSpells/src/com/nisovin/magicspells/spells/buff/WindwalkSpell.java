@@ -149,6 +149,7 @@ public class WindwalkSpell extends BuffSpell {
 		if (flyers.contains(player)) {
 			player.setFlying(false);
 			player.setAllowFlight(false);
+			player.setFallDistance(0);
 			flyers.remove(player);
 			sendMessage(player, strFade);
 		}

@@ -126,12 +126,18 @@ public class ArmorSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	@EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
+	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player)event.getEntity();
 			if (armored.contains(p)) {
-				addUseAndChargeCost(p);
+				if (event.getDamage() > p.getHealth()) {
+					// killing blow, turn off the spell
+					turnOff(p);
+				} else {
+					// add a use per attack
+					addUseAndChargeCost(p);
+				}
 			}
 		}
 	}
