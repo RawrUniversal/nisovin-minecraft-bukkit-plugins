@@ -82,10 +82,11 @@ public class MagicSpells extends JavaPlugin {
 	static ArrayList<Spell> spellsOrdered; // spells in loaded order
 	static HashMap<String,Spellbook> spellbooks; // player spellbooks
 	static HashMap<String,Spell> incantations; // map incantation strings to spells
-	
+		
 	static ManaHandler mana;
 	static HashMap<Player,Long> manaPotionCooldowns;
 	static NoMagicZoneHandler noMagicZones;
+	static BuffManager buffManager;
 	
 	@Override
 	public void onEnable() {
@@ -248,6 +249,12 @@ public class MagicSpells extends JavaPlugin {
 			for (Player p : getServer().getOnlinePlayers()) {
 				mana.createManaBar(p);
 			}
+		}
+		
+		// setup buff manager
+		int buffCheckInterval = config.getInt("general.buff-check-interval", 0);
+		if (buffCheckInterval > 0) {
+			buffManager = new BuffManager(buffCheckInterval);
 		}
 		
 		// load mana potions
@@ -591,6 +598,10 @@ public class MagicSpells extends JavaPlugin {
 		return noMagicZones;
 	}
 	
+	public static BuffManager getBuffManager() {
+		return buffManager;
+	}
+	
 	/**
 	 * Sets the handler for no-magic zones
 	 * @param handler the no-magic zone handler
@@ -745,6 +756,10 @@ public class MagicSpells extends JavaPlugin {
 		if (mana != null) {
 			mana.turnOff();
 			mana = null;
+		}
+		if (buffManager != null) {
+			buffManager.turnOff();
+			buffManager = null;
 		}
 		HandlerList.unregisterAll(this);	
 	}

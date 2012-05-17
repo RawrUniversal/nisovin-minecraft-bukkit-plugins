@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.BuffManager;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -106,6 +107,8 @@ public abstract class BuffSpell extends Spell {
 				}
 			}, duration * 20 + 20); // overestimate ticks, since the duration is real-time ms based
 		}
+		BuffManager buffman = MagicSpells.getBuffManager();
+		if (buffman != null) buffman.addBuff(player, this);
 	}
 	
 	/**
@@ -194,6 +197,8 @@ public abstract class BuffSpell extends Spell {
 	public void turnOff(Player player) {
 		if (useCounter != null) useCounter.remove(player.getName());
 		if (durationStartTime != null) durationStartTime.remove(player.getName());
+		BuffManager buffman = MagicSpells.getBuffManager();
+		if (buffman != null) buffman.removeBuff(player, this);
 	}
 	
 	@Override
