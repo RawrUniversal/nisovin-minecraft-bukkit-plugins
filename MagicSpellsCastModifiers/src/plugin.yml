@@ -1,0 +1,5 @@
+name: MagicSpellsCastModifiers
+version: 1.0
+main: com.nisovin.magicspells.castmodifiers.MagicSpellsCastModifiers
+author: nisovin
+depend: [MagicSpells]
