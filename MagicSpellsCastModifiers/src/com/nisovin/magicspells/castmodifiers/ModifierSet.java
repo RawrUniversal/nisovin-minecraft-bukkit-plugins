@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.ManaChangeEvent;
 import com.nisovin.magicspells.events.SpellCastEvent;
 
 public class ModifierSet {
@@ -22,10 +23,18 @@ public class ModifierSet {
 	
 	public void apply(SpellCastEvent event) {
 		for (Modifier modifier : modifiers) {
-			System.out.println("Applying modifier");
 			boolean cont = modifier.apply(event);
 			if (!cont) {
 				MagicSpells.sendMessage(event.getCaster(), message);
+				break;
+			}
+		}
+	}
+	
+	public void apply(ManaChangeEvent event) {
+		for (Modifier modifier : modifiers) {
+			boolean cont = modifier.apply(event);
+			if (!cont) {
 				break;
 			}
 		}

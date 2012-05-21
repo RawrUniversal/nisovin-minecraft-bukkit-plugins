@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -14,12 +13,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
-import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class MagicSpellsCastModifiers extends JavaPlugin implements Listener {
 	
-	private HashMap<Spell, ModifierSet> modifiers = new HashMap<Spell, ModifierSet>();
+	HashMap<Spell, ModifierSet> modifiers = new HashMap<Spell, ModifierSet>();
+	ModifierSet manaModifiers;
 	
 	@Override
 	public void onEnable() {
@@ -42,6 +41,7 @@ public class MagicSpellsCastModifiers extends JavaPlugin implements Listener {
 		modifiers.clear();
 		MagicConfig magicConfig = new MagicConfig(new File(MagicSpells.plugin.getDataFolder(), "config.yml"));
 		if (magicConfig.isLoaded()) {
+			// load spell modifiers
 			for (String spellName : magicConfig.getSpellKeys()) {
 				if (magicConfig.contains("spells." + spellName + ".modifiers")) {
 					List<String> list = magicConfig.getStringList("spells." + spellName + ".modifiers", null);
@@ -52,9 +52,21 @@ public class MagicSpellsCastModifiers extends JavaPlugin implements Listener {
 					}
 				}
 			}
+			// load mana modifiers
+			if (magicConfig.contains("general.mana.modifiers")) {
+				List<String> list = magicConfig.getStringList("general.mana.modifiers", null);
+				if (list != null && list.size() > 0) {
+					MagicSpells.debug(2, "Adding mana modifiers");
+					manaModifiers = new ModifierSet(list, "");
+				}
+			}
 		}
+		getServer().getPluginManager().registerEvents(this, this);
 		if (modifiers.size() > 0) {
-			getServer().getPluginManager().registerEvents(this,this);
+			getServer().getPluginManager().registerEvents(new CastListener(this), this);
+		}
+		if (manaModifiers != null) {
+			getServer().getPluginManager().registerEvents(new ManaListener(this), this);
 		}
 	}
 	
@@ -62,12 +74,4 @@ public class MagicSpellsCastModifiers extends JavaPlugin implements Listener {
 		HandlerList.unregisterAll((Plugin)this);
 	}
 	
-	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
-	public void onSpellCast(SpellCastEvent event) {
-		ModifierSet m = modifiers.get(event.getSpell());
-		if (m != null) {
-			m.apply(event);
-		}
-	}
-
 }

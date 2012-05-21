@@ -1,6 +1,8 @@
-package com.nisovin.magicspells.castmodifiers;
+package com.nisovin.magicspells.castmodifiers.conditions;
 
 import org.bukkit.entity.Player;
+
+import com.nisovin.magicspells.castmodifiers.Condition;
 
 public class InBlockCondition extends Condition {
 
