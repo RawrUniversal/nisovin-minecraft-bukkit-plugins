@@ -8,7 +8,6 @@ import com.nisovin.magicspells.events.SpellCastEvent;
 public class Modifier {
 
 	Condition condition;
-	String conditionVar;
 	ModifierType type;
 	String modifierVar;
 	
@@ -17,7 +16,7 @@ public class Modifier {
 		condition = Condition.getConditionByName(data[0]);		
 		type = getTypeByName(data[1]);
 		if (type == null && data.length > 2) {
-			conditionVar = data[1];
+			condition.setVar(data[1]);
 			type = getTypeByName(data[2]);
 			if (data.length > 3) {
 				modifierVar = data[3];
@@ -29,7 +28,7 @@ public class Modifier {
 	
 	public boolean apply(SpellCastEvent event) {
 		Player player = event.getCaster();
-		boolean check = condition.check(player, conditionVar);
+		boolean check = condition.check(player);
 		if (check == false && type == ModifierType.REQUIRED) {
 			event.setCancelled(true);
 			return false;
@@ -46,7 +45,7 @@ public class Modifier {
 	
 	public boolean apply(ManaChangeEvent event) {
 		Player player = event.getPlayer();
-		boolean check = condition.check(player, conditionVar);
+		boolean check = condition.check(player);
 		if (check == false && type == ModifierType.REQUIRED) {
 			event.setNewAmount(event.getOldAmount());
 			return false;

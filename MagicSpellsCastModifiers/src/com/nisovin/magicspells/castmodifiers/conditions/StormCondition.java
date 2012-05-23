@@ -7,7 +7,11 @@ import com.nisovin.magicspells.castmodifiers.Condition;
 public class StormCondition extends Condition {
 
 	@Override
-	public boolean check(Player player, String var) {
+	public void setVar(String var) {
+	}
+
+	@Override
+	public boolean check(Player player) {
 		return player.getWorld().hasStorm() || player.getWorld().isThundering();
 	}
 

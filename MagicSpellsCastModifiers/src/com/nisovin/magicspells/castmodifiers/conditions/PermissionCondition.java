@@ -6,9 +6,17 @@ import com.nisovin.magicspells.castmodifiers.Condition;
 
 public class PermissionCondition extends Condition {
 
+	String perm;
+
 	@Override
-	public boolean check(Player player, String var) {
-		return player.hasPermission(var);
+	public void setVar(String var) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public boolean check(Player player) {
+		return player.hasPermission(perm);
 	}
 
 }

@@ -6,9 +6,16 @@ import com.nisovin.magicspells.castmodifiers.Condition;
 
 public class LightLevelBelowCondition extends Condition {
 
+	byte level = 0;
+
 	@Override
-	public boolean check(Player player, String var) {
-		return (player.getLocation().getBlock().getLightLevel() < Byte.parseByte(var));
+	public void setVar(String var) {
+		level = Byte.parseByte(var);
+	}
+
+	@Override
+	public boolean check(Player player) {
+		return (player.getLocation().getBlock().getLightLevel() < level);
 	}
 
 }

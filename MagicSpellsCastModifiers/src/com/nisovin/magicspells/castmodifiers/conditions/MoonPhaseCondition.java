@@ -6,17 +6,24 @@ import com.nisovin.magicspells.castmodifiers.Condition;
 
 public class MoonPhaseCondition extends Condition {
 
+	String phaseName = "";
+
 	@Override
-	public boolean check(Player player, String var) {
+	public void setVar(String var) {
+		phaseName = var.toLowerCase();
+	}
+	
+	@Override
+	public boolean check(Player player) {
 		long time = player.getWorld().getFullTime();
 		int phase = (int)((time / 24000) % 8);
-		if (phase == 0 && var.equalsIgnoreCase("full")) {
+		if (phase == 0 && phaseName.equals("full")) {
 			return true;
-		} else if ((phase == 1 || phase == 2 || phase == 3) && var.equalsIgnoreCase("waning")) {
+		} else if ((phase == 1 || phase == 2 || phase == 3) && phaseName.equals("waning")) {
 			return true;
-		} else if (phase == 4 && var.equalsIgnoreCase("new")) {
+		} else if (phase == 4 && phaseName.equals("new")) {
 			return true;
-		} else if ((phase == 5 || phase == 6 || phase == 7) && var.equalsIgnoreCase("waxing")) {
+		} else if ((phase == 5 || phase == 6 || phase == 7) && phaseName.equals("waxing")) {
 			return true;
 		} else {
 			return false;

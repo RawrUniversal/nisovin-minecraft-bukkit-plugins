@@ -6,9 +6,16 @@ import com.nisovin.magicspells.castmodifiers.Condition;
 
 public class InWorldCondition extends Condition {
 
+	String world = "";
+
 	@Override
-	public boolean check(Player player, String var) {
-		return player.getWorld().getName().equalsIgnoreCase(var);
+	public void setVar(String var) {
+		world = var;
+	}
+	
+	@Override
+	public boolean check(Player player) {
+		return player.getWorld().getName().equalsIgnoreCase(world);
 	}
 
 }
