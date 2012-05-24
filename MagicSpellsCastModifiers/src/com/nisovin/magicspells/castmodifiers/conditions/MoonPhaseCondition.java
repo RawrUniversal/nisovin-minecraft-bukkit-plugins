@@ -9,8 +9,9 @@ public class MoonPhaseCondition extends Condition {
 	String phaseName = "";
 
 	@Override
-	public void setVar(String var) {
+	public boolean setVar(String var) {
 		phaseName = var.toLowerCase();
+		return true;
 	}
 	
 	@Override

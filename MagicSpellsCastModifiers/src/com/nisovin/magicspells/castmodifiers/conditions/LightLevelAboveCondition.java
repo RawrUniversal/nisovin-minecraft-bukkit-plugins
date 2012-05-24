@@ -9,8 +9,13 @@ public class LightLevelAboveCondition extends Condition {
 	byte level = 0;
 
 	@Override
-	public void setVar(String var) {
-		level = Byte.parseByte(var);
+	public boolean setVar(String var) {
+		try {
+			level = Byte.parseByte(var);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 	
 	@Override

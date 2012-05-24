@@ -9,8 +9,13 @@ public class HealthBelowCondition extends Condition {
 	int health = 0;
 
 	@Override
-	public void setVar(String var) {
-		health = Integer.parseInt(var);
+	public boolean setVar(String var) {
+		try {
+			health = Integer.parseInt(var);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	@Override

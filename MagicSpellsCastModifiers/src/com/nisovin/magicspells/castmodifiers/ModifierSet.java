@@ -16,8 +16,13 @@ public class ModifierSet {
 		this.message = message;
 		modifiers = new ArrayList<Modifier>();
 		for (String s : data) {
-			modifiers.add(new Modifier(s));
-			MagicSpells.debug(3, "    Modifier added: " + s);
+			Modifier m = Modifier.factory(s);
+			if (m != null) {
+				modifiers.add(m);
+				MagicSpells.debug(3, "    Modifier added: " + s);
+			} else {
+				MagicSpells.error("Problem with modifier: " + s);
+			}
 		}
 	}
 	

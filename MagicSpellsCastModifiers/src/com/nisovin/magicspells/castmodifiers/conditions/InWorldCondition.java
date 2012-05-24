@@ -9,8 +9,9 @@ public class InWorldCondition extends Condition {
 	String world = "";
 
 	@Override
-	public void setVar(String var) {
+	public boolean setVar(String var) {
 		world = var;
+		return true;
 	}
 	
 	@Override

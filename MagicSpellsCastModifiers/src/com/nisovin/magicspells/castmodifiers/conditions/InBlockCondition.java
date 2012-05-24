@@ -9,11 +9,16 @@ public class InBlockCondition extends Condition {
 	int[] ids = new int[0];
 
 	@Override
-	public void setVar(String var) {
-		String[] vardata = var.split(",");
-		ids = new int[vardata.length];
-		for (int i = 0; i < vardata.length; i++) {
-			ids[i] = Integer.parseInt(vardata[i]);
+	public boolean setVar(String var) {
+		try {
+			String[] vardata = var.split(",");
+			ids = new int[vardata.length];
+			for (int i = 0; i < vardata.length; i++) {
+				ids[i] = Integer.parseInt(vardata[i]);
+			}
+			return true;
+		} catch (Exception e) {
+			return false;
 		}
 	}
 	

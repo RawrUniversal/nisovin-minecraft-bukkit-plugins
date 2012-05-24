@@ -9,9 +9,9 @@ public class PermissionCondition extends Condition {
 	String perm;
 
 	@Override
-	public void setVar(String var) {
-		// TODO Auto-generated method stub
-		
+	public boolean setVar(String var) {
+		perm = var;
+		return true;
 	}
 	
 	@Override

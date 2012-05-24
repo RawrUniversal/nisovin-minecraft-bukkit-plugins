@@ -10,10 +10,15 @@ public class TimeCondition extends Condition {
 	int end;
 
 	@Override
-	public void setVar(String var) {
-		String[] vardata = var.split("-");
-		start = Integer.parseInt(vardata[0]);
-		end = Integer.parseInt(vardata[1]);
+	public boolean setVar(String var) {
+		try {
+			String[] vardata = var.split("-");
+			start = Integer.parseInt(vardata[0]);
+			end = Integer.parseInt(vardata[1]);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	@Override

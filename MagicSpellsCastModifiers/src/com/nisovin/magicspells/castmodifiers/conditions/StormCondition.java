@@ -7,7 +7,8 @@ import com.nisovin.magicspells.castmodifiers.Condition;
 public class StormCondition extends Condition {
 
 	@Override
-	public void setVar(String var) {
+	public boolean setVar(String var) {
+		return true;
 	}
 
 	@Override

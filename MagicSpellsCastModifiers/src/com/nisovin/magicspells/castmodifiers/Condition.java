@@ -11,7 +11,7 @@ public abstract class Condition {
 
 	public abstract boolean check(Player player);
 	
-	public abstract void setVar(String var);
+	public abstract boolean setVar(String var);
 	
 	private static HashMap<String, Class<? extends Condition>> conditions = new HashMap<String, Class<? extends Condition>>();
 	
@@ -34,6 +34,7 @@ public abstract class Condition {
 	static {
 		conditions.put("day", DayCondition.class);
 		conditions.put("night", NightCondition.class);
+		conditions.put("time", TimeCondition.class);
 		conditions.put("storm", StormCondition.class);
 		conditions.put("moonphase", MoonPhaseCondition.class);
 		conditions.put("lightlevelabove", LightLevelAboveCondition.class);
@@ -44,6 +45,7 @@ public abstract class Condition {
 		conditions.put("healthbelow", HealthBelowCondition.class);
 		conditions.put("permission", PermissionCondition.class);
 		conditions.put("wearing", WearingCondition.class);
+		conditions.put("hasitem", HasItemCondition.class);
 		conditions.put("world", InWorldCondition.class);
 	}
 	
