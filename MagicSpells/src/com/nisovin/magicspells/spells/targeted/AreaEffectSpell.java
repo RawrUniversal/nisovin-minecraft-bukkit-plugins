@@ -28,6 +28,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 	private boolean failIfNoTargets;
 	private boolean targetPlayers;
 	private boolean targetNonPlayers;
+	private int maxTargets;
 	private List<String> spellNames;
 	private List<TargetedSpell> spells;
 	
@@ -41,6 +42,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		failIfNoTargets = getConfigBoolean("fail-if-no-targets", true);
 		targetPlayers = getConfigBoolean("target-players", false);
 		targetNonPlayers = getConfigBoolean("target-non-players", true);
+		maxTargets = getConfigInt("max-targets", 0);
 		spellNames = getConfigStringList("spells", null);
 	}
 	
@@ -132,6 +134,9 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 						}
 					}
 					count++;
+					if (maxTargets > 0 && count >= maxTargets) {
+						break;
+					}
 				}
 			}
 		}
