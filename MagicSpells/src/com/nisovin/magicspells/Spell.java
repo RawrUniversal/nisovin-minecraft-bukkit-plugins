@@ -341,7 +341,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					removeReagents(player, reagents);
 				}
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.MESSAGES_ONLY || action == PostCastAction.NO_COOLDOWN || action == PostCastAction.NO_REAGENTS) {
-					sendMessage(player, strCastSelf);
+					sendMessage(player, strCastSelf, "%a", player.getDisplayName());
 					sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getDisplayName()));
 				}
 				if (experience > 0) {

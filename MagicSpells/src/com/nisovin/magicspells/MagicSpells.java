@@ -1,7 +1,6 @@
 package com.nisovin.magicspells;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -289,7 +288,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// set up metrics
-		setupMetrics();
+		//setupMetrics();
 		
 		// call loaded event
 		pm.callEvent(new MagicSpellsLoadedEvent(this));
@@ -422,7 +421,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	private void setupMetrics() {
+	/*private void setupMetrics() {
 		try {
 			Metrics metrics = new Metrics();
 			
@@ -435,7 +434,7 @@ public class MagicSpells extends JavaPlugin {
 			metrics.beginMeasuringPlugin(this);
 		} catch (IOException e) {
 		}
-	}
+	}*/
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {

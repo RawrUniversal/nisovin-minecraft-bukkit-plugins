@@ -131,7 +131,7 @@ public class ArmorSpell extends BuffSpell {
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player)event.getEntity();
 			if (armored.contains(p)) {
-				if (event.getDamage() > p.getHealth()) {
+				if (event.getDamage() >= p.getHealth()) {
 					// killing blow, turn off the spell
 					turnOff(p);
 				} else {

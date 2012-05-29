@@ -159,7 +159,7 @@ public abstract class TargetedSpell extends InstantSpell {
 			b = bi.next();
 			bx = b.getX();
 			by = b.getY();
-			bz = b.getZ();			
+			bz = b.getZ();
 			if (checkLos && !MagicSpells.getTransparentBlocks().contains((byte)b.getTypeId())) {
 				// line of sight is broken, stop without target
 				break;
