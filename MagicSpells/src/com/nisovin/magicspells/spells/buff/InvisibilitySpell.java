@@ -59,7 +59,7 @@ public class InvisibilitySpell extends BuffSpell {
 			startSpellDuration(player);
 			invisibles.put(player, new CostCharger(player));
 			// spell effect
-			playGraphicalEffects(1, player);
+			playSpellEffects(1, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -114,7 +114,7 @@ public class InvisibilitySpell extends BuffSpell {
 				p.showPlayer(player);
 			}
 			// spell effect
-			playGraphicalEffects(4, player);
+			playSpellEffects(4, player);
 			sendMessage(player, strFade);
 		}
 	}

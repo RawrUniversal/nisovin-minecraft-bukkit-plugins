@@ -45,8 +45,8 @@ public class HealSpell extends TargetedEntitySpell {
 		if (health > 20) health = 20;
 		target.setHealth(health);
 		
-		playGraphicalEffects(1, player);
-		playGraphicalEffects(2, target, "FF0000 40");
+		playSpellEffects(1, player);
+		playSpellEffects(2, target, "FF0000 40");
 	}
 
 	@Override

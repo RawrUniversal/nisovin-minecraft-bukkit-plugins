@@ -48,7 +48,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 			}
 			
 			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier));
-			playGraphicalEffects(player, target);
+			playSpellEffects(player, target);
 			sendMessages(player, target);
 			return PostCastAction.NO_MESSAGES;
 		}		
@@ -63,7 +63,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 			return false;
 		} else {
 			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier));
-			playGraphicalEffects(caster, target);
+			playSpellEffects(caster, target);
 			return true;
 		}
 	}

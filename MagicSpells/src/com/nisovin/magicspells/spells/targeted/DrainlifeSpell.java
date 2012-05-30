@@ -131,7 +131,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 			ExperienceUtils.changeExp(player, give);
 		}
 		
-		playGraphicalEffects(player, target);
+		playSpellEffects(player, target);
 		
 		// show animation
 		if (showSpellEffect) {

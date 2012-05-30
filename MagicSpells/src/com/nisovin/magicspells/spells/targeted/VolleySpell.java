@@ -54,7 +54,7 @@ public class VolleySpell extends TargetedLocationSpell {
 			a.setShooter(player);
 		}
 		
-		playGraphicalEffects(player, target);
+		playSpellEffects(player, target);
 	}
 
 	@Override

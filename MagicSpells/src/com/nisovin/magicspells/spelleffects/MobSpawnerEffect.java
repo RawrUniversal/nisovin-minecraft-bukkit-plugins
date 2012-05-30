@@ -1,9 +1,9 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
 
-class MobSpawnerEffect extends GraphicalEffect {
+class MobSpawnerEffect extends SpellEffect {
 
 	@Override
 	public void playEffect(Location location, String param) {

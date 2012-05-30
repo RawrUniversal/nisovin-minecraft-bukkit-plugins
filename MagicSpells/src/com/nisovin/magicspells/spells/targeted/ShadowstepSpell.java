@@ -64,7 +64,7 @@ public class ShadowstepSpell extends TargetedEntitySpell {
 		}
 		
 		// ok
-		playGraphicalEffects(player.getLocation(), loc);
+		playSpellEffects(player.getLocation(), loc);
 		player.teleport(loc);
 		
 		return true;

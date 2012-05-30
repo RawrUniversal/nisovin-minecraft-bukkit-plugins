@@ -43,11 +43,11 @@ public class PurgeSpell extends InstantSpell {
 				if (entity instanceof LivingEntity && !(entity instanceof Player) && (entityTypes == null || entityTypes.contains(entity.getType()))) {
 					((LivingEntity)entity).setHealth(0);
 					killed = true;
-					playGraphicalEffects(2, entity);
+					playSpellEffects(2, entity);
 				}
 			}
 			if (killed) {
-				playGraphicalEffects(1, player);
+				playSpellEffects(1, player);
 			} else {
 				return PostCastAction.ALREADY_HANDLED;
 			}

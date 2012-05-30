@@ -67,7 +67,7 @@ public class PainSpell extends TargetedEntitySpell {
 		} else {
 			target.damage(dam);
 		}
-		playGraphicalEffects(player, target);
+		playSpellEffects(player, target);
 		return true;
 	}
 

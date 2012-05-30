@@ -108,8 +108,8 @@ public class GateSpell extends InstantSpell {
 				Location to = b.getLocation();
 				boolean teleported = player.teleport(location);
 				if (teleported) {
-					playGraphicalEffects(1, from);
-					playGraphicalEffects(2, to);
+					playSpellEffects(1, from);
+					playSpellEffects(2, to);
 				} else {
 					// fail - teleport blocked
 					MagicSpells.error(name + ": teleport prevented!");
@@ -154,8 +154,8 @@ public class GateSpell extends InstantSpell {
 				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
 					boolean teleported = player.teleport(target);
 					if (teleported) {
-						playGraphicalEffects(1, location);
-						playGraphicalEffects(2, target);
+						playSpellEffects(1, location);
+						playSpellEffects(2, target);
 						sendMessage(player, strCastDone);
 					} else {
 						// fail -- teleport prevented

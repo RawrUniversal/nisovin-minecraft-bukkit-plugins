@@ -50,7 +50,7 @@ public class LightningSpell extends TargetedLocationSpell {
 			if (requireEntityTarget) {
 				entityTarget = getTargetedEntity(player, range, targetPlayers, obeyLos);
 				if (entityTarget != null && entityTarget instanceof Player && checkPlugins) {
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entityTarget, DamageCause.ENTITY_ATTACK, 0);
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entityTarget, DamageCause.ENTITY_ATTACK, 1 + additionalDamage);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						entityTarget = null;
@@ -73,7 +73,7 @@ public class LightningSpell extends TargetedLocationSpell {
 			}
 			if (target != null) {
 				lightning(target.getLocation());
-				playGraphicalEffects(player, target.getLocation());
+				playSpellEffects(player, target.getLocation());
 				if (entityTarget != null) {
 					sendMessages(player, entityTarget);
 					return PostCastAction.NO_MESSAGES;
@@ -96,7 +96,7 @@ public class LightningSpell extends TargetedLocationSpell {
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		lightning(target);
-		playGraphicalEffects(caster, target);
+		playSpellEffects(caster, target);
 		return true;
 	}
 	

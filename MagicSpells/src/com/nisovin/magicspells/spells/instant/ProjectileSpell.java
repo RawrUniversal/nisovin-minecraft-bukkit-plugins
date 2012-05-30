@@ -147,13 +147,13 @@ public class ProjectileSpell extends InstantSpell {
 					projectile.setVelocity(player.getLocation().getDirection().multiply(velocity));
 				}
 				projectiles.put(projectile, new ProjectileInfo(player, power));
-				playGraphicalEffects(1, projectile);
+				playSpellEffects(1, projectile);
 			} else if (projectileItem != null) {
 				Item item = player.getWorld().dropItem(player.getEyeLocation(), projectileItem.clone());
 				item.setVelocity(player.getLocation().getDirection().multiply(velocity > 0 ? velocity : 1));
 				item.setPickupDelay(10);
 				itemProjectiles.put(item, new ProjectileInfo(player, power, new ItemProjectileMonitor(item)));
-				playGraphicalEffects(1, item);
+				playSpellEffects(1, item);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -179,10 +179,10 @@ public class ProjectileSpell extends InstantSpell {
 				for (TargetedSpell spell : spells) {
 					if (spell instanceof TargetedEntitySpell) {
 						((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
-						playGraphicalEffects(2, target);
+						playSpellEffects(2, target);
 					} else if (spell instanceof TargetedLocationSpell) {
 						((TargetedLocationSpell)spell).castAtLocation(info.player, target.getLocation(), info.power);
-						playGraphicalEffects(2, target.getLocation());
+						playSpellEffects(2, target.getLocation());
 					}
 				}
 				
@@ -217,7 +217,7 @@ public class ProjectileSpell extends InstantSpell {
 				for (TargetedSpell spell : spells) {
 					if (spell instanceof TargetedLocationSpell) {
 						((TargetedLocationSpell)spell).castAtLocation(info.player, projectile.getLocation(), info.power);
-						playGraphicalEffects(2, projectile.getLocation());
+						playSpellEffects(2, projectile.getLocation());
 					}
 				}
 				sendMessage(info.player, strHitCaster);
@@ -230,7 +230,7 @@ public class ProjectileSpell extends InstantSpell {
 	}
 		
 	private void aoe(Entity projectile, ProjectileInfo info) {
-		playGraphicalEffects(4, projectile.getLocation());
+		playSpellEffects(4, projectile.getLocation());
 		List<Entity> entities = projectile.getNearbyEntities(aoeRadius, aoeRadius, aoeRadius);
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity && (targetPlayers || !(entity instanceof Player)) && !entity.equals(info.player)) {
@@ -249,10 +249,10 @@ public class ProjectileSpell extends InstantSpell {
 				for (TargetedSpell spell : spells) {
 					if (spell instanceof TargetedEntitySpell) {
 						((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
-						playGraphicalEffects(2, target);
+						playSpellEffects(2, target);
 					} else if (spell instanceof TargetedLocationSpell) {
 						((TargetedLocationSpell)spell).castAtLocation(info.player, target.getLocation(), info.power);
-						playGraphicalEffects(2, target.getLocation());
+						playSpellEffects(2, target.getLocation());
 					}
 				}
 				

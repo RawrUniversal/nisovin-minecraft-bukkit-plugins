@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.SpellAnimation;
 
-class NovaEffect extends GraphicalEffect {
+class NovaEffect extends SpellEffect {
 
 	@Override
 	public void playEffect(Location location, String param) {

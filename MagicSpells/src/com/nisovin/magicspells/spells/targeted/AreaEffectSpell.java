@@ -127,10 +127,10 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 					for (TargetedSpell spell : spells) {
 						if (spell instanceof TargetedEntitySpell) {
 							((TargetedEntitySpell)spell).castAtEntity(player, target, power);
-							playGraphicalEffects(player, target);
+							playSpellEffects(player, target);
 						} else if (spell instanceof TargetedLocationSpell) {
 							((TargetedLocationSpell)spell).castAtLocation(player, target.getLocation(), power);
-							playGraphicalEffects(player, target);
+							playSpellEffects(player, target);
 						}
 					}
 					count++;

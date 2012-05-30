@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
@@ -7,7 +7,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Tameable;
 
-class HeartsEffect extends GraphicalEffect {
+class HeartsEffect extends SpellEffect {
 	
 	@Override
 	public void playEffect(Entity entity, String param) {

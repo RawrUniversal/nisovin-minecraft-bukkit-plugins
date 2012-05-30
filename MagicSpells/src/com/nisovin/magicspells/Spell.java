@@ -17,7 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.events.SpellCastEvent;
-import com.nisovin.magicspells.graphicaleffects.GraphicalEffect;
+import com.nisovin.magicspells.spelleffects.SpellEffect;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -40,7 +40,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected ItemStack spellIcon;
 	protected int broadcastRange;
 	protected int experience;
-	protected HashMap<Integer, List<String>> graphicalEffects;
+	protected HashMap<Integer, List<String>> effects;
 	
 	protected SpellReagents reagents;
 	protected int cooldown;
@@ -109,11 +109,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.experience = config.getInt(section + "." + spellName + ".experience", 0);
 		
 		// graphical effects
-		List<String> effects = config.getStringList(section + "." + spellName + ".effects", null);
-		if (effects != null) {
-			this.graphicalEffects = new HashMap<Integer, List<String>>();
+		List<String> effectsList = config.getStringList(section + "." + spellName + ".effects", null);
+		if (effectsList != null) {
+			this.effects = new HashMap<Integer, List<String>>();
 			List<String> e;
-			for (String eff : effects) {
+			for (String eff : effectsList) {
 				String[] data = eff.split(" ", 2);
 				int pos = 0;
 				if (data[0].equals("1") || data[0].equalsIgnoreCase("pos1") || data[0].equalsIgnoreCase("position1") || data[0].equalsIgnoreCase("caster") || data[0].equalsIgnoreCase("actor")) {
@@ -126,10 +126,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					pos = 4;
 				}
 				if (pos != 0) {
-					e = graphicalEffects.get(pos);
+					e = effects.get(pos);
 					if (e == null) {
 						e = new ArrayList<String>();
-						graphicalEffects.put(pos, e);
+						effects.put(pos, e);
 					}
 					e.add(data[1]);
 				}
@@ -653,46 +653,46 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		inventory.setContents(items);
 	}
 	
-	protected void playGraphicalEffects(Entity pos1, Entity pos2) {
-		playGraphicalEffects(1, pos1);
-		playGraphicalEffects(2, pos2);
-		playGraphicalEffectsTrail(pos1.getLocation(), pos2.getLocation(), null);
+	protected void playSpellEffects(Entity pos1, Entity pos2) {
+		playSpellEffects(1, pos1);
+		playSpellEffects(2, pos2);
+		playSpellEffectsTrail(pos1.getLocation(), pos2.getLocation(), null);
 	}
 	
-	protected void playGraphicalEffects(Entity pos1, Location pos2) {
-		playGraphicalEffects(1, pos1);
-		playGraphicalEffects(2, pos2);
-		playGraphicalEffectsTrail(pos1.getLocation(), pos2, null);
+	protected void playSpellEffects(Entity pos1, Location pos2) {
+		playSpellEffects(1, pos1);
+		playSpellEffects(2, pos2);
+		playSpellEffectsTrail(pos1.getLocation(), pos2, null);
 	}
 	
-	protected void playGraphicalEffects(Location pos1, Entity pos2) {
-		playGraphicalEffects(1, pos1);
-		playGraphicalEffects(2, pos2);
-		playGraphicalEffectsTrail(pos1, pos2.getLocation(), null);
+	protected void playSpellEffects(Location pos1, Entity pos2) {
+		playSpellEffects(1, pos1);
+		playSpellEffects(2, pos2);
+		playSpellEffectsTrail(pos1, pos2.getLocation(), null);
 	}
 	
-	protected void playGraphicalEffects(Location pos1, Location pos2) {
-		playGraphicalEffects(1, pos1);
-		playGraphicalEffects(2, pos2);
-		playGraphicalEffectsTrail(pos1, pos2, null);
+	protected void playSpellEffects(Location pos1, Location pos2) {
+		playSpellEffects(1, pos1);
+		playSpellEffects(2, pos2);
+		playSpellEffectsTrail(pos1, pos2, null);
 	}
 	
-	protected void playGraphicalEffects(int pos, Entity entity) {
-		playGraphicalEffects(pos, entity, null);
+	protected void playSpellEffects(int pos, Entity entity) {
+		playSpellEffects(pos, entity, null);
 	}
 	
-	protected void playGraphicalEffects(int pos, Entity entity, String param) {
-		if (graphicalEffects != null) {
-			List<String> effects = graphicalEffects.get(pos);
-			if (effects != null) {
-				for (String eff : effects) {
-					GraphicalEffect effect = null;
+	protected void playSpellEffects(int pos, Entity entity, String param) {
+		if (effects != null) {
+			List<String> effectsList = effects.get(pos);
+			if (effectsList != null) {
+				for (String eff : effectsList) {
+					SpellEffect effect = null;
 					if (eff.contains(" ")) {
 						String[] data = eff.split(" ", 2);
-						effect = GraphicalEffect.getEffectByName(data[0]);
+						effect = SpellEffect.getEffectByName(data[0]);
 						param = data[1];
 					} else {
-						effect = GraphicalEffect.getEffectByName(eff);
+						effect = SpellEffect.getEffectByName(eff);
 					}
 					if (effect != null) {
 						effect.playEffect(entity, param);
@@ -702,22 +702,22 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 	}
 	
-	protected void playGraphicalEffects(int pos, Location location) {
-		playGraphicalEffects(pos, location, null);
+	protected void playSpellEffects(int pos, Location location) {
+		playSpellEffects(pos, location, null);
 	}
 	
-	protected void playGraphicalEffects(int pos, Location location, String param) {
-		if (graphicalEffects != null) {
-			List<String> effects = graphicalEffects.get(pos);
-			if (effects != null) {
-				for (String eff : effects) {
-					GraphicalEffect effect = null;
+	protected void playSpellEffects(int pos, Location location, String param) {
+		if (effects != null) {
+			List<String> effectsList = effects.get(pos);
+			if (effectsList != null) {
+				for (String eff : effectsList) {
+					SpellEffect effect = null;
 					if (eff.contains(" ")) {
 						String[] data = eff.split(" ", 2);
-						effect = GraphicalEffect.getEffectByName(data[0]);
+						effect = SpellEffect.getEffectByName(data[0]);
 						param = data[1];
 					} else {
-						effect = GraphicalEffect.getEffectByName(eff);
+						effect = SpellEffect.getEffectByName(eff);
 					}
 					if (effect != null) {
 						effect.playEffect(location, param);
@@ -727,18 +727,18 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 	}
 	
-	protected void playGraphicalEffectsTrail(Location loc1, Location loc2, String param) {
-		if (graphicalEffects != null) {
-			List<String> effects = graphicalEffects.get(3);
-			if (effects != null) {
-				for (String eff : effects) {
-					GraphicalEffect effect = null;
+	protected void playSpellEffectsTrail(Location loc1, Location loc2, String param) {
+		if (effects != null) {
+			List<String> effectsList = effects.get(3);
+			if (effectsList != null) {
+				for (String eff : effectsList) {
+					SpellEffect effect = null;
 					if (eff.contains(" ")) {
 						String[] data = eff.split(" ", 2);
-						effect = GraphicalEffect.getEffectByName(data[0]);
+						effect = SpellEffect.getEffectByName(data[0]);
 						param = data[1];
 					} else {
-						effect = GraphicalEffect.getEffectByName(eff);
+						effect = SpellEffect.getEffectByName(eff);
 					}
 					if (effect != null) {
 						effect.playEffect(loc1, loc2, param);

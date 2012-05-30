@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import java.util.Random;
 
@@ -9,7 +9,7 @@ import org.bukkit.block.Block;
 
 import com.nisovin.magicspells.util.BlockUtils;
 
-class CloudEffect extends GraphicalEffect {
+class CloudEffect extends SpellEffect {
 
 	Random rand = new Random();
 	

@@ -94,7 +94,7 @@ public class BlinkSpell extends TargetedLocationSpell {
 	}
 
 	private void teleport(Player player, Location location, HashSet<Location> smokeLocs) {
-		playGraphicalEffects(player.getLocation(), location);
+		playSpellEffects(player.getLocation(), location);
 		player.teleport(location);
 		if (smokeTrail && smokeLocs != null) {
 			for (Location l : smokeLocs) {

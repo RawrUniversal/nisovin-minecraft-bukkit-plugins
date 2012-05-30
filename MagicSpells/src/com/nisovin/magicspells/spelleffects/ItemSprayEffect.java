@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import java.util.Random;
 
@@ -10,7 +10,7 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 
-class ItemSprayEffect extends GraphicalEffect {
+class ItemSprayEffect extends SpellEffect {
 
 	@Override
 	public void playEffect(Location location, String param) {

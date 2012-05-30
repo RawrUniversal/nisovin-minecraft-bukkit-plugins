@@ -88,8 +88,8 @@ public class ZapSpell extends TargetedSpell {
 				}
 				
 				// show animation
-				playGraphicalEffects(1, player);
-				playGraphicalEffects(2, target.getLocation(), target.getTypeId() + "");
+				playSpellEffects(1, player);
+				playSpellEffects(2, target.getLocation(), target.getTypeId() + "");
 				
 				// remove block
 				target.setType(Material.AIR);

@@ -103,9 +103,9 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 		}
 		// effects
 		if (target != null) {
-			playGraphicalEffects(player, target);
+			playSpellEffects(player, target);
 		} else {
-			playGraphicalEffects(1, player);
+			playSpellEffects(1, player);
 		}
 		// add delayed command
 		if (commandToExecuteLater != null && commandToExecuteLater.size() > 0 && !commandToExecuteLater.get(0).isEmpty()) {
@@ -191,7 +191,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 				}
 			}
 			// graphical effect
-			playGraphicalEffects(4, player);
+			playSpellEffects(4, player);
 		}
 		
 	}

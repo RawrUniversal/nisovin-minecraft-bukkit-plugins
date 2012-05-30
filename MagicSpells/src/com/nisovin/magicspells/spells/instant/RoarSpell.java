@@ -32,7 +32,7 @@ public class RoarSpell extends InstantSpell {
 				if (entity instanceof Monster) {
 					((Monster) entity).setTarget(player);
 					count++;
-					playGraphicalEffects(2, entity);
+					playSpellEffects(2, entity);
 				}
 			}
 			
@@ -42,7 +42,7 @@ public class RoarSpell extends InstantSpell {
 				//fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
-				playGraphicalEffects(1, player);
+				playSpellEffects(1, player);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

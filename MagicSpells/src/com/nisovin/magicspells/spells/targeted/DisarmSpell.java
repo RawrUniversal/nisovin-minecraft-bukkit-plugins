@@ -56,7 +56,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 			
 			boolean disarmed = disarm(target);
 			if (disarmed) {
-				playGraphicalEffects(player, target);
+				playSpellEffects(player, target);
 				// send messages
 				sendMessages(player, target);
 				return PostCastAction.NO_MESSAGES;
@@ -114,7 +114,7 @@ public class DisarmSpell extends TargetedEntitySpell {
 		if (target instanceof Player) {
 			boolean disarmed =  disarm((Player)target);
 			if (disarmed) {
-				playGraphicalEffects(caster, target);
+				playSpellEffects(caster, target);
 			}
 			return disarmed;
 		} else {

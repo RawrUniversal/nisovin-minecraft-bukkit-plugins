@@ -69,7 +69,7 @@ public class BuildSpell extends TargetedSpell {
 						return noTarget(player, strCantBuild);
 					}
 				}
-				playGraphicalEffects(2, b.getLocation(), item.getTypeId()+"");
+				playSpellEffects(2, b.getLocation(), item.getTypeId()+"");
 				if (consumeBlock) {
 					int amt = item.getAmount()-1;
 					if (amt > 0) {

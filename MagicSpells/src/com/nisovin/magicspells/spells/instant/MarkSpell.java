@@ -41,7 +41,7 @@ public class MarkSpell extends InstantSpell {
 			if (permanentMarks) {
 				saveMarks();
 			}
-			playGraphicalEffects(1, player);
+			playSpellEffects(1, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;		
 	}

@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import java.util.ArrayList;
 
@@ -9,7 +9,7 @@ import org.bukkit.World;
 
 import com.nisovin.magicspells.MagicSpells;
 
-class SmokeTrailEffect extends GraphicalEffect {
+class SmokeTrailEffect extends SpellEffect {
 
 	@Override
 	public void playEffect(Location location1, Location location2, String param) {

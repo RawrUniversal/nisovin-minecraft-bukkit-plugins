@@ -1,10 +1,10 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-class BigSmokeEffect extends GraphicalEffect {
+class BigSmokeEffect extends SpellEffect {
 
 	@Override
 	public void playEffect(Location location, String param) {

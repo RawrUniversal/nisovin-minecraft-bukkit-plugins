@@ -98,8 +98,8 @@ public class RecallSpell extends InstantSpell {
 					Location from = player.getLocation();
 					boolean teleported = player.teleport(mark);
 					if (teleported) {
-						playGraphicalEffects(1, from);
-						playGraphicalEffects(2, mark);
+						playSpellEffects(1, from);
+						playSpellEffects(2, mark);
 					} else {
 						// fail -- teleport prevented
 						MagicSpells.error("Recall teleport blocked for " + player.getName());
@@ -145,8 +145,8 @@ public class RecallSpell extends InstantSpell {
 				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
 					boolean teleported = player.teleport(mark);
 					if (teleported) {
-						playGraphicalEffects(1, location);
-						playGraphicalEffects(2, mark);
+						playSpellEffects(1, location);
+						playSpellEffects(2, mark);
 						sendMessage(player, strCastDone);
 					} else {
 						// fail -- teleport prevented

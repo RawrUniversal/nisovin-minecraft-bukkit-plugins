@@ -1,8 +1,8 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import org.bukkit.Location;
 
-class LightningEffect extends GraphicalEffect {
+class LightningEffect extends SpellEffect {
 
 	@Override
 	public void playEffect(Location location, String param) {

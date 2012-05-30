@@ -88,7 +88,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		// cause explosion
 		boolean ret = MagicSpells.getVolatileCodeHandler().createExplosionByPlayer(player, target, explosionSize * power, addFire);
 		if (ret) {
-			playGraphicalEffects(player, target);
+			playSpellEffects(player, target);
 		}
 		return ret;
 	}

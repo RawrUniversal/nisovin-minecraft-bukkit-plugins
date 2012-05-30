@@ -53,10 +53,10 @@ public class ForcepushSpell extends InstantSpell {
 					v.setY(maxYForce/10.0);
 				}
 				entity.setVelocity(v);
-				playGraphicalEffects(2, entity);
+				playSpellEffects(2, entity);
 			}
 	    }
-		playGraphicalEffects(1, player);
+		playSpellEffects(1, player);
 	}
 
 }

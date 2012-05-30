@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import java.util.HashMap;
 
@@ -10,7 +10,7 @@ import org.bukkit.entity.Entity;
  * Represents a graphical effect that can be used with the 'effects' option of a spell.
  *
  */
-public abstract class GraphicalEffect {
+public abstract class SpellEffect {
 	
 	/**
 	 * Plays an effect on the specified entity.
@@ -40,14 +40,14 @@ public abstract class GraphicalEffect {
 		
 	}
 	
-	private static HashMap<String, GraphicalEffect> effects = new HashMap<String, GraphicalEffect>();
+	private static HashMap<String, SpellEffect> effects = new HashMap<String, SpellEffect>();
 	
 	/**
 	 * Gets the GraphicalEffect by the provided name.
 	 * @param name the name of the effect
 	 * @return
 	 */
-	public static GraphicalEffect getEffectByName(String name) {
+	public static SpellEffect getEffectByName(String name) {
 		return effects.get(name);
 	}
 	
@@ -57,7 +57,7 @@ public abstract class GraphicalEffect {
 	 * @param name the name of the effect
 	 * @param effect the effect to add
 	 */
-	public static void addEffect(String name, GraphicalEffect effect) {
+	public static void addEffect(String name, SpellEffect effect) {
 		effects.put(name, effect);
 	}
 	

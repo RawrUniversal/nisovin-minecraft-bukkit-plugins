@@ -64,7 +64,7 @@ public class LevitateSpell extends TargetedEntitySpell {
 		int duration = this.duration > 0 ? Math.round(this.duration * (20F/tickRate) * power) : 0;
 		Levitator lev = new Levitator(player, target, duration, distance);
 		levitating.put(player, lev);
-		playGraphicalEffects(player, target);
+		playSpellEffects(player, target);
 	}
 
 	@Override

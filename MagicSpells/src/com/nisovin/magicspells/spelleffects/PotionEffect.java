@@ -1,11 +1,11 @@
-package com.nisovin.magicspells.graphicaleffects;
+package com.nisovin.magicspells.spelleffects;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import com.nisovin.magicspells.MagicSpells;
 
-class PotionEffect extends GraphicalEffect {
+class PotionEffect extends SpellEffect {
 
 	@Override
 	public void playEffect(Entity entity, String param) {

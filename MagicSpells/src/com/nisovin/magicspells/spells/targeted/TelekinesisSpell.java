@@ -41,7 +41,7 @@ public class TelekinesisSpell extends TargetedLocationSpell {
 				if (!activated) {
 					return noTarget(player);
 				} else {
-					playGraphicalEffects(player, target.getLocation());
+					playSpellEffects(player, target.getLocation());
 				}
 			}
 		}
@@ -64,7 +64,7 @@ public class TelekinesisSpell extends TargetedLocationSpell {
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		boolean activated = activate(target.getBlock());
 		if (activated) {
-			playGraphicalEffects(caster, target);
+			playSpellEffects(caster, target);
 		}
 		return activated;
 	}
