@@ -72,7 +72,7 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	public void sendFakeSlotUpdate(Player player, int slot, ItemStack item) {
 		net.minecraft.server.ItemStack nmsItem = null;
 		if (item != null) {
-			nmsItem = new net.minecraft.server.ItemStack(item.getTypeId(), slot+1, item.getDurability());
+			nmsItem = new net.minecraft.server.ItemStack(item.getTypeId(), item.getAmount(), item.getDurability());
 		} else {
 			nmsItem = null;
 		}

@@ -16,6 +16,7 @@ general:
     str-console-name: Admin
     text-color: 3
     broadcast-range: 20
+    spell-icon-slot: -1
     separate-player-spells-per-world: false
     allow-cycle-to-no-spell: false
     only-cycle-to-castable-spells: true

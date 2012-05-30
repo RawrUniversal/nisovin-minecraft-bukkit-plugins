@@ -12,6 +12,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -84,7 +85,12 @@ class MagicPlayerListener implements Listener {
 					spell = MagicSpells.getSpellbook(player).prevSpell(inHand);
 				}
 				if (spell != null) {
+					// send message
 					MagicSpells.sendMessage(player, MagicSpells.strSpellChange, "%s", spell.getName());
+					// show spell icon
+					if (MagicSpells.spellIconSlot >= 0) {
+						showIcon(player, MagicSpells.spellIconSlot, spell.getSpellIcon());
+					}
 				}
 				
 				// check for mana pots
@@ -119,6 +125,24 @@ class MagicPlayerListener implements Listener {
 					}
 				}
 				
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onItemHeldChange(PlayerItemHeldEvent event) {
+		if (MagicSpells.spellIconSlot >= 0) {
+			Player player = event.getPlayer();
+			if (event.getNewSlot() == MagicSpells.spellIconSlot) {
+				showIcon(player, MagicSpells.spellIconSlot, null);
+			} else {
+				Spellbook spellbook = MagicSpells.getSpellbook(player);
+				Spell spell = spellbook.getActiveSpell(player.getInventory().getItem(event.getNewSlot()));
+				if (spell != null) {
+					showIcon(player, MagicSpells.spellIconSlot, spell.getSpellIcon());
+				} else {
+					showIcon(player, MagicSpells.spellIconSlot, null);
+				}
 			}
 		}
 	}
@@ -163,6 +187,11 @@ class MagicPlayerListener implements Listener {
 			// cast spell
 			spell.cast(player);
 		}		
+	}
+	
+	private void showIcon(Player player, int slot, ItemStack icon) {
+		if (icon == null) icon = player.getInventory().getItem(MagicSpells.spellIconSlot);
+		MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, slot, icon);
 	}
 	
 }
