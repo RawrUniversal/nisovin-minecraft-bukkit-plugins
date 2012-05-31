@@ -51,6 +51,15 @@ public class HelpSpell extends CommandSpell {
 	}
 	
 	@Override
+	public String tabComplete(CommandSender sender, String partial) {
+		if (sender instanceof Player && !partial.contains(" ")) {
+			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
+			return spellbook.tabComplete(partial);
+		}
+		return null;
+	}
+	
+	@Override
 	public boolean castFromConsole(CommandSender sender, String[] args) {
 		return false;
 	}

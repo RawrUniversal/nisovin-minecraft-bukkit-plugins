@@ -167,5 +167,24 @@ public class ForgetSpell extends CommandSpell {
 		}
 		return true;
 	}
+	
+	@Override
+	public String tabComplete(CommandSender sender, String partial) {
+		String[] args = partial.split(" ");
+		if (args.length == 1) {
+			// matching player name
+			return tabCompletePlayerName(args[0]);
+		} else if (args.length == 2) {
+			// matching spell name
+			if (sender instanceof Player) {
+				Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
+				String spellName = spellbook.tabComplete(args[1]);
+				if (spellName != null) {
+					return args[0] + " " + spellName;
+				}
+			}
+		}
+		return null;
+	}
 
 }

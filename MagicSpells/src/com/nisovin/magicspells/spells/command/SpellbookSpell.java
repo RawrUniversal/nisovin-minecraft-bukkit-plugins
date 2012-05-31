@@ -217,6 +217,15 @@ public class SpellbookSpell extends CommandSpell {
 		}
 	}
 	
+	@Override
+	public String tabComplete(CommandSender sender, String partial) {
+		if (sender instanceof Player && !partial.contains(" ")) {
+			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
+			return spellbook.tabComplete(partial);
+		}
+		return null;
+	}
+	
 	private void loadSpellbooks() {
 		try {
 			Scanner scanner = new Scanner(new File(MagicSpells.plugin.getDataFolder(), "books.txt"));

@@ -102,6 +102,11 @@ public class TomeSpell extends CommandSpell {
 		return false;
 	}
 	
+	@Override
+	public String tabComplete(CommandSender sender, String partial) {
+		return null;
+	}
+	
 	@EventHandler
 	public void onBookRead(BookReadEvent event) {
 		String spellData = event.getBook().getHiddenData("MagicSpell");

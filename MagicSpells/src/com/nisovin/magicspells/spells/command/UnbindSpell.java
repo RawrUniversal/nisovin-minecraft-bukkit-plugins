@@ -64,6 +64,21 @@ public class UnbindSpell extends CommandSpell {
 	}
 
 	@Override
+	public String tabComplete(CommandSender sender, String partial) {
+		if (sender instanceof Player) {
+			// only one arg
+			if (partial.contains(" ")) {
+				return null;
+			}
+			
+			// tab complete spellname from spellbook
+			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
+			return spellbook.tabComplete(partial);
+		}
+		return null;
+	}
+
+	@Override
 	public boolean castFromConsole(CommandSender sender, String[] args) {
 		return false;
 	}

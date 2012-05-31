@@ -206,6 +206,11 @@ public class ScrollSpell extends CommandSpell {
 		return true;
 	}
 	
+	@Override
+	public String tabComplete(CommandSender sender, String partial) {
+		return null;
+	}
+	
 	private void createBaseScroll(String[] args, CommandSender sender) {
 		// get spell
 		Spell spell = MagicSpells.getSpellByInGameName(args[1]);
