@@ -1,24 +1,21 @@
 package com.nisovin.magicspells.spells.targeted;
 
-import java.util.ArrayList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
-import org.bukkit.Material;
+import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.ManaChangeReason;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.SpellAnimation;
 
 public class DrainlifeSpell extends TargetedEntitySpell {
 	
@@ -28,6 +25,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 	private int giveAmt;
 	private boolean showSpellEffect;
 	private int animationSpeed;
+	private boolean instant;
 	private boolean ignoreArmor;
 	private boolean obeyLos;
 	private boolean targetPlayers;
@@ -42,6 +40,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 		giveAmt = getConfigInt("give-amt", 2);
 		showSpellEffect = getConfigBoolean("show-spell-effect", true);
 		animationSpeed = getConfigInt("animation-speed", 2);
+		instant = getConfigBoolean("instant", true);
 		ignoreArmor = getConfigBoolean("ignore-armor", false);
 		obeyLos = getConfigBoolean("obey-los", true);
 		targetPlayers = getConfigBoolean("target-players", false);
@@ -116,6 +115,22 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 		}
 		
 		// give to caster
+		if (instant) {
+			giveToCaster(player, give);
+			playSpellEffects(player, target);
+		} else {
+			playSpellEffects(2, target);
+		}		
+		
+		// show animation
+		if (showSpellEffect) {
+			new DrainlifeAnim(target.getLocation(), player, give);
+		}
+		
+		return true;
+	}
+	
+	private void giveToCaster(Player player, int give) {
 		if (giveType.equals("health")) {
 			int h = player.getHealth()+Math.round(give);
 			if (h>20) h=20;
@@ -130,15 +145,6 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 		} else if (takeType.equals("experience")) {
 			ExperienceUtils.changeExp(player, give);
 		}
-		
-		playSpellEffects(player, target);
-		
-		// show animation
-		if (showSpellEffect) {
-			new DrainlifeAnimation(player, target);
-		}
-		
-		return true;
 	}
 
 	@Override
@@ -150,58 +156,37 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 		}
 	}
 	
-	private class DrainlifeAnimation implements Runnable {
+	private class DrainlifeAnim extends SpellAnimation {
 		
-		private int taskId;
-		private int i;
-		private ArrayList<Block> blocks;
-		private World world;
+		Vector current;
+		Player caster;
+		World world;
+		int giveAmt;
 		
-		public DrainlifeAnimation(Player player, LivingEntity target) {			
-			// get blocks to animate
-			Vector start = target.getLocation().toVector();
-			Vector playerVector = player.getLocation().toVector();
-			double distanceSq = start.distanceSquared(playerVector);
-			Vector direction = playerVector.subtract(start);
-			BlockIterator iterator;
-			try { 
-				iterator = new BlockIterator(player.getWorld(), start, direction, player.getEyeHeight(), range);
-			} catch (IllegalStateException e) {
-				return;
-			}
-			blocks = new ArrayList<Block>();
-			Block b;
-			while (iterator.hasNext()) {
-				b = iterator.next();
-				if (b != null && b.getType() == Material.AIR) {
-					blocks.add(b);
-				} else {
-					break;
-				}
-				if (b.getLocation().toVector().distanceSquared(start) > distanceSq) {
-					break;
-				}
-			}
+		public DrainlifeAnim(Location start, Player caster, int giveAmt) {
+			super(animationSpeed, true);
 			
-			// start animation
-			world = player.getWorld();
-			if (blocks.size() > 0) {
-				i = 0;
-				taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, animationSpeed, animationSpeed);
-			}
+			this.current = start.toVector();
+			this.caster = caster;
+			this.world = caster.getWorld();
+			this.giveAmt = giveAmt;
 		}
 
 		@Override
-		public void run() {
-			if (blocks.size() > i) {
-				Block b = blocks.get(i);
-				world.playEffect(b.getLocation(), Effect.SMOKE, 4);
-				i++;
-			} else {
-				Bukkit.getServer().getScheduler().cancelTask(taskId);
+		protected void onTick(int tick) {
+			Vector targetVector = caster.getLocation().toVector();
+			Vector tempVector = current.clone();
+			tempVector.subtract(caster.getLocation().toVector()).normalize();
+			current.subtract(tempVector);
+			world.playEffect(current.toLocation(world), Effect.SMOKE, 4);
+			if (current.distanceSquared(targetVector) < 4 || tick > range * 1.5) {
+				stop();
+				if (!instant) {
+					giveToCaster(caster, giveAmt);
+					playSpellEffects(1, caster);
+				}
 			}
 		}
-		
 	}
 
 }
