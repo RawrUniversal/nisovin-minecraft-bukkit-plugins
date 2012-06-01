@@ -762,6 +762,10 @@ public class MagicSpells extends JavaPlugin {
 			buffManager.turnOff();
 			buffManager = null;
 		}
+		getServer().getPluginManager().removePermission("magicspells.grant.*");
+		getServer().getPluginManager().removePermission("magicspells.cast.*");
+		getServer().getPluginManager().removePermission("magicspells.learn.*");
+		getServer().getPluginManager().removePermission("magicspells.teach.*");
 		HandlerList.unregisterAll(this);	
 	}
 	
