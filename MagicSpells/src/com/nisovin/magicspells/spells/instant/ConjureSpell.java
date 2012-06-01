@@ -15,6 +15,8 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class ConjureSpell extends InstantSpell {
 
 	private boolean addToInventory;
+	private boolean powerAffectsQuantity;
+	private boolean powerAffectsChance;
 	private int[] itemTypes;
 	private int[] itemDatas;
 	private int[] itemMinQuantities;
@@ -25,6 +27,8 @@ public class ConjureSpell extends InstantSpell {
 		super(config, spellName);
 		
 		addToInventory = getConfigBoolean("add-to-inventory", false);
+		powerAffectsQuantity = getConfigBoolean("power-affects-quantity", false);
+		powerAffectsChance = getConfigBoolean("power-affects-chance", true);
 		List<String> list = getConfigStringList("items", null);
 		if (list != null && list.size() > 0) {
 			itemTypes = new int[list.size()];
@@ -75,10 +79,15 @@ public class ConjureSpell extends InstantSpell {
 			Random rand = new Random();
 			List<ItemStack> items = new ArrayList<ItemStack>();
 			for (int i = 0; i < itemTypes.length; i++) {
-				if (itemTypes[i] != 0 && rand.nextInt(100) < itemChances[i]) {
+				int r = rand.nextInt(100);
+				if (powerAffectsChance) r = Math.round(r / power);
+				if (itemTypes[i] != 0 && r < itemChances[i]) {
 					int quant = itemMinQuantities[i];
 					if (itemMaxQuantities[i] > itemMinQuantities[i]) {
 						quant = rand.nextInt(itemMaxQuantities[i] - itemMinQuantities[i]) + itemMinQuantities[i];
+					}
+					if (powerAffectsQuantity) {
+						quant = Math.round(quant * power);
 					}
 					if (quant > 0) {
 						ItemStack item = new ItemStack(itemTypes[i], quant, (short)itemDatas[i]);
