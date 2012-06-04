@@ -26,6 +26,7 @@ public class ReflectSpell extends BuffSpell {
 			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
 			reflectors.add(player);
+			startSpellDuration(player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}

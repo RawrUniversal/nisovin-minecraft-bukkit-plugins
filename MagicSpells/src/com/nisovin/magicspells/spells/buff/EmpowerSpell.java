@@ -32,6 +32,7 @@ public class EmpowerSpell extends BuffSpell {
 		} else if (state == SpellCastState.NORMAL) {
 			float p = power * extraPower;
 			empowered.put(player, p);
+			startSpellDuration(player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
