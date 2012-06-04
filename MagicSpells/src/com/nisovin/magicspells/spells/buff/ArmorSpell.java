@@ -20,6 +20,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class ArmorSpell extends BuffSpell {
 
 	private boolean toggle;
+	private boolean permanent;
 	
 	private ItemStack helmet;
 	private ItemStack chestplate;
@@ -33,6 +34,9 @@ public class ArmorSpell extends BuffSpell {
 	public ArmorSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		toggle = getConfigBoolean("toggle", false);
+		permanent = getConfigBoolean("permanent", false);
+		
 		helmet = getItem(getConfigString("helmet", ""));
 		chestplate = getItem(getConfigString("chestplate", ""));
 		leggings = getItem(getConfigString("leggings", ""));
@@ -41,6 +45,13 @@ public class ArmorSpell extends BuffSpell {
 		strHasArmor = getConfigString("str-has-armor", "You cannot cast this spell if you are wearing armor.");
 		
 		armored = new HashSet<Player>();
+	}
+	
+	@Override
+	public void initialize() {
+		if (!permanent) {
+			registerEvents();
+		}
 	}
 	
 	private ItemStack getItem(String s) {
@@ -120,8 +131,10 @@ public class ArmorSpell extends BuffSpell {
 				inv.setBoots(boots.clone());
 			}
 			
-			armored.add(player);
-			startSpellDuration(player);
+			if (!permanent) {
+				armored.add(player);
+				startSpellDuration(player);
+			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
