@@ -103,8 +103,10 @@ public class TreeSpell extends TargetedLocationSpell {
 						int dist2 = Math.abs(o2.getX() - centerX) + Math.abs(o2.getZ() - centerZ);
 						if (dist1 > dist2) {
 							return 1;
-						} else {
+						} else if (dist1 < dist2) {
 							return -1;
+						} else {
+							return 0;
 						}
 					}
 				}
