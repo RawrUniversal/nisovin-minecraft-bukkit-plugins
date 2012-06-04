@@ -77,16 +77,8 @@ public class WindwalkSpell extends BuffSpell {
 			if (launchSpeed > 0) {
 				player.setVelocity(new Vector(0,launchSpeed,0));
 			}
-			// set duration limit
-			if (duration > 0) {
-				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
-					public void run() {
-						turnOff(player);
-					}
-				}, duration*20);
-			}
 			// set cost interval
-			if (useCostInterval > 0) {
+			if (useCostInterval > 0 || numUses > 0) {
 				int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						addUseAndChargeCost(player);
@@ -94,6 +86,7 @@ public class WindwalkSpell extends BuffSpell {
 				}, useCostInterval*20, useCostInterval*20);
 				tasks.put(player, taskId);
 			}
+			startSpellDuration(player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
