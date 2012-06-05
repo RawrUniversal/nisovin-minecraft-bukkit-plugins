@@ -200,4 +200,8 @@ public abstract class TargetedSpell extends InstantSpell {
 		
 		return null;
 	}
+	
+	public boolean isFriendlySpell() {
+		return false;
+	}
 }

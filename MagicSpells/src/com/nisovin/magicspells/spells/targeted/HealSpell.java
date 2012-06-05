@@ -58,5 +58,10 @@ public class HealSpell extends TargetedEntitySpell {
 			return false;
 		}
 	}
+	
+	@Override
+	public boolean isFriendlySpell() {
+		return true;
+	}
 
 }

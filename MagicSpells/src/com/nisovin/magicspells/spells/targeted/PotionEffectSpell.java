@@ -20,6 +20,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 	private boolean targetPlayers;
 	private boolean targetNonPlayers;
 	private boolean obeyLos;
+	private boolean friendly;
 	
 	public PotionEffectSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -31,6 +32,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 		targetPlayers = getConfigBoolean("target-players", false);
 		targetNonPlayers = getConfigBoolean("target-non-players", true);
 		obeyLos = getConfigBoolean("obey-los", true);
+		friendly = getConfigBoolean("friendly", false);
 	}
 
 	@Override
@@ -66,6 +68,11 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 			playSpellEffects(caster, target);
 			return true;
 		}
+	}
+	
+	@Override
+	public boolean isFriendlySpell() {
+		return friendly;
 	}
 
 }

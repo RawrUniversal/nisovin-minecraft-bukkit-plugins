@@ -178,14 +178,16 @@ public class Spellbook {
 			// complete spell name
 			List<String> options = new ArrayList<String>();
 			for (Spell spell : allSpells) {
-				if (spell.getName().toLowerCase().startsWith(partial)) {
-					options.add(spell.getName());
-				} else {
-					String[] aliases = spell.getAliases();
-					if (aliases != null && aliases.length > 0) {
-						for (String alias : aliases) {
-							if (alias.toLowerCase().startsWith(partial)) {
-								options.add(alias);
+				if (spell.canCastByCommand()) {
+					if (spell.getName().toLowerCase().startsWith(partial)) {
+						options.add(spell.getName());
+					} else {
+						String[] aliases = spell.getAliases();
+						if (aliases != null && aliases.length > 0) {
+							for (String alias : aliases) {
+								if (alias.toLowerCase().startsWith(partial)) {
+									options.add(alias);
+								}
 							}
 						}
 					}
