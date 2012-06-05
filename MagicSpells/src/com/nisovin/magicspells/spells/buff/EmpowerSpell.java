@@ -60,4 +60,9 @@ public class EmpowerSpell extends BuffSpell {
 		empowered.clear();
 	}
 
+	@Override
+	public boolean isActive(Player player) {
+		return empowered.containsKey(player);
+	}
+
 }

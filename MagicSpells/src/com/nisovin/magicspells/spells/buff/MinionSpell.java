@@ -222,5 +222,10 @@ public class MinionSpell extends BuffSpell {
 		minions.clear();
 		targets.clear();
 	}
+
+	@Override
+	public boolean isActive(Player player) {
+		return minions.containsKey(player.getName());
+	}
 	
 }

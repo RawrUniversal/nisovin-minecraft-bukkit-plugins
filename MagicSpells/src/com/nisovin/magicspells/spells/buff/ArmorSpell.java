@@ -202,4 +202,9 @@ public class ArmorSpell extends BuffSpell {
 		}
 	}
 
+	@Override
+	public boolean isActive(Player player) {
+		return armored.contains(player);
+	}
+
 }

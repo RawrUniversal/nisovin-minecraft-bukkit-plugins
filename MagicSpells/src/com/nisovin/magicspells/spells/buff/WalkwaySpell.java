@@ -329,4 +329,9 @@ public class WalkwaySpell extends BuffSpell {
 		
 	}
 
+	@Override
+	public boolean isActive(Player player) {
+		return platforms.containsKey(player);
+	}
+
 }

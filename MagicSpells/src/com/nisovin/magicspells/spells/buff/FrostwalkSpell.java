@@ -110,4 +110,9 @@ public class FrostwalkSpell extends BuffSpell {
 		frostwalkers.clear();
 	}
 
+	@Override
+	public boolean isActive(Player player) {
+		return frostwalkers.containsKey(player.getName());
+	}
+
 }

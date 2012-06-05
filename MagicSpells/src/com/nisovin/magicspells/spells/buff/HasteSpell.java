@@ -76,4 +76,9 @@ public class HasteSpell extends BuffSpell {
 		hasted.clear();
 	}
 
+	@Override
+	public boolean isActive(Player player) {
+		return hasted.containsKey(player);
+	}
+
 }

@@ -161,4 +161,9 @@ public class WindwalkSpell extends BuffSpell {
 		this.flyers.clear();
 	}
 
+	@Override
+	public boolean isActive(Player player) {
+		return flyers.contains(player);
+	}
+
 }

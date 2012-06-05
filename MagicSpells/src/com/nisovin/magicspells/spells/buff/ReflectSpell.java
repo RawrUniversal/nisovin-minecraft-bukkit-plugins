@@ -60,4 +60,9 @@ public class ReflectSpell extends BuffSpell {
 		reflectors.clear();
 	}
 
+	@Override
+	public boolean isActive(Player player) {
+		return reflectors.contains(player);
+	}
+
 }

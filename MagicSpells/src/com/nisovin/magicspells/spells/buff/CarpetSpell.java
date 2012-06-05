@@ -189,4 +189,9 @@ public class CarpetSpell extends BuffSpell {
 		unregisterListener();
 	}
 
+	@Override
+	public boolean isActive(Player player) {
+		return windwalkers.containsKey(player.getName());
+	}
+
 }

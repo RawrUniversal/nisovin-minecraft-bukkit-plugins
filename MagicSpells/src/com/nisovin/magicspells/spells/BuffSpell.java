@@ -132,6 +132,13 @@ public abstract class BuffSpell extends Spell {
 	}
 	
 	/**
+	 * Checks if this buff spell is active for the specified player
+	 * @param player the player to check
+	 * @return true if the spell is active, false otherwise
+	 */
+	public abstract boolean isActive(Player player);
+	
+	/**
 	 * Adds a use to the spell for the player. If the number of uses exceeds the amount allowed, the spell will immediately expire.
 	 * This does not automatically charge the use cost.
 	 * @param player the player to add the use for
