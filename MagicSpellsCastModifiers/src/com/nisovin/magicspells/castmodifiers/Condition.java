@@ -6,12 +6,11 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.conditions.*;
 
-
 public abstract class Condition {
-
-	public abstract boolean check(Player player);
 	
 	public abstract boolean setVar(String var);
+
+	public abstract boolean check(Player player);
 	
 	private static HashMap<String, Class<? extends Condition>> conditions = new HashMap<String, Class<? extends Condition>>();
 	
@@ -41,12 +40,17 @@ public abstract class Condition {
 		conditions.put("lightlevelbelow", LightLevelBelowCondition.class);
 		conditions.put("onblock", OnBlockCondition.class);
 		conditions.put("inblock", InBlockCondition.class);
-		conditions.put("healthabove", HealthAboveCondition.class);
-		conditions.put("healthbelow", HealthBelowCondition.class);
-		conditions.put("permission", PermissionCondition.class);
+		conditions.put("biome", BiomeCondition.class);
 		conditions.put("wearing", WearingCondition.class);
 		conditions.put("hasitem", HasItemCondition.class);
+		conditions.put("healthabove", HealthAboveCondition.class);
+		conditions.put("healthbelow", HealthBelowCondition.class);
+		conditions.put("foodabove", FoodAboveCondition.class);
+		conditions.put("foodbelow", FoodBelowCondition.class);
+		conditions.put("buffactive", BuffActiveCondition.class);
 		conditions.put("world", InWorldCondition.class);
+		conditions.put("permission", PermissionCondition.class);
+		conditions.put("chance", ChanceCondition.class);
 	}
 	
 }

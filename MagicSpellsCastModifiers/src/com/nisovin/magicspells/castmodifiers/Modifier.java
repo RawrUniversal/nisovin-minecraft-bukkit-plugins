@@ -16,6 +16,7 @@ public class Modifier {
 	public static Modifier factory(String s) {
 		Modifier m = new Modifier();
 		String[] data = s.split(" ");
+		if (data.length < 2) return null;
 		
 		// get condition
 		m.condition = Condition.getConditionByName(data[0]);
@@ -65,6 +66,8 @@ public class Modifier {
 			event.increasePower(modifierVarFloat);
 		} else if (type == ModifierType.COOLDOWN) {
 			event.setCooldown(modifierVarInt);
+		} else if (type == ModifierType.REAGENTS) {
+			event.setReagents(event.getReagents().multiply(modifierVarFloat));
 		}
 		return true;
 	}
@@ -106,7 +109,8 @@ public class Modifier {
 		REQUIRED,
 		DENIED,
 		POWER,
-		COOLDOWN
+		COOLDOWN,
+		REAGENTS
 	}
 	
 }
