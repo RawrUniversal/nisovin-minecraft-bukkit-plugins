@@ -17,6 +17,7 @@ public class ConjureSpell extends InstantSpell {
 	private boolean addToInventory;
 	private boolean powerAffectsQuantity;
 	private boolean powerAffectsChance;
+	private boolean calculateDropsIndividually;
 	private int[] itemTypes;
 	private int[] itemDatas;
 	private int[] itemMinQuantities;
@@ -29,6 +30,7 @@ public class ConjureSpell extends InstantSpell {
 		addToInventory = getConfigBoolean("add-to-inventory", false);
 		powerAffectsQuantity = getConfigBoolean("power-affects-quantity", false);
 		powerAffectsChance = getConfigBoolean("power-affects-chance", true);
+		calculateDropsIndividually = getConfigBoolean("calculate-drops-individually", true);
 		List<String> list = getConfigStringList("items", null);
 		if (list != null && list.size() > 0) {
 			itemTypes = new int[list.size()];
@@ -78,22 +80,10 @@ public class ConjureSpell extends InstantSpell {
 			// get items to drop
 			Random rand = new Random();
 			List<ItemStack> items = new ArrayList<ItemStack>();
-			for (int i = 0; i < itemTypes.length; i++) {
-				int r = rand.nextInt(100);
-				if (powerAffectsChance) r = Math.round(r / power);
-				if (itemTypes[i] != 0 && r < itemChances[i]) {
-					int quant = itemMinQuantities[i];
-					if (itemMaxQuantities[i] > itemMinQuantities[i]) {
-						quant = rand.nextInt(itemMaxQuantities[i] - itemMinQuantities[i]) + itemMinQuantities[i];
-					}
-					if (powerAffectsQuantity) {
-						quant = Math.round(quant * power);
-					}
-					if (quant > 0) {
-						ItemStack item = new ItemStack(itemTypes[i], quant, (short)itemDatas[i]);
-						items.add(item);
-					}
-				}
+			if (calculateDropsIndividually) {
+				individual(items, rand, power);
+			} else {
+				together(items, rand, power);
 			}
 			
 			// drop items
@@ -108,6 +98,43 @@ public class ConjureSpell extends InstantSpell {
 		}		
 		return PostCastAction.HANDLE_NORMALLY;
 		
+	}
+	
+	private void individual(List<ItemStack> items, Random rand, float power) {
+		for (int i = 0; i < itemTypes.length; i++) {
+			int r = rand.nextInt(100);
+			if (powerAffectsChance) r = Math.round(r / power);
+			if (itemTypes[i] != 0 && r < itemChances[i]) {
+				addItem(i, items, rand, power);
+			}
+		}
+	}
+	
+	private void together(List<ItemStack> items, Random rand, float power) {
+		int r = rand.nextInt(100);
+		int m = 0;
+		for (int i = 0; i < itemTypes.length; i++) {
+			if (itemTypes[i] != 0 && r < itemChances[i] + m) {
+				addItem(i, items, rand, power);
+				return;
+			} else {
+				m += itemChances[i];
+			}
+		}
+	}
+	
+	private void addItem(int i, List<ItemStack> items, Random rand, float power) {
+		int quant = itemMinQuantities[i];
+		if (itemMaxQuantities[i] > itemMinQuantities[i]) {
+			quant = rand.nextInt(itemMaxQuantities[i] - itemMinQuantities[i]) + itemMinQuantities[i];
+		}
+		if (powerAffectsQuantity) {
+			quant = Math.round(quant * power);
+		}
+		if (quant > 0) {
+			ItemStack item = new ItemStack(itemTypes[i], quant, (short)itemDatas[i]);
+			items.add(item);
+		}
 	}
 	
 

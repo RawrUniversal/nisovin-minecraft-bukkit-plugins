@@ -287,6 +287,9 @@ spells:
         description: Conjure some magical reagents.
         cast-item: 280
         cooldown: 600
+        power-affects-quantity: false
+        power-affects-chance: true
+        calculate-drops-individually: true
         items:
             - 331 5-7
             - 265 1-2 10%
