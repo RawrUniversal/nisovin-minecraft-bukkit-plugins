@@ -47,6 +47,8 @@ public abstract class Condition {
 		conditions.put("healthbelow", HealthBelowCondition.class);
 		conditions.put("foodabove", FoodAboveCondition.class);
 		conditions.put("foodbelow", FoodBelowCondition.class);
+		conditions.put("levelabove", LevelAboveCondition.class);
+		conditions.put("levelbelow", LevelBelowCondition.class);
 		conditions.put("buffactive", BuffActiveCondition.class);
 		conditions.put("world", InWorldCondition.class);
 		conditions.put("permission", PermissionCondition.class);
