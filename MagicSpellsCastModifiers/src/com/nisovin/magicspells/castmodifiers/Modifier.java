@@ -10,7 +10,6 @@ public class Modifier {
 	Condition condition;
 	ModifierType type;
 	String modifierVar;
-	int modifierVarInt;
 	float modifierVarFloat;
 	
 	public static Modifier factory(String s) {
@@ -40,10 +39,8 @@ public class Modifier {
 		
 		// process modifiervar
 		try {
-			if (m.type == ModifierType.POWER) {
+			if (m.type == ModifierType.POWER || m.type == ModifierType.COOLDOWN || m.type == ModifierType.REAGENTS) {
 				m.modifierVarFloat = Float.parseFloat(m.modifierVar);
-			} else if (m.type == ModifierType.COOLDOWN) {
-				m.modifierVarInt = Integer.parseInt(m.modifierVar);
 			}
 		} catch (NumberFormatException e) {
 			return null;
@@ -65,7 +62,7 @@ public class Modifier {
 		} else if (type == ModifierType.POWER) {
 			event.increasePower(modifierVarFloat);
 		} else if (type == ModifierType.COOLDOWN) {
-			event.setCooldown(modifierVarInt);
+			event.setCooldown(modifierVarFloat);
 		} else if (type == ModifierType.REAGENTS) {
 			event.setReagents(event.getReagents().multiply(modifierVarFloat));
 		}
@@ -100,6 +97,8 @@ public class Modifier {
 			return ModifierType.POWER;
 		} else if (name.equalsIgnoreCase("cooldown")) {
 			return ModifierType.COOLDOWN;
+		} else if (name.equalsIgnoreCase("reagents")) {
+			return ModifierType.REAGENTS;
 		} else {
 			return null;
 		}
