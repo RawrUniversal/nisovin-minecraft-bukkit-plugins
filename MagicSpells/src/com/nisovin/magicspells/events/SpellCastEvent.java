@@ -19,14 +19,14 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 
     private Spell.SpellCastState state;
     private boolean stateChanged;
-	private int cooldown;
+	private float cooldown;
 	private SpellReagents reagents;
 	private boolean reagentsChanged;
 	private float power;
 	private String[] args;
 	private boolean cancelled = false;
 	
-	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, String[] args, int cooldown, SpellReagents reagents) {
+	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, String[] args, float cooldown, SpellReagents reagents) {
 		super(spell, caster);
 		this.state = state;
 		this.stateChanged = false;
@@ -66,7 +66,7 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 	 * Gets the cooldown that will be triggered after the spell is cast.
 	 * @return the cooldown
 	 */
-	public int getCooldown() {
+	public float getCooldown() {
 		return cooldown;
 	}
 	
@@ -74,7 +74,7 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 	 * Sets the cooldown that will be triggered after the spell is cast.
 	 * @param cooldown the cooldown to set
 	 */
-	public void setCooldown(int cooldown) {
+	public void setCooldown(float cooldown) {
 		this.cooldown = cooldown;
 	}
 	

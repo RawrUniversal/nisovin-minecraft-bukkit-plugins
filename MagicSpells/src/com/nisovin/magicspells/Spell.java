@@ -43,8 +43,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected HashMap<Integer, List<String>> effects;
 	
 	protected SpellReagents reagents;
-	protected int cooldown;
-	protected HashMap<Spell, Integer> sharedCooldowns;
+	protected float cooldown;
+	protected HashMap<Spell, Float> sharedCooldowns;
 	protected boolean ignoreGlobalCooldown;
 
 	protected List<String> prerequisites;
@@ -173,14 +173,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		// cooldowns
-		this.cooldown = config.getInt(section + "." + spellName + ".cooldown", 0);
+		this.cooldown = (float)config.getDouble(section + "." + spellName + ".cooldown", 0);
 		List<String> cooldowns = config.getStringList(section + "." + spellName + ".shared-cooldowns", null);
 		if (cooldowns != null) {
-			this.sharedCooldowns = new HashMap<Spell,Integer>();
+			this.sharedCooldowns = new HashMap<Spell,Float>();
 			for (String s : cooldowns) {
 				String[] data = s.split(" ");
 				Spell spell = MagicSpells.getSpellByInternalName(data[0]);
-				int cd = Integer.parseInt(data[1]);
+				float cd = Float.parseFloat(data[1]);
 				if (spell != null) {
 					this.sharedCooldowns.put(spell, cd);
 				}
@@ -291,7 +291,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		// call events
 		float power = 1.0F;
-		int cooldown = this.cooldown;
+		float cooldown = this.cooldown;
 		SpellReagents reagents = this.reagents.clone();
 		SpellCastEvent event = new SpellCastEvent(this, player, state, power, args, cooldown, reagents);
 		Bukkit.getServer().getPluginManager().callEvent(event);
@@ -320,7 +320,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return new SpellCastResult(state, action);
 	}
 	
-	private PostCastAction handleCast(Player player, SpellCastState state, float power, int cooldown, SpellReagents reagents, String[] args) {
+	private PostCastAction handleCast(Player player, SpellCastState state, float power, float cooldown, SpellReagents reagents, String[] args) {
 		MagicSpells.debug(3, "    Power: " + power);
 		MagicSpells.debug(3, "    Cooldown: " + cooldown);
 		if (MagicSpells.debug && args != null && args.length > 0) {
@@ -350,7 +350,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					player.giveExp(experience);
 				}
 			} else if (state == SpellCastState.ON_COOLDOWN) {
-				MagicSpells.sendMessage(player, formatMessage(strOnCooldown, "%c", getCooldown(player)+""));
+				MagicSpells.sendMessage(player, formatMessage(strOnCooldown, "%c", Math.round(getCooldown(player))+""));
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
 				MagicSpells.sendMessage(player, strMissingReagents);
 				if (MagicSpells.showStrCostOnMissingReagents && strCost != null && !strCost.isEmpty()) {
@@ -457,14 +457,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param player The player to check
 	 * @return The number of seconds remaining in the cooldown
 	 */
-	public int getCooldown(Player player) {
+	public float getCooldown(Player player) {
 		if (cooldown <= 0) {
 			return 0;
 		}
 		
 		Long casted = lastCast.get(player.getName());
 		if (casted != null) {
-			return (int)(cooldown - ((System.currentTimeMillis()-casted)/1000));
+			return (cooldown - ((System.currentTimeMillis()-casted)/1000F));
 		} else {
 			return 0;
 		}
@@ -474,7 +474,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * Begins the cooldown for the spell for the specified player
 	 * @param player The player to set the cooldown for
 	 */
-	public void setCooldown(Player player, int cooldown) {
+	public void setCooldown(Player player, float cooldown) {
 		setCooldown(player, cooldown, true);
 	}
 	
@@ -482,12 +482,12 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * Begins the cooldown for the spell for the specified player
 	 * @param player The player to set the cooldown for
 	 */
-	public void setCooldown(Player player, int cooldown, boolean activateSharedCooldowns) {
+	public void setCooldown(Player player, float cooldown, boolean activateSharedCooldowns) {
 		if (cooldown > 0) {
 			lastCast.put(player.getName(), System.currentTimeMillis());
 		}
 		if (activateSharedCooldowns && sharedCooldowns != null) {
-			for (Map.Entry<Spell, Integer> scd : sharedCooldowns.entrySet()) {
+			for (Map.Entry<Spell, Float> scd : sharedCooldowns.entrySet()) {
 				scd.getKey().setCooldown(player, scd.getValue(), false);
 			}
 		}
