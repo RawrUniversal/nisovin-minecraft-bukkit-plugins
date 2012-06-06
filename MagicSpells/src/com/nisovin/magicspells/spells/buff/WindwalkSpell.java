@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -116,7 +117,9 @@ public class WindwalkSpell extends BuffSpell {
 		super.turnOff(player);
 		if (flyers.contains(player)) {
 			player.setFlying(false);
-			player.setAllowFlight(false);
+			if (player.getGameMode() != GameMode.CREATIVE) {
+				player.setAllowFlight(false);
+			}
 			player.setFallDistance(0);
 			flyers.remove(player);
 			sendMessage(player, strFade);
