@@ -63,7 +63,7 @@ public class GeyserSpell extends TargetedEntitySpell {
 			
 			// check plugins
 			if (target instanceof Player && checkPlugins) {
-				EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.CUSTOM, dam);
+				EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
 				Bukkit.getServer().getPluginManager().callEvent(event);
 				if (event.isCancelled()) {
 					return noTarget(player);
