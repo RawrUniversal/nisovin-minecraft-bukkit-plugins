@@ -12,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
@@ -24,7 +23,6 @@ public class CarpetSpell extends BuffSpell {
 	
 	private int platformBlock;
 	private int size;
-	private boolean cancelOnLogout;
 	private boolean cancelOnTeleport;
 	
 	private HashMap<String,BlockPlatform> windwalkers;
@@ -36,7 +34,6 @@ public class CarpetSpell extends BuffSpell {
 		
 		platformBlock = getConfigInt("platform-block", Material.GLASS.getId());
 		size = getConfigInt("size", 2);
-		cancelOnLogout = getConfigBoolean("cancel-on-logout", true);
 		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
 		
 		windwalkers = new HashMap<String,BlockPlatform>();
@@ -141,13 +138,6 @@ public class CarpetSpell extends BuffSpell {
 			}
 		}
 		
-	}
-
-	public class QuitListener implements Listener {
-		@EventHandler(priority=EventPriority.MONITOR)
-		public void onPlayerQuit(PlayerQuitEvent event) {
-			turnOff(event.getPlayer());
-		}		
 	}
 
 	public class TeleportListener implements Listener {

@@ -8,12 +8,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.BuffSpell;
@@ -23,16 +20,14 @@ public class InvisibilitySpell extends BuffSpell {
 
 	private boolean toggle;
 	private boolean preventPickups;
-	private boolean cancelOnAttack;
 	
-	private HashMap<Player,CostCharger> invisibles = new HashMap<Player, InvisibilitySpell.CostCharger>();
+	private HashMap<String,CostCharger> invisibles = new HashMap<String, InvisibilitySpell.CostCharger>();
 	
 	public InvisibilitySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		toggle = getConfigBoolean("toggle", true);
 		preventPickups = getConfigBoolean("prevent-pickups", true);
-		cancelOnAttack = getConfigBoolean("cancel-on-attack", true);
 	}
 
 	@Override
@@ -57,7 +52,7 @@ public class InvisibilitySpell extends BuffSpell {
 			}
 			// start buff stuff
 			startSpellDuration(player);
-			invisibles.put(player, new CostCharger(player));
+			invisibles.put(player.getName(), new CostCharger(player));
 			// spell effect
 			playSpellEffects(1, player);
 		}
@@ -81,30 +76,24 @@ public class InvisibilitySpell extends BuffSpell {
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onEntityDamage(EntityDamageEvent event) {
-		if (event.isCancelled() || !cancelOnAttack || !(event instanceof EntityDamageByEntityEvent)) return;
-		EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
-		if (evt.getDamager() instanceof Player && invisibles.containsKey((Player)evt.getDamager())) {
-			turnOff((Player)evt.getDamager());
-		}
-	}
-	
-	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		for (Player p : invisibles.keySet()) {
-			player.hidePlayer(p);
+		for (String name : invisibles.keySet()) {
+			Player p = Bukkit.getPlayerExact(name);
+			if (p != null && !name.equals(player.getName())) {
+				player.hidePlayer(p);
+			}
 		}
-	}
-	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		turnOff(event.getPlayer());
+		if (invisibles.containsKey(player.getName())) {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				p.hidePlayer(player);
+			}
+		}
 	}
 	
 	@Override
 	public void turnOff(Player player) {
-		if (invisibles.containsKey(player)) {
+		if (invisibles.containsKey(player.getName())) {
 			super.turnOff(player);
 			// stop charge ticker
 			CostCharger c = invisibles.remove(player);
@@ -151,7 +140,7 @@ public class InvisibilitySpell extends BuffSpell {
 
 	@Override
 	public boolean isActive(Player player) {
-		return invisibles.containsKey(player);
+		return invisibles.containsKey(player.getName());
 	}
 
 }

@@ -9,9 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.util.Vector;
@@ -24,9 +22,7 @@ public class WindwalkSpell extends BuffSpell {
 
 	private int launchSpeed;
     private boolean cancelOnLand;
-	private boolean cancelOnLogout;
 	private boolean cancelOnTeleport;
-	private boolean cancelOnDamage;
 	
 	private HashSet<Player> flyers;
 	private HashMap<Player, Integer> tasks;
@@ -36,9 +32,7 @@ public class WindwalkSpell extends BuffSpell {
 
 		launchSpeed = getConfigInt("launch-speed", 1);
         cancelOnLand = getConfigBoolean("cancel-on-land", true);
-		cancelOnLogout = getConfigBoolean("cancel-on-logout", true);
 		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
-		cancelOnDamage = getConfigBoolean("cancel-on-damage", false);
 		
 		flyers = new HashSet<Player>();
 		if (useCostInterval > 0) {
@@ -58,9 +52,6 @@ public class WindwalkSpell extends BuffSpell {
 		}
 		if (cancelOnTeleport) {
 			registerEvents(new TeleportListener());
-		}
-		if (cancelOnDamage) {
-			registerEvents(new DamageListener());
 		}
 	}
 
@@ -102,13 +93,6 @@ public class WindwalkSpell extends BuffSpell {
 	    }
 	}
 
-	public class QuitListener implements Listener {
-		@EventHandler(priority=EventPriority.MONITOR)
-		public void onPlayerQuit(PlayerQuitEvent event) {
-			turnOff(event.getPlayer());
-		}
-	}
-
 	public class TeleportListener implements Listener {
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onPlayerTeleport(PlayerTeleportEvent event) {
@@ -123,15 +107,6 @@ public class WindwalkSpell extends BuffSpell {
 		public void onPlayerPortal(PlayerPortalEvent event) {
 			if (flyers.contains(event.getPlayer())) {
 				turnOff(event.getPlayer());
-			}
-		}
-	}
-	
-	public class DamageListener implements Listener {
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
-		public void onPlayerDamage(EntityDamageEvent event) {
-			if (event.getEntity() instanceof Player && flyers.contains((Player)event.getEntity())) {
-				turnOff((Player)event.getEntity());
 			}
 		}
 	}

@@ -252,7 +252,7 @@ spells:
         str-cast-others: "%a is now walking on air!"
         str-fade: You are no longer walking on air.
     clarity:
-        spell-class: ".buff.ManaRegen"
+        spell-class: ".buff.ManaRegenSpell"
         name: clarity
         description: Increase mana regeneration for a time.
         cast-item: 290
@@ -709,7 +709,8 @@ spells:
             - disabled spawn
         toggle: true
         prevent-pickups: true
-        cancel-on-attack: true
+        cancel-on-give-damage: true
+        cancel-on-logout: true
         duration: 15
         cost:
             - 331 2

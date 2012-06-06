@@ -14,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
@@ -25,7 +24,6 @@ public class WalkwaySpell extends BuffSpell {
 
 	private Material material;
 	private int size;
-	private boolean cancelOnLogout;
 	private boolean cancelOnTeleport;
 	
 	private HashMap<Player,Platform> platforms;
@@ -36,7 +34,6 @@ public class WalkwaySpell extends BuffSpell {
 		
 		material = Material.getMaterial(getConfigInt("platform-type", Material.WOOD.getId()));
 		size = getConfigInt("size", 6);
-		cancelOnLogout = getConfigBoolean("cancel-on-logout", true);
 		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
 		
 		platforms = new HashMap<Player,Platform>();
@@ -45,9 +42,6 @@ public class WalkwaySpell extends BuffSpell {
 
 	public void initialize() {
 		super.initialize();
-		if (cancelOnLogout) {
-			registerEvents(new QuitListener());
-		}
 		if (cancelOnTeleport) {
 			registerEvents(new TeleportListener());
 		}
@@ -103,15 +97,6 @@ public class WalkwaySpell extends BuffSpell {
 			}
 		}
 		
-	}
-
-	public class QuitListener implements Listener {
-		@EventHandler(priority=EventPriority.MONITOR)
-		public void onPlayerQuit(PlayerQuitEvent event) {
-			if (platforms.containsKey(event.getPlayer())) {
-				turnOff(event.getPlayer());
-			}
-		}
 	}
 
 	public class TeleportListener implements Listener {

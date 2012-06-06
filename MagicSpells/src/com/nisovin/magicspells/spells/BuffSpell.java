@@ -5,6 +5,12 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.BuffManager;
@@ -25,7 +31,9 @@ public abstract class BuffSpell extends Spell {
 	protected int useCostInterval;
 	protected int numUses;
 	protected int duration;
-	protected boolean cancelOnRecast;
+	protected boolean cancelOnGiveDamage;
+	protected boolean cancelOnTakeDamage;
+	protected boolean cancelOnLogout;
 	protected String strFade;
 	private boolean castWithItem;
 	private boolean castByCommand;
@@ -69,7 +77,16 @@ public abstract class BuffSpell extends Spell {
 		useCostInterval = getConfigInt("use-cost-interval", 0);
 		numUses = getConfigInt("num-uses", 0);
 		duration = getConfigInt("duration", 0);
-		cancelOnRecast = getConfigBoolean("cancel-on-recast", true);
+		
+		cancelOnGiveDamage = getConfigBoolean("cancel-on-give-damage", false);
+		cancelOnTakeDamage = getConfigBoolean("cancel-on-take-damage", false);
+		cancelOnLogout = getConfigBoolean("cancel-on-logout", false);
+		if (cancelOnGiveDamage || cancelOnTakeDamage) {
+			registerEvents(new DamageListener());
+		}
+		if (cancelOnLogout) {
+			registerEvents(new QuitListener());
+		}
 		
 		strFade = getConfigString("str-fade", "");
 		
@@ -79,7 +96,7 @@ public abstract class BuffSpell extends Spell {
 		if (duration > 0) {
 			durationStartTime = new HashMap<String,Long>();
 		}
-		
+				
 		castWithItem = getConfigBoolean("can-cast-with-item", true);
 		castByCommand = getConfigBoolean("can-cast-by-command", true);
 	}
@@ -211,5 +228,28 @@ public abstract class BuffSpell extends Spell {
 	@Override
 	protected
 	abstract void turnOff();
+	
+	public class DamageListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onPlayerDamage(EntityDamageEvent event) {
+			if (cancelOnTakeDamage && event.getEntity() instanceof Player && isActive((Player)event.getEntity())) {
+				turnOff((Player)event.getEntity());
+			} else if (cancelOnGiveDamage && event instanceof EntityDamageByEntityEvent) {
+				EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
+				if (evt.getDamager() instanceof Player && isActive((Player)evt.getDamager())) {
+					turnOff((Player)evt.getDamager());
+				}
+			}
+		}
+	}
+
+	public class QuitListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR)
+		public void onPlayerQuit(PlayerQuitEvent event) {
+			if (isActive(event.getPlayer())) {
+				turnOff(event.getPlayer());
+			}
+		}
+	}
 	
 }
