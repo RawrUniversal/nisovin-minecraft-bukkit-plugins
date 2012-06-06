@@ -22,6 +22,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 	private int commandDelay;
 	private List<String> commandToBlock;
 	private List<String> temporaryPermissions;
+	private boolean temporaryOp;
 	private boolean requirePlayerTarget;
 	private boolean executeAsTargetInstead;
 	private boolean executeOnConsoleInstead;
@@ -39,6 +40,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 		commandDelay = getConfigInt("command-delay", 0);
 		commandToBlock = getConfigStringList("command-to-block", null);
 		temporaryPermissions = getConfigStringList("temporary-permissions", null);
+		temporaryOp = getConfigBoolean("temporary-op", false);
 		requirePlayerTarget = getConfigBoolean("require-player-target", false);
 		executeAsTargetInstead = getConfigBoolean("execute-as-target-instead", false);
 		executeOnConsoleInstead = getConfigBoolean("execute-on-console-instead", false);
@@ -82,6 +84,12 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 				}
 			}
 		}
+		// temp op
+		boolean opped = false;
+		if (temporaryOp && !player.isOp()) {
+			opped = true;
+			player.setOp(true);
+		}
 		// perform commands
 		for (String comm : commandToExecute) {
 			if (args != null && args.length > 0) {
@@ -100,6 +108,10 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 			} else {
 				player.performCommand(comm);
 			}
+		}
+		// deop
+		if (opped) {
+			player.setOp(false);
 		}
 		// effects
 		if (target != null) {
@@ -174,6 +186,12 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 					}
 				}
 			}
+			// temporary op
+			boolean opped = false;
+			if (temporaryOp && !player.isOp()) {
+				opped = true;
+				player.setOp(true);
+			}
 			// run commands
 			for (String comm : commandToExecuteLater) {
 				if (comm != null && !comm.isEmpty()) {
@@ -189,6 +207,10 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 						player.performCommand(comm);
 					}
 				}
+			}
+			// deop
+			if (opped) {
+				player.setOp(false);
 			}
 			// graphical effect
 			playSpellEffects(4, player);
