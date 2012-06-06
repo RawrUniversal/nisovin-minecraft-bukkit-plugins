@@ -251,6 +251,19 @@ spells:
         str-cast-self: You are now walking on air!
         str-cast-others: "%a is now walking on air!"
         str-fade: You are no longer walking on air.
+    clarity:
+        spell-class: ".buff.ManaRegen"
+        name: clarity
+        description: Increase mana regeneration for a time.
+        cast-item: 290
+        cost:
+            - mana 10
+        cooldown: 300
+        duration: 60
+        regen-mod-amt: 3
+        str-cast-self: Your thoughts race and flow with ease!
+        str-cost: 10 mana
+        str-fade: Your mind returns to normal.
     combust:
         spell-class: ".targeted.CombustSpell"
         name: combust
