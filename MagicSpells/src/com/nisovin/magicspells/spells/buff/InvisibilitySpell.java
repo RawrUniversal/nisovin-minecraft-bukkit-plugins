@@ -8,11 +8,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -20,6 +22,7 @@ public class InvisibilitySpell extends BuffSpell {
 
 	private boolean toggle;
 	private boolean preventPickups;
+	private boolean cancelOnSpellCast;
 	
 	private HashMap<String,CostCharger> invisibles = new HashMap<String, InvisibilitySpell.CostCharger>();
 	
@@ -28,6 +31,15 @@ public class InvisibilitySpell extends BuffSpell {
 		
 		toggle = getConfigBoolean("toggle", true);
 		preventPickups = getConfigBoolean("prevent-pickups", true);
+		cancelOnSpellCast = getConfigBoolean("cancel-on-spell-cast", false);
+	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+		if (cancelOnSpellCast) {
+			registerEvents(new SpellCastListener());
+		}
 	}
 
 	@Override
@@ -114,6 +126,15 @@ public class InvisibilitySpell extends BuffSpell {
 			c.stop();
 		}
 		invisibles.clear();
+	}
+	
+	public class SpellCastListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSpellCast(SpellCastEvent event) {
+			if (isActive(event.getCaster())) {
+				turnOff(event.getCaster());
+			}
+		}
 	}
 	
 	private class CostCharger implements Runnable {
