@@ -13,6 +13,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import com.nisovin.magicspells.util.ExperienceUtils;
+
 public class CurrencyHandler {
 
 	private HashMap<String,String> currencies = new HashMap<String,String>();
@@ -30,7 +32,7 @@ public class CurrencyHandler {
 				if (defaultCurrency == null) {
 					defaultCurrency = key;
 				}
-				currencies.put(key, sec.getString(key).toLowerCase());
+				currencies.put(key.toLowerCase(), sec.getString(key).toLowerCase());
 			}
 			if (defaultCurrency == null) {
 				defaultCurrency = "money";
@@ -52,7 +54,7 @@ public class CurrencyHandler {
 	}
 	
 	public boolean has(Player player, double amount, String currency) {
-		String c = currencies.get(currency);
+		String c = currencies.get(currency.toLowerCase());
 		if (c == null) c = currencies.get(defaultCurrency);
 		
 		if (c == null) {
@@ -61,6 +63,8 @@ public class CurrencyHandler {
 			return economy.has(player.getName(), amount);
 		} else if (c.equalsIgnoreCase("levels")) {
 			return player.getLevel() >= (int)amount;
+		} else if (c.equalsIgnoreCase("experience") || c.equalsIgnoreCase("xp")) {
+			return ExperienceUtils.hasExp(player, (int)amount);
 		} else if (c.matches("^[0-9]+$")) {
 			return inventoryContains(player.getInventory(), new ItemStack(Integer.parseInt(c), (int)amount));
 		} else if (c.matches("^[0-9]+:[0-9]+$")) {
@@ -79,13 +83,15 @@ public class CurrencyHandler {
 	
 	@SuppressWarnings("deprecation")
 	public void remove(Player player, double amount, String currency) {
-		String c = currencies.get(currency);
+		String c = currencies.get(currency.toLowerCase());
 		if (c == null) c = currencies.get(defaultCurrency);
 		
 		if (c.equalsIgnoreCase("vault") && economy != null) {
 			economy.withdrawPlayer(player.getName(), amount);
 		} else if (c.equalsIgnoreCase("levels")) {
 			player.setLevel(player.getLevel() - (int)amount);
+		} else if (c.equalsIgnoreCase("experience") || c.equalsIgnoreCase("xp")) {
+			ExperienceUtils.changeExp(player, -(int)amount);
 		} else if (c.matches("^[0-9]+$")) {
 			removeFromInventory(player.getInventory(), new ItemStack(Integer.parseInt(c), (int)amount));
 			player.updateInventory();

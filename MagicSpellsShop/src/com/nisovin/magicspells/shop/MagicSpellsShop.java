@@ -238,6 +238,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		Spell spell = MagicSpells.getSpellByInGameName(spellName);
 		if (spell == null) {
 			event.getPlayer().sendMessage("A spell by that name does not exist.");
+			event.setCancelled(true);
 			return;
 		}
 		

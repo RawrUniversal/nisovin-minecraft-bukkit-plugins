@@ -1,5 +1,5 @@
 name: MagicSpellsShop
-version: 1.3
+version: 1.4
 main: com.nisovin.magicspells.shop.MagicSpellsShop
 author: nisovin
 depend: [MagicSpells]
