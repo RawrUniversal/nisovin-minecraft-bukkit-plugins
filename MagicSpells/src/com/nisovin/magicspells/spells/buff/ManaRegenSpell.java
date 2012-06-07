@@ -42,6 +42,8 @@ public class ManaRegenSpell extends BuffSpell {
 			int newAmt = event.getNewAmount() + regenModAmt;
 			if (newAmt > event.getMaxMana()) {
 				newAmt = event.getMaxMana();
+			} else if (newAmt < 0) {
+				newAmt = 0;
 			}
 			event.setNewAmount(newAmt);
 			addUseAndChargeCost(p);
