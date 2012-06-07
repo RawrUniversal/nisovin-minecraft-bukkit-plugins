@@ -44,10 +44,13 @@ public class InvisibilitySpell extends BuffSpell {
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (toggle && invisibles.containsKey(player)) {
+		if (invisibles.containsKey(player.getName())) {
 			turnOff(player);
-			return PostCastAction.ALREADY_HANDLED;
-		} else if (state == SpellCastState.NORMAL) {
+			if (toggle) {
+				return PostCastAction.ALREADY_HANDLED;
+			}
+		}
+		if (state == SpellCastState.NORMAL) {
 			// make player invisible
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				p.hidePlayer(player);
