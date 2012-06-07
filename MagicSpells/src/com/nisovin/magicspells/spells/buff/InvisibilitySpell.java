@@ -108,7 +108,7 @@ public class InvisibilitySpell extends BuffSpell {
 		if (invisibles.containsKey(player.getName())) {
 			super.turnOff(player);
 			// stop charge ticker
-			CostCharger c = invisibles.remove(player);
+			CostCharger c = invisibles.remove(player.getName());
 			c.stop();
 			// force visible
 			for (Player p : Bukkit.getOnlinePlayers()) {

@@ -445,7 +445,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		Long casted = lastCast.get(player.getName());
 		if (casted != null) {
-			if (casted + (cooldown*1000) > System.currentTimeMillis()) {
+			if (casted + (int)(cooldown*1000F) > System.currentTimeMillis()) {
 				return true;
 			}
 		}
@@ -484,6 +484,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 */
 	public void setCooldown(Player player, float cooldown, boolean activateSharedCooldowns) {
 		if (cooldown > 0) {
+			System.out.println("test");
 			lastCast.put(player.getName(), System.currentTimeMillis());
 		}
 		if (activateSharedCooldowns && sharedCooldowns != null) {
