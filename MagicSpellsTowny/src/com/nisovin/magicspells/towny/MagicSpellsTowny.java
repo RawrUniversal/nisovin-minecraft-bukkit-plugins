@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -15,6 +16,7 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
@@ -56,7 +58,13 @@ public class MagicSpellsTowny extends JavaPlugin implements Listener {
 	
 	@EventHandler(ignoreCancelled=true)
 	public void onSpellTarget(SpellTargetEvent event) {
-		if (CombatUtil.preventDamageCall(event.getCaster(), event.getTarget())) {
+		boolean friendlySpell = false;
+		if (event.getSpell() instanceof TargetedSpell && ((TargetedSpell)event.getSpell()).isFriendlySpell()) {
+			friendlySpell = true;
+		}
+		if (!friendlySpell && CombatUtil.preventDamageCall(event.getCaster(), event.getTarget())) {
+			event.setCancelled(true);
+		} else if (friendlySpell && event.getTarget() instanceof Player && CombatUtil.isAlly(event.getCaster().getName(), ((Player)event.getTarget()).getName())) {
 			event.setCancelled(true);
 		}
 	}
