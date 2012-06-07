@@ -91,23 +91,28 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 			player.setOp(true);
 		}
 		// perform commands
-		for (String comm : commandToExecute) {
-			if (args != null && args.length > 0) {
-				for (int i = 0; i < args.length; i++) {
-					comm = comm.replace("%"+(i+1), args[i]);
+		try {
+			for (String comm : commandToExecute) {
+				if (args != null && args.length > 0) {
+					for (int i = 0; i < args.length; i++) {
+						comm = comm.replace("%"+(i+1), args[i]);
+					}
+				}
+				comm = comm.replace("%a", player.getName());
+				if (target != null) {
+					comm = comm.replace("%t", target.getName());
+				}
+				if (executeAsTargetInstead) {
+					target.performCommand(comm);
+				} else if (executeOnConsoleInstead) {
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
+				} else {
+					player.performCommand(comm);
 				}
 			}
-			comm = comm.replace("%a", player.getName());
-			if (target != null) {
-				comm = comm.replace("%t", target.getName());
-			}
-			if (executeAsTargetInstead) {
-				target.performCommand(comm);
-			} else if (executeOnConsoleInstead) {
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
-			} else {
-				player.performCommand(comm);
-			}
+		} catch (Exception e) {
+			// catch all exceptions to make sure we don't leave someone opped
+			e.printStackTrace();
 		}
 		// deop
 		if (opped) {
@@ -193,20 +198,25 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 				player.setOp(true);
 			}
 			// run commands
-			for (String comm : commandToExecuteLater) {
-				if (comm != null && !comm.isEmpty()) {
-					comm = comm.replace("%a", player.getName());
-					if (target != null) {
-						comm = comm.replace("%t", target.getName());
-					}
-					if (executeAsTargetInstead) {
-						target.performCommand(comm);
-					} else if (executeOnConsoleInstead) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
-					} else {
-						player.performCommand(comm);
+			try {
+				for (String comm : commandToExecuteLater) {
+					if (comm != null && !comm.isEmpty()) {
+						comm = comm.replace("%a", player.getName());
+						if (target != null) {
+							comm = comm.replace("%t", target.getName());
+						}
+						if (executeAsTargetInstead) {
+							target.performCommand(comm);
+						} else if (executeOnConsoleInstead) {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
+						} else {
+							player.performCommand(comm);
+						}
 					}
 				}
+			} catch (Exception e) {
+				// catch exceptions to make sure we don't leave someone opped
+				e.printStackTrace();
 			}
 			// deop
 			if (opped) {
