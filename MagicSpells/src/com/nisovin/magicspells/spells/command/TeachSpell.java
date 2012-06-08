@@ -13,6 +13,7 @@ import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class TeachSpell extends CommandSpell {
 
@@ -139,7 +140,7 @@ public class TeachSpell extends CommandSpell {
 	
 	@Override
 	public String tabComplete(CommandSender sender, String partial) {
-		String[] args = partial.split(" ");
+		String[] args = Util.splitParams(partial);
 		if (args.length == 1) {
 			// matching player name
 			return tabCompletePlayerName(args[0]);

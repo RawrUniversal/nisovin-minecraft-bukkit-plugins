@@ -33,6 +33,7 @@ import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spells.*;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class MagicSpells extends JavaPlugin {
 
@@ -441,6 +442,7 @@ public class MagicSpells extends JavaPlugin {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
 		if (command.getName().equalsIgnoreCase("magicspellcast")) {
+			args = Util.splitParams(args);
 			if (args == null || args.length == 0) {
 				if (sender instanceof Player) {
 					sendMessage((Player)sender, strCastUsage);
@@ -480,6 +482,7 @@ public class MagicSpells extends JavaPlugin {
 							for (int i = 1; i < args.length; i++) {
 								spellArgs[i-1] = args[i];
 							}
+							spellArgs = Util.splitParams(spellArgs);
 						}
 						spell.cast(player, spellArgs);
 					} else {

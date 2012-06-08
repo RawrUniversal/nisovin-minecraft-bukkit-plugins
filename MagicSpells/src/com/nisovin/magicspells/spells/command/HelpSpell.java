@@ -8,6 +8,7 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class HelpSpell extends CommandSpell {
 	
@@ -52,7 +53,8 @@ public class HelpSpell extends CommandSpell {
 	
 	@Override
 	public String tabComplete(CommandSender sender, String partial) {
-		if (sender instanceof Player && !partial.contains(" ")) {
+		String [] args = Util.splitParams(partial);
+		if (sender instanceof Player && args.length == 1) {
 			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
 			return spellbook.tabComplete(partial);
 		}

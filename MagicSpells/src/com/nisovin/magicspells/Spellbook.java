@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import com.nisovin.magicspells.events.SpellSelectionChangedEvent;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.CastItem;
+import com.nisovin.magicspells.util.Util;
 
 public class Spellbook {
 
@@ -174,8 +175,10 @@ public class Spellbook {
 	}
 	
 	public String tabComplete(String partial) {
-		if (!partial.contains(" ")) {
+		String[] data = Util.splitParams(partial, 2);
+		if (data.length == 1) {
 			// complete spell name
+			partial = data[0];
 			List<String> options = new ArrayList<String>();
 			for (Spell spell : allSpells) {
 				if (spell.canCastByCommand()) {
@@ -208,7 +211,6 @@ public class Spellbook {
 			}
 		} else {
 			// complete spell params
-			String[] data = partial.split(" ", 2);
 			Spell spell = getSpellByName(data[0]);
 			if (spell == null) {
 				return null;

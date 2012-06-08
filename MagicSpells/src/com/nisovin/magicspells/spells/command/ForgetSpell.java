@@ -10,6 +10,7 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class ForgetSpell extends CommandSpell {
 
@@ -170,7 +171,7 @@ public class ForgetSpell extends CommandSpell {
 	
 	@Override
 	public String tabComplete(CommandSender sender, String partial) {
-		String[] args = partial.split(" ");
+		String[] args = Util.splitParams(partial);
 		if (args.length == 1) {
 			// matching player name
 			return tabCompletePlayerName(args[0]);
