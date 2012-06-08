@@ -42,8 +42,9 @@ public class PassiveSpell extends Spell {
 	private PassiveSpell thisSpell = this;
 	private Random random = new Random();
 	
-	private String trigger;
+	private List<String> triggers;
 	private float chance;
+	private boolean castWithoutTarget;
 	
 	private List<String> spellNames;
 	private List<Spell> spells;
@@ -51,8 +52,9 @@ public class PassiveSpell extends Spell {
 	public PassiveSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		trigger = getConfigString("trigger", "");
+		triggers = getConfigStringList("trigger", null);
 		chance = getConfigFloat("chance", 100F) / 100F;
+		castWithoutTarget = getConfigBoolean("cast-without-target", false);
 		
 		spellNames = getConfigStringList("spells", null);
 	}
@@ -77,30 +79,46 @@ public class PassiveSpell extends Spell {
 		}
 		
 		// get trigger
-		String type = trigger;
-		String var = null;
-		if (trigger.contains(" ")) {
-			String[] data = trigger.split(" ", 2);
-			type = data[0];
-			var = data[1];
+		int trigCount = 0;
+		if (triggers != null) {
+			for (String trigger : triggers) {
+				String type = trigger;
+				String var = null;
+				if (trigger.contains(" ")) {
+					String[] data = trigger.split(" ", 2);
+					type = data[0];
+					var = data[1];
+				}
+				type = type.toLowerCase();
+				
+				// process trigger
+				if (type.equalsIgnoreCase("takedamage")) {
+					registerEvents(new TakeDamageListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("givedamage")) {
+					registerEvents(new GiveDamageListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("blockbreak")) {
+					registerEvents(new BlockBreakListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("blockplace")) {
+					registerEvents(new BlockPlaceListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("rightclick")) {
+					registerEvents(new RightClickListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("spelltargeted")) {
+					registerEvents(new SpellTargetedListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("spellcast")) {
+					registerEvents(new SpellCastListener(var));
+					trigCount++;
+				}
+			}
 		}
-		type = type.toLowerCase();
-		
-		// process trigger
-		if (type.equalsIgnoreCase("takedamage")) {
-			registerEvents(new TakeDamageListener(var));
-		} else if (type.equalsIgnoreCase("givedamage")) {
-			registerEvents(new GiveDamageListener(var));
-		} else if (type.equalsIgnoreCase("blockbreak")) {
-			registerEvents(new BlockBreakListener(var));
-		} else if (type.equalsIgnoreCase("blockplace")) {
-			registerEvents(new BlockPlaceListener(var));
-		} else if (type.equalsIgnoreCase("rightclick")) {
-			registerEvents(new RightClickListener(var));
-		} else if (type.equalsIgnoreCase("spelltargeted")) {
-			registerEvents(new SpellTargetedListener(var));
-		} else if (type.equalsIgnoreCase("spellcast")) {
-			registerEvents(new SpellCastListener(var));
+		if (trigCount == 0) {
+			MagicSpells.error("Passive spell '" + name + "' has no triggers defined!");
+			return;
 		}
 	}
 
@@ -138,7 +156,7 @@ public class PassiveSpell extends Spell {
 						} else if (target != null) {
 							((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);
 						}
-					} else {
+					} else if (castWithoutTarget || !(spell instanceof TargetedSpell)) {
 						spell.castSpell(caster, SpellCastState.NORMAL, power, null);
 					}
 				}
