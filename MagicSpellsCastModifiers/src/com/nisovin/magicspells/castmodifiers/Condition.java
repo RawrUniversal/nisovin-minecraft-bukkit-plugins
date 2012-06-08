@@ -40,6 +40,7 @@ public abstract class Condition {
 		conditions.put("lightlevelbelow", LightLevelBelowCondition.class);
 		conditions.put("onblock", OnBlockCondition.class);
 		conditions.put("inblock", InBlockCondition.class);
+		conditions.put("undersky", UnderSkyCondition.class);
 		conditions.put("biome", BiomeCondition.class);
 		conditions.put("wearing", WearingCondition.class);
 		conditions.put("hasitem", HasItemCondition.class);
