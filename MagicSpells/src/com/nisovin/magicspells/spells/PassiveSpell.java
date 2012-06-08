@@ -41,6 +41,7 @@ public class PassiveSpell extends Spell {
 
 	private PassiveSpell thisSpell = this;
 	private Random random = new Random();
+	private boolean disabled = false;
 	
 	private List<String> triggers;
 	private float chance;
@@ -141,10 +142,12 @@ public class PassiveSpell extends Spell {
 	
 	private void activate(Player caster, LivingEntity target, Location location) {
 		MagicSpells.debug(3, "Activating passive spell '" + name + "' for player " + caster.getName());
-		if (!onCooldown(caster) && (chance >= .999 || random.nextFloat() <= chance) && hasReagents(caster)) {
+		if (!disabled && !onCooldown(caster) && (chance >= .999 || random.nextFloat() <= chance) && hasReagents(caster)) {
+			disabled = true;
 			SpellCastEvent event = new SpellCastEvent(this, caster, SpellCastState.NORMAL, 1.0F, null, cooldown, new SpellReagents());
 			Bukkit.getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
+				setCooldown(caster, event.getCooldown());
 				float power = event.getPower();
 				for (Spell spell : spells) {
 					MagicSpells.debug(3, "    Casting spell effect '" + spell.getName() + "'");
@@ -160,10 +163,10 @@ public class PassiveSpell extends Spell {
 						spell.castSpell(caster, SpellCastState.NORMAL, power, null);
 					}
 				}
-				setCooldown(caster, event.getCooldown());
 				removeReagents(caster);
 				sendMessage(caster, strCastSelf);
 			}
+			disabled = false;
 		}
 	}
 	
@@ -241,6 +244,8 @@ public class PassiveSpell extends Spell {
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onDamage(EntityDamageByEntityEvent event) {
+			if (event.getDamage() == 0) return;
+			if (event.getEntity() instanceof LivingEntity && (((LivingEntity)event.getEntity()).getHealth() <= 0 || ((LivingEntity)event.getEntity()).getNoDamageTicks() > 0)) return;
 			Player player = null;
 			if (event.getDamager().getType() == EntityType.PLAYER) {
 				player = (Player)event.getDamager();
