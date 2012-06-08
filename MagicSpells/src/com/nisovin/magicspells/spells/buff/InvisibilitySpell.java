@@ -134,7 +134,7 @@ public class InvisibilitySpell extends BuffSpell {
 	public class SpellCastListener implements Listener {
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onSpellCast(SpellCastEvent event) {
-			if (isActive(event.getCaster())) {
+			if (isActive(event.getCaster()) && !event.getSpell().getInternalName().equals(internalName)) {
 				turnOff(event.getCaster());
 			}
 		}

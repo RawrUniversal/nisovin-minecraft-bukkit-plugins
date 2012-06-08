@@ -157,7 +157,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 		ignoreCastItemDurability = config.getIntList("general.ignore-cast-item-durability", new ArrayList<Integer>());
 		globalCooldown = config.getInt("general.global-cooldown", 500);
-		castOnAnimate = config.getBoolean("general.cast-on-animate", true);
+		castOnAnimate = config.getBoolean("general.cast-on-animate", false);
 		
 		entityNames = new HashMap<EntityType, String>();
 		if (config.contains("general.entity-names")) {
