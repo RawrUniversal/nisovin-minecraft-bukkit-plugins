@@ -50,7 +50,11 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 			}
 			
 			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier));
-			playSpellEffects(player, target);
+			if (targeted) {
+				playSpellEffects(player, target);
+			} else {
+				playSpellEffects(1, player);
+			}
 			sendMessages(player, target);
 			return PostCastAction.NO_MESSAGES;
 		}		
@@ -64,8 +68,14 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 		} else if (!(target instanceof Player) && !targetNonPlayers) {
 			return false;
 		} else {
-			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier));
-			playSpellEffects(caster, target);
+			PotionEffect effect = new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier);
+			if (targeted) {
+				target.addPotionEffect(effect);
+				playSpellEffects(caster, target);
+			} else {
+				caster.addPotionEffect(effect);
+				playSpellEffects(1, caster);
+			}
 			return true;
 		}
 	}
