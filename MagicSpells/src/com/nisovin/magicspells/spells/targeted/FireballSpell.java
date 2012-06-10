@@ -31,6 +31,7 @@ public class FireballSpell extends TargetedSpell {
 	private boolean targetPlayers;
 	private boolean checkPlugins;
 	private float damageMultiplier;
+	private float explosionSize;
 	private boolean smallFireball;
 	private boolean noExplosion;
 	private boolean noExplosionEffect;
@@ -48,6 +49,7 @@ public class FireballSpell extends TargetedSpell {
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 		damageMultiplier = getConfigFloat("damage-multiplier", 0);
+		explosionSize = getConfigFloat("explosion-size", 0);
 		smallFireball = getConfigBoolean("small-fireball", false);
 		noExplosion = config.getBoolean("spells." + spellName + ".no-explosion", false);
 		noExplosionEffect = getConfigBoolean("no-explosion-effect", true);
@@ -157,10 +159,15 @@ public class FireballSpell extends TargetedSpell {
 							}, 20);
 						}
 					}
-				} else if (noFire) {
-					event.setFire(false);
 				} else {
-					event.setFire(true);
+					if (noFire) {
+						event.setFire(false);
+					} else {
+						event.setFire(true);
+					}
+					if (explosionSize > 0) {
+						event.setRadius(explosionSize);
+					}
 				}
 				if (noExplosion || (damageMultiplier == 0 && targetPlayers)) {
 					// remove immediately
