@@ -204,9 +204,9 @@ public class MinionSpell extends BuffSpell {
 	
 	@Override
 	public void turnOff(Player player) {
-		super.turnOff(player);
 		LivingEntity minion = minions.get(player.getName());
 		if (minion != null && !minion.isDead()) {
+			super.turnOff(player);
 			minion.setHealth(0);
 			sendMessage(player, strFade);
 		}

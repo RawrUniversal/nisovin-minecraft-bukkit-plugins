@@ -11,6 +11,7 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
@@ -52,6 +53,7 @@ public class TeachSpell extends CommandSpell {
 					sendMessage(player, strNoTarget);
 				} else {
 					Spell spell = MagicSpells.getSpellByInGameName(args[1]);
+					Player target = players.get(0);
 					if (spell == null) {
 						// fail: no spell match
 						sendMessage(player, strNoSpell);
@@ -65,7 +67,7 @@ public class TeachSpell extends CommandSpell {
 							sendMessage(player, strCantTeach);
 						} else {
 							// yay! can learn!
-							Spellbook targetSpellbook = MagicSpells.getSpellbook(players.get(0));
+							Spellbook targetSpellbook = MagicSpells.getSpellbook(target);
 							if (targetSpellbook == null || !targetSpellbook.canLearn(spell)) {
 								// fail: no spellbook for some reason or can't learn the spell
 								sendMessage(player, strCantLearn);
@@ -74,15 +76,17 @@ public class TeachSpell extends CommandSpell {
 								sendMessage(player, strAlreadyKnown);
 							} else {
 								// call event
-								boolean cancelled = callEvent(spell, players.get(0), player);
+								boolean cancelled = callEvent(spell, target, player);
 								if (cancelled) {
 									// fail: plugin cancelled it
 									sendMessage(player, strCantLearn);
 								} else {									
 									targetSpellbook.addSpell(spell);
 									targetSpellbook.save();
-									sendMessage(players.get(0), formatMessage(strCastTarget, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
-									sendMessage(player, formatMessage(strCastSelf, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", players.get(0).getDisplayName()));
+									sendMessage(target, formatMessage(strCastTarget, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", target.getDisplayName()));
+									sendMessage(player, formatMessage(strCastSelf, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", target.getDisplayName()));
+									playSpellEffects(EffectPosition.CASTER, player);
+									playSpellEffects(EffectPosition.TARGET, target);
 									return PostCastAction.NO_MESSAGES;
 								}
 							}

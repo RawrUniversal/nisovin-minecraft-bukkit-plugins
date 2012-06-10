@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import com.nisovin.magicspells.BuffManager;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
 
@@ -126,6 +127,7 @@ public abstract class BuffSpell extends Spell {
 		}
 		BuffManager buffman = MagicSpells.getBuffManager();
 		if (buffman != null) buffman.addBuff(player, this);
+		playSpellEffects(EffectPosition.CASTER, player);
 	}
 	
 	/**
@@ -223,6 +225,7 @@ public abstract class BuffSpell extends Spell {
 		if (durationStartTime != null) durationStartTime.remove(player.getName());
 		BuffManager buffman = MagicSpells.getBuffManager();
 		if (buffman != null) buffman.removeBuff(player, this);
+		playSpellEffects(EffectPosition.DISABLED, player);
 	}
 	
 	@Override

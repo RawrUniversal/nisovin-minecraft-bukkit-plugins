@@ -10,6 +10,7 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.bookworm.Book;
@@ -153,6 +154,7 @@ public class TomeSpell extends CommandSpell {
 						if (uses <= 0 && consumeBook) {
 							event.getPlayer().setItemInHand(null);
 						}
+						playSpellEffects(EffectPosition.DELAYED, event.getPlayer());
 					}
 				}
 			}

@@ -114,8 +114,8 @@ public class WindwalkSpell extends BuffSpell {
 
 	@Override
 	public void turnOff(final Player player) {
-		super.turnOff(player);
 		if (flyers.contains(player)) {
+			super.turnOff(player);
 			player.setFlying(false);
 			if (player.getGameMode() != GameMode.CREATIVE) {
 				player.setAllowFlight(false);

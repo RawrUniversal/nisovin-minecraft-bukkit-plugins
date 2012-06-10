@@ -174,8 +174,8 @@ public class ArmorSpell extends BuffSpell {
 	
 	@Override
 	public void turnOff(Player player) {
-		super.turnOff(player);
 		if (armored.contains(player)) {
+			super.turnOff(player);
 			armored.remove(player);
 			PlayerInventory inv = player.getInventory();
 			if (helmet != null && inv.getHelmet() != null && inv.getHelmet().getType() == helmet.getType()) {

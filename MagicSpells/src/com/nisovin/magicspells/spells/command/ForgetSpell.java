@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
@@ -105,8 +106,11 @@ public class ForgetSpell extends CommandSpell {
 				if (!player.equals(target)) {
 					sendMessage(target, formatMessage(strCastTarget, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", target.getDisplayName()));
 					sendMessage(player, formatMessage(strCastSelf, "%a", player.getDisplayName(), "%s", spell.getName(), "%t", target.getDisplayName()));
+					playSpellEffects(EffectPosition.CASTER, player);
+					playSpellEffects(EffectPosition.TARGET, target);
 				} else {
 					sendMessage(player, strCastSelfTarget, "%s", spell.getName());
+					playSpellEffects(EffectPosition.CASTER, player);
 				}
 				return PostCastAction.NO_MESSAGES;
 			} else if (all) {
@@ -115,8 +119,11 @@ public class ForgetSpell extends CommandSpell {
 				targetSpellbook.save();
 				if (!player.equals(target)) {
 					sendMessage(player, strResetTarget, "%t", target.getDisplayName());
+					playSpellEffects(EffectPosition.CASTER, player);
+					playSpellEffects(EffectPosition.TARGET, target);
 				} else {
 					sendMessage(player, strResetSelf);
+					playSpellEffects(EffectPosition.CASTER, player);
 				}
 				return PostCastAction.NO_MESSAGES;
 			}
