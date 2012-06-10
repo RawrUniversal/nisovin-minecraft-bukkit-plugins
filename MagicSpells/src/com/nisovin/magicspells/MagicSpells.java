@@ -323,17 +323,17 @@ public class MagicSpells extends JavaPlugin {
 		Set<String> spellKeys = config.getSpellKeys();
 		if (spellKeys == null) return;
 		for (String spellName : spellKeys) {
-			String className = "";
-			if (config.contains("spells." + spellName + ".spell-class")) {
-				className = config.getString("spells." + spellName + ".spell-class", "");
-			}
-			if (className == null || className.isEmpty()) {
-				error("Spell '" + spellName + "' does not have a spell-class property");
-				continue;
-			} else if (className.startsWith(".")) {
-				className = "com.nisovin.magicspells.spells" + className;
-			}
 			if (config.getBoolean("spells." + spellName + ".enabled", true)) {
+				String className = "";
+				if (config.contains("spells." + spellName + ".spell-class")) {
+					className = config.getString("spells." + spellName + ".spell-class", "");
+				}
+				if (className == null || className.isEmpty()) {
+					error("Spell '" + spellName + "' does not have a spell-class property");
+					continue;
+				} else if (className.startsWith(".")) {
+					className = "com.nisovin.magicspells.spells" + className;
+				}
 				try {
 					// load spell class
 					Class<? extends Spell> spellClass = cl.loadClass(className).asSubclass(Spell.class);

@@ -37,6 +37,10 @@ public class BuffManager {
 		}
 	}
 	
+	public HashSet<BuffSpell> getActiveBuffs(Player player) {
+		return activeBuffs.get(player.getName());
+	}
+	
 	public void turnOff() {
 		if (taskId > 0) {
 			Bukkit.getScheduler().cancelTask(taskId);
