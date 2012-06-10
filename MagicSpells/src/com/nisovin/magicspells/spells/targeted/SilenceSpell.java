@@ -85,6 +85,7 @@ public class SilenceSpell extends TargetedEntitySpell {
 						
 			// silence player
 			silence(target, power);
+			playSpellEffects(player, target);
 			
 			sendMessages(player, target);
 			return PostCastAction.NO_MESSAGES;
@@ -106,6 +107,7 @@ public class SilenceSpell extends TargetedEntitySpell {
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
 		if (target instanceof Player) {
 			silence((Player)target, power);
+			playSpellEffects(caster, target);
 			return true;
 		} else {
 			return false;

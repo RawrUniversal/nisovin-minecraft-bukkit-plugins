@@ -6,6 +6,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -32,17 +33,16 @@ public class RoarSpell extends InstantSpell {
 				if (entity instanceof Monster) {
 					((Monster) entity).setTarget(player);
 					count++;
-					playSpellEffects(2, entity);
+					playSpellEffects(EffectPosition.TARGET, entity);
 				}
 			}
 			
 			if (cancelIfNoTargets && count == 0) {
 				// nothing affected
 				sendMessage(player, strNoTarget);
-				//fizzle(player);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
-				playSpellEffects(1, player);
+				playSpellEffects(EffectPosition.CASTER, player);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

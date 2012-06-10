@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spells.targeted;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -45,8 +46,9 @@ public class HealSpell extends TargetedEntitySpell {
 		if (health > 20) health = 20;
 		target.setHealth(health);
 		
-		playSpellEffects(1, player);
-		playSpellEffects(2, target, "FF0000 40");
+		playSpellEffects(EffectPosition.CASTER, player);
+		playSpellEffects(EffectPosition.TARGET, target, "FF0000 40");
+		playSpellEffectsTrail(player.getLocation(), target.getLocation(), null);
 	}
 
 	@Override

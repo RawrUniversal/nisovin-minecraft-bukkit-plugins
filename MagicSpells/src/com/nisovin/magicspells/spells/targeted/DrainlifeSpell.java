@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.ManaChangeReason;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -119,7 +120,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 			giveToCaster(player, give);
 			playSpellEffects(player, target);
 		} else {
-			playSpellEffects(2, target);
+			playSpellEffects(EffectPosition.TARGET, target);
 		}		
 		
 		// show animation
@@ -183,7 +184,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 				stop();
 				if (!instant) {
 					giveToCaster(caster, giveAmt);
-					playSpellEffects(1, caster);
+					playSpellEffects(EffectPosition.CASTER, caster);
 				}
 			}
 		}

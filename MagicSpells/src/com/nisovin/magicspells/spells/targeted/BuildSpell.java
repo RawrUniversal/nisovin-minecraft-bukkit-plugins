@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -69,7 +70,9 @@ public class BuildSpell extends TargetedSpell {
 						return noTarget(player, strCantBuild);
 					}
 				}
-				playSpellEffects(2, b.getLocation(), item.getTypeId()+"");
+				playSpellEffects(EffectPosition.CASTER, player);
+				playSpellEffects(EffectPosition.TARGET, b.getLocation(), item.getTypeId()+"");
+				playSpellEffectsTrail(player.getLocation(), b.getLocation(), null);
 				if (consumeBlock) {
 					int amt = item.getAmount()-1;
 					if (amt > 0) {

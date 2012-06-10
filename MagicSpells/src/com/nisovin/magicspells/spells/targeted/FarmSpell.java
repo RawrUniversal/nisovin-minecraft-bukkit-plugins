@@ -7,6 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -36,9 +37,9 @@ public class FarmSpell extends TargetedLocationSpell {
 			if (block != null) {
 				boolean farmed = farm(block);
 				if (!farmed) return noTarget(player);
-				playSpellEffects(1, player);
+				playSpellEffects(EffectPosition.CASTER, player);
 				if (targeted) {
-					playSpellEffects(2, block.getLocation());
+					playSpellEffects(EffectPosition.TARGET, block.getLocation());
 				}
 			} else {
 				return noTarget(player);

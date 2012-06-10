@@ -21,6 +21,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -100,7 +101,7 @@ public class FireballSpell extends TargetedSpell {
 			fireball.setShooter(player);
 			fireballs.put(fireball,power);
 			
-			playSpellEffects(1, player);
+			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -114,7 +115,7 @@ public class FireballSpell extends TargetedSpell {
 		if (event.getEntity() instanceof Fireball) {
 			final Fireball fireball = (Fireball)event.getEntity();
 			if (fireballs.containsKey(fireball)) {
-				playSpellEffects(2, fireball.getLocation());
+				playSpellEffects(EffectPosition.TARGET, fireball.getLocation());
 				if (noExplosion) {
 					event.setCancelled(true);
 					Location loc = fireball.getLocation();

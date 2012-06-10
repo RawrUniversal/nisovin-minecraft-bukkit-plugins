@@ -11,6 +11,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -78,8 +79,9 @@ public class MaterializeSpell extends TargetedLocationSpell {
 			block.setTypeIdAndData(type, data, applyPhysics);
 		}
 		
-		playSpellEffects(1, player);
-		playSpellEffects(2, block.getLocation(), block.getTypeId() + "");
+		playSpellEffects(EffectPosition.CASTER, player);
+		playSpellEffects(EffectPosition.TARGET, block.getLocation(), block.getTypeId() + "");
+		playSpellEffectsTrail(player.getLocation(), block.getLocation(), null);
 		
 		return true;
 	}

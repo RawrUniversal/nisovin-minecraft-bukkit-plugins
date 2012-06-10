@@ -7,6 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -53,10 +54,10 @@ public class ForcepushSpell extends InstantSpell {
 					v.setY(maxYForce/10.0);
 				}
 				entity.setVelocity(v);
-				playSpellEffects(2, entity);
+				playSpellEffects(EffectPosition.TARGET, entity);
 			}
 	    }
-		playSpellEffects(1, player);
+		playSpellEffects(EffectPosition.CASTER, player);
 	}
 
 }

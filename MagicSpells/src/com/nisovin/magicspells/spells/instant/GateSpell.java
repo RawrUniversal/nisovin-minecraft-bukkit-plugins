@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -108,8 +109,8 @@ public class GateSpell extends InstantSpell {
 				Location to = b.getLocation();
 				boolean teleported = player.teleport(location);
 				if (teleported) {
-					playSpellEffects(1, from);
-					playSpellEffects(2, to);
+					playSpellEffects(EffectPosition.CASTER, from);
+					playSpellEffects(EffectPosition.TARGET, to);
 				} else {
 					// fail - teleport blocked
 					MagicSpells.error(name + ": teleport prevented!");
@@ -154,8 +155,8 @@ public class GateSpell extends InstantSpell {
 				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
 					boolean teleported = player.teleport(target);
 					if (teleported) {
-						playSpellEffects(1, location);
-						playSpellEffects(2, target);
+						playSpellEffects(EffectPosition.CASTER, location);
+						playSpellEffects(EffectPosition.TARGET, target);
 						sendMessage(player, strCastDone);
 					} else {
 						// fail -- teleport prevented

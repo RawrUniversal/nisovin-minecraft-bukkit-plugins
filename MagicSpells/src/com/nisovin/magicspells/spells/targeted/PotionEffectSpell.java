@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -53,7 +54,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 			if (targeted) {
 				playSpellEffects(player, target);
 			} else {
-				playSpellEffects(1, player);
+				playSpellEffects(EffectPosition.CASTER, player);
 			}
 			sendMessages(player, target);
 			return PostCastAction.NO_MESSAGES;
@@ -74,7 +75,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 				playSpellEffects(caster, target);
 			} else {
 				caster.addPotionEffect(effect);
-				playSpellEffects(1, caster);
+				playSpellEffects(EffectPosition.CASTER, caster);
 			}
 			return true;
 		}

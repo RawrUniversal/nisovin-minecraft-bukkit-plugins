@@ -6,6 +6,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -36,9 +37,9 @@ public class ConfusionSpell extends InstantSpell {
 					next = 0;
 				}
 				monsters.get(i).setTarget(monsters.get(next));
-				playSpellEffects(2, monsters.get(i));
+				playSpellEffects(EffectPosition.TARGET, monsters.get(i));
 			}
-			playSpellEffects(1, player);
+			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}

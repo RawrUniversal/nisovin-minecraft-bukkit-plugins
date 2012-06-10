@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -44,16 +45,16 @@ public class HasteSpell extends BuffSpell {
 		Player player = event.getPlayer();
 		if (hasted.containsKey(player)) {
 			if (isExpired(player)) {
-				playSpellEffects(2, player);
+				playSpellEffects(EffectPosition.DISABLED, player);
 				turnOff(player);
 			} else if (event.isSprinting()) {
 				event.setCancelled(true);
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, boostDuration, hasted.get(player)), true);
 				addUseAndChargeCost(player);
-				playSpellEffects(1, player);
+				playSpellEffects(EffectPosition.CASTER, player);
 			} else {
 				MagicSpells.getVolatileCodeHandler().removeMobEffect(player, PotionEffectType.SPEED);
-				playSpellEffects(2, player);
+				playSpellEffects(EffectPosition.DISABLED, player);
 			}
 		}
 	}

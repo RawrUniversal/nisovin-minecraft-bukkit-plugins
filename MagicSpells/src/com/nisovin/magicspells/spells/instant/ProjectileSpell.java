@@ -34,6 +34,7 @@ import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
@@ -147,13 +148,13 @@ public class ProjectileSpell extends InstantSpell {
 					projectile.setVelocity(player.getLocation().getDirection().multiply(velocity));
 				}
 				projectiles.put(projectile, new ProjectileInfo(player, power));
-				playSpellEffects(1, projectile);
+				playSpellEffects(EffectPosition.CASTER, projectile);
 			} else if (projectileItem != null) {
 				Item item = player.getWorld().dropItem(player.getEyeLocation(), projectileItem.clone());
 				item.setVelocity(player.getLocation().getDirection().multiply(velocity > 0 ? velocity : 1));
 				item.setPickupDelay(10);
 				itemProjectiles.put(item, new ProjectileInfo(player, power, new ItemProjectileMonitor(item)));
-				playSpellEffects(1, item);
+				playSpellEffects(EffectPosition.CASTER, item);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -179,10 +180,10 @@ public class ProjectileSpell extends InstantSpell {
 				for (TargetedSpell spell : spells) {
 					if (spell instanceof TargetedEntitySpell) {
 						((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
-						playSpellEffects(2, target);
+						playSpellEffects(EffectPosition.TARGET, target);
 					} else if (spell instanceof TargetedLocationSpell) {
 						((TargetedLocationSpell)spell).castAtLocation(info.player, target.getLocation(), info.power);
-						playSpellEffects(2, target.getLocation());
+						playSpellEffects(EffectPosition.TARGET, target.getLocation());
 					}
 				}
 				
@@ -217,7 +218,7 @@ public class ProjectileSpell extends InstantSpell {
 				for (TargetedSpell spell : spells) {
 					if (spell instanceof TargetedLocationSpell) {
 						((TargetedLocationSpell)spell).castAtLocation(info.player, projectile.getLocation(), info.power);
-						playSpellEffects(2, projectile.getLocation());
+						playSpellEffects(EffectPosition.TARGET, projectile.getLocation());
 					}
 				}
 				sendMessage(info.player, strHitCaster);
@@ -230,7 +231,7 @@ public class ProjectileSpell extends InstantSpell {
 	}
 		
 	private void aoe(Entity projectile, ProjectileInfo info) {
-		playSpellEffects(4, projectile.getLocation());
+		playSpellEffects(EffectPosition.SPECIAL, projectile.getLocation());
 		List<Entity> entities = projectile.getNearbyEntities(aoeRadius, aoeRadius, aoeRadius);
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity && (targetPlayers || !(entity instanceof Player)) && !entity.equals(info.player)) {
@@ -249,10 +250,10 @@ public class ProjectileSpell extends InstantSpell {
 				for (TargetedSpell spell : spells) {
 					if (spell instanceof TargetedEntitySpell) {
 						((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
-						playSpellEffects(2, target);
+						playSpellEffects(EffectPosition.TARGET, target);
 					} else if (spell instanceof TargetedLocationSpell) {
 						((TargetedLocationSpell)spell).castAtLocation(info.player, target.getLocation(), info.power);
-						playSpellEffects(2, target.getLocation());
+						playSpellEffects(EffectPosition.TARGET, target.getLocation());
 					}
 				}
 				

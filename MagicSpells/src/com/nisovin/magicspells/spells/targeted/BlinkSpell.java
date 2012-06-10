@@ -82,6 +82,7 @@ public class BlinkSpell extends TargetedLocationSpell {
 					loc.setZ(loc.getZ()+.5);
 					loc.setPitch(player.getLocation().getPitch());
 					loc.setYaw(player.getLocation().getYaw());
+					playSpellEffects(player.getLocation(), loc);
 					teleport(player, loc, smokes);
 				} else {
 					return noTarget(player, strCantBlink);

@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -88,8 +89,9 @@ public class ZapSpell extends TargetedSpell {
 				}
 				
 				// show animation
-				playSpellEffects(1, player);
-				playSpellEffects(2, target.getLocation(), target.getTypeId() + "");
+				playSpellEffects(EffectPosition.CASTER, player);
+				playSpellEffects(EffectPosition.TARGET, target.getLocation(), target.getTypeId() + "");
+				playSpellEffectsTrail(player.getLocation(), target.getLocation(), null);
 				
 				// remove block
 				target.setType(Material.AIR);

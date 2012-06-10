@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -69,7 +70,7 @@ public class InvisibilitySpell extends BuffSpell {
 			startSpellDuration(player);
 			invisibles.put(player.getName(), new CostCharger(player));
 			// spell effect
-			playSpellEffects(1, player);
+			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -118,7 +119,7 @@ public class InvisibilitySpell extends BuffSpell {
 				p.showPlayer(player);
 			}
 			// spell effect
-			playSpellEffects(4, player);
+			playSpellEffects(EffectPosition.DISABLED, player);
 			sendMessage(player, strFade);
 		}
 	}

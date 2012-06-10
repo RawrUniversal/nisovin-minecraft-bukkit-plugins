@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class ExternalCommandSpell extends TargetedEntitySpell {
@@ -122,7 +123,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 		if (target != null) {
 			playSpellEffects(player, target);
 		} else {
-			playSpellEffects(1, player);
+			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		// add delayed command
 		if (commandToExecuteLater != null && commandToExecuteLater.size() > 0 && !commandToExecuteLater.get(0).isEmpty()) {
@@ -223,7 +224,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 				player.setOp(false);
 			}
 			// graphical effect
-			playSpellEffects(4, player);
+			playSpellEffects(EffectPosition.DISABLED, player);
 		}
 		
 	}

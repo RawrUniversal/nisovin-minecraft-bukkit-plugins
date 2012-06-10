@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MagicLocation;
@@ -98,8 +99,8 @@ public class RecallSpell extends InstantSpell {
 					Location from = player.getLocation();
 					boolean teleported = player.teleport(mark);
 					if (teleported) {
-						playSpellEffects(1, from);
-						playSpellEffects(2, mark);
+						playSpellEffects(EffectPosition.CASTER, from);
+						playSpellEffects(EffectPosition.TARGET, mark);
 					} else {
 						// fail -- teleport prevented
 						MagicSpells.error("Recall teleport blocked for " + player.getName());
@@ -145,8 +146,8 @@ public class RecallSpell extends InstantSpell {
 				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
 					boolean teleported = player.teleport(mark);
 					if (teleported) {
-						playSpellEffects(1, location);
-						playSpellEffects(2, mark);
+						playSpellEffects(EffectPosition.CASTER, location);
+						playSpellEffects(EffectPosition.TARGET, mark);
 						sendMessage(player, strCastDone);
 					} else {
 						// fail -- teleport prevented

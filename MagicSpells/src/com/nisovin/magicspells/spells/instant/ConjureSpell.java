@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -95,6 +96,8 @@ public class ConjureSpell extends InstantSpell {
 					player.getWorld().dropItem(loc, item);
 				}
 			}
+			
+			playSpellEffects(EffectPosition.CASTER, player);
 		}		
 		return PostCastAction.HANDLE_NORMALLY;
 		
