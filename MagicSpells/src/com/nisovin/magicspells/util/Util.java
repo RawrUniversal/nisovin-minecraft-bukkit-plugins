@@ -23,7 +23,7 @@ public class Util {
 		return false;
 	}
 	
-	public static String arrayJoin(String[] array) {
+	public static String arrayJoin(String[] array, char with) {
 		if (array == null || array.length == 0) {
 			return "";
 		}
@@ -31,7 +31,7 @@ public class Util {
 		StringBuilder sb = new StringBuilder(len * 12);
 		sb.append(array[0]);
 		for (int i = 1; i < len; i++) {
-			sb.append(' ');
+			sb.append(with);
 			sb.append(array[i]);
 		}
 		return sb.toString();
@@ -97,11 +97,11 @@ public class Util {
 	}
 	
 	public static String[] splitParams(String[] split, int max) {
-		return splitParams(arrayJoin(split), max);
+		return splitParams(arrayJoin(split, ' '), max);
 	}
 	
 	public static String[] splitParams(String[] split) {
-		return splitParams(arrayJoin(split), 0);
+		return splitParams(arrayJoin(split, ' '), 0);
 	}
 	
 	public static void main(String[] args) {

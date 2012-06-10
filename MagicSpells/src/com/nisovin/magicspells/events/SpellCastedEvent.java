@@ -16,13 +16,13 @@ public class SpellCastedEvent extends SpellEvent {
     private static final HandlerList handlers = new HandlerList();
 
     private Spell.SpellCastState state;
-	private int cooldown;
+	private float cooldown;
 	private SpellReagents reagents;
 	private float power;
 	private String[] args;
 	private Spell.PostCastAction action;
 	
-	public SpellCastedEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, String[] args, int cooldown, SpellReagents reagents, Spell.PostCastAction action) {
+	public SpellCastedEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, String[] args, float cooldown, SpellReagents reagents, Spell.PostCastAction action) {
 		super(spell, caster);
 		this.state = state;
 		this.cooldown = cooldown;
@@ -44,7 +44,7 @@ public class SpellCastedEvent extends SpellEvent {
 	 * Gets the cooldown that was triggered by the spell.
 	 * @return the cooldown
 	 */
-	public int getCooldown() {
+	public float getCooldown() {
 		return cooldown;
 	}
 	

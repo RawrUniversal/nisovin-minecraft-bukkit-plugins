@@ -17,11 +17,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.spelleffects.SpellEffect;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
+import com.nisovin.magicspells.util.Util;
 
 public abstract class Spell implements Comparable<Spell>, Listener {
 
@@ -324,12 +326,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		MagicSpells.debug(3, "    Power: " + power);
 		MagicSpells.debug(3, "    Cooldown: " + cooldown);
 		if (MagicSpells.debug && args != null && args.length > 0) {
-			StringBuilder sb = new StringBuilder();
-			for (String arg : args) {
-				if (sb.length() > 0) sb.append(",");
-				sb.append(arg);
-			}
-			MagicSpells.debug(3, "    Args: {" + sb.toString() + "}");
+			MagicSpells.debug(3, "    Args: {" + Util.arrayJoin(args, ',') + "}");
 		}
 		PostCastAction action = castSpell(player, state, power, args);
 		MagicSpells.debug(3, "    Post-cast action: " + action);
@@ -364,6 +361,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				MagicSpells.sendMessage(player, strWrongWorld);
 			}
 		}
+		
+		SpellCastedEvent event = new SpellCastedEvent(this, player, state, power, args, cooldown, reagents, action);
+		Bukkit.getPluginManager().callEvent(event);
 		
 		return action;
 	}
