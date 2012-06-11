@@ -159,7 +159,7 @@ public class MagicSpells extends JavaPlugin {
 		ignoreCastItemDurability = config.getIntList("general.ignore-cast-item-durability", new ArrayList<Integer>());
 		globalCooldown = config.getInt("general.global-cooldown", 500);
 		castOnAnimate = config.getBoolean("general.cast-on-animate", false);
-		useExpBarAsCastTimeBar = config.getBoolean("general.use-exp-bar-as-cast-time-bar", false);
+		useExpBarAsCastTimeBar = config.getBoolean("general.use-exp-bar-as-cast-time-bar", true);
 		
 		entityNames = new HashMap<EntityType, String>();
 		if (config.contains("general.entity-names")) {
@@ -292,9 +292,6 @@ public class MagicSpells extends JavaPlugin {
 			pm.registerEvents(new MagicChatListener(this), this);
 		}
 		
-		// set up metrics
-		//setupMetrics();
-		
 		// call loaded event
 		pm.callEvent(new MagicSpellsLoadedEvent(this));
 	}
@@ -425,21 +422,6 @@ public class MagicSpells extends JavaPlugin {
 			}
 		}
 	}
-	
-	/*private void setupMetrics() {
-		try {
-			Metrics metrics = new Metrics();
-			
-			metrics.addCustomData(this, new Metrics.Plotter("Spell Count") {
-				public int getValue() {
-					return spells.size();
-				}
-			});
-			
-			metrics.beginMeasuringPlugin(this);
-		} catch (IOException e) {
-		}
-	}*/
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
