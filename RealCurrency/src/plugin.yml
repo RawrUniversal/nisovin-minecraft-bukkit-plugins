@@ -1,0 +1,24 @@
+name: RealCurrency
+version: 1.0
+main: com.nisovin.realcurrency.RealCurrency
+softdepend: [Vault]
+commands:
+    realcurrency:
+        description: RealCurrency base command
+        usage: /<command> [<add|remove> [player] <amount>]
+        aliases: [money]
+    realcurrencypay:
+        description: Pay an amount to another player
+        usage: /<command> <player> <amount>
+        aliases: [pay]
+permissions:
+    realcurrency.count:
+        description: Check how much money you have
+        default: true
+    realcurrency.count.other:
+        description: Check how much money someone else has
+        default: op
+    realcurrency.pay:
+        default: true
+    realcurrency.change:
+        default: op
