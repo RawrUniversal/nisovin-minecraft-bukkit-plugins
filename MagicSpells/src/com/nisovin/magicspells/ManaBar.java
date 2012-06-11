@@ -31,6 +31,7 @@ public class ManaBar {
 	}
 	
 	public boolean add(int amount, ManaChangeReason reason) {
+		int oldAmt = mana;
 		if (amount > 0) {
 			if (mana == maxMana) {
 				return false;
@@ -40,14 +41,14 @@ public class ManaBar {
 				newAmt = maxMana;
 			}
 			mana = callManaChangeEvent(newAmt, reason);
-			return true;
+			return mana != oldAmt;
 		} else {
 			amount *= -1;
 			if (amount > mana) {
 				return false;
 			} else {
 				mana = callManaChangeEvent(mana - amount, reason);
-				return true;
+				return mana != oldAmt;
 			}
 		}
 	}
