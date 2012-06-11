@@ -61,6 +61,7 @@ public class MagicSpells extends JavaPlugin {
 	static HashMap<EntityType, String> entityNames;
 	static int globalCooldown;
 	static boolean castOnAnimate;
+	static boolean useExpBarAsCastTimeBar;
 	
 	static boolean enableManaBars;
 	static int manaPotionCooldown;
@@ -158,6 +159,7 @@ public class MagicSpells extends JavaPlugin {
 		ignoreCastItemDurability = config.getIntList("general.ignore-cast-item-durability", new ArrayList<Integer>());
 		globalCooldown = config.getInt("general.global-cooldown", 500);
 		castOnAnimate = config.getBoolean("general.cast-on-animate", false);
+		useExpBarAsCastTimeBar = config.getBoolean("general.use-exp-bar-as-cast-time-bar", false);
 		
 		entityNames = new HashMap<EntityType, String>();
 		if (config.contains("general.entity-names")) {

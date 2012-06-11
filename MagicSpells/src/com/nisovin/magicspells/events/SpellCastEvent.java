@@ -23,10 +23,11 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 	private SpellReagents reagents;
 	private boolean reagentsChanged;
 	private float power;
+	private int castTime;
 	private String[] args;
 	private boolean cancelled = false;
 	
-	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, String[] args, float cooldown, SpellReagents reagents) {
+	public SpellCastEvent(Spell spell, Player caster, Spell.SpellCastState state, float power, String[] args, float cooldown, SpellReagents reagents, int castTime) {
 		super(spell, caster);
 		this.state = state;
 		this.stateChanged = false;
@@ -34,6 +35,7 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 		this.reagents = reagents;
 		this.reagentsChanged = false;
 		this.power = power;
+		this.castTime = castTime;
 		this.args = args;
 	}
 	
@@ -134,6 +136,22 @@ public class SpellCastEvent extends SpellEvent implements Cancellable {
 	 */
 	public void increasePower(float power) {
 		this.power *= power;
+	}
+	
+	/**
+	 * Gets the cast time for this spell cast, in server ticks.
+	 * @return the cast time
+	 */
+	public int getCastTime() {
+		return castTime;
+	}
+	
+	/**
+	 * Sets the cast time for this spell cast, in server ticks.
+	 * @param castTime the new cast time
+	 */
+	public void setCastTime(int castTime) {
+		this.castTime = castTime;
 	}
 	
 	/**

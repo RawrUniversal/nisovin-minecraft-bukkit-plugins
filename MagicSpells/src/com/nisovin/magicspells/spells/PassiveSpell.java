@@ -145,7 +145,7 @@ public class PassiveSpell extends Spell {
 		MagicSpells.debug(3, "Activating passive spell '" + name + "' for player " + caster.getName());
 		if (!disabled && !onCooldown(caster) && (chance >= .999 || random.nextFloat() <= chance) && hasReagents(caster)) {
 			disabled = true;
-			SpellCastEvent event = new SpellCastEvent(this, caster, SpellCastState.NORMAL, 1.0F, null, cooldown, new SpellReagents());
+			SpellCastEvent event = new SpellCastEvent(this, caster, SpellCastState.NORMAL, 1.0F, null, cooldown, new SpellReagents(), 0);
 			Bukkit.getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
 				setCooldown(caster, event.getCooldown());

@@ -1,16 +1,10 @@
 package com.nisovin.magicspells.spells.instant;
 
-import java.util.HashSet;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
@@ -22,26 +16,14 @@ public class GateSpell extends InstantSpell {
 	
 	private String world;
 	private String coords;
-	private int castTime;
 	private String strGateFailed;
-	private String strCastDone;
-	private String strCastInterrupted;
-	
-	private HashSet<String> casting;
 
 	public GateSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		world = getConfigString("world", "CURRENT");
 		coords = getConfigString("coordinates", "SPAWN");
-		castTime = getConfigInt("cast-time", 0);
 		strGateFailed = getConfigString("str-gate-failed", "Unable to teleport.");
-		strCastDone = getConfigString("str-cast-done", "");
-		strCastInterrupted = getConfigString("str-cast-interrupted", "");
-		
-		if (castTime > 0) {
-			casting = new HashSet<String>();
-		}
 	}
 
 	@Override
@@ -99,75 +81,20 @@ public class GateSpell extends InstantSpell {
 			}
 			
 			// teleport caster
-			if (castTime > 0) {
-				// wait a bit
-				casting.add(player.getName());
-				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Teleporter(player, location), castTime);
+			Location from = player.getLocation();
+			Location to = b.getLocation();
+			boolean teleported = player.teleport(location);
+			if (teleported) {
+				playSpellEffects(EffectPosition.CASTER, from);
+				playSpellEffects(EffectPosition.TARGET, to);
 			} else {
-				// go instantly
-				Location from = player.getLocation();
-				Location to = b.getLocation();
-				boolean teleported = player.teleport(location);
-				if (teleported) {
-					playSpellEffects(EffectPosition.CASTER, from);
-					playSpellEffects(EffectPosition.TARGET, to);
-				} else {
-					// fail - teleport blocked
-					MagicSpells.error(name + ": teleport prevented!");
-					sendMessage(player, strGateFailed);
-					return PostCastAction.ALREADY_HANDLED;
-				}
+				// fail - teleport blocked
+				MagicSpells.error(name + ": teleport prevented!");
+				sendMessage(player, strGateFailed);
+				return PostCastAction.ALREADY_HANDLED;
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
-	}
-
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onEntityDamage(EntityDamageEvent event) {
-		if (event.isCancelled()) return;
-		if (castTime <= 0) return;
-		
-		Entity e = event.getEntity();
-		if (e instanceof Player) {
-			String name = ((Player)e).getName();
-			if (casting.contains(name)) {
-				casting.remove(name);
-				sendMessage((Player)e, strCastInterrupted);
-			}
-		}
-	}
-	
-	private class Teleporter implements Runnable {
-		private Player player;
-		private Location location;
-		private Location target;
-		
-		public Teleporter(Player player, Location target) {
-			this.player = player;
-			this.location = player.getLocation().clone();
-			this.target = target;
-		}
-		
-		public void run() {
-			if (casting.contains(player.getName())) {
-				casting.remove(player.getName());
-				Location loc = player.getLocation();
-				if (Math.abs(location.getX()-loc.getX()) < .1 && Math.abs(location.getY()-loc.getY()) < .1 && Math.abs(location.getZ()-loc.getZ()) < .1) {
-					boolean teleported = player.teleport(target);
-					if (teleported) {
-						playSpellEffects(EffectPosition.CASTER, location);
-						playSpellEffects(EffectPosition.TARGET, target);
-						sendMessage(player, strCastDone);
-					} else {
-						// fail -- teleport prevented
-						MagicSpells.error(name + ": teleport prevented!");
-						sendMessage(player, strGateFailed);
-					}
-				} else {
-					sendMessage(player, strCastInterrupted);
-				}
-			}
-		}
 	}
 
 }
