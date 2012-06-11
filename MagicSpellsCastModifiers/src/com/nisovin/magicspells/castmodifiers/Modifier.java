@@ -11,6 +11,7 @@ public class Modifier {
 	ModifierType type;
 	String modifierVar;
 	float modifierVarFloat;
+	int modifierVarInt;
 	
 	public static Modifier factory(String s) {
 		Modifier m = new Modifier();
@@ -41,6 +42,8 @@ public class Modifier {
 		try {
 			if (m.type == ModifierType.POWER || m.type == ModifierType.COOLDOWN || m.type == ModifierType.REAGENTS) {
 				m.modifierVarFloat = Float.parseFloat(m.modifierVar);
+			} else if (m.type == ModifierType.CAST_TIME) {
+				m.modifierVarInt = Integer.parseInt(m.modifierVar);
 			}
 		} catch (NumberFormatException e) {
 			return null;
@@ -66,6 +69,8 @@ public class Modifier {
 				event.setCooldown(modifierVarFloat);
 			} else if (type == ModifierType.REAGENTS) {
 				event.setReagents(event.getReagents().multiply(modifierVarFloat));
+			} else if (type == ModifierType.CAST_TIME) {
+				event.setCastTime(modifierVarInt);
 			}
 		}
 		return true;
@@ -101,6 +106,8 @@ public class Modifier {
 			return ModifierType.COOLDOWN;
 		} else if (name.equalsIgnoreCase("reagents")) {
 			return ModifierType.REAGENTS;
+		} else if (name.equalsIgnoreCase("casttime")) {
+			return ModifierType.CAST_TIME;
 		} else {
 			return null;
 		}
@@ -111,7 +118,8 @@ public class Modifier {
 		DENIED,
 		POWER,
 		COOLDOWN,
-		REAGENTS
+		REAGENTS,
+		CAST_TIME
 	}
 	
 }
