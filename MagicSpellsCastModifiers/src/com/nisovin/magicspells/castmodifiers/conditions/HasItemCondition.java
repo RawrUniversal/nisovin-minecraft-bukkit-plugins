@@ -33,7 +33,12 @@ public class HasItemCondition extends Condition {
 	@Override
 	public boolean check(Player player) {
 		if (checkData) {
-			return player.getInventory().contains(new ItemStack(id, 1, data), 1);
+			for (ItemStack item : player.getInventory().getContents()) {
+				if (item != null && item.getTypeId() == id && item.getDurability() == data) {
+					return true;
+				}
+			}
+			return false;
 		} else {
 			return player.getInventory().contains(Material.getMaterial(id));
 		}

@@ -59,12 +59,14 @@ public class Modifier {
 		} else if (check == true && type == ModifierType.DENIED) {
 			event.setCancelled(true);
 			return false;
-		} else if (type == ModifierType.POWER) {
-			event.increasePower(modifierVarFloat);
-		} else if (type == ModifierType.COOLDOWN) {
-			event.setCooldown(modifierVarFloat);
-		} else if (type == ModifierType.REAGENTS) {
-			event.setReagents(event.getReagents().multiply(modifierVarFloat));
+		} else if (check == true) { 
+			if (type == ModifierType.POWER) {
+				event.increasePower(modifierVarFloat);
+			} else if (type == ModifierType.COOLDOWN) {
+				event.setCooldown(modifierVarFloat);
+			} else if (type == ModifierType.REAGENTS) {
+				event.setReagents(event.getReagents().multiply(modifierVarFloat));
+			}
 		}
 		return true;
 	}
@@ -78,7 +80,7 @@ public class Modifier {
 		} else if (check == true && type == ModifierType.DENIED) {
 			event.setNewAmount(event.getOldAmount());
 			return false;
-		} else if (type == ModifierType.POWER) {
+		} else if (check == true && type == ModifierType.POWER) {
 			int gain = event.getNewAmount() - event.getOldAmount();
 			gain = Math.round(gain * modifierVarFloat);
 			int newAmt = event.getOldAmount() + gain;
