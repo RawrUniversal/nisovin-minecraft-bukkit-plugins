@@ -33,6 +33,7 @@ import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
@@ -153,18 +154,22 @@ public class PassiveSpell extends Spell {
 					MagicSpells.debug(3, "    Casting spell effect '" + spell.getName() + "'");
 					if (spell instanceof TargetedEntitySpell && target != null) {
 						((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
+						playSpellEffects(caster, target);
 					} else if (spell instanceof TargetedLocationSpell && (location != null || target != null)) {
 						if (location != null) {
 							((TargetedLocationSpell)spell).castAtLocation(caster, location, power);
+							playSpellEffects(caster, location);
 						} else if (target != null) {
 							((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);
+							playSpellEffects(caster, target.getLocation());
 						}
 					} else if (castWithoutTarget || !(spell instanceof TargetedSpell)) {
 						spell.castSpell(caster, SpellCastState.NORMAL, power, null);
+						playSpellEffects(EffectPosition.CASTER, caster);
 					}
 				}
 				removeReagents(caster);
-				sendMessage(caster, strCastSelf);
+				sendMessage(caster, strCastSelf);				
 			}
 			disabled = false;
 		}
