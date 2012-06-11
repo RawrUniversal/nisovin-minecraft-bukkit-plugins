@@ -23,6 +23,15 @@ public class Util {
 		return false;
 	}
 	
+	public static boolean arrayContains(Object[] array, Object value) {
+		for (Object i : array) {
+			if (i != null && i.equals(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static String arrayJoin(String[] array, char with) {
 		if (array == null || array.length == 0) {
 			return "";
@@ -102,13 +111,6 @@ public class Util {
 	
 	public static String[] splitParams(String[] split) {
 		return splitParams(arrayJoin(split, ' '), 0);
-	}
-	
-	public static void main(String[] args) {
-		String[] params = splitParams("He said \"Y'all come back no', ya' hear?\" to everyone.");
-		for (String p : params) {
-			System.out.println(p);
-		}
 	}
 	
 }

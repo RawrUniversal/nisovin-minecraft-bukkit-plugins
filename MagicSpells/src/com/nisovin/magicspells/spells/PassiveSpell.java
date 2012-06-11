@@ -37,6 +37,7 @@ import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
+import com.nisovin.magicspells.util.Util;
 
 public class PassiveSpell extends Spell {
 
@@ -177,15 +178,24 @@ public class PassiveSpell extends Spell {
 	
 	public class TakeDamageListener implements Listener {
 		
-		int itemId = -1;
-		DamageCause damageCause = null;
+		int[] itemIds = null;
+		DamageCause[] damageCauses = null;
 		
 		public TakeDamageListener(String var) {
 			if (var != null) {
-				if (var.matches("[0-9]+")) {
-					itemId = Integer.parseInt(var);
+				var = var.replace(", ", ",");
+				if (var.matches("[0-9]+(,[0-9]+)*")) {
+					String[] s = var.split(",");
+					itemIds = new int[s.length];
+					for (int i = 0; i < s.length; i++) {
+						itemIds[i] = Integer.parseInt(s[i]);
+					}
 				} else {
-					damageCause = DamageCause.valueOf(var.toUpperCase());
+					String[] s = var.split(",");
+					damageCauses = new DamageCause[s.length];
+					for (int i = 0; i < s.length; i++) {
+						damageCauses[i] = DamageCause.valueOf(s[i].toUpperCase());
+					}
 				}
 			}
 		}
@@ -215,22 +225,22 @@ public class PassiveSpell extends Spell {
 		}
 		
 		private boolean check(Entity attacker, DamageCause cause) {
-			if (itemId >= 0 && attacker != null) {
+			if (itemIds != null && attacker != null) {
 				if (attacker instanceof Player) {
 					ItemStack inHand = ((Player)attacker).getItemInHand();
-					if (inHand != null && inHand.getTypeId() == itemId) {
+					if (inHand != null && Util.arrayContains(itemIds, inHand.getTypeId())) {
 						return true;
-					} else if (inHand == null && itemId == 0) {
+					} else if (inHand == null && Util.arrayContains(itemIds, 0)) {
 						return true;
 					}
-				} else if (attacker instanceof Skeleton && itemId == Material.BOW.getId()) {
+				} else if (attacker instanceof Skeleton && Util.arrayContains(itemIds, Material.BOW.getId())) {
 					return true;
-				} else if (attacker instanceof Zombie && itemId == 0) {
+				} else if (attacker instanceof Zombie && Util.arrayContains(itemIds, 0)) {
 					return true;
 				}
 				return false;
-			} else if (damageCause != null) {
-				return damageCause == cause;
+			} else if (damageCauses != null) {
+				return Util.arrayContains(damageCauses, cause);
 			} else {
 				return true;
 			}
@@ -239,11 +249,16 @@ public class PassiveSpell extends Spell {
 	
 	public class GiveDamageListener implements Listener {
 		
-		int itemId = -1;
+		int[] itemIds = null;
 		
 		public GiveDamageListener(String var) {
-			if (var != null && var.matches("[0-9]+")) {
-				itemId = Integer.parseInt(var);
+			var = var.replace(" ", "");
+			if (var.matches("[0-9]+(,[0-9]+)*")) {
+				String[] s = var.split(",");
+				itemIds = new int[s.length];
+				for (int i = 0; i < s.length; i++) {
+					itemIds[i] = Integer.parseInt(s[i]);
+				}
 			}
 		}
 		
@@ -258,7 +273,7 @@ public class PassiveSpell extends Spell {
 				player = (Player)((Projectile)event.getDamager()).getShooter();
 			}
 			if (player != null) {
-				if (itemId >= 0 && player.getItemInHand().getTypeId() != itemId) {
+				if (itemIds != null && Util.arrayContains(itemIds, player.getItemInHand().getTypeId())) {
 					return;
 				}
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
@@ -273,17 +288,24 @@ public class PassiveSpell extends Spell {
 	
 	public class BlockBreakListener implements Listener {
 		
-		int typeId = -1;
+		int[] typeIds = null;
 		
 		public BlockBreakListener(String var) {
-			if (var != null && var.matches("[0-9]+")) {
-				typeId = Integer.parseInt(var);
+			if (var != null) {
+				var = var.replace(" ", "");
+				if (var.matches("[0-9]+(,[0-9]+)*")) {
+					String[] s = var.split(",");
+					typeIds = new int[s.length];
+					for (int i = 0; i < s.length; i++) {
+						typeIds[i] = Integer.parseInt(s[i]);
+					}
+				}
 			}
 		}
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onBlockBreak(BlockBreakEvent event) {
-			if (typeId < 0 || event.getBlock().getTypeId() == typeId) {
+			if (typeIds == null || Util.arrayContains(typeIds, event.getBlock().getTypeId())) {
 				Player player = event.getPlayer();
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spellbook.hasSpell(thisSpell)) {
@@ -295,17 +317,24 @@ public class PassiveSpell extends Spell {
 	
 	public class BlockPlaceListener implements Listener {
 		
-		int typeId = -1;
+		int[] typeIds = null;
 		
 		public BlockPlaceListener(String var) {
-			if (var != null && var.matches("[0-9]+")) {
-				typeId = Integer.parseInt(var);
+			if (var != null) {
+				var = var.replace(" ", "");
+				if (var.matches("[0-9]+(,[0-9]+)*")) {
+					String[] s = var.split(",");
+					typeIds = new int[s.length];
+					for (int i = 0; i < s.length; i++) {
+						typeIds[i] = Integer.parseInt(s[i]);
+					}
+				}
 			}
 		}
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onBlockPlace(BlockPlaceEvent event) {
-			if (typeId < 0 || event.getBlock().getTypeId() == typeId) {
+			if (typeIds != null || Util.arrayContains(typeIds, event.getBlock().getTypeId())) {
 				Player player = event.getPlayer();
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spellbook.hasSpell(thisSpell)) {
@@ -316,19 +345,28 @@ public class PassiveSpell extends Spell {
 	}
 	
 	public class RightClickListener implements Listener {
-		int typeId = -1;
-		int data = 0;
-		boolean checkData = false;
+		int typeIds[] = new int[0];
+		int datas[] = new int[0];
+		boolean checkData[] = new boolean[0];
 		
 		public RightClickListener(String var) {
-			if (var != null && var.matches("[0-9]+(:[0-9]+)?")) {
-				if (var.contains(":")) {
-					String[] s = var.split(":");
-					typeId = Integer.parseInt(s[0]);
-					data = Integer.parseInt(s[1]);
-					checkData = true;
-				} else {
-					typeId = Integer.parseInt(var);
+			var = var.replace(" ", "");
+			if (var != null && var.matches("[0-9]+(:[0-9]+)?(,[0-9]+(:[0-9]+)?)*")) {
+				String[] vars = var.split(",");
+				typeIds = new int[vars.length];
+				datas = new int[vars.length];
+				checkData = new boolean[vars.length];
+				for (int i = 0; i < vars.length; i++) {
+					if (vars[i].contains(":")) {
+						String[] s = vars[i].split(":");
+						typeIds[i] = Integer.parseInt(s[0]);
+						datas[i] = Integer.parseInt(s[1]);
+						checkData[i] = true;
+					} else {
+						typeIds[i] = Integer.parseInt(vars[i]);
+						datas[i] = 0;
+						checkData[i] = false;
+					}
 				}
 			}
 		}
@@ -336,7 +374,7 @@ public class PassiveSpell extends Spell {
 		@EventHandler(priority=EventPriority.MONITOR)
 		public void onPlayerInteract(PlayerInteractEvent event) {
 			if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && event.hasItem() && event.useItemInHand() != Result.DENY) {
-				if (event.getItem().getTypeId() == typeId && (!checkData || event.getItem().getDurability() == data)) {
+				if (checkItem(event.getItem())) {
 					Player player = event.getPlayer();
 					Spellbook spellbook = MagicSpells.getSpellbook(player);
 					if (spellbook.hasSpell(thisSpell)) {
@@ -344,6 +382,15 @@ public class PassiveSpell extends Spell {
 					}
 				}
 			}
+		}
+		
+		private boolean checkItem(ItemStack item) {
+			for (int i = 0; i < typeIds.length; i++) {
+				if (item.getTypeId() == typeIds[i] && (!checkData[i] || item.getDurability() == datas[i])) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 	
