@@ -34,6 +34,7 @@ public abstract class BuffSpell extends Spell {
 	protected int duration;
 	protected boolean cancelOnGiveDamage;
 	protected boolean cancelOnTakeDamage;
+	protected boolean cancelOnDeath;
 	protected boolean cancelOnLogout;
 	protected String strFade;
 	private boolean castWithItem;
@@ -81,8 +82,9 @@ public abstract class BuffSpell extends Spell {
 		
 		cancelOnGiveDamage = getConfigBoolean("cancel-on-give-damage", false);
 		cancelOnTakeDamage = getConfigBoolean("cancel-on-take-damage", false);
+		cancelOnDeath = getConfigBoolean("cancel-on-death", false);
 		cancelOnLogout = getConfigBoolean("cancel-on-logout", false);
-		if (cancelOnGiveDamage || cancelOnTakeDamage) {
+		if (cancelOnGiveDamage || cancelOnTakeDamage || cancelOnDeath) {
 			registerEvents(new DamageListener());
 		}
 		if (cancelOnLogout) {
@@ -235,8 +237,10 @@ public abstract class BuffSpell extends Spell {
 	public class DamageListener implements Listener {
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onPlayerDamage(EntityDamageEvent event) {
-			if (cancelOnTakeDamage && event.getEntity() instanceof Player && isActive((Player)event.getEntity())) {
-				turnOff((Player)event.getEntity());
+			if ((cancelOnTakeDamage || cancelOnDeath) && event.getEntity() instanceof Player && isActive((Player)event.getEntity())) {
+				if (cancelOnTakeDamage || event.getDamage() >= ((Player)event.getEntity()).getHealth()) {
+					turnOff((Player)event.getEntity());
+				}
 			} else if (cancelOnGiveDamage && event instanceof EntityDamageByEntityEvent) {
 				EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 				if (evt.getDamager() instanceof Player && isActive((Player)evt.getDamager())) {
