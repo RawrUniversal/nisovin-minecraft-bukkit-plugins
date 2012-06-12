@@ -256,10 +256,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// setup buff manager
-		int buffCheckInterval = config.getInt("general.buff-check-interval", 0);
-		if (buffCheckInterval > 0) {
-			buffManager = new BuffManager(buffCheckInterval);
-		}
+		buffManager = new BuffManager(config.getInt("general.buff-check-interval", 0));
 		
 		// load mana potions
 		List<String> manaPots = config.getStringList("general.mana.mana-potions", null);
