@@ -1,4 +1,4 @@
-package com.nisovin.magicspells.spells.channeled;
+package com.nisovin.magicspells.spells.targeted;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,17 +13,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import com.nisovin.magicspells.spells.ChanneledSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class SummonSpell extends ChanneledSpell {
+public class SummonSpell extends TargetedSpell {
 
 	private boolean requireExactName;
 	private boolean requireAcceptance;
 	private int maxAcceptDelay;
 	private String acceptCommand;
 	private String strUsage;
-	private String strNoTarget;
 	private String strSummonPending;
 	private String strSummonAccepted;
 	private String strSummonExpired;
@@ -88,34 +87,24 @@ public class SummonSpell extends ChanneledSpell {
 			}
 			if (target == null) {
 				// fail -- no player target
-				sendMessage(player, strNoTarget);
-				return PostCastAction.ALREADY_HANDLED;
+				return noTarget(player);
 			}
 			
-			// start channel
-			boolean success = addChanneler(target.getName(), player);
-			if (!success) {
-				// failed to channel -- don't charge stuff or cooldown
-				return PostCastAction.ALREADY_HANDLED;
-			}
-			
-		}
-		return PostCastAction.HANDLE_NORMALLY;
-	}
-
-	@Override
-	protected void finishSpell(String key, Location location) {
-		Player target = Bukkit.getServer().getPlayer(key);
-		if (target != null) {
+			// teleport player
 			if (requireAcceptance) {
-				pendingSummons.put(target, location);
+				pendingSummons.put(target, player.getLocation());
 				pendingTimes.put(target, System.currentTimeMillis());
 				sendMessage(target, strSummonPending);
 			} else {
-				target.teleport(location);
+				target.teleport(player.getLocation());
 				sendMessage(target, strSummonAccepted);
 			}
+			
+			sendMessages(player, target);
+			return PostCastAction.NO_MESSAGES;
+			
 		}
+		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
 	@EventHandler(priority=EventPriority.LOW)
