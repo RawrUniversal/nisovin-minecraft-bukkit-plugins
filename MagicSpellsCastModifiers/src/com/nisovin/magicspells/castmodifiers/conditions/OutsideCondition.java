@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
 
-public class UnderSkyCondition extends Condition {
+public class OutsideCondition extends Condition {
 
 	@Override
 	public boolean setVar(String var) {
