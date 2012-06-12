@@ -15,9 +15,9 @@ import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ChanneledSpell extends InstantSpell {
+public class RitualSpell extends InstantSpell {
 	
-	private int channelTime;
+	private int ritualDuration;
 	private int reqParticipants;
 	private boolean needSpellToParticipate;
 	private boolean showProgressOnExpBar;
@@ -26,30 +26,30 @@ public class ChanneledSpell extends InstantSpell {
 	private String theSpellName;
 	private int tickInterval;
 	private int effectInterval;
-	private String strChannelJoined;
-	private String strChannelSuccess;
-	private String strChannelInterrupted;
-	private String strChannelFailed;
+	private String strRitualJoined;
+	private String strRitualSuccess;
+	private String strRitualInterrupted;
+	private String strRitualFailed;
 	
-	private HashMap<Player, ActiveSpellChannel> activeChannels;
+	private HashMap<Player, ActiveRitual> activeRituals;
 	
-	public ChanneledSpell(MagicConfig config, String spellName) {
+	public RitualSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		channelTime = getConfigInt("channel-time", 200);
-		reqParticipants = getConfigInt("req-participants", 1);
+		ritualDuration = getConfigInt("ritual-time", 200);
+		reqParticipants = getConfigInt("req-participants", 3);
 		needSpellToParticipate = getConfigBoolean("need-spell-to-participate", false);
 		showProgressOnExpBar = getConfigBoolean("show-progress-on-exp-bar", true);
 		chargeReagentsUpFront = getConfigBoolean("charge-reagents-up-front", true);
 		theSpellName = getConfigString("spell", "");
 		tickInterval = getConfigInt("tick-interval", 5);
 		effectInterval = getConfigInt("effect-interval", 20);
-		strChannelJoined = getConfigString("str-channel-joined", null);
-		strChannelSuccess = getConfigString("str-channel-success", null);
-		strChannelInterrupted = getConfigString("str-channel-interrupted", null);
-		strChannelFailed = getConfigString("str-channel-failed", null);
+		strRitualJoined = getConfigString("str-ritual-joined", null);
+		strRitualSuccess = getConfigString("str-ritual-success", null);
+		strRitualInterrupted = getConfigString("str-ritual-interrupted", null);
+		strRitualFailed = getConfigString("str-ritual-failed", null);
 		
-		activeChannels = new HashMap<Player, ActiveSpellChannel>();
+		activeRituals = new HashMap<Player, ActiveRitual>();
 	}
 	
 	@Override
@@ -57,18 +57,18 @@ public class ChanneledSpell extends InstantSpell {
 		super.initialize();
 		spell = MagicSpells.getSpellByInternalName(theSpellName);
 		if (spell == null) {
-			MagicSpells.error("ChanneledSpell '" + internalName + "' does not have a spell defined (" + theSpellName + ")!");
+			MagicSpells.error("RitualSpell '" + internalName + "' does not have a spell defined (" + theSpellName + ")!");
 		}
 	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (activeChannels.containsKey(player)) {
-			ActiveSpellChannel channel = activeChannels.remove(player);
-			channel.stop(strChannelInterrupted);
+		if (activeRituals.containsKey(player)) {
+			ActiveRitual channel = activeRituals.remove(player);
+			channel.stop(strRitualInterrupted);
 		}
 		if (state == SpellCastState.NORMAL) {
-			activeChannels.put(player, new ActiveSpellChannel(player, power, args));
+			activeRituals.put(player, new ActiveRitual(player, power, args));
 			if (!chargeReagentsUpFront) {
 				return PostCastAction.NO_REAGENTS;
 			}
@@ -79,11 +79,11 @@ public class ChanneledSpell extends InstantSpell {
 	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 	public void onPlayerInteract(PlayerInteractEntityEvent event) {
 		if (event.getRightClicked() instanceof Player) {
-			ActiveSpellChannel channel = activeChannels.get((Player)event.getRightClicked());
+			ActiveRitual channel = activeRituals.get((Player)event.getRightClicked());
 			if (channel != null) {
 				if (!needSpellToParticipate || hasThisSpell(event.getPlayer())) {
 					channel.addChanneler(event.getPlayer());
-					sendMessage(event.getPlayer(), strChannelJoined);
+					sendMessage(event.getPlayer(), strRitualJoined);
 				}
 			}
 		}
@@ -93,7 +93,7 @@ public class ChanneledSpell extends InstantSpell {
 		return MagicSpells.getSpellbook(player).hasSpell(this);
 	}
 	
-	public class ActiveSpellChannel implements Runnable {
+	public class ActiveRitual implements Runnable {
 		
 		private Player caster;
 		private HashMap<Player, Location> channelers = new HashMap<Player, Location>();
@@ -102,7 +102,7 @@ public class ChanneledSpell extends InstantSpell {
 		private int duration = 0;
 		private int taskId;
 		
-		public ActiveSpellChannel(Player caster, float power, String[] args) {
+		public ActiveRitual(Player caster, float power, String[] args) {
 			this.power = power;
 			this.args = args;
 			this.caster = caster;
@@ -142,7 +142,7 @@ public class ChanneledSpell extends InstantSpell {
 				}
 				// send exp bar update
 				if (showProgressOnExpBar) {
-					MagicSpells.getVolatileCodeHandler().setExperienceBar(player, count, (float)duration / (float)channelTime);
+					MagicSpells.getVolatileCodeHandler().setExperienceBar(player, count, (float)duration / (float)ritualDuration);
 				}
 				// spell effect
 				if (duration % effectInterval == 0) {
@@ -150,23 +150,23 @@ public class ChanneledSpell extends InstantSpell {
 				}
 			}
 			if (interrupted) {
-				stop(strChannelInterrupted);
+				stop(strRitualInterrupted);
 			}
 			
-			if (duration >= channelTime) {
+			if (duration >= ritualDuration) {
 				// channel is done
 				if (count >= reqParticipants && !caster.isDead() && caster.isOnline()) {
 					if (chargeReagentsUpFront || hasReagents(caster)) {
-						stop(strChannelSuccess);
+						stop(strRitualSuccess);
 						PostCastAction action = spell.castSpell(caster, SpellCastState.NORMAL, power, args);
 						if (!chargeReagentsUpFront && (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.NO_COOLDOWN || action == PostCastAction.NO_MESSAGES || action == PostCastAction.REAGENTS_ONLY)) {
 							removeReagents(caster);
 						}
 					} else {
-						stop(strChannelFailed);
+						stop(strRitualFailed);
 					}
 				} else {
-					stop(strChannelFailed);
+					stop(strRitualFailed);
 				}
 			}
 		}
@@ -177,7 +177,7 @@ public class ChanneledSpell extends InstantSpell {
 				MagicSpells.getVolatileCodeHandler().setExperienceBar(player, player.getLevel(), player.getExp());
 			}
 			Bukkit.getScheduler().cancelTask(taskId);
-			activeChannels.remove(caster);
+			activeRituals.remove(caster);
 		}
 		
 	}

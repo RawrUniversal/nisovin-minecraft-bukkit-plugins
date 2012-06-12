@@ -38,7 +38,6 @@ public class SummonSpell extends TargetedSpell {
 		maxAcceptDelay = getConfigInt("max-accept-delay", 90);
 		acceptCommand = getConfigString("accept-command", "accept");
 		strUsage = getConfigString("str-usage", "Usage: /cast summon <playername>, or /cast summon \nwhile looking at a sign with a player name on the first line.");
-		strNoTarget = getConfigString("str-no-target", "Target player not found.");
 		strSummonPending = getConfigString("str-summon-pending", "You are being summoned! Type /accept to teleport.");
 		strSummonAccepted = getConfigString("str-summon-accepted", "You have been summoned.");
 		strSummonExpired = getConfigString("str-summon-expired", "The summon has expired.");
