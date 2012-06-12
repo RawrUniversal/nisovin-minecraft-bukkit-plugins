@@ -16,9 +16,6 @@ import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class ChanneledSpell extends InstantSpell {
-
-	private static final int tickInterval = 5;
-	private static final int effectInterval = 20;
 	
 	private int channelTime;
 	private int reqParticipants;
@@ -27,6 +24,8 @@ public class ChanneledSpell extends InstantSpell {
 	private boolean chargeReagentsUpFront;
 	private Spell spell;
 	private String theSpellName;
+	private int tickInterval;
+	private int effectInterval;
 	private String strChannelJoined;
 	private String strChannelSuccess;
 	private String strChannelInterrupted;
@@ -43,6 +42,8 @@ public class ChanneledSpell extends InstantSpell {
 		showProgressOnExpBar = getConfigBoolean("show-progress-on-exp-bar", true);
 		chargeReagentsUpFront = getConfigBoolean("charge-reagents-up-front", true);
 		theSpellName = getConfigString("spell", "");
+		tickInterval = getConfigInt("tick-interval", 5);
+		effectInterval = getConfigInt("effect-interval", 20);
 		strChannelJoined = getConfigString("str-channel-joined", null);
 		strChannelSuccess = getConfigString("str-channel-success", null);
 		strChannelInterrupted = getConfigString("str-channel-interrupted", null);
