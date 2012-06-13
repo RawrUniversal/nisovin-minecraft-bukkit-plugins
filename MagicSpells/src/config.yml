@@ -22,6 +22,7 @@ general:
     only-cycle-to-castable-spells: true
     allow-cast-with-fist: false
     ops-have-all-spells: true
+    ops-ignore-reagents-cooldowns: true
     default-all-perms-false: false
     ignore-default-bindings: false
     ignore-cast-item-durability: [ 268, 269, 270, 271, 283, 284, 285, 286, 290, 294, 314, 315, 316, 317 ]
