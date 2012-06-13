@@ -175,7 +175,7 @@ public abstract class TargetedSpell extends InstantSpell {
 						target = e;
 						
 						// check for anti-magic-zone
-						if (target != null && MagicSpells.getNoMagicZoneHandler() != null && MagicSpells.getNoMagicZoneHandler().willFizzle(target.getLocation(), this)) {
+						if (target != null && MagicSpells.getNoMagicZoneManager() != null && MagicSpells.getNoMagicZoneManager().willFizzle(target.getLocation(), this)) {
 							target = null;
 							continue;
 						}

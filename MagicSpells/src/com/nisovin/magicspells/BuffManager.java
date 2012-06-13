@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.spells.BuffSpell;
+import com.nisovin.magicspells.zones.NoMagicZoneManager;
 
 public class BuffManager {
 	
@@ -54,7 +55,7 @@ public class BuffManager {
 	class Monitor implements Runnable {
 		@Override
 		public void run() {
-			NoMagicZoneHandler noMagicZones = MagicSpells.getNoMagicZoneHandler();
+			NoMagicZoneManager noMagicZones = MagicSpells.getNoMagicZoneManager();
 			if (noMagicZones != null) {
 				for (String playerName : activeBuffs.keySet()) {
 					Player p = Bukkit.getPlayerExact(playerName);

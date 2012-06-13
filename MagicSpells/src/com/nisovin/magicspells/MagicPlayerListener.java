@@ -47,7 +47,7 @@ class MagicPlayerListener implements Listener {
 
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onPlayerInteract(PlayerInteractEvent event) {		
+	public void onPlayerInteract(PlayerInteractEvent event) {
 		// first check if player is interacting with a special block
 		boolean noInteract = false;
 		if (event.hasBlock()) {

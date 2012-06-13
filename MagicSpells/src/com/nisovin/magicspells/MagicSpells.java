@@ -34,6 +34,7 @@ import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spells.*;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
+import com.nisovin.magicspells.zones.NoMagicZoneManager;
 
 public class MagicSpells extends JavaPlugin {
 
@@ -87,7 +88,7 @@ public class MagicSpells extends JavaPlugin {
 		
 	static ManaHandler mana;
 	static HashMap<Player,Long> manaPotionCooldowns;
-	static NoMagicZoneHandler noMagicZones;
+	static NoMagicZoneManager noMagicZones;
 	static BuffManager buffManager;
 	
 	@Override
@@ -579,20 +580,12 @@ public class MagicSpells extends JavaPlugin {
 	 * Gets the handler for no-magic zones.
 	 * @return the no-magic zone handler
 	 */
-	public static NoMagicZoneHandler getNoMagicZoneHandler() {
+	public static NoMagicZoneManager getNoMagicZoneManager() {
 		return noMagicZones;
 	}
 	
 	public static BuffManager getBuffManager() {
 		return buffManager;
-	}
-	
-	/**
-	 * Sets the handler for no-magic zones
-	 * @param handler the no-magic zone handler
-	 */
-	public static void setNoMagicZoneHandler(NoMagicZoneHandler handler) {
-		noMagicZones = handler;
 	}
 	
 	/**
