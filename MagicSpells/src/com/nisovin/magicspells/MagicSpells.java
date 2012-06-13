@@ -189,9 +189,12 @@ public class MagicSpells extends JavaPlugin {
 		strManaPotionOnCooldown = config.getString("general.mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
 				
 		// init permissions
-		boolean opsIgnoreReagentsCooldowns = config.getBoolean("general.ops-ignore-reagents-cooldowns", false);
-		addPermission(pm, "noreagents", opsIgnoreReagentsCooldowns? PermissionDefault.OP : PermissionDefault.FALSE, "Allows casting without needing reagents");
-		addPermission(pm, "nocooldown", opsIgnoreReagentsCooldowns? PermissionDefault.OP : PermissionDefault.FALSE, "Allows casting without being affected by cooldowns");
+		boolean opsIgnoreReagents = config.getBoolean("general.ops-ignore-reagents", true);
+		boolean opsIgnoreCooldowns = config.getBoolean("general.ops-ignore-cooldowns", true);
+		boolean opsIgnoreCastTimes = config.getBoolean("general.ops-ignore-cast-times", true);
+		addPermission(pm, "noreagents", opsIgnoreReagents? PermissionDefault.OP : PermissionDefault.FALSE, "Allows casting without needing reagents");
+		addPermission(pm, "nocooldown", opsIgnoreCooldowns? PermissionDefault.OP : PermissionDefault.FALSE, "Allows casting without being affected by cooldowns");
+		addPermission(pm, "nocasttime", opsIgnoreCastTimes? PermissionDefault.OP : PermissionDefault.FALSE, "Allows casting without being affected by cooldowns");
 		addPermission(pm, "notarget", PermissionDefault.FALSE, "Prevents being targeted by any targeted spells");
 		addPermission(pm, "silent", PermissionDefault.FALSE, "Prevents cast messages from being broadcast to players");
 		HashMap<String, Boolean> permGrantChildren = new HashMap<String,Boolean>();

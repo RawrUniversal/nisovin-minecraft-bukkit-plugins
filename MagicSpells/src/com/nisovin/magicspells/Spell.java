@@ -336,6 +336,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				MagicSpells.debug(2, "    Spell cast state changed: " + state);
 			}
 		}
+		if (player.hasPermission("magicspells.nocasttime")) {
+			castTime = 0;
+		}
 		
 		// cast spell
 		PostCastAction action;
