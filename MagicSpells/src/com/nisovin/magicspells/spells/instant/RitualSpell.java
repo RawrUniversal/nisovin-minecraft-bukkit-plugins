@@ -7,7 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
@@ -89,6 +91,24 @@ public class RitualSpell extends InstantSpell {
 		}
 	}
 	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		for (ActiveRitual ritual : activeRituals.values()) {
+			if (ritual.isChanneler(event.getPlayer())) {
+				ritual.stop(strInterrupted);
+			}
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+	public void onPlayerDeath(PlayerDeathEvent event) {
+		for (ActiveRitual ritual : activeRituals.values()) {
+			if (ritual.isChanneler(event.getEntity())) {
+				ritual.stop(strInterrupted);
+			}
+		}
+	}
+	
 	private boolean hasThisSpell(Player player) {
 		return MagicSpells.getSpellbook(player).hasSpell(this);
 	}
@@ -96,11 +116,11 @@ public class RitualSpell extends InstantSpell {
 	public class ActiveRitual implements Runnable {
 		
 		private Player caster;
-		private HashMap<Player, Location> channelers = new HashMap<Player, Location>();
 		private float power;
 		private String[] args;
 		private int duration = 0;
 		private int taskId;
+		private HashMap<Player, Location> channelers = new HashMap<Player, Location>();
 		
 		public ActiveRitual(Player caster, float power, String[] args) {
 			this.power = power;
@@ -176,6 +196,7 @@ public class RitualSpell extends InstantSpell {
 				sendMessage(player, message);
 				MagicSpells.getVolatileCodeHandler().setExperienceBar(player, player.getLevel(), player.getExp());
 			}
+			channelers.clear();
 			Bukkit.getScheduler().cancelTask(taskId);
 			activeRituals.remove(caster);
 		}

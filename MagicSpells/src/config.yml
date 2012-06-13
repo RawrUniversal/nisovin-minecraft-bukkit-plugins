@@ -448,6 +448,20 @@ spells:
             - 262 1
         str-cost: 4 redstone, 2 gunpowder, 1 arrow
         str-cast-self: You fire an explosive arrow.
+    farm:
+        spell-class: ".targeted.FarmSpell"
+        description: Make crops grow nearby.
+        name: farm
+        cooldown: 10
+        radius: 3
+        growth: 1
+        targeted: false
+        cost:
+            - 331 1
+            - 295 2
+        str-cost: 1 redstone dust and 2 seeds
+        str-cast-self: The crops around you grow quickly.
+        str-no-target: There are no crops nearby.
     fireball:
         spell-class: ".targeted.FireballSpell"
         name: fireball
@@ -600,7 +614,6 @@ spells:
         effects:
             - pos1 ender
             - pos2 ender
-        cast-time: 0
         cost:
             - 331 1
             - 265 1
@@ -608,8 +621,6 @@ spells:
         str-cast-self: You have teleported to spawn.
         str-cast-others: "%a teleports!"
         str-gate-failed: Unable to teleport.
-        str-cast-done: ""
-        str-cast-interrupted: ""
     geyser:
         spell-class: ".targeted.GeyserSpell"
         name: geyser
@@ -836,6 +847,22 @@ spells:
         str-cost: 3 redstone and 3 torches, plus 1 redstone occasionally
         str-cast-self: Light appears at your feet.
         str-fade: The light at your feet goes out.
+    lilywalk:
+        spell-class: ".buff.LilywalkSpell"
+        name: lilywalk
+        description: Lets you walk on water on lily pads.
+        cast-item: 317
+        cooldown: 30
+        cost:
+            - 331 4
+            - 111 1
+        use-cost:
+            - 331 1
+        use-cost-interval: 50
+        str-cost: 4 redstone and 1 lilypad, plus 1 redstone every 50 blocks
+        str-cast-self: You can now walk on water!
+        str-cast-others: "%a can now walk on water!"
+        str-fade: You can no longer walk on water.
     mana:
         spell-class: ".instant.ManaSpell"
         name: lifetap
@@ -974,7 +1001,6 @@ spells:
         cooldown: 300
         mark-spell: mark
         max-range: -1
-        cast-time: 0
         allow-cross-world: true
         use-bed-location: false
         cost:
@@ -986,8 +1012,6 @@ spells:
         str-other-world: You cannot recall to another world.
         str-too-far: Your marked location is too far away.
         str-cast-others: "%a disappears!"
-        str-cast-done: ""
-        str-cast-interrupted: ""
     reflect:
         spell-class: ".buff.ReflectSpell"
         name: reflect

@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class SummonSpell extends TargetedSpell {
@@ -52,21 +53,30 @@ public class SummonSpell extends TargetedSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			// get target name
+			// get target name and landing location
 			String targetName = "";
+			Location landLoc = null;
 			if (args != null && args.length > 0) {
 				targetName = args[0];
+				landLoc = player.getLocation();
 			} else {
 				Block block = player.getTargetBlock(null, 10);
 				if (block != null && (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST)) {
 					Sign sign = (Sign)block.getState();
 					targetName = sign.getLine(0);
+					landLoc = block.getLocation().add(.5, .1, .5);
 				}
 			}
 			
 			// check usage
 			if (targetName.equals("")) {
 				// fail -- show usage
+				sendMessage(player, strUsage);
+				return PostCastAction.ALREADY_HANDLED;
+			}
+			
+			// check location
+			if (landLoc == null || !BlockUtils.isSafeToStand(landLoc)) {
 				sendMessage(player, strUsage);
 				return PostCastAction.ALREADY_HANDLED;
 			}
@@ -91,11 +101,11 @@ public class SummonSpell extends TargetedSpell {
 			
 			// teleport player
 			if (requireAcceptance) {
-				pendingSummons.put(target, player.getLocation());
+				pendingSummons.put(target, landLoc);
 				pendingTimes.put(target, System.currentTimeMillis());
 				sendMessage(target, strSummonPending);
 			} else {
-				target.teleport(player.getLocation());
+				target.teleport(landLoc);
 				sendMessage(target, strSummonAccepted);
 			}
 			

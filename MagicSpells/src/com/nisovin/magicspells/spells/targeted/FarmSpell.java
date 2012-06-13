@@ -35,7 +35,7 @@ public class FarmSpell extends TargetedLocationSpell {
 				block = player.getLocation().subtract(0, 1, 0).getBlock();
 			}
 			if (block != null) {
-				boolean farmed = farm(block);
+				boolean farmed = farm(block, Math.round(radius * power));
 				if (!farmed) return noTarget(player);
 				playSpellEffects(EffectPosition.CASTER, player);
 				if (targeted) {
@@ -48,7 +48,7 @@ public class FarmSpell extends TargetedLocationSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	private boolean farm(Block center) {
+	private boolean farm(Block center, int radius) {
 		int cx = center.getX();
 		int y = center.getY();
 		int cz = center.getZ();
@@ -82,7 +82,7 @@ public class FarmSpell extends TargetedLocationSpell {
 	
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
-		return farm(target.subtract(0, 1, 0).getBlock());
+		return farm(target.subtract(0, 1, 0).getBlock(), Math.round(radius * power));
 	}
 
 }
