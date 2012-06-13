@@ -29,7 +29,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
-import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
@@ -41,7 +40,6 @@ import com.nisovin.magicspells.util.Util;
 
 public class PassiveSpell extends Spell {
 
-	private PassiveSpell thisSpell = this;
 	private Random random = new Random();
 	private boolean disabled = false;
 	
@@ -130,6 +128,10 @@ public class PassiveSpell extends Spell {
 		return PostCastAction.ALREADY_HANDLED;
 	}
 	
+	private boolean hasSpell(Player caster) {
+		return MagicSpells.getSpellbook(caster).hasSpell(this);
+	}
+	
 	private void activate(Player caster) {
 		activate(caster, null, null);
 	}
@@ -204,8 +206,7 @@ public class PassiveSpell extends Spell {
 		public void onDamage(EntityDamageEvent event) {
 			if (event.getEntityType() == EntityType.PLAYER) {
 				Player player = (Player)event.getEntity();
-				Spellbook spellbook = MagicSpells.getSpellbook(player);
-				if (spellbook.hasSpell(thisSpell)) {
+				if (hasSpell(player)) {
 					DamageCause cause = event.getCause();
 					if (event instanceof EntityDamageByEntityEvent) {
 						Entity attacker = ((EntityDamageByEntityEvent)event).getDamager();
@@ -280,8 +281,7 @@ public class PassiveSpell extends Spell {
 						return;
 					}
 				}
-				Spellbook spellbook = MagicSpells.getSpellbook(player);
-				if (spellbook.hasSpell(thisSpell)) {
+				if (hasSpell(player)) {
 					if (event.getEntity() instanceof LivingEntity && ((LivingEntity)event.getEntity()).getNoDamageTicks() <= 0) {
 						activate(player, (LivingEntity)event.getEntity());
 					}
@@ -311,8 +311,7 @@ public class PassiveSpell extends Spell {
 		public void onBlockBreak(BlockBreakEvent event) {
 			if (typeIds == null || Util.arrayContains(typeIds, event.getBlock().getTypeId())) {
 				Player player = event.getPlayer();
-				Spellbook spellbook = MagicSpells.getSpellbook(player);
-				if (spellbook.hasSpell(thisSpell)) {
+				if (hasSpell(player)) {
 					activate(player, event.getBlock().getLocation().add(.5, 0, .5));
 				}
 			}
@@ -340,8 +339,7 @@ public class PassiveSpell extends Spell {
 		public void onBlockPlace(BlockPlaceEvent event) {
 			if (typeIds == null || Util.arrayContains(typeIds, event.getBlock().getTypeId())) {
 				Player player = event.getPlayer();
-				Spellbook spellbook = MagicSpells.getSpellbook(player);
-				if (spellbook.hasSpell(thisSpell)) {
+				if (hasSpell(player)) {
 					activate(player, event.getBlock().getLocation().add(.5, 0, .5));
 				}
 			}
@@ -380,8 +378,7 @@ public class PassiveSpell extends Spell {
 			if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && event.hasItem() && event.useItemInHand() != Result.DENY) {
 				if (checkItem(event.getItem())) {
 					Player player = event.getPlayer();
-					Spellbook spellbook = MagicSpells.getSpellbook(player);
-					if (spellbook.hasSpell(thisSpell)) {
+					if (hasSpell(player)) {
 						activate(player);
 					}
 				}
@@ -411,8 +408,7 @@ public class PassiveSpell extends Spell {
 			if (event.getTarget() instanceof Player) {
 				if (spellName == null || event.getSpell().getName().equals(spellName)) {
 					Player player = (Player)event.getTarget();
-					Spellbook spellbook = MagicSpells.getSpellbook(player);
-					if (spellbook.hasSpell(thisSpell)) {
+					if (hasSpell(player)) {
 						activate(player, event.getCaster());
 					}
 				}
@@ -431,8 +427,7 @@ public class PassiveSpell extends Spell {
 		@EventHandler(priority=EventPriority.MONITOR)
 		public void onSpellCasted(SpellCastedEvent event) {
 			if (event.getSpell().getInternalName().equals(spellName) && event.getPostCastAction() != PostCastAction.ALREADY_HANDLED) {
-				Spellbook spellbook = MagicSpells.getSpellbook(event.getCaster());
-				if (spellbook.hasSpell(thisSpell)) {
+				if (hasSpell(event.getCaster())) {
 					activate(event.getCaster());
 				}
 			}
