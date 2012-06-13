@@ -12,10 +12,12 @@ public abstract class NoMagicZone {
 
 	private String message;
 	private List<String> allowedSpells;
+	private List<String> disallowedSpells;
 	
 	public final void create(ConfigurationSection config) {
 		message = config.getString("message", "You are in a no-magic zone.");
 		allowedSpells = config.getStringList("allowed-spells");
+		disallowedSpells = config.getStringList("disallowed-spells");
 		initialize(config);
 	}
 	
@@ -26,7 +28,13 @@ public abstract class NoMagicZone {
 	}
 	
 	public boolean willFizzle(Location location, Spell spell) {
-		if (allowedSpells != null && allowedSpells.contains(spell.getInternalName())) {
+		if (disallowedSpells != null) {
+			if (disallowedSpells.contains(spell.getInternalName())) {
+				return inZone(location);
+			} else {
+				return false;
+			}
+		} else if (allowedSpells != null && allowedSpells.contains(spell.getInternalName())) {
 			return false;
 		} else {
 			return inZone(location);
