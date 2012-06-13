@@ -55,7 +55,7 @@ public class PassiveSpell extends Spell {
 	public PassiveSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		triggers = getConfigStringList("trigger", null);
+		triggers = getConfigStringList("triggers", null);
 		chance = getConfigFloat("chance", 100F) / 100F;
 		castWithoutTarget = getConfigBoolean("cast-without-target", false);
 		
@@ -273,8 +273,12 @@ public class PassiveSpell extends Spell {
 				player = (Player)((Projectile)event.getDamager()).getShooter();
 			}
 			if (player != null) {
-				if (itemIds != null && Util.arrayContains(itemIds, player.getItemInHand().getTypeId())) {
-					return;
+				if (itemIds != null) {
+					int id = 0;
+					if (player.getItemInHand() != null) id = player.getItemInHand().getTypeId();
+					if (!Util.arrayContains(itemIds, id)) {
+						return;
+					}
 				}
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spellbook.hasSpell(thisSpell)) {
@@ -334,7 +338,7 @@ public class PassiveSpell extends Spell {
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onBlockPlace(BlockPlaceEvent event) {
-			if (typeIds != null || Util.arrayContains(typeIds, event.getBlock().getTypeId())) {
+			if (typeIds == null || Util.arrayContains(typeIds, event.getBlock().getTypeId())) {
 				Player player = event.getPlayer();
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spellbook.hasSpell(thisSpell)) {
