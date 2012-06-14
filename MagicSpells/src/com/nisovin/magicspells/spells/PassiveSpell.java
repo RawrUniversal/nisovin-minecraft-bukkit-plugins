@@ -24,6 +24,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -98,6 +99,9 @@ public class PassiveSpell extends Spell {
 					trigCount++;
 				} else if (type.equalsIgnoreCase("givedamage")) {
 					registerEvents(new GiveDamageListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("kill")) {
+					registerEvents(new KillListener(var));
 					trigCount++;
 				} else if (type.equalsIgnoreCase("blockbreak")) {
 					registerEvents(new BlockBreakListener(var));
@@ -253,12 +257,14 @@ public class PassiveSpell extends Spell {
 		int[] itemIds = null;
 		
 		public GiveDamageListener(String var) {
-			var = var.replace(" ", "");
-			if (var.matches("[0-9]+(,[0-9]+)*")) {
-				String[] s = var.split(",");
-				itemIds = new int[s.length];
-				for (int i = 0; i < s.length; i++) {
-					itemIds[i] = Integer.parseInt(s[i]);
+			if (var != null) {
+				var = var.replace(" ", "");
+				if (var.matches("[0-9]+(,[0-9]+)*")) {
+					String[] s = var.split(",");
+					itemIds = new int[s.length];
+					for (int i = 0; i < s.length; i++) {
+						itemIds[i] = Integer.parseInt(s[i]);
+					}
 				}
 			}
 		}
@@ -288,6 +294,31 @@ public class PassiveSpell extends Spell {
 				}
 			}
 		}
+	}
+	
+	public class KillListener implements Listener {
+		
+		EntityType[] types = null;
+		
+		public KillListener(String var) {
+			if (var != null) {
+				var = var.replace(" ", "");
+				String[] s = var.split(",");
+				types = new EntityType[s.length];
+				for (int i = 0; i < s.length; i++) {
+					types[i] = EntityType.fromName(s[i].toUpperCase());
+				}
+			}
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onDeath(EntityDeathEvent event) {
+			Player killer = event.getEntity().getKiller();
+			if (killer != null && (types == null || Util.arrayContains(types, event.getEntity().getType())) && hasSpell(killer)) {
+				activate(killer);
+			}
+		}
+		
 	}
 	
 	public class BlockBreakListener implements Listener {
