@@ -26,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -117,6 +118,9 @@ public class PassiveSpell extends Spell {
 					trigCount++;
 				} else if (type.equalsIgnoreCase("spellcast")) {
 					registerEvents(new SpellCastListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("sprint")) {
+					registerEvents(new SprintListener());
 					trigCount++;
 				}
 			}
@@ -461,6 +465,15 @@ public class PassiveSpell extends Spell {
 				if (hasSpell(event.getCaster())) {
 					activate(event.getCaster());
 				}
+			}
+		}
+	}
+	
+	public class SprintListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSprint(PlayerToggleSprintEvent event) {
+			if (event.isSprinting() && hasSpell(event.getPlayer())) {
+				activate(event.getPlayer());
 			}
 		}
 	}
