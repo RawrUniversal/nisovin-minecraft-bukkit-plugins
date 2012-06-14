@@ -7,6 +7,7 @@ import java.util.Random;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
@@ -19,6 +20,7 @@ public class ConjureSpell extends InstantSpell {
 	private boolean powerAffectsQuantity;
 	private boolean powerAffectsChance;
 	private boolean calculateDropsIndividually;
+	private boolean autoEquip;
 	private int[] itemTypes;
 	private int[] itemDatas;
 	private int[] itemMinQuantities;
@@ -32,6 +34,7 @@ public class ConjureSpell extends InstantSpell {
 		powerAffectsQuantity = getConfigBoolean("power-affects-quantity", false);
 		powerAffectsChance = getConfigBoolean("power-affects-chance", true);
 		calculateDropsIndividually = getConfigBoolean("calculate-drops-individually", true);
+		autoEquip = getConfigBoolean("auto-equip", false);
 		List<String> list = getConfigStringList("items", null);
 		if (list != null && list.size() > 0) {
 			itemTypes = new int[list.size()];
@@ -90,10 +93,29 @@ public class ConjureSpell extends InstantSpell {
 			// drop items
 			Location loc = player.getEyeLocation().add(player.getLocation().getDirection());
 			for (ItemStack item : items) {
-				if (addToInventory) {
-					player.getInventory().addItem(item);
-				} else {
-					player.getWorld().dropItem(loc, item);
+				boolean added = false;
+				PlayerInventory inv = player.getInventory();
+				if (autoEquip && item.getAmount() == 1) {
+					if (item.getType().name().endsWith("HELMET") && inv.getHelmet() == null) {
+						inv.setHelmet(item);
+						added = true;
+					} else if (item.getType().name().endsWith("CHESTPLATE") && inv.getChestplate() == null) {
+						inv.setChestplate(item);
+						added = true;
+					} else if (item.getType().name().endsWith("LEGGINGS") && inv.getLeggings() == null) {
+						inv.setLeggings(item);
+						added = true;
+					} else if (item.getType().name().endsWith("BOOTS") && inv.getBoots() == null) {
+						inv.setBoots(item);
+						added = true;
+					}
+				}
+				if (!added) {
+					if (addToInventory) {
+						inv.addItem(item);
+					} else {
+						player.getWorld().dropItem(loc, item);
+					}
 				}
 			}
 			
