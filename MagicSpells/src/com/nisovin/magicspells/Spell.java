@@ -342,6 +342,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		// cast spell
 		PostCastAction action;
+		MagicSpells.debug(3, "    Cast time: " + castTime);
 		if (castTime <= 0 || state != SpellCastState.NORMAL) {
 			action = handleCast(player, state, power, cooldown, reagents, args);
 		} else {
@@ -349,9 +350,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			sendMessage(player, strCastStart);
 			playSpellEffects(EffectPosition.START_CAST, player);
 			if (MagicSpells.useExpBarAsCastTimeBar) {
-				new DelayedSpellCastWithBar(player, this, state, power, cooldown, reagents);
+				new DelayedSpellCastWithBar(player, this, state, power, cooldown, reagents, castTime);
 			} else {
-				new DelayedSpellCast(player, this, state, power, cooldown, reagents);
+				new DelayedSpellCast(player, this, state, power, cooldown, reagents, castTime);
 			}
 		}
 		
@@ -906,54 +907,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return this.reagents;
 	}
 	
-	@Deprecated
-	/**
-	 * Use getReagents() instead.
-	 */
-	public ItemStack[] getReagentCost() {
-		return this.reagents.getItemsAsArray();
-	}
-
-	@Deprecated
-	/**
-	 * Use getReagents() instead.
-	 */
-	public int getManaCost() {
-		return this.reagents.getMana();
-	}
-
-	@Deprecated
-	/**
-	 * Use getReagents() instead.
-	 */
-	public int getHealthCost() {
-		return this.reagents.getHealth();
-	}
-
-	@Deprecated
-	/**
-	 * Use getReagents() instead.
-	 */
-	public int getHungerCost() {
-		return this.reagents.getHunger();
-	}
-
-	@Deprecated
-	/**
-	 * Use getReagents() instead.
-	 */
-	public int getExperienceCost() {
-		return this.reagents.getExperience();
-	}
-
-	@Deprecated()
-	/**
-	 * Use getReagents() instead.
-	 */
-	public int getLevelsCost() {
-		return this.reagents.getLevels();
-	}
-	
 	public String getConsoleName() {
 		return MagicSpells.strConsoleName;
 	}
@@ -1004,15 +957,36 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	public enum PostCastAction {
-		HANDLE_NORMALLY,
-		ALREADY_HANDLED,
-		NO_MESSAGES,
-		NO_REAGENTS,
-		NO_COOLDOWN,
-		MESSAGES_ONLY,
-		REAGENTS_ONLY,
-		COOLDOWN_ONLY,
-		DELAYED
+		HANDLE_NORMALLY(true, true, true),
+		ALREADY_HANDLED(false, false, false),
+		NO_MESSAGES(true, true, false),
+		NO_REAGENTS(true, false, true),
+		NO_COOLDOWN(false, true, true),
+		MESSAGES_ONLY(false, false, true),
+		REAGENTS_ONLY(false, true, false),
+		COOLDOWN_ONLY(true, false, false),
+		DELAYED(false, false, false);
+		
+		private boolean cooldown;
+		private boolean reagents;
+		private boolean messages;
+		private PostCastAction(boolean cooldown, boolean reagents, boolean messages) {
+			this.cooldown = cooldown;
+			this.reagents = reagents;
+			this.messages = messages;
+		}
+		
+		public boolean setCooldown() {
+			return cooldown;
+		}
+		
+		public boolean chargeReagents() {
+			return reagents;
+		}
+		
+		public boolean sendMessages() {
+			return messages;
+		}
 	}
 	
 	public class SpellCastResult {
@@ -1035,7 +1009,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		private int taskId;
 		private boolean cancelled = false;
 		
-		public DelayedSpellCast(Player player, Spell spell, SpellCastState state, float power, float cooldown, SpellReagents reagents) {
+		public DelayedSpellCast(Player player, Spell spell, SpellCastState state, float power, float cooldown, SpellReagents reagents, int castTime) {
 			this.player = player;
 			this.prevLoc = player.getLocation().clone();
 			this.spell = spell;
@@ -1084,13 +1058,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		private float power;
 		private float cooldown;
 		private SpellReagents reagents;
+		private int castTime;
 		private int taskId;
 		private boolean cancelled = false;
 		
 		private int interval = 5;
 		private int elapsed = 0;
 		
-		public DelayedSpellCastWithBar(Player player, Spell spell, SpellCastState state, float power, float cooldown, SpellReagents reagents) {
+		public DelayedSpellCastWithBar(Player player, Spell spell, SpellCastState state, float power, float cooldown, SpellReagents reagents, int castTime) {
 			this.player = player;
 			this.prevLoc = player.getLocation().clone();
 			this.spell = spell;
@@ -1098,6 +1073,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			this.power = power;
 			this.cooldown = cooldown;
 			this.reagents = reagents;
+			this.castTime = castTime;
 			
 			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, interval, interval);
 			if (interruptOnDamage) {
