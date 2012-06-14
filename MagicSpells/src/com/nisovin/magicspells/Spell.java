@@ -73,7 +73,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String strCastStart;
 	protected String strInterrupted;
 	
-	private HashMap<String, Long> lastCast;
+	private HashMap<String, Long> nextCast;
 	
 	public Spell(MagicConfig config, String spellName) {
 		this.config = config;
@@ -206,9 +206,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			}
 		}
 		this.ignoreGlobalCooldown = config.getBoolean(section + "." + spellName + ".ignore-global-cooldown", false);
-		if (cooldown > 0) {
-			lastCast = new HashMap<String, Long>();
-		}
+		this.nextCast = new HashMap<String, Long>();
 
 		// hierarchy options
 		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
@@ -367,7 +365,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		PostCastAction action = castSpell(player, state, power, args);
 		MagicSpells.debug(3, "    Post-cast action: " + action);
-		
+
 		if (action != null && action != PostCastAction.ALREADY_HANDLED) {
 			if (state == SpellCastState.NORMAL) {
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.COOLDOWN_ONLY || action == PostCastAction.NO_MESSAGES || action == PostCastAction.NO_REAGENTS) {
@@ -476,13 +474,13 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @return whether the spell is on cooldown
 	 */
 	public boolean onCooldown(Player player) {
-		if (cooldown == 0 || player.hasPermission("magicspells.nocooldown")) {
+		if (player.hasPermission("magicspells.nocooldown")) {
 			return false;
 		}
 		
-		Long casted = lastCast.get(player.getName());
-		if (casted != null) {
-			if (casted + (int)(cooldown*1000F) > System.currentTimeMillis()) {
+		Long next = nextCast.get(player.getName());
+		if (next != null) {
+			if (next > System.currentTimeMillis()) {
 				return true;
 			}
 		}
@@ -495,13 +493,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @return The number of seconds remaining in the cooldown
 	 */
 	public float getCooldown(Player player) {
-		if (cooldown <= 0) {
-			return 0;
-		}
-		
-		Long casted = lastCast.get(player.getName());
-		if (casted != null) {
-			return (cooldown - ((System.currentTimeMillis()-casted)/1000F));
+		Long next = nextCast.get(player.getName());
+		if (next != null) {
+			float c = (next - System.currentTimeMillis()) / 1000F;
+			return c > 0 ? c : 0;
 		} else {
 			return 0;
 		}
@@ -521,7 +516,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 */
 	public void setCooldown(Player player, float cooldown, boolean activateSharedCooldowns) {
 		if (cooldown > 0) {
-			lastCast.put(player.getName(), System.currentTimeMillis());
+			nextCast.put(player.getName(), System.currentTimeMillis() + (int)(cooldown * 1000));
 		}
 		if (activateSharedCooldowns && sharedCooldowns != null) {
 			for (Map.Entry<Spell, Float> scd : sharedCooldowns.entrySet()) {
