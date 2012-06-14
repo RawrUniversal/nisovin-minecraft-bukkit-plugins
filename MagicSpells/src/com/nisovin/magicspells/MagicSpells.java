@@ -468,7 +468,6 @@ public class MagicSpells extends JavaPlugin {
 							for (int i = 1; i < args.length; i++) {
 								spellArgs[i-1] = args[i];
 							}
-							spellArgs = Util.splitParams(spellArgs);
 						}
 						spell.cast(player, spellArgs);
 					} else {
