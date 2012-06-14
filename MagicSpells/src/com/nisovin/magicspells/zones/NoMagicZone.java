@@ -18,6 +18,8 @@ public abstract class NoMagicZone {
 		message = config.getString("message", "You are in a no-magic zone.");
 		allowedSpells = config.getStringList("allowed-spells");
 		disallowedSpells = config.getStringList("disallowed-spells");
+		if (allowedSpells != null && allowedSpells.size() == 0) allowedSpells = null;
+		if (disallowedSpells != null && disallowedSpells.size() == 0) disallowedSpells = null;
 		initialize(config);
 	}
 	

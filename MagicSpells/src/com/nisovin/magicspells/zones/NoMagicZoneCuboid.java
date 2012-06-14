@@ -28,7 +28,7 @@ public class NoMagicZoneCuboid extends NoMagicZone {
 			minx = x2;
 			maxx = x1;
 		}
-		if (y1 < y1) {
+		if (y1 < y2) {
 			miny = y1;
 			maxy = y2;
 		} else {
@@ -41,7 +41,7 @@ public class NoMagicZoneCuboid extends NoMagicZone {
 		} else {
 			minz = z2;
 			maxz = z1;
-		}	
+		}
 	}
 
 	@Override
