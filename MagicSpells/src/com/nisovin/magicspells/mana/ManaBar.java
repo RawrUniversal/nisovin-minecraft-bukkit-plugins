@@ -69,10 +69,12 @@ public class ManaBar {
 		
 		newAmt = callManaChangeEvent(newAmt, reason);
 		if (newAmt == mana) return false;
+		mana = newAmt;
 		return true;
 	}
 	
 	public boolean regenerate() {
+		if (mana == maxMana) return false;
 		return changeMana(regenAmount, ManaChangeReason.REGEN);
 	}
 	

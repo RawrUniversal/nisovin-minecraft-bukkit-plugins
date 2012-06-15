@@ -64,39 +64,31 @@ public class ManaSystem extends ManaHandler {
 			ranks.add(r);
 		}
 		
+		manaBars = new HashMap<String, ManaBar>();
 		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, new Regenerator(), regenInterval, regenInterval);
 	}
 	
 	private ManaBar getManaBar(Player player) {
 		ManaBar bar = manaBars.get(player.getName().toLowerCase());
 		if (bar == null) {
-			createManaBar(player, true);
-			bar = manaBars.get(player.getName().toLowerCase());
+			// create the mana bar
+			ManaRank rank = getRank(player);
+			if (rank != null) {
+				bar = new ManaBar(player, rank.maxMana, rank.regenAmount);
+			} else {
+				bar = new ManaBar(player, defaultMaxMana, defaultRegenAmount);
+			}
+			manaBars.put(player.getName().toLowerCase(), bar);
 		}
 		return bar;
 	}
 	
 	@Override
 	public void createManaBar(Player player) {
-		createManaBar(player, false);
-	}
-	
-	public void createManaBar(Player player, boolean forceCreate) {
-		ManaRank rank = null;
-		for (ManaRank r : ranks) {
-			if (player.hasPermission("magicspells.rank." + r.name)) {
-				rank = r;
-				break;
-			}
-		}
-		ManaBar bar = forceCreate ? null : getManaBar(player);
-		if (bar == null) {
-			if (rank != null) {
-				manaBars.put(player.getName().toLowerCase(), new ManaBar(player, rank.maxMana, rank.regenAmount));
-			} else {
-				manaBars.put(player.getName().toLowerCase(), new ManaBar(player, defaultMaxMana, defaultRegenAmount));
-			}
-		} else {
+		boolean update = manaBars.containsKey(player.getName().toLowerCase());
+		ManaBar bar = getManaBar(player);
+		if (update && bar != null) {
+			ManaRank rank = getRank(player);
 			if (rank != null) {
 				bar.setMaxMana(rank.maxMana);
 				bar.setRegenAmount(rank.regenAmount);
@@ -105,6 +97,15 @@ public class ManaSystem extends ManaHandler {
 				bar.setRegenAmount(defaultRegenAmount);
 			}
 		}
+	}
+	
+	private ManaRank getRank(Player player) {
+		for (ManaRank rank : ranks) {
+			if (player.hasPermission("magicspells.rank." + rank.name)) {
+				return rank;
+			}
+		}
+		return null;
 	}
 
 	@Override
