@@ -1,4 +1,4 @@
-package com.nisovin.magicspells;
+package com.nisovin.magicspells.mana;
 
 public enum ManaChangeReason {
 

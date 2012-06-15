@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellCastedEvent;
+import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spelleffects.SpellEffect;
 import com.nisovin.magicspells.util.CastItem;

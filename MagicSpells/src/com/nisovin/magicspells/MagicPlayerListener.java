@@ -17,6 +17,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.mana.ManaChangeReason;
+
 class MagicPlayerListener implements Listener {
 	
 	private MagicSpells plugin;

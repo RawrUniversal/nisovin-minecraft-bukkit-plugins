@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
-import com.nisovin.magicspells.ManaChangeReason;
 import com.nisovin.magicspells.events.ManaChangeEvent;
+import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 

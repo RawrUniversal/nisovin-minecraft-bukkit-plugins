@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.nisovin.magicspells.ManaChangeReason;
+import com.nisovin.magicspells.mana.ManaChangeReason;
 
 /**
  * This event is fired whenever a player's mana value is changed.

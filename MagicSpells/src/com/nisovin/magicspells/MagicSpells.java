@@ -31,6 +31,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
+import com.nisovin.magicspells.mana.ManaHandler;
+import com.nisovin.magicspells.mana.ManaSystem;
 import com.nisovin.magicspells.spells.*;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
@@ -184,9 +186,9 @@ public class MagicSpells extends JavaPlugin {
 		strWrongWorld = config.getString("general.str-wrong-world", "You cannot cast that spell here.");
 		strConsoleName = config.getString("general.console-name", "Admin");
 		
-		enableManaBars = config.getBoolean("general.mana.enable-mana-bars", true);
-		manaPotionCooldown = config.getInt("general.mana.mana-potion-cooldown", 30);
-		strManaPotionOnCooldown = config.getString("general.mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
+		enableManaBars = config.getBoolean("mana.enable-mana-system", true);
+		manaPotionCooldown = config.getInt("mana.mana-potion-cooldown", 30);
+		strManaPotionOnCooldown = config.getString("mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
 				
 		// init permissions
 		boolean opsIgnoreReagents = config.getBoolean("general.ops-ignore-reagents", true);
@@ -247,6 +249,9 @@ public class MagicSpells extends JavaPlugin {
 			spell.initialize();
 		}
 		
+		// setup buff manager
+		buffManager = new BuffManager(config.getInt("general.buff-check-interval", 0));
+		
 		// load online player spellbooks
 		for (Player p : getServer().getOnlinePlayers()) {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
@@ -254,17 +259,14 @@ public class MagicSpells extends JavaPlugin {
 		
 		// setup mana bar manager
 		if (enableManaBars) {
-			mana = new ManaBarManager(config);
+			mana = new ManaSystem(config);
 			for (Player p : getServer().getOnlinePlayers()) {
 				mana.createManaBar(p);
 			}
 		}
 		
-		// setup buff manager
-		buffManager = new BuffManager(config.getInt("general.buff-check-interval", 0));
-		
 		// load mana potions
-		List<String> manaPots = config.getStringList("general.mana.mana-potions", null);
+		List<String> manaPots = config.getStringList("mana.mana-potions", null);
 		if (manaPots != null && manaPots.size() > 0) {
 			manaPotions = new HashMap<ItemStack,Integer>();
 			for (int i = 0; i < manaPots.size(); i++) {
@@ -548,6 +550,10 @@ public class MagicSpells extends JavaPlugin {
 			spellbooks.put(player.getName(), spellbook);
 		}
 		return spellbook;
+	}
+	
+	public static ChatColor getTextColor() {
+		return textColor;
 	}
 	
 	/**

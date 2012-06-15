@@ -3,7 +3,7 @@ package com.nisovin.magicspells.spells.instant;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.ManaChangeReason;
+import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;

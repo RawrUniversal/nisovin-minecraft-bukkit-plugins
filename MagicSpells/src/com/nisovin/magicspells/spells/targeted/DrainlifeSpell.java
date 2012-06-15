@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.ManaChangeReason;
+import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.ExperienceUtils;
