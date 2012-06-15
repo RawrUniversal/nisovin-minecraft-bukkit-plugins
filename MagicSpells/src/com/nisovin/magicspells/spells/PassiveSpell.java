@@ -37,7 +37,6 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.MagicConfig;
-import com.nisovin.magicspells.util.SpellReagents;
 import com.nisovin.magicspells.util.Util;
 
 public class PassiveSpell extends Spell {
@@ -156,14 +155,20 @@ public class PassiveSpell extends Spell {
 		MagicSpells.debug(3, "Activating passive spell '" + name + "' for player " + caster.getName());
 		if (!disabled && !onCooldown(caster) && (chance >= .999 || random.nextFloat() <= chance) && hasReagents(caster)) {
 			disabled = true;
-			SpellCastEvent event = new SpellCastEvent(this, caster, SpellCastState.NORMAL, 1.0F, null, cooldown, new SpellReagents(), 0);
+			SpellCastEvent event = new SpellCastEvent(this, caster, SpellCastState.NORMAL, 1.0F, null, this.cooldown, this.reagents.clone(), 0);
 			Bukkit.getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
+				if (event.haveReagentsChanged() && !hasReagents(caster, event.getReagents())) {
+					return;
+				}
 				setCooldown(caster, event.getCooldown());
 				float power = event.getPower();
 				for (Spell spell : spells) {
 					MagicSpells.debug(3, "    Casting spell effect '" + spell.getName() + "'");
-					if (spell instanceof TargetedEntitySpell && target != null) {
+					if (castWithoutTarget || !(spell instanceof TargetedSpell)) {
+						spell.castSpell(caster, SpellCastState.NORMAL, power, null);
+						playSpellEffects(EffectPosition.CASTER, caster);
+					} else if (spell instanceof TargetedEntitySpell && target != null) {
 						((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
 						playSpellEffects(caster, target);
 					} else if (spell instanceof TargetedLocationSpell && (location != null || target != null)) {
@@ -174,12 +179,9 @@ public class PassiveSpell extends Spell {
 							((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);
 							playSpellEffects(caster, target.getLocation());
 						}
-					} else if (castWithoutTarget || !(spell instanceof TargetedSpell)) {
-						spell.castSpell(caster, SpellCastState.NORMAL, power, null);
-						playSpellEffects(EffectPosition.CASTER, caster);
 					}
 				}
-				removeReagents(caster);
+				removeReagents(caster, event.getReagents());
 				sendMessage(caster, strCastSelf);				
 			}
 			disabled = false;
