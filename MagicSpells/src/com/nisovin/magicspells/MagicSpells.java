@@ -1,6 +1,8 @@
 package com.nisovin.magicspells;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,10 +13,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 
-
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -22,6 +25,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -196,7 +200,7 @@ public class MagicSpells extends JavaPlugin {
 		boolean opsIgnoreCastTimes = config.getBoolean("general.ops-ignore-cast-times", true);
 		addPermission(pm, "noreagents", opsIgnoreReagents? PermissionDefault.OP : PermissionDefault.FALSE, "Allows casting without needing reagents");
 		addPermission(pm, "nocooldown", opsIgnoreCooldowns? PermissionDefault.OP : PermissionDefault.FALSE, "Allows casting without being affected by cooldowns");
-		addPermission(pm, "nocasttime", opsIgnoreCastTimes? PermissionDefault.OP : PermissionDefault.FALSE, "Allows casting without being affected by cooldowns");
+		addPermission(pm, "nocasttime", opsIgnoreCastTimes? PermissionDefault.OP : PermissionDefault.FALSE, "Allows casting without being affected by cast times");
 		addPermission(pm, "notarget", PermissionDefault.FALSE, "Prevents being targeted by any targeted spells");
 		addPermission(pm, "silent", PermissionDefault.FALSE, "Prevents cast messages from being broadcast to players");
 		HashMap<String, Boolean> permGrantChildren = new HashMap<String,Boolean>();
@@ -257,6 +261,33 @@ public class MagicSpells extends JavaPlugin {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
 		}
 		
+		// load saved cooldowns
+		File file = new File(getDataFolder(), "cooldowns.txt");
+		Scanner scanner = null;
+		if (file.exists()) {
+			try {
+				scanner = new Scanner(file);
+				while (scanner.hasNext()) {
+					String line = scanner.nextLine();
+					if (!line.isEmpty()) {
+						String[] data = line.split(":");
+						long cooldown = Long.parseLong(data[2]);
+						if (cooldown > System.currentTimeMillis()) {
+							Spell spell = getSpellByInternalName(data[0]);
+							if (spell != null) {
+								spell.setCooldownManually(data[1], cooldown);
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (scanner != null) scanner.close();
+				file.delete();
+			}
+		}
+		
 		// setup mana bar manager
 		if (enableManaBars) {
 			mana = new ManaSystem(config);
@@ -290,10 +321,10 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// load listeners
-		pm.registerEvents(new MagicPlayerListener(this), this);
-		pm.registerEvents(new MagicSpellListener(this), this);
+		registerEvents(new MagicPlayerListener(this));
+		registerEvents(new MagicSpellListener(this));
 		if (incantations.size() > 0) {
-			pm.registerEvents(new MagicChatListener(this), this);
+			registerEvents(new MagicChatListener(this));
 		}
 		
 		// call loaded event
@@ -660,6 +691,42 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
+	static void registerEvents(Listener listener) {
+		Bukkit.getPluginManager().registerEvents(listener, plugin);
+		/*Method[] methods;
+        try {
+            methods = listener.getClass().getDeclaredMethods();
+        } catch (NoClassDefFoundError e) {
+            return;
+        }
+        for (int i = 0; i < methods.length; i++) {
+            final Method method = methods[i];
+            final EventHandler eh = method.getAnnotation(EventHandler.class);
+            if (eh == null) continue;
+            final Class<?> checkClass = method.getParameterTypes()[0];
+            if (!Event.class.isAssignableFrom(checkClass) || method.getParameterTypes().length != 1) {
+                plugin.getLogger().severe("Wrong method arguments used for event type registered");
+                continue;
+            }
+            final Class<? extends Event> eventClass = checkClass.asSubclass(Event.class);
+            method.setAccessible(true);
+            EventExecutor executor = new EventExecutor() {
+                public void execute(Listener listener, Event event) {
+                    try {
+                        if (!eventClass.isAssignableFrom(event.getClass())) {
+                            return;
+                        }
+                        method.invoke(listener, event);
+                    } catch (Exception ex) {
+                    	System.out.println("ERROR FOUND!");
+                    	ex.printStackTrace();
+                    }
+                }
+            };
+            plugin.getServer().getPluginManager().registerEvent(eventClass, listener, eh.priority(), executor, plugin, eh.ignoreCancelled());
+        }*/
+	}
+	
 	/**
 	 * Writes a debug message to the console if the debug option is enabled.
 	 * Uses debug level 2.
@@ -731,9 +798,35 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	public void unload() {
+		// turn off spells
 		for (Spell spell : spells.values()) {
 			spell.turnOff();
 		}
+		// save cooldowns
+		File file = new File(getDataFolder(), "cooldowns.txt");
+		if (file.exists()) file.delete();
+		try {
+			FileWriter writer = new FileWriter(file);
+			for (Spell spell : spells.values()) {
+				Map<String, Long> cooldowns = spell.getCooldowns();
+				for (String name : cooldowns.keySet()) {
+					long cooldown = cooldowns.get(name);
+					if (cooldown > System.currentTimeMillis()) {
+						writer.append(spell.getInternalName() + ":" + name + ":" + cooldown + "\n");
+					}
+				}
+			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			file.delete();
+		}
+		// turn off buff manager
+		if (buffManager != null) {
+			buffManager.turnOff();
+			buffManager = null;
+		}
+		// clear memory
 		spells.clear();
 		spells = null;
 		spellNames.clear();
@@ -744,14 +837,12 @@ public class MagicSpells extends JavaPlugin {
 			mana.turnOff();
 			mana = null;
 		}
-		if (buffManager != null) {
-			buffManager.turnOff();
-			buffManager = null;
-		}
+		// remove star permissions (to allow new spells to be added to them)
 		getServer().getPluginManager().removePermission("magicspells.grant.*");
 		getServer().getPluginManager().removePermission("magicspells.cast.*");
 		getServer().getPluginManager().removePermission("magicspells.learn.*");
 		getServer().getPluginManager().removePermission("magicspells.teach.*");
+		// unregister all listeners
 		HandlerList.unregisterAll(this);	
 	}
 	

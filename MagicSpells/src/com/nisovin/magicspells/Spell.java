@@ -788,7 +788,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	protected void registerEvents(Listener listener) {
-		Bukkit.getPluginManager().registerEvents(listener, MagicSpells.plugin);
+		MagicSpells.registerEvents(listener);
 	}
 	
 	protected void unregisterEvents() {
@@ -909,6 +909,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	public String getStrWrongCastItem() {
 		return strWrongCastItem;
+	}
+	
+	Map<String, Long> getCooldowns() {
+		return nextCast;
+	}
+	
+	void setCooldownManually(String name, long nextCast) {
+		this.nextCast.put(name, nextCast);
 	}
 	
 	/**

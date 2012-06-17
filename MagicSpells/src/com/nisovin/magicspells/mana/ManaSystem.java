@@ -56,12 +56,14 @@ public class ManaSystem extends ManaHandler {
 
 		ranks = new ArrayList<ManaRank>();
 		Set<String> rankKeys = config.getKeys("mana.ranks");
-		for (String key : rankKeys) {
-			ManaRank r = new ManaRank();
-			r.name = key;
-			r.maxMana = config.getInt("mana.ranks." + key + ".max-mana", defaultMaxMana);
-			r.regenAmount = config.getInt("mana.ranks." + key + ".regen-amount", defaultRegenAmount);
-			ranks.add(r);
+		if (rankKeys != null) {
+			for (String key : rankKeys) {
+				ManaRank r = new ManaRank();
+				r.name = key;
+				r.maxMana = config.getInt("mana.ranks." + key + ".max-mana", defaultMaxMana);
+				r.regenAmount = config.getInt("mana.ranks." + key + ".regen-amount", defaultRegenAmount);
+				ranks.add(r);
+			}
 		}
 		
 		manaBars = new HashMap<String, ManaBar>();
