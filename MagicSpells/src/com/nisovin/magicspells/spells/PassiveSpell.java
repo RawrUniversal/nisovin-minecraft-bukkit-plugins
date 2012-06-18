@@ -26,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -120,6 +121,9 @@ public class PassiveSpell extends Spell {
 					trigCount++;
 				} else if (type.equalsIgnoreCase("sprint")) {
 					registerEvents(new SprintListener());
+					trigCount++;
+				} else if (type.equalsIgnoreCase("sneak")) {
+					registerEvents(new SneakListener());
 					trigCount++;
 				}
 			}
@@ -475,6 +479,15 @@ public class PassiveSpell extends Spell {
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onSprint(PlayerToggleSprintEvent event) {
 			if (event.isSprinting() && hasSpell(event.getPlayer())) {
+				activate(event.getPlayer());
+			}
+		}
+	}
+	
+	public class SneakListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSneak(PlayerToggleSneakEvent event) {
+			if (event.isSneaking() && hasSpell(event.getPlayer())) {
 				activate(event.getPlayer());
 			}
 		}

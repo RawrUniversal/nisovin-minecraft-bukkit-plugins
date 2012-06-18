@@ -23,7 +23,9 @@ public class RitualSpell extends InstantSpell {
 	private int reqParticipants;
 	private boolean needSpellToParticipate;
 	private boolean showProgressOnExpBar;
-	private boolean chargeReagentsUpFront;
+	private boolean chargeReagentsImmediately;
+	private boolean setCooldownImmediately;
+	private boolean setCooldownForAll;
 	private Spell spell;
 	private String theSpellName;
 	private int tickInterval;
@@ -42,7 +44,9 @@ public class RitualSpell extends InstantSpell {
 		reqParticipants = getConfigInt("req-participants", 3);
 		needSpellToParticipate = getConfigBoolean("need-spell-to-participate", false);
 		showProgressOnExpBar = getConfigBoolean("show-progress-on-exp-bar", true);
-		chargeReagentsUpFront = getConfigBoolean("charge-reagents-up-front", true);
+		chargeReagentsImmediately = getConfigBoolean("charge-reagents-immediately", true);
+		setCooldownImmediately = getConfigBoolean("set-cooldown-immediately", true);
+		setCooldownForAll = getConfigBoolean("set-cooldown-for-all", true);
 		theSpellName = getConfigString("spell", "");
 		tickInterval = getConfigInt("tick-interval", 5);
 		effectInterval = getConfigInt("effect-interval", 20);
@@ -71,8 +75,12 @@ public class RitualSpell extends InstantSpell {
 		}
 		if (state == SpellCastState.NORMAL) {
 			activeRituals.put(player, new ActiveRitual(player, power, args));
-			if (!chargeReagentsUpFront) {
+			if (!chargeReagentsImmediately && !setCooldownImmediately) {
+				return PostCastAction.MESSAGES_ONLY;
+			} else if (!chargeReagentsImmediately) {
 				return PostCastAction.NO_REAGENTS;
+			} else if (!setCooldownImmediately) {
+				return PostCastAction.NO_COOLDOWN;
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -176,11 +184,19 @@ public class RitualSpell extends InstantSpell {
 			if (duration >= ritualDuration) {
 				// channel is done
 				if (count >= reqParticipants && !caster.isDead() && caster.isOnline()) {
-					if (chargeReagentsUpFront || hasReagents(caster)) {
+					if (chargeReagentsImmediately || hasReagents(caster)) {
 						stop(strRitualSuccess);
 						PostCastAction action = spell.castSpell(caster, SpellCastState.NORMAL, power, args);
-						if (!chargeReagentsUpFront && (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.NO_COOLDOWN || action == PostCastAction.NO_MESSAGES || action == PostCastAction.REAGENTS_ONLY)) {
+						if (!chargeReagentsImmediately && action.chargeReagents()) {
 							removeReagents(caster);
+						}
+						if (!setCooldownImmediately && action.setCooldown()) {
+							setCooldown(caster, cooldown);
+						}
+						if (setCooldownForAll && action.setCooldown()) {
+							for (Player p : channelers.keySet()) {
+								setCooldown(p, cooldown);
+							}
 						}
 					} else {
 						stop(strRitualFailed);

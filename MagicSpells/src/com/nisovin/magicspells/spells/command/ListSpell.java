@@ -27,7 +27,7 @@ public class ListSpell extends CommandSpell {
 		super(config, spellName);
 		
 		onlyShowCastableSpells = getConfigBoolean("only-show-castable-spells", false);
-		reloadGrantedSpells = getConfigBoolean("reload-granted-spells", false);
+		reloadGrantedSpells = getConfigBoolean("reload-granted-spells", true);
 		spellsToHide = getConfigStringList("spells-to-hide", null);
 		strNoSpells = getConfigString("str-no-spells", "You do not know any spells.");
 		strPrefix = getConfigString("str-prefix", "Known spells:");

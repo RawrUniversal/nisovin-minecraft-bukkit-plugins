@@ -99,7 +99,7 @@ spells:
         name: list
         description: List all the spells you know.
         only-show-castable-spells: false
-        reload-granted-spells: false
+        reload-granted-spells: true
         spells-to-hide: []
         str-prefix: "Known spells:"
         str-no-spells: You do not know any spells.
@@ -803,6 +803,9 @@ spells:
         cooldown: 30
         range: 12
         cancel-on-item-switch: true
+        cancel-on-spell-cast: true
+        target-players: false
+        obey-los: true
         cost:
             - 331 2
             - 288 1

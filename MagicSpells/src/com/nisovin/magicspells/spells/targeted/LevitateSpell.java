@@ -7,11 +7,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -19,7 +21,10 @@ public class LevitateSpell extends TargetedEntitySpell {
 
 	private int tickRate;
 	private int duration;
+	private boolean targetPlayers;
+	private boolean obeyLos;
 	private boolean cancelOnItemSwitch;
+	private boolean cancelOnSpellCast;
 	
 	private HashMap<Player,Levitator> levitating;
 	
@@ -28,7 +33,10 @@ public class LevitateSpell extends TargetedEntitySpell {
 		
 		tickRate = getConfigInt("tick-rate", 5);
 		duration = getConfigInt("duration", 10);
+		targetPlayers = getConfigBoolean("target-players", false);
+		obeyLos = getConfigBoolean("obey-los", true);
 		cancelOnItemSwitch = getConfigBoolean("cancel-on-item-switch", true);
+		cancelOnSpellCast = getConfigBoolean("cancel-on-spell-cast", false);
 		
 		levitating = new HashMap<Player,Levitator>();
 	}
@@ -39,6 +47,9 @@ public class LevitateSpell extends TargetedEntitySpell {
 		if (cancelOnItemSwitch) {
 			registerEvents(new ItemSwitchListener());
 		}
+		if (cancelOnSpellCast) {
+			registerEvents(new SpellCastListener());
+		}
 	}
 
 	@Override
@@ -47,7 +58,7 @@ public class LevitateSpell extends TargetedEntitySpell {
 			levitating.remove(player).stop();
 			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, range, true, true);
+			LivingEntity target = getTargetedEntity(player, range, targetPlayers, obeyLos);
 			if (target == null) {
 				return noTarget(player);
 			}
@@ -78,6 +89,15 @@ public class LevitateSpell extends TargetedEntitySpell {
 		public void onItemSwitch(PlayerItemHeldEvent event) {
 			if (levitating.containsKey(event.getPlayer())) {
 				levitating.remove(event.getPlayer()).stop();
+			}
+		}
+	}
+	
+	public class SpellCastListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSpellCast(SpellCastEvent event) {
+			if (levitating.containsKey(event.getCaster()) && !event.getSpell().getInternalName().equals(internalName)) {
+				levitating.remove(event.getCaster()).stop();
 			}
 		}
 	}
