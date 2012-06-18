@@ -97,6 +97,7 @@ spells:
     list:
         spell-class: ".command.ListSpell"
         name: list
+        always-granted: true
         description: List all the spells you know.
         only-show-castable-spells: false
         reload-granted-spells: true
@@ -106,6 +107,7 @@ spells:
     help:
         spell-class: ".command.HelpSpell"
         name: help
+        always-granted: true
         description: Get information about a specified spell.
         require-known-spell: true
         str-usage: "Usage: /cast help <spell>"
@@ -158,7 +160,7 @@ spells:
     bind:
         spell-class: ".command.BindSpell"
         name: bind
-        enable: true
+        enabled: true
         description: Binds a spell to a wand item.
         allow-bind-to-fist: false
         str-cast-self: "You have successfully bound the %s spell to the \nitem you are holding."
@@ -169,7 +171,7 @@ spells:
     unbind:
         spell-class: ".command.UnbindSpell"
         name: unbind
-        enable: true
+        enabled: true
         description: Unbinds a spell from its assigned wand item.
         str-cast-self: "You have successfully unbound the %s spell."
         str-usage: You must specify a spell name.

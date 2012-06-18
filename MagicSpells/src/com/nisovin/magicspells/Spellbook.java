@@ -126,7 +126,7 @@ public class Spellbook {
 		for (Spell spell : MagicSpells.spellsOrdered) {
 			MagicSpells.debug(3, "    Checking spell " + spell.getInternalName() + "...");
 			if (!hasSpell(spell, false)) {
-				if (player.hasPermission("magicspells.grant." + spell.getInternalName())) {
+				if (spell.isAlwaysGranted() || player.hasPermission("magicspells.grant." + spell.getInternalName())) {
 					addSpell(spell);
 					added = true;
 				}

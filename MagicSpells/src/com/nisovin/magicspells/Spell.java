@@ -37,6 +37,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String internalName;
 	protected String name;
 	protected String[] aliases;	
+	protected boolean alwaysGranted;
 	protected List<String> incantations;
 	
 	protected String description;
@@ -91,7 +92,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			aliases = new String[temp.size()];
 			aliases = temp.toArray(aliases);
 		}
-		incantations = config.getStringList(section + "." + spellName + ".incantations", null);
+		this.alwaysGranted = config.getBoolean(section + "." + spellName + ".always-granted", false);
+		this.incantations = config.getStringList(section + "." + spellName + ".incantations", null);
 		
 		// general options
 		this.description = config.getString(section + "." + spellName + ".description", "");
@@ -431,6 +433,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	public abstract boolean canCastWithItem();
 	
 	public abstract boolean canCastByCommand();
+	
+	public boolean isAlwaysGranted() {
+		return alwaysGranted;
+	}
 	
 	public boolean isValidItemForCastCommand(ItemStack item) {
 		if (!requireCastItemOnCommand || castItems == null) {
