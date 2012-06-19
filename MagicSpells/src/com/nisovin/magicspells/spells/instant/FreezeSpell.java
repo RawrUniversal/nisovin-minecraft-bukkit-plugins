@@ -2,6 +2,7 @@ package com.nisovin.magicspells.spells.instant;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -9,11 +10,11 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -28,6 +29,7 @@ public class FreezeSpell extends InstantSpell {
 	private int slowDuration;
 	private boolean playBowSound;
 	private boolean targetPlayers;
+	private boolean callTargetEvents;
 	
 	private float identifier;
 	
@@ -42,6 +44,7 @@ public class FreezeSpell extends InstantSpell {
 		slowDuration = getConfigInt("slow-duration", 40);
 		playBowSound = getConfigBoolean("play-bow-sound", true);
 		targetPlayers = getConfigBoolean("target-players", false);
+		callTargetEvents = getConfigBoolean("call-target-events", false);
 		
 		identifier = (float)Math.random() * 20F;
 	}
@@ -66,24 +69,31 @@ public class FreezeSpell extends InstantSpell {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onEntityDamage(EntityDamageEvent event) {
-		if (damage <= 0 || event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) return;
+	public void onEntityDamage(EntityDamageByEntityEvent event) {
+		if (damage <= 0 || event.isCancelled()) return;
 		
-		EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
-		if (!(evt.getDamager() instanceof Snowball) || evt.getDamager().getFallDistance() != identifier) return;
+		if (!(event.getDamager() instanceof Snowball) || event.getDamager().getFallDistance() != identifier) return;
 		
 		if (targetPlayers || !(event.getEntity() instanceof Player)) {
-			event.setDamage(damage);
+			if (callTargetEvents) {
+				SpellTargetEvent e = new SpellTargetEvent(this, (Player)((Snowball)event.getDamager()).getShooter(), (LivingEntity)event.getEntity());
+				Bukkit.getPluginManager().callEvent(e);
+				if (e.isCancelled()) {
+					event.setCancelled(true);
+				} else {
+					event.setDamage(damage);
+				}
+			} else {				
+				event.setDamage(damage);
+			}
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onEntityDamage2(EntityDamageEvent event) {
+	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
+	public void onEntityDamage2(EntityDamageByEntityEvent event) {
 		if (slowAmount <= 0 || slowDuration <= 0) return;
-		if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent)) return;
 		
-		EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
-		if (!(evt.getDamager() instanceof Snowball) || evt.getDamager().getFallDistance() != identifier) return;
+		if (!(event.getDamager() instanceof Snowball) || event.getDamager().getFallDistance() != identifier) return;
 		
 		if (event.getDamage() == damage) {
 			((LivingEntity)event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, slowDuration, slowAmount), true);
