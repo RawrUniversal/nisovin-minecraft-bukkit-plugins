@@ -3,7 +3,9 @@ package com.nisovin.magicspells;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -17,18 +19,20 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -50,6 +54,7 @@ public class MagicSpells extends JavaPlugin {
 	
 	static boolean debug;
 	static int debugLevel;
+	static boolean enableErrorLogging;
 	static ChatColor textColor;
 	static int broadcastRange;
 	
@@ -134,6 +139,7 @@ public class MagicSpells extends JavaPlugin {
 		
 		debug = config.getBoolean("general.debug", false);
 		debugLevel = config.getInt("general.debug-level", 3);
+		enableErrorLogging = config.getBoolean("general.enable-error-logging", true);
 		textColor = ChatColor.getByChar(config.getString("general.text-color", ChatColor.DARK_AQUA.getChar() + ""));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		
@@ -460,41 +466,61 @@ public class MagicSpells extends JavaPlugin {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String [] args) {
-		if (command.getName().equalsIgnoreCase("magicspellcast")) {
-			args = Util.splitParams(args);
-			if (args == null || args.length == 0) {
-				if (sender instanceof Player) {
-					sendMessage((Player)sender, strCastUsage);
-				} else {
-					sender.sendMessage(textColor + strCastUsage);
-				}
-			} else if (sender.isOp() && args[0].equals("reload")) {
-				if (args.length == 1) {
-					unload();
-					load();
-					sender.sendMessage(textColor + "MagicSpells config reloaded.");
-				} else {
-					List<Player> players = getServer().matchPlayer(args[1]);
-					if (players.size() != 1) {
-						sender.sendMessage(textColor + "Player not found.");
+		try {
+			if (command.getName().equalsIgnoreCase("magicspellcast")) {
+				args = Util.splitParams(args);
+				if (args == null || args.length == 0) {
+					if (sender instanceof Player) {
+						sendMessage((Player)sender, strCastUsage);
 					} else {
-						Player player = players.get(0);
-						spellbooks.put(player.getName(), new Spellbook(player, this));
-						sender.sendMessage(textColor + player.getName() + "'s spellbook reloaded.");
+						sender.sendMessage(textColor + strCastUsage);
 					}
-				}
-			} else if (sender.isOp() && args[0].equals("debug")) {
-				debug = !debug;
-				sender.sendMessage("MagicSpells: debug mode " + (debug?"enabled":"disabled"));
-			} else if (sender.isOp() && args[0].equals("configexplode")) {
-				MagicConfig.explode();
-				sender.sendMessage("MagicSpells: spell config exploded");
-			} else if (sender instanceof Player) {
-				Player player = (Player)sender;
-				Spellbook spellbook = getSpellbook(player);
-				Spell spell = getSpellByInGameName(args[0]);
-				if (spell != null && spell.canCastByCommand() && spellbook.hasSpell(spell)) {
-					if (spell.isValidItemForCastCommand(player.getItemInHand())) {
+				} else if (sender.isOp() && args[0].equals("reload")) {
+					if (args.length == 1) {
+						unload();
+						load();
+						sender.sendMessage(textColor + "MagicSpells config reloaded.");
+					} else {
+						List<Player> players = getServer().matchPlayer(args[1]);
+						if (players.size() != 1) {
+							sender.sendMessage(textColor + "Player not found.");
+						} else {
+							Player player = players.get(0);
+							spellbooks.put(player.getName(), new Spellbook(player, this));
+							sender.sendMessage(textColor + player.getName() + "'s spellbook reloaded.");
+						}
+					}
+				} else if (sender.isOp() && args[0].equals("debug")) {
+					debug = !debug;
+					sender.sendMessage("MagicSpells: debug mode " + (debug?"enabled":"disabled"));
+				} else if (sender.isOp() && args[0].equals("configexplode")) {
+					MagicConfig.explode();
+					sender.sendMessage("MagicSpells: spell config exploded");
+				} else if (sender instanceof Player) {
+					Player player = (Player)sender;
+					Spellbook spellbook = getSpellbook(player);
+					Spell spell = getSpellByInGameName(args[0]);
+					if (spell != null && spell.canCastByCommand() && spellbook.hasSpell(spell)) {
+						if (spell.isValidItemForCastCommand(player.getItemInHand())) {
+							String[] spellArgs = null;
+							if (args.length > 1) {
+								spellArgs = new String[args.length-1];
+								for (int i = 1; i < args.length; i++) {
+									spellArgs[i-1] = args[i];
+								}
+							}
+							spell.cast(player, spellArgs);
+						} else {
+							sendMessage(player, spell.getStrWrongCastItem());
+						}
+					} else {
+						sendMessage(player, strUnknownSpell);
+					}
+				} else { // not a player
+					Spell spell = spellNames.get(args[0]);
+					if (spell == null) {
+						sender.sendMessage("Unknown spell.");
+					} else {
 						String[] spellArgs = null;
 						if (args.length > 1) {
 							spellArgs = new String[args.length-1];
@@ -502,40 +528,26 @@ public class MagicSpells extends JavaPlugin {
 								spellArgs[i-1] = args[i];
 							}
 						}
-						spell.cast(player, spellArgs);
-					} else {
-						sendMessage(player, spell.getStrWrongCastItem());
-					}
-				} else {
-					sendMessage(player, strUnknownSpell);
-				}
-			} else { // not a player
-				Spell spell = spellNames.get(args[0]);
-				if (spell == null) {
-					sender.sendMessage("Unknown spell.");
-				} else {
-					String[] spellArgs = null;
-					if (args.length > 1) {
-						spellArgs = new String[args.length-1];
-						for (int i = 1; i < args.length; i++) {
-							spellArgs[i-1] = args[i];
+						boolean ok = spell.castFromConsole(sender, spellArgs);
+						if (!ok) {
+							sender.sendMessage("Cannot cast that spell from console.");
 						}
 					}
-					boolean ok = spell.castFromConsole(sender, spellArgs);
-					if (!ok) {
-						sender.sendMessage("Cannot cast that spell from console.");
-					}
 				}
+				return true;
+			} else if (command.getName().equalsIgnoreCase("magicspellmana")) {
+				if (enableManaBars && sender instanceof Player) {
+					Player player = (Player)sender;
+					mana.showMana(player, true);
+				}
+				return true;
 			}
-			return true;
-		} else if (command.getName().equalsIgnoreCase("magicspellmana")) {
-			if (enableManaBars && sender instanceof Player) {
-				Player player = (Player)sender;
-				mana.showMana(player, true);
-			}
+			return false;
+		} catch (Exception ex) {
+			handleException(ex);
+			sender.sendMessage(ChatColor.RED + "An error has occured.");
 			return true;
 		}
-		return false;
 	}
 	
 	/**
@@ -692,8 +704,8 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	static void registerEvents(Listener listener) {
-		Bukkit.getPluginManager().registerEvents(listener, plugin);
-		/*Method[] methods;
+		//Bukkit.getPluginManager().registerEvents(listener, plugin);
+		Method[] methods;
         try {
             methods = listener.getClass().getDeclaredMethods();
         } catch (NoClassDefFoundError e) {
@@ -718,13 +730,38 @@ public class MagicSpells extends JavaPlugin {
                         }
                         method.invoke(listener, event);
                     } catch (Exception ex) {
-                    	System.out.println("ERROR FOUND!");
-                    	ex.printStackTrace();
+                    	handleException(ex);
                     }
                 }
             };
             plugin.getServer().getPluginManager().registerEvent(eventClass, listener, eh.priority(), executor, plugin, eh.ignoreCancelled());
-        }*/
+        }
+	}
+	
+	static void handleException(Exception ex) {
+		if (enableErrorLogging) {
+			plugin.getLogger().severe("AN EXCEPTION HAS OCCURED:");
+			PrintWriter writer = null;
+			try {
+				File folder = new File(plugin.getDataFolder(), "errors");
+				if (!folder.exists()) folder.mkdir();
+				writer = new PrintWriter(new File(folder, System.currentTimeMillis() + ".txt"));
+				Throwable t = ex;
+				while (t != null) {
+					plugin.getLogger().severe("    " + t.getMessage() + " (" + t.getClass().getName() + ")");
+					t.printStackTrace(writer);
+					writer.println();
+					t = t.getCause();
+				}
+				plugin.getLogger().severe("This error has been saved in the errors folder");
+			} catch (Exception x) {
+				plugin.getLogger().severe("ERROR HANDLING EXCEPTION");
+			} finally {
+				if (writer != null) writer.close();
+			}
+		} else {
+			ex.printStackTrace();
+		}
 	}
 	
 	/**
