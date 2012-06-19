@@ -294,21 +294,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		MagicSpells.debug(1, "Player " + player.getName() + " is trying to cast " + internalName);
 		
 		// get spell state
-		SpellCastState state;
-		if (!MagicSpells.getSpellbook(player).canCast(this)) {
-			state = SpellCastState.CANT_CAST;
-		} else if (worldRestrictions != null && !worldRestrictions.contains(player.getWorld().getName())) {
-			state = SpellCastState.WRONG_WORLD;
-		} else if (MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.willFizzle(player, this)) {
-			state = SpellCastState.NO_MAGIC_ZONE;
-		} else if (onCooldown(player)) {
-			state = SpellCastState.ON_COOLDOWN;
-		} else if (!hasReagents(player)) {
-			state = SpellCastState.MISSING_REAGENTS;
-		} else {
-			state = SpellCastState.NORMAL;
-		}
-		
+		SpellCastState state = getCastState(player);		
 		MagicSpells.debug(2, "    Spell cast state: " + state);
 		
 		// call events
@@ -358,6 +344,22 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		return new SpellCastResult(state, action);
+	}
+	
+	protected SpellCastState getCastState(Player player) {
+		if (!MagicSpells.getSpellbook(player).canCast(this)) {
+			return SpellCastState.CANT_CAST;
+		} else if (worldRestrictions != null && !worldRestrictions.contains(player.getWorld().getName())) {
+			return SpellCastState.WRONG_WORLD;
+		} else if (MagicSpells.noMagicZones != null && MagicSpells.noMagicZones.willFizzle(player, this)) {
+			return SpellCastState.NO_MAGIC_ZONE;
+		} else if (onCooldown(player)) {
+			return SpellCastState.ON_COOLDOWN;
+		} else if (!hasReagents(player)) {
+			return SpellCastState.MISSING_REAGENTS;
+		} else {
+			return SpellCastState.NORMAL;
+		}
 	}
 	
 	private PostCastAction handleCast(Player player, SpellCastState state, float power, float cooldown, SpellReagents reagents, String[] args) {
