@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import com.nisovin.magicspells.events.SpellSelectionChangedEvent;
 import com.nisovin.magicspells.spells.BuffSpell;
@@ -34,6 +35,7 @@ public class Spellbook {
 	private HashMap<CastItem,ArrayList<Spell>> itemSpells = new HashMap<CastItem,ArrayList<Spell>>();
 	private HashMap<CastItem,Integer> activeSpells = new HashMap<CastItem,Integer>();
 	private HashMap<Spell,Set<CastItem>> customBindings = new HashMap<Spell,Set<CastItem>>();
+	private HashMap<Plugin,Set<Spell>> temporarySpells = new HashMap<Plugin,Set<Spell>>();
 	
 	public Spellbook(Player player, MagicSpells plugin) {
 		this.plugin = plugin;
@@ -401,6 +403,36 @@ public class Spellbook {
 		allSpells.remove(spell);
 	}
 	
+	public void addTemporarySpell(Spell spell, Plugin plugin) {
+		if (!hasSpell(spell)) {
+			addSpell(spell);
+			Set<Spell> temps = temporarySpells.get(plugin);
+			if (temps == null) {
+				temps = new HashSet<Spell>();
+				temporarySpells.put(plugin, temps);
+			}
+			temps.add(spell);
+		}
+	}
+	
+	public void removeTemporarySpells(Plugin plugin) {
+		Set<Spell> temps = temporarySpells.remove(plugin);
+		if (temps != null) {
+			for (Spell spell : temps) {
+				removeSpell(spell);
+			}
+		}
+	}
+	
+	private boolean isTemporary(Spell spell) {
+		for (Set<Spell> temps : temporarySpells.values()) {
+			if (temps.contains(spell)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void addCastItem(Spell spell, CastItem castItem) {
 		// add to custom bindings
 		Set<CastItem> bindings = customBindings.get(spell);
@@ -481,16 +513,18 @@ public class Spellbook {
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
 			for (Spell spell : allSpells) {
-				writer.append(spell.getInternalName());
-				if (customBindings.containsKey(spell)) {
-					Set<CastItem> items = customBindings.get(spell);
-					String s = "";
-					for (CastItem i : items) {
-						s += (s.isEmpty()?"":",") + i;
+				if (!isTemporary(spell)) {
+					writer.append(spell.getInternalName());
+					if (customBindings.containsKey(spell)) {
+						Set<CastItem> items = customBindings.get(spell);
+						String s = "";
+						for (CastItem i : items) {
+							s += (s.isEmpty()?"":",") + i;
+						}
+						writer.append(":" + s);
 					}
-					writer.append(":" + s);
+					writer.newLine();
 				}
-				writer.newLine();
 			}
 			writer.close();
 			MagicSpells.debug(2, "Saved spellbook file: " + playerName.toLowerCase());
