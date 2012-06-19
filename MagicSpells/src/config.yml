@@ -1294,6 +1294,7 @@ spells:
         arrows: 10
         speed: 20
         spread: 150
+        shoot-interval: 0
         cost:
             - 331 3
             - 262 2
