@@ -1,6 +1,7 @@
 general:
     debug: false
     debug-level: 3
+    enable-error-logging: true
     enable-volatile-features: true
     alt-config: altConfig.yml
     str-cast-usage: |
@@ -1205,14 +1206,10 @@ spells:
             - 331 5
         str-cost: 5 redstone dust
         str-cast-self: You call down a lightning storm!
-    summon:
-        spell-class: ".channeled.SummonSpell"
-        name: summon
-        description: Summon another player to your position.
-        channel-time: 30
-        req-participants: 3
-        req-percent: 0
-        max-distance: 10
+    summon_helper:
+        spell-class: ".targeted.SummonSpell"
+        can-cast-with-item: false
+        can-cast-by-command: false
         require-exact-name: false
         require-acceptance: true
         max-accept-delay: 90
@@ -1221,27 +1218,43 @@ spells:
             Usage: /cast summon <playername>, or /cast summon 
             while looking at a sign with a player name on the first line.
         str-no-target: Target player not found.
-        str-too-far-away: You are too far away from the summoning ritual.
-        str-start-channel: You begin to channel a summoning spell.
-        str-moved: You have stopped channeling.
-        str-spell-success: You have successfully summoned %k.
         str-summon-pending: You are being summoned! Type /accept to teleport.
         str-summon-accepted: You have been summoned.
         str-summon-expired: The summon has expired.
+    summon:
+        spell-class: ".instant.RitualSpell"
+        name: summon
+        description: Summon another player to your position. This ritual requires 3 participants.
+        cooldown: 300
+        ritual-duration: 200
+        req-participants: 3
+        charge-reagents-immediately: true
+        set-cooldown-immediately: true
+        set-cooldown-for-all: true
+        spell: summon_helper
+        tick-interval: 5
+        effect-interval: 20
+        cost:
+            - 331 5
+            - 265 3
+        str-cost: 5 redstone and 3 iron bars
+        str-cast-self: You begin a summoning ritual.
+        str-cast-others: "%a has begun a summoning ritual. Right-click to participate."
+        str-ritual-joined: You have joined the summoning ritual.
+        str-ritual-success: The summoning ritual is a success!
+        str-ritual-interrupted: The summoning ritual has been interrupted.
+        str-ritual-fail: The summoning ritual has failed.
     sun:
-        spell-class: ".channeled.SunSpell"
+        spell-class: ".instant.TimeSpell"
         name: sun
         description: Changes the time to morning.
-        channel-time: 30
-        req-participants: 2
-        req-percent: 35
-        max-distance: 20
+        cooldown: 1800
+        cost:
+            - 331 8
+            - 347 1
+        str-cost: 8 redstone dust and a clock
         time-to-set: 0
-        str-too-far-away: You are too far away from the ritual.
-        str-start-channel: You begin to channel the sun spell.
-        str-moved: You have stopped channeling.
-        str-spell-success: You have successfully called the sun.
-        str-announce: The sun has suddenly appeared in the sky!        
+        str-announce: The sun has suddenly appeared in the sky!
     telekinesis:
         spell-class: ".targeted.TelekinesisSpell"
         name: telekinesis

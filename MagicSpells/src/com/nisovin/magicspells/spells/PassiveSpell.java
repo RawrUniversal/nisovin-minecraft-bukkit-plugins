@@ -286,8 +286,11 @@ public class PassiveSpell extends Spell {
 			Player player = null;
 			if (event.getDamager().getType() == EntityType.PLAYER) {
 				player = (Player)event.getDamager();
-			} else if (event.getDamager() instanceof Projectile && ((Projectile)event.getDamager()).getShooter().getType() == EntityType.PLAYER) {
-				player = (Player)((Projectile)event.getDamager()).getShooter();
+			} else if (event.getDamager() instanceof Projectile) {
+				LivingEntity shooter = ((Projectile)event.getDamager()).getShooter();
+				if (shooter != null && shooter.getType() == EntityType.PLAYER) {
+					player = (Player)((Projectile)event.getDamager()).getShooter();
+				}
 			}
 			if (player != null) {
 				if (itemIds != null) {
