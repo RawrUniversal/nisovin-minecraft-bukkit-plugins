@@ -38,7 +38,14 @@ public class PhaseSpell extends InstantSpell {
 			int range = Math.round(this.range * power);
 			int distance = Math.round(maxDistance * power);
 			
-			BlockIterator iter = new BlockIterator(player, distance*2);
+			BlockIterator iter;
+			try {
+				iter = new BlockIterator(player, distance*2);
+			} catch (IllegalStateException e) {
+				sendMessage(player, strCantPhase);
+				return PostCastAction.ALREADY_HANDLED;
+			}
+			
 			Block start = null;
 			int i = 0;
 			Location location = null;
