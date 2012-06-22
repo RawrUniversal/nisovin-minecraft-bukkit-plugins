@@ -1,5 +1,8 @@
 package com.nisovin.magicspells.spells.targeted;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +21,7 @@ public class VolleySpell extends TargetedLocationSpell {
 	private int speed;
 	private int spread;
 	private int shootInterval;
+	private int removeDelay;
 	
 	public VolleySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -26,6 +30,7 @@ public class VolleySpell extends TargetedLocationSpell {
 		speed = getConfigInt("speed", 20);
 		spread = getConfigInt("spread", 150);
 		shootInterval = getConfigInt("shoot-interval", 0);
+		removeDelay = getConfigInt("remove-delay", 0);
 	}
 	
 	@Override
@@ -53,12 +58,27 @@ public class VolleySpell extends TargetedLocationSpell {
 		Vector v = target.toVector().subtract(spawn.toVector()).normalize();
 		
 		if (shootInterval <= 0) {
+			final ArrayList<Arrow> arrowList = new ArrayList<Arrow>();
+			
 			int arrows = Math.round(this.arrows*power);
 			for (int i = 0; i < arrows; i++) {
 				Arrow a = player.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
 				a.setVelocity(a.getVelocity());
 				a.setShooter(player);
+				if (removeDelay > 0) arrowList.add(a);
 			}
+			
+			if (removeDelay > 0) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+					public void run() {
+						for (Arrow a : arrowList) {
+							a.remove();
+						}
+						arrowList.clear();
+					}
+				}, removeDelay);
+			}
+			
 		} else {
 			new ArrowShooter(player, spawn, v);
 		}
@@ -78,23 +98,50 @@ public class VolleySpell extends TargetedLocationSpell {
 		Vector dir;
 		int count;
 		int taskId;
+		HashMap<Integer, Arrow> arrowMap;
 		
 		ArrowShooter(Player player, Location spawn, Vector dir) {
 			this.player = player;
 			this.spawn = spawn;
 			this.dir = dir;
 			this.count = 0;
+			
+			if (removeDelay > 0) {
+				this.arrowMap = new HashMap<Integer, Arrow>();
+			}
+			
 			this.taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, 0, shootInterval);
 		}
 		
 		@Override
-		public void run() {
-			Arrow a = player.getWorld().spawnArrow(spawn, dir, (speed/10.0F), (spread/10.0F));
-			a.setVelocity(a.getVelocity());
-			a.setShooter(player);
-			if (++count >= arrows) {
+		public void run() {			
+			// fire an arrow
+			if (count < arrows) {
+				Arrow a = player.getWorld().spawnArrow(spawn, dir, (speed/10.0F), (spread/10.0F));
+				a.setVelocity(a.getVelocity());
+				a.setShooter(player);
+				if (removeDelay > 0) {
+					arrowMap.put(count, a);
+				}
+			}
+			
+			// remove old arrow
+			if (removeDelay > 0) {
+				int old = count - removeDelay;
+				if (old > 0) {
+					Arrow a = arrowMap.remove(old);
+					if (a != null) {
+						a.remove();
+					}
+				}
+			}
+			
+			// end if it's done
+			if (count >= arrows + removeDelay) {
 				Bukkit.getScheduler().cancelTask(taskId);
 			}
+
+			count++;
 		}
 	}
 

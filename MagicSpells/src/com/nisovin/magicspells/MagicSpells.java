@@ -19,6 +19,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -880,7 +881,9 @@ public class MagicSpells extends JavaPlugin {
 		getServer().getPluginManager().removePermission("magicspells.learn.*");
 		getServer().getPluginManager().removePermission("magicspells.teach.*");
 		// unregister all listeners
-		HandlerList.unregisterAll(this);	
+		HandlerList.unregisterAll(this);
+		// cancel all tasks
+		Bukkit.getScheduler().cancelTasks(this);
 	}
 	
 	@Override
