@@ -94,7 +94,6 @@ public abstract class TargetedSpell extends InstantSpell {
 		return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;		
 	}
 	
-	@Override
 	public boolean isBeneficial() {
 		return false;
 	}
