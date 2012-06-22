@@ -75,6 +75,7 @@ public class MagicSpells extends JavaPlugin {
 	static int globalCooldown;
 	static boolean castOnAnimate;
 	static boolean useExpBarAsCastTimeBar;
+	static boolean cooldownsPersistThroughReload;
 	
 	static boolean enableManaBars;
 	static int manaPotionCooldown;
@@ -174,6 +175,7 @@ public class MagicSpells extends JavaPlugin {
 		globalCooldown = config.getInt("general.global-cooldown", 500);
 		castOnAnimate = config.getBoolean("general.cast-on-animate", false);
 		useExpBarAsCastTimeBar = config.getBoolean("general.use-exp-bar-as-cast-time-bar", true);
+		cooldownsPersistThroughReload = config.getBoolean("general.cooldowns-persist-through-reload", true);
 		
 		entityNames = new HashMap<EntityType, String>();
 		if (config.contains("general.entity-names")) {
@@ -269,29 +271,31 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// load saved cooldowns
-		File file = new File(getDataFolder(), "cooldowns.txt");
-		Scanner scanner = null;
-		if (file.exists()) {
-			try {
-				scanner = new Scanner(file);
-				while (scanner.hasNext()) {
-					String line = scanner.nextLine();
-					if (!line.isEmpty()) {
-						String[] data = line.split(":");
-						long cooldown = Long.parseLong(data[2]);
-						if (cooldown > System.currentTimeMillis()) {
-							Spell spell = getSpellByInternalName(data[0]);
-							if (spell != null) {
-								spell.setCooldownManually(data[1], cooldown);
+		if (cooldownsPersistThroughReload) {
+			File file = new File(getDataFolder(), "cooldowns.txt");
+			Scanner scanner = null;
+			if (file.exists()) {
+				try {
+					scanner = new Scanner(file);
+					while (scanner.hasNext()) {
+						String line = scanner.nextLine();
+						if (!line.isEmpty()) {
+							String[] data = line.split(":");
+							long cooldown = Long.parseLong(data[2]);
+							if (cooldown > System.currentTimeMillis()) {
+								Spell spell = getSpellByInternalName(data[0]);
+								if (spell != null) {
+									spell.setCooldownManually(data[1], cooldown);
+								}
 							}
 						}
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					if (scanner != null) scanner.close();
+					file.delete();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (scanner != null) scanner.close();
-				file.delete();
 			}
 		}
 		
@@ -490,6 +494,11 @@ public class MagicSpells extends JavaPlugin {
 							spellbooks.put(player.getName(), new Spellbook(player, this));
 							sender.sendMessage(textColor + player.getName() + "'s spellbook reloaded.");
 						}
+					}
+				} else if (sender.isOp() && args[0].equals("reset")) {
+					for (Spell spell : spells.values()) {
+						spell.getCooldowns().clear();
+						sender.sendMessage(textColor + "Cooldowns reset");
 					}
 				} else if (sender.isOp() && args[0].equals("debug")) {
 					debug = !debug;
@@ -841,23 +850,25 @@ public class MagicSpells extends JavaPlugin {
 			spell.turnOff();
 		}
 		// save cooldowns
-		File file = new File(getDataFolder(), "cooldowns.txt");
-		if (file.exists()) file.delete();
-		try {
-			FileWriter writer = new FileWriter(file);
-			for (Spell spell : spells.values()) {
-				Map<String, Long> cooldowns = spell.getCooldowns();
-				for (String name : cooldowns.keySet()) {
-					long cooldown = cooldowns.get(name);
-					if (cooldown > System.currentTimeMillis()) {
-						writer.append(spell.getInternalName() + ":" + name + ":" + cooldown + "\n");
+		if (cooldownsPersistThroughReload) {
+			File file = new File(getDataFolder(), "cooldowns.txt");
+			if (file.exists()) file.delete();
+			try {
+				FileWriter writer = new FileWriter(file);
+				for (Spell spell : spells.values()) {
+					Map<String, Long> cooldowns = spell.getCooldowns();
+					for (String name : cooldowns.keySet()) {
+						long cooldown = cooldowns.get(name);
+						if (cooldown > System.currentTimeMillis()) {
+							writer.append(spell.getInternalName() + ":" + name + ":" + cooldown + "\n");
+						}
 					}
 				}
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				file.delete();
 			}
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			file.delete();
 		}
 		// turn off buff manager
 		if (buffManager != null) {
