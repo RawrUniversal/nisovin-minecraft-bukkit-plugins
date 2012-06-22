@@ -60,6 +60,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	protected SpellReagents reagents;
 	protected float cooldown;
+	protected List<String> rawSharedCooldowns;
 	protected HashMap<Spell, Float> sharedCooldowns;
 	protected boolean ignoreGlobalCooldown;
 
@@ -200,18 +201,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		// cooldowns
 		this.cooldown = (float)config.getDouble(section + "." + spellName + ".cooldown", 0);
-		List<String> cooldowns = config.getStringList(section + "." + spellName + ".shared-cooldowns", null);
-		if (cooldowns != null) {
-			this.sharedCooldowns = new HashMap<Spell,Float>();
-			for (String s : cooldowns) {
-				String[] data = s.split(" ");
-				Spell spell = MagicSpells.getSpellByInternalName(data[0]);
-				float cd = Float.parseFloat(data[1]);
-				if (spell != null) {
-					this.sharedCooldowns.put(spell, cd);
-				}
-			}
-		}
+		this.rawSharedCooldowns = config.getStringList(section + "." + spellName + ".shared-cooldowns", null);
 		this.ignoreGlobalCooldown = config.getBoolean(section + "." + spellName + ".ignore-global-cooldown", false);
 		this.nextCast = new HashMap<String, Long>();
 
@@ -232,6 +222,28 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strWrongCastItem = config.getString(section + "." + spellName + ".str-wrong-cast-item", strCantCast);
 		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
 		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
+	}
+	
+	/**
+	 * This method is called immediately after all spells have been loaded.
+	 */
+	protected void initialize() {
+		// process shared cooldowns
+		if (rawSharedCooldowns != null) {
+			this.sharedCooldowns = new HashMap<Spell,Float>();
+			for (String s : rawSharedCooldowns) {
+				String[] data = s.split(" ");
+				Spell spell = MagicSpells.getSpellByInternalName(data[0]);
+				float cd = Float.parseFloat(data[1]);
+				if (spell != null) {
+					this.sharedCooldowns.put(spell, cd);
+				}
+			}
+			rawSharedCooldowns.clear();
+			rawSharedCooldowns = null;
+		}
+		
+		registerEvents();
 	}
 	
 	/**
@@ -1032,13 +1044,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	void setCooldownManually(String name, long nextCast) {
 		this.nextCast.put(name, nextCast);
-	}
-	
-	/**
-	 * This method is called immediately after all spells have been loaded.
-	 */
-	protected void initialize() {
-		registerEvents();
 	}
 	
 	/**
