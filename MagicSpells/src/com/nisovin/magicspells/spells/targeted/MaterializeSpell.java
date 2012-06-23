@@ -11,6 +11,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -19,6 +20,7 @@ public class MaterializeSpell extends TargetedLocationSpell {
 
 	private int type;
 	private byte data;
+	private int resetDelay;
 	private boolean applyPhysics;
 	private boolean checkPlugins;
 	private String strFailed;
@@ -35,6 +37,7 @@ public class MaterializeSpell extends TargetedLocationSpell {
 			type = Integer.parseInt(s);
 			data = 0;
 		}
+		resetDelay = getConfigInt("reset-delay", 0);
 		applyPhysics = getConfigBoolean("apply-physics", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 		strFailed = getConfigString("str-failed", "");
@@ -62,7 +65,7 @@ public class MaterializeSpell extends TargetedLocationSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	private boolean materialize(Player player, Block block, Block against) {
+	private boolean materialize(Player player, final Block block, Block against) {
 		BlockState blockState = block.getState();
 		
 		if (checkPlugins) {
@@ -80,8 +83,19 @@ public class MaterializeSpell extends TargetedLocationSpell {
 		}
 		
 		playSpellEffects(EffectPosition.CASTER, player);
-		playSpellEffects(EffectPosition.TARGET, block.getLocation(), block.getTypeId() + "");
+		playSpellEffects(EffectPosition.TARGET, block.getLocation(), type + "");
 		playSpellEffectsTrail(player.getLocation(), block.getLocation(), null);
+		
+		if (resetDelay > 0) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+				public void run() {
+					if (block.getTypeId() == type && block.getData() == data) {
+						block.setType(Material.AIR);
+						playSpellEffects(EffectPosition.DELAYED, block.getLocation(), type + "");
+					}
+				}
+			}, resetDelay);
+		}
 		
 		return true;
 	}
