@@ -89,15 +89,18 @@ public class ManaSystem extends ManaHandler {
 	public void createManaBar(Player player) {
 		boolean update = manaBars.containsKey(player.getName().toLowerCase());
 		ManaBar bar = getManaBar(player);
-		if (update && bar != null) {
-			ManaRank rank = getRank(player);
-			if (rank != null) {
-				bar.setMaxMana(rank.maxMana);
-				bar.setRegenAmount(rank.regenAmount);
-			} else {
-				bar.setMaxMana(defaultMaxMana);
-				bar.setRegenAmount(defaultRegenAmount);
+		if (bar != null) {
+			if (update) {
+				ManaRank rank = getRank(player);
+				if (rank != null) {
+					bar.setMaxMana(rank.maxMana);
+					bar.setRegenAmount(rank.regenAmount);
+				} else {
+					bar.setMaxMana(defaultMaxMana);
+					bar.setRegenAmount(defaultRegenAmount);
+				}
 			}
+			showMana(player);
 		}
 	}
 	
