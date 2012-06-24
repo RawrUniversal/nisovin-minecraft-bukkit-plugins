@@ -42,8 +42,9 @@ import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.mana.ManaHandler;
 import com.nisovin.magicspells.mana.ManaSystem;
-import com.nisovin.magicspells.spells.*;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Metrics;
+import com.nisovin.magicspells.util.Metrics.Graph;
 import com.nisovin.magicspells.util.Util;
 import com.nisovin.magicspells.zones.NoMagicZoneManager;
 
@@ -92,6 +93,14 @@ public class MagicSpells extends JavaPlugin {
 	static String strWrongWorld;
 	static String strCantBind;
 	static String strConsoleName;
+	
+	static boolean metricsEnabled;
+	static int metricSpellCasts;
+	static int metricSpellCastsExternal;
+	static int metricSpellCastsTargeted;
+	static int metricSpellCastsInstant;
+	static int metricSpellCastsBuff;
+	static int metricErrors;
 	
 	static HashMap<String,Spell> spells; // map internal names to spells
 	static HashMap<String,Spell> spellNames; // map configured names to spells
@@ -219,7 +228,6 @@ public class MagicSpells extends JavaPlugin {
 		
 		// load spells
 		loadSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
-		loadMultiSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
 		log("Spells loaded: " + spells.size());
 		if (spells.size() == 0) {
 			MagicSpells.log(Level.SEVERE, "No spells loaded!");
@@ -338,6 +346,12 @@ public class MagicSpells extends JavaPlugin {
 			registerEvents(new MagicChatListener(this));
 		}
 		
+		// setup metrics
+		metricsEnabled = config.getBoolean("general.enable-stat-collection", true);
+		if (metricsEnabled) {
+			setupMetrics();
+		}
+		
 		// call loaded event
 		pm.callEvent(new MagicSpellsLoadedEvent(this));
 	}
@@ -416,37 +430,6 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	private void loadMultiSpells(MagicConfig config, PluginManager pm, HashMap<String, Boolean> permGrantChildren, HashMap<String, Boolean> permLearnChildren, HashMap<String, Boolean> permCastChildren, HashMap<String, Boolean> permTeachChildren) {
-		// load multi-spells
-		Set<String> multiSpells = config.getKeys("multispells");
-		if (multiSpells != null && multiSpells.size() > 0) {
-			error("Please update your Multi Spells to the new layout! To do so,");
-			error("just remove the 'multispells:' config header so that your multi spells");
-			error("are in the same section as your normal spells. Then, add the");
-			error("spell-class: \".MultiSpell\"");
-			error("option to all of your Multi Spells. Now you're good to go!");
-			for (String spellName : multiSpells) {
-				if (config.getBoolean("multispells." + spellName + ".enabled", true)) {
-					// initialize spell
-					OldMultiSpell multiSpell = new OldMultiSpell(config, spellName);
-					spells.put(spellName, multiSpell);
-					spellsOrdered.add(multiSpell);
-					// add permissions
-					addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
-					addPermission(pm, "learn." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-					addPermission(pm, "cast." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-					addPermission(pm, "teach." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-					permGrantChildren.put("magicspells.grant." + spellName, true);
-					permLearnChildren.put("magicspells.learn." + spellName, true);
-					permCastChildren.put("magicspells.cast." + spellName, true);
-					permTeachChildren.put("magicspells.teach." + spellName, true);
-					// load complete
-					debug(2, "Loaded multi-spell: " + spellName);
-				}
-			}
-		}
-	}
-	
 	private void addPermission(PluginManager pm, String perm, PermissionDefault permDefault) {
 		addPermission(pm, perm, permDefault, null, null);
 	}
@@ -466,6 +449,68 @@ public class MagicSpells extends JavaPlugin {
 			} else {
 				pm.addPermission(new Permission("magicspells." + perm, description, permDefault, children));
 			}
+		}
+	}
+	
+	private void setupMetrics() {
+		try {
+			Metrics metrics = new Metrics(this);
+			
+			Graph graph1 = metrics.createGraph("Spell Casts");
+			graph1.addPlotter(new Metrics.Plotter("Total") {
+				@Override
+				public int getValue() {
+					int r = metricSpellCasts;
+					metricSpellCasts = 0;
+					return r;
+				}
+			});
+			graph1.addPlotter(new Metrics.Plotter("External") {
+				@Override
+				public int getValue() {
+					int r = metricSpellCastsExternal;
+					metricSpellCastsExternal = 0;
+					return r;
+				}
+			});
+			graph1.addPlotter(new Metrics.Plotter("Targeted") {
+				@Override
+				public int getValue() {
+					int r = metricSpellCastsTargeted;
+					metricSpellCastsTargeted = 0;
+					return r;
+				}
+			});
+			graph1.addPlotter(new Metrics.Plotter("Instant") {
+				@Override
+				public int getValue() {
+					int r = metricSpellCastsInstant;
+					metricSpellCastsInstant = 0;
+					return r;
+				}
+			});
+			graph1.addPlotter(new Metrics.Plotter("Buff") {
+				@Override
+				public int getValue() {
+					int r = metricSpellCastsBuff;
+					metricSpellCastsBuff = 0;
+					return r;
+				}
+			});
+			
+			Graph graph2 = metrics.createGraph("Errors");
+			graph2.addPlotter(new Metrics.Plotter("Errors") {
+				@Override
+				public int getValue() {
+					int r = metricErrors;
+					metricErrors = 0;
+					return r;
+				}
+			});
+			
+			metrics.start();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -495,11 +540,16 @@ public class MagicSpells extends JavaPlugin {
 							sender.sendMessage(textColor + player.getName() + "'s spellbook reloaded.");
 						}
 					}
-				} else if (sender.isOp() && args[0].equals("reset")) {
+				} else if (sender.isOp() && args[0].equals("resetcd")) {
+					Player p = args.length > 1 ? Bukkit.getPlayer(args[1]) : null;
 					for (Spell spell : spells.values()) {
-						spell.getCooldowns().clear();
-						sender.sendMessage(textColor + "Cooldowns reset");
+						if (p != null) {
+							spell.setCooldown(p, 0);
+						} else {
+							spell.getCooldowns().clear();
+						}
 					}
+					sender.sendMessage(textColor + "Cooldowns reset" + p != null ? " for " + p.getName() : "");
 				} else if (sender.isOp() && args[0].equals("debug")) {
 					debug = !debug;
 					sender.sendMessage("MagicSpells: debug mode " + (debug?"enabled":"disabled"));
@@ -772,6 +822,7 @@ public class MagicSpells extends JavaPlugin {
 		} else {
 			ex.printStackTrace();
 		}
+		metricErrors++;
 	}
 	
 	/**
