@@ -59,12 +59,12 @@ public class MagicSpellsTowny extends JavaPlugin implements Listener {
 	@EventHandler(ignoreCancelled=true)
 	public void onSpellTarget(SpellTargetEvent event) {
 		boolean friendlySpell = false;
-		if (event.getSpell() instanceof TargetedSpell && ((TargetedSpell)event.getSpell()).isFriendlySpell()) {
+		if (event.getSpell() instanceof TargetedSpell && ((TargetedSpell)event.getSpell()).isBeneficial()) {
 			friendlySpell = true;
 		}
 		if (!friendlySpell && CombatUtil.preventDamageCall(event.getCaster(), event.getTarget())) {
 			event.setCancelled(true);
-		} else if (friendlySpell && event.getTarget() instanceof Player && CombatUtil.isAlly(event.getCaster().getName(), ((Player)event.getTarget()).getName())) {
+		} else if (friendlySpell && event.getTarget() instanceof Player && !CombatUtil.isAlly(event.getCaster().getName(), ((Player)event.getTarget()).getName())) {
 			event.setCancelled(true);
 		}
 	}
