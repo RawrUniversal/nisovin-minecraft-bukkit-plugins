@@ -92,8 +92,9 @@ public class FireballSpell extends TargetedSpell {
 			}
 			Fireball fireball;
 			if (smallFireball) {
-				fireball = player.getWorld().spawn(loc, SmallFireball.class);
-				player.getWorld().playEffect(player.getLocation(), Effect.BLAZE_SHOOT, 0);
+				//fireball = player.getWorld().spawn(loc, SmallFireball.class);
+				fireball = MagicSpells.getVolatileCodeHandler().shootSmallFireball(player);
+				player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
 			} else {
 				fireball = player.getWorld().spawn(loc, Fireball.class);
 				player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);

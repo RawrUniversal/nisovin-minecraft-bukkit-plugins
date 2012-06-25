@@ -9,6 +9,7 @@ import net.minecraft.server.DataWatcher;
 import net.minecraft.server.EntityCreature;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.EntitySmallFireball;
 import net.minecraft.server.EntityTNTPrimed;
 import net.minecraft.server.MobEffect;
 import net.minecraft.server.Packet103SetSlot;
@@ -26,12 +27,14 @@ import org.bukkit.craftbukkit.entity.CraftCreature;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 
 class CraftBukkitHandleEnabled implements CraftBukkitHandle {
@@ -159,6 +162,23 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	public void setExperienceBar(Player player, int level, float percent) {
 		Packet43SetExperience packet = new Packet43SetExperience(percent, player.getTotalExperience(), level);
 		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
+	}
+
+	@Override
+	public Fireball shootSmallFireball(Player player) {
+		net.minecraft.server.World w = ((CraftWorld)player.getWorld()).getHandle();
+		Location playerLoc = player.getLocation();
+		Vector loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(10));
+		
+		double d0 = loc.getX() - playerLoc.getX();
+        double d1 = loc.getY() - (playerLoc.getY() + 1.5);
+        double d2 = loc.getZ() - playerLoc.getZ();
+		EntitySmallFireball entitysmallfireball = new EntitySmallFireball(w, ((CraftPlayer)player).getHandle(), d0, d1, d2);
+
+        entitysmallfireball.locY = playerLoc.getY() + 1.5;
+        w.addEntity(entitysmallfireball);
+        
+        return (Fireball)entitysmallfireball.getBukkitEntity();
 	}
 
 }
