@@ -29,8 +29,8 @@ public class ModifyOptionsMore extends MenuPrompt {
 		c.sendRawMessage(Menu.TEXT_COLOR + "  4) List all " + Menu.KEYLETTER_COLOR + "g" + Menu.KEYWORD_COLOR + "roups");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  5) Set a short " + Menu.KEYLETTER_COLOR + "d" + Menu.KEYWORD_COLOR + "escription");
 		if (obj instanceof Group) {
-			c.sendRawMessage(Menu.TEXT_COLOR + "  6) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "ename this group");
-			c.sendRawMessage(Menu.TEXT_COLOR + "  7) De" + Menu.KEYLETTER_COLOR + "l" + Menu.KEYWORD_COLOR + "ete this group");
+			c.sendRawMessage(Menu.TEXT_COLOR + "  6) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "ename" + Menu.TEXT_COLOR + " this group");
+			c.sendRawMessage(Menu.TEXT_COLOR + "  7) " + Menu.KEYWORD_COLOR + "De" + Menu.KEYLETTER_COLOR + "l" + Menu.KEYWORD_COLOR + "ete" + Menu.TEXT_COLOR + " this group");
 		}
 		c.sendRawMessage(Menu.TEXT_COLOR + "  0) Show " + Menu.KEYLETTER_COLOR + "m" + Menu.KEYWORD_COLOR + "ore " + Menu.TEXT_COLOR + "options");
 		return MainPlugin.TEXT_COLOR + "Please type your selection:";
