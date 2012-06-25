@@ -113,11 +113,14 @@ public class PassiveSpell extends Spell {
 				} else if (type.equalsIgnoreCase("rightclick")) {
 					registerEvents(new RightClickListener(var));
 					trigCount++;
-				} else if (type.equalsIgnoreCase("spelltargeted")) {
-					registerEvents(new SpellTargetedListener(var));
-					trigCount++;
 				} else if (type.equalsIgnoreCase("spellcast")) {
 					registerEvents(new SpellCastListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("spelltarget")) {
+					registerEvents(new SpellTargetListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("spelltargeted")) {
+					registerEvents(new SpellTargetedListener(var));
 					trigCount++;
 				} else if (type.equalsIgnoreCase("sprint")) {
 					registerEvents(new SprintListener());
@@ -473,6 +476,24 @@ public class PassiveSpell extends Spell {
 			if (event.getSpell().getInternalName().equals(spellName) && event.getPostCastAction() != PostCastAction.ALREADY_HANDLED) {
 				if (hasSpell(event.getCaster())) {
 					activate(event.getCaster());
+				}
+			}
+		}
+	}
+	
+	public class SpellTargetListener implements Listener {
+		
+		String spellName;
+		
+		public SpellTargetListener(String var) {
+			spellName = var;
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSpellTarget(SpellTargetEvent event) {
+			if (spellName == null || event.getSpell().getName().equals(spellName)) {
+				if (hasSpell(event.getCaster())) {
+					activate(event.getCaster(), event.getTarget());
 				}
 			}
 		}
