@@ -4,8 +4,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import com.nisovin.magicspells.ManaChangeReason;
 import com.nisovin.magicspells.events.ManaChangeEvent;
+import com.nisovin.magicspells.mana.ManaChangeReason;
 
 public class ManaListener implements Listener {
 
