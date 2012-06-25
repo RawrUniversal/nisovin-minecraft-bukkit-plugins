@@ -81,6 +81,7 @@ public class ManaSystem extends ManaHandler {
 				bar = new ManaBar(player, defaultMaxMana, defaultRegenAmount);
 			}
 			manaBars.put(player.getName().toLowerCase(), bar);
+			MagicSpells.debug(1, "Creating mana bar for player " + player.getName() + " with rank " + rank.name);
 		}
 		return bar;
 	}
@@ -93,9 +94,11 @@ public class ManaSystem extends ManaHandler {
 			if (update) {
 				ManaRank rank = getRank(player);
 				if (rank != null) {
+					MagicSpells.debug(1, "Creating mana bar for player " + player.getName() + " with rank " + rank.name);
 					bar.setMaxMana(rank.maxMana);
 					bar.setRegenAmount(rank.regenAmount);
 				} else {
+					MagicSpells.debug(1, "Creating mana bar for player " + player.getName() + " with default rank");
 					bar.setMaxMana(defaultMaxMana);
 					bar.setRegenAmount(defaultRegenAmount);
 				}
@@ -105,11 +108,15 @@ public class ManaSystem extends ManaHandler {
 	}
 	
 	private ManaRank getRank(Player player) {
+		MagicSpells.debug(3, "Fetching mana rank for player " + player.getName() + "...");
 		for (ManaRank rank : ranks) {
+			MagicSpells.debug(3, "    checking rank " + rank.name);
 			if (player.hasPermission("magicspells.rank." + rank.name)) {
+				MagicSpells.debug(3, "    rank found");
 				return rank;
 			}
 		}
+		MagicSpells.debug(3, "    no rank found");
 		return null;
 	}
 

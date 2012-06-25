@@ -78,6 +78,7 @@ public class ConjureSpell extends InstantSpell {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
@@ -92,6 +93,7 @@ public class ConjureSpell extends InstantSpell {
 			
 			// drop items
 			Location loc = player.getEyeLocation().add(player.getLocation().getDirection());
+			boolean updateInv = false;
 			for (ItemStack item : items) {
 				boolean added = false;
 				PlayerInventory inv = player.getInventory();
@@ -113,10 +115,16 @@ public class ConjureSpell extends InstantSpell {
 				if (!added) {
 					if (addToInventory) {
 						inv.addItem(item);
+						updateInv = true;
 					} else {
 						player.getWorld().dropItem(loc, item);
 					}
+				} else {
+					updateInv = true;
 				}
+			}
+			if (updateInv) {
+				player.updateInventory();
 			}
 			
 			playSpellEffects(EffectPosition.CASTER, player);
