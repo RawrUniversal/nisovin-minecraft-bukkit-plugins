@@ -237,7 +237,7 @@ public class Spellbook {
 		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
-			if (spells.size() > 1 || i.equals(-1) || MagicSpells.allowCycleToNoSpell) {
+			if (spells.size() > 1 || i.equals(-1) || MagicSpells.allowCycleToNoSpell || MagicSpells.alwaysShowMessageOnCycle) {
 				int count = 0;
 				while (count++ < spells.size()) {
 					i++;

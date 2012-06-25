@@ -2,6 +2,7 @@ general:
     debug: false
     debug-level: 3
     enable-error-logging: true
+    enable-stat-collection: true
     enable-volatile-features: true
     alt-config: altConfig.yml
     str-cast-usage: |
@@ -20,6 +21,7 @@ general:
     spell-icon-slot: -1
     separate-player-spells-per-world: false
     allow-cycle-to-no-spell: false
+    always-show-message-on-cycle: false
     only-cycle-to-castable-spells: true
     allow-cast-with-fist: false
     ops-have-all-spells: true

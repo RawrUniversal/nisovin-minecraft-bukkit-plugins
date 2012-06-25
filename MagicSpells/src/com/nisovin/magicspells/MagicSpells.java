@@ -65,6 +65,7 @@ public class MagicSpells extends JavaPlugin {
 	
 	static boolean separatePlayerSpellsPerWorld;
 	static boolean allowCycleToNoSpell;
+	static boolean alwaysShowMessageOnCycle;
 	static boolean onlyCycleToCastableSpells;
 	static int spellIconSlot;
 	static boolean allowCastWithFist;
@@ -159,6 +160,7 @@ public class MagicSpells extends JavaPlugin {
 
 		separatePlayerSpellsPerWorld = config.getBoolean("general.separate-player-spells-per-world", false);
 		allowCycleToNoSpell = config.getBoolean("general.allow-cycle-to-no-spell", false);
+		alwaysShowMessageOnCycle = config.getBoolean("general.always-show-message-on-cycle", false);
 		onlyCycleToCastableSpells = config.getBoolean("general.only-cycle-to-castable-spells", true);
 		spellIconSlot = config.getInt("general.spell-icon-slot", -1);
 		allowCastWithFist = config.getBoolean("general.allow-cast-with-fist", false);
