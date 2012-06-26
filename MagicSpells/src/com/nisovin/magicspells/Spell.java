@@ -61,6 +61,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected int castTime;
 	protected boolean interruptOnMove;
 	protected boolean interruptOnDamage;
+	protected String spellOnInterrupt;
 	
 	protected SpellReagents reagents;
 	protected float cooldown;
@@ -136,6 +137,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.castTime = config.getInt(section + "." + spellName + ".cast-time", 0);
 		this.interruptOnMove = config.getBoolean(section + "." + spellName + ".interrupt-on-move", true);
 		this.interruptOnDamage = config.getBoolean(section + "." + spellName + ".interrupt-on-damage", false);
+		this.spellOnInterrupt = config.getString(section + "." + spellName + ".spell-on-interrupt", null);
 		
 		// graphical effects
 		List<String> effectsList = config.getStringList(section + "." + spellName + ".effects", null);
@@ -1174,7 +1176,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					}
 					spell.handleCast(player, state, power, cooldown, reagents, null);
 				} else {
-					sendMessage(player, strInterrupted);
+					interrupt();
 				}
 			}
 			HandlerList.unregisterAll(this);
@@ -1185,7 +1187,17 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			if (event.getEntity().equals(player)) {
 				cancelled = true;
 				Bukkit.getScheduler().cancelTask(taskId);
-				sendMessage(player, strInterrupted);
+				interrupt();
+			}
+		}
+		
+		private void interrupt() {
+			sendMessage(player, strInterrupted);
+			if (spellOnInterrupt != null) {
+				Spell spell = MagicSpells.getSpellByInternalName(spellOnInterrupt);
+				if (spell != null) {
+					spell.castSpell(player, SpellCastState.NORMAL, power, null);
+				}
 			}
 		}
 	}
@@ -1238,8 +1250,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					}
 					MagicSpells.getExpBarManager().update(player, 0, ((float)elapsed / (float)castTime), this);
 				} else {
-					sendMessage(player, strInterrupted);
-					end();
+					interrupt();
 				}
 			} else {
 				end();
@@ -1250,7 +1261,18 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		public void onDamage(EntityDamageEvent event) {
 			if (!cancelled && event.getEntity().equals(player)) {
 				cancelled = true;
-				sendMessage(player, strInterrupted);
+				interrupt();
+			}
+		}
+		
+		private void interrupt() {
+			sendMessage(player, strInterrupted);
+			end();
+			if (spellOnInterrupt != null) {
+				Spell spell = MagicSpells.getSpellByInternalName(spellOnInterrupt);
+				if (spell != null) {
+					spell.castSpell(player, SpellCastState.NORMAL, power, null);
+				}
 			}
 		}
 		
