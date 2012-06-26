@@ -81,7 +81,9 @@ public class ConjureSpell extends InstantSpell {
 	@SuppressWarnings("deprecation")
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+		if (itemTypes == null) return PostCastAction.ALREADY_HANDLED;
 		if (state == SpellCastState.NORMAL) {
+			
 			// get items to drop
 			Random rand = new Random();
 			List<ItemStack> items = new ArrayList<ItemStack>();
