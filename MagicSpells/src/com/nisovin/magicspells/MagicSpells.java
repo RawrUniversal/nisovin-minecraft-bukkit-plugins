@@ -871,11 +871,12 @@ public class MagicSpells extends JavaPlugin {
 			try {
 				writer = new PrintWriter(new File(plugin.getDataFolder(), "profiling_report_" + System.currentTimeMillis() + ".txt"));
 				long totalTime = 0;
+				writer.println("Key\tRuns\tAvg\tTotal");
 				for (String key : profilingTotalTime.keySet()) {
 					long time = profilingTotalTime.get(key);
 					int runs = profilingRuns.get(key);
 					totalTime += time;
-					writer.println(key + " :: runs: " + runs + "; avg: " + (time/runs/1000000F) + "ms; total: " + (time/1000000F) + "ms");
+					writer.println(key + "\t" + runs + "\t" + (time/runs/1000000F) + "ms\t" + (time/1000000F) + "ms");
 				}
 				writer.println();
 				writer.println("TOTAL TIME: " + (totalTime/1000000F) + "ms");

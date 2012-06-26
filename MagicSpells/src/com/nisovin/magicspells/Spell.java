@@ -44,6 +44,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	protected String internalName;
 	protected String name;
+	protected String profilingKey;
 	protected String[] aliases;	
 	protected boolean alwaysGranted;
 	protected List<String> incantations;
@@ -96,6 +97,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	protected void loadConfigData(MagicConfig config, String spellName, String section) {
+		this.profilingKey = "Spell:" + this.getClass().getName().replace("com.nisovin.magicspells.spells.", "") + "-" + spellName;
 		this.name = config.getString(section + "." + spellName + ".name", spellName);
 		List<String> temp = config.getStringList(section + "." + spellName + ".aliases", null);
 		if (temp != null) {
@@ -401,6 +403,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	private PostCastAction handleCast(Player player, SpellCastState state, float power, float cooldown, SpellReagents reagents, String[] args) {
+		long start = System.nanoTime();		
 		MagicSpells.debug(3, "    Power: " + power);
 		MagicSpells.debug(3, "    Cooldown: " + cooldown);
 		if (MagicSpells.debug && args != null && args.length > 0) {
@@ -408,6 +411,17 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		PostCastAction action = castSpell(player, state, power, args);
 		MagicSpells.debug(3, "    Post-cast action: " + action);
+		
+		if (MagicSpells.enableProfiling) {
+        	Long total = MagicSpells.profilingTotalTime.get(profilingKey);
+        	if (total == null) total = (long)0;
+        	total += (System.nanoTime() - start);
+        	MagicSpells.profilingTotalTime.put(profilingKey, total);
+        	Integer runs = MagicSpells.profilingRuns.get(profilingKey);
+        	if (runs == null) runs = 0;
+        	runs += 1;
+        	MagicSpells.profilingRuns.put(profilingKey, runs);
+		}
 
 		if (action != null && action != PostCastAction.ALREADY_HANDLED) {
 			if (state == SpellCastState.NORMAL) {
