@@ -40,7 +40,7 @@ public class RitualSpell extends InstantSpell {
 	public RitualSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		ritualDuration = getConfigInt("ritual-time", 200);
+		ritualDuration = getConfigInt("ritual-duration", 200);
 		reqParticipants = getConfigInt("req-participants", 3);
 		needSpellToParticipate = getConfigBoolean("need-spell-to-participate", false);
 		showProgressOnExpBar = getConfigBoolean("show-progress-on-exp-bar", true);
