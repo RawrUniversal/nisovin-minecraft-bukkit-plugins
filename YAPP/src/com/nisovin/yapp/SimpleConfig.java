@@ -32,11 +32,11 @@ public class SimpleConfig {
 						section = line.replace("=", "").trim().toLowerCase();
 						continue;
 					} else if (line.contains(":")) {
-						data = line.split(":");
+						data = line.split(":", 2);
 						key = data[0].trim();
 						val = data[1].trim();
 					} else if (line.contains("=")) {
-						data = line.split("=");
+						data = line.split("=", 2);
 						key = data[0].trim();
 						val = data[1].trim();
 					} else {
