@@ -77,7 +77,7 @@ public class InvisibilitySpell extends BuffSpell {
 	
 	@EventHandler
 	public void onPlayerItemPickup(PlayerPickupItemEvent event) {
-		if (preventPickups && invisibles.containsKey(event.getPlayer())) {
+		if (preventPickups && invisibles.containsKey(event.getPlayer().getName())) {
 			event.setCancelled(true);
 		}
 	}
@@ -85,7 +85,7 @@ public class InvisibilitySpell extends BuffSpell {
 	@EventHandler
 	public void onEntityTarget(EntityTargetEvent event) {
 		if (!event.isCancelled() && event.getTarget() instanceof Player) {
-			if (invisibles.containsKey((Player)event.getTarget())) {
+			if (invisibles.containsKey(((Player)event.getTarget()).getName())) {
 				event.setCancelled(true);
 			}
 		}
