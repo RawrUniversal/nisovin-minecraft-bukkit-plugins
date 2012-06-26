@@ -42,6 +42,7 @@ import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.mana.ManaHandler;
 import com.nisovin.magicspells.mana.ManaSystem;
+import com.nisovin.magicspells.util.ExperienceBarManager;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Metrics;
 import com.nisovin.magicspells.util.Metrics.Graph;
@@ -113,6 +114,7 @@ public class MagicSpells extends JavaPlugin {
 	static HashMap<Player,Long> manaPotionCooldowns;
 	static NoMagicZoneManager noMagicZones;
 	static BuffManager buffManager;
+	static ExperienceBarManager expBarManager;
 	
 	@Override
 	public void onEnable() {
@@ -308,6 +310,9 @@ public class MagicSpells extends JavaPlugin {
 				}
 			}
 		}
+		
+		// setup exp bar manager
+		expBarManager = new ExperienceBarManager();
 		
 		// setup mana bar manager
 		if (enableManaBars) {
@@ -721,6 +726,10 @@ public class MagicSpells extends JavaPlugin {
 	
 	public static CraftBukkitHandle getVolatileCodeHandler() {
 		return craftbukkit;
+	}
+	
+	public static ExperienceBarManager getExpBarManager() {
+		return expBarManager;
 	}
 	
 	/**

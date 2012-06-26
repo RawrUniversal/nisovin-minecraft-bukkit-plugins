@@ -136,12 +136,18 @@ public class RitualSpell extends InstantSpell {
 			this.caster = caster;
 			this.channelers.put(caster, caster.getLocation().clone());
 			this.taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, tickInterval, tickInterval);
+			if (showProgressOnExpBar) {
+				MagicSpells.getExpBarManager().lock(caster, this);
+			}
 			playSpellEffects(EffectPosition.CASTER, caster);
 		}
 		
 		public void addChanneler(Player player) {
 			if (!channelers.containsKey(player)) {
 				channelers.put(player, player.getLocation().clone());
+				if (showProgressOnExpBar) {
+					MagicSpells.getExpBarManager().lock(player, this);
+				}
 				playSpellEffects(EffectPosition.CASTER, player);
 			}
 		}
@@ -170,7 +176,7 @@ public class RitualSpell extends InstantSpell {
 				}
 				// send exp bar update
 				if (showProgressOnExpBar) {
-					MagicSpells.getVolatileCodeHandler().setExperienceBar(player, count, (float)duration / (float)ritualDuration);
+					MagicSpells.getExpBarManager().update(player, count, (float)duration / (float)ritualDuration, this);
 				}
 				// spell effect
 				if (duration % effectInterval == 0) {
@@ -210,7 +216,12 @@ public class RitualSpell extends InstantSpell {
 		public void stop(String message) {
 			for (Player player : channelers.keySet()) {
 				sendMessage(player, message);
-				MagicSpells.getVolatileCodeHandler().setExperienceBar(player, player.getLevel(), player.getExp());
+				MagicSpells.getExpBarManager().unlock(player, this);
+				if (MagicSpells.getManaHandler() != null) {
+					MagicSpells.getManaHandler().showMana(player);
+				} else {
+					MagicSpells.getExpBarManager().update(player, player.getLevel(), player.getExp());
+				}
 			}
 			channelers.clear();
 			Bukkit.getScheduler().cancelTask(taskId);

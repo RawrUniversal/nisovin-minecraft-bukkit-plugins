@@ -1215,6 +1215,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			this.reagents = reagents;
 			this.castTime = castTime;
 			
+			MagicSpells.getExpBarManager().lock(player, this);
+			
 			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, interval, interval);
 			if (interruptOnDamage) {
 				registerEvents(this);
@@ -1234,7 +1236,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 						spell.handleCast(player, state, power, cooldown, reagents, null);
 						cancelled = true;
 					}
-					MagicSpells.getVolatileCodeHandler().setExperienceBar(player, 0, ((float)elapsed / (float)castTime));
+					MagicSpells.getExpBarManager().update(player, 0, ((float)elapsed / (float)castTime), this);
 				} else {
 					sendMessage(player, strInterrupted);
 					end();
@@ -1256,7 +1258,12 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			cancelled = true;
 			Bukkit.getScheduler().cancelTask(taskId);
 			HandlerList.unregisterAll(this);
-			MagicSpells.getVolatileCodeHandler().setExperienceBar(player, player.getLevel(), player.getExp());
+			MagicSpells.getExpBarManager().unlock(player, this);
+			if (MagicSpells.mana != null) {
+				MagicSpells.mana.showMana(player);
+			} else {
+				MagicSpells.getExpBarManager().update(player, player.getLevel(), player.getExp());
+			}
 		}
 	}
 

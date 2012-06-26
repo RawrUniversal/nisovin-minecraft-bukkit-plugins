@@ -232,7 +232,7 @@ public class ManaSystem extends ManaHandler {
 	}
 	
 	private void showManaOnExperienceBar(Player player, ManaBar bar) {
-		MagicSpells.getVolatileCodeHandler().setExperienceBar(player, bar.getMana(), (float)bar.getMana()/(float)bar.getMaxMana());
+		MagicSpells.getExpBarManager().update(player, bar.getMana(), (float)bar.getMana()/(float)bar.getMaxMana());
 	}
 
 	@Override
