@@ -58,6 +58,7 @@ public class MagicSpells extends JavaPlugin {
 	static boolean debug;
 	static int debugLevel;
 	static boolean enableErrorLogging;
+	static boolean enableProfiling;
 	static ChatColor textColor;
 	static int broadcastRange;
 	
@@ -85,6 +86,7 @@ public class MagicSpells extends JavaPlugin {
 	static String strManaPotionOnCooldown;
 	static HashMap<ItemStack,Integer> manaPotions;
 	
+	// strings
 	static String strCastUsage;
 	static String strUnknownSpell;
 	static String strSpellChange;
@@ -96,6 +98,7 @@ public class MagicSpells extends JavaPlugin {
 	static String strCantBind;
 	static String strConsoleName;
 	
+	// metrics vars
 	static boolean metricsEnabled;
 	static int metricSpellCasts;
 	static int metricSpellCastsExternal;
@@ -110,11 +113,16 @@ public class MagicSpells extends JavaPlugin {
 	static HashMap<String,Spellbook> spellbooks; // player spellbooks
 	static HashMap<String,Spell> incantations; // map incantation strings to spells
 		
+	// container vars
 	static ManaHandler mana;
 	static HashMap<Player,Long> manaPotionCooldowns;
 	static NoMagicZoneManager noMagicZones;
 	static BuffManager buffManager;
 	static ExperienceBarManager expBarManager;
+	
+	// profiling
+	static HashMap<String, Long> profilingTotalTime;
+	static HashMap<String, Integer> profilingRuns;
 	
 	@Override
 	public void onEnable() {
@@ -154,6 +162,7 @@ public class MagicSpells extends JavaPlugin {
 		debug = config.getBoolean("general.debug", false);
 		debugLevel = config.getInt("general.debug-level", 3);
 		enableErrorLogging = config.getBoolean("general.enable-error-logging", true);
+		enableProfiling = config.getBoolean("general.enable-profiling", false);
 		textColor = ChatColor.getByChar(config.getString("general.text-color", ChatColor.DARK_AQUA.getChar() + ""));
 		broadcastRange = config.getInt("general.broadcast-range", 20);
 		
@@ -359,6 +368,12 @@ public class MagicSpells extends JavaPlugin {
 			setupMetrics();
 		}
 		
+		// setup profiling
+		if (enableProfiling) {
+			profilingTotalTime = new HashMap<String, Long>();
+			profilingRuns = new HashMap<String, Integer>();
+		}
+		
 		// call loaded event
 		pm.callEvent(new MagicSpellsLoadedEvent(this));
 	}
@@ -557,6 +572,9 @@ public class MagicSpells extends JavaPlugin {
 						}
 					}
 					sender.sendMessage(textColor + "Cooldowns reset" + p != null ? " for " + p.getName() : "");
+				} else if (sender.isOp() && args[0].equals("profilereport")) {
+					sender.sendMessage(textColor + "Creating profiling report");
+					profilingReport();
 				} else if (sender.isOp() && args[0].equals("debug")) {
 					debug = !debug;
 					sender.sendMessage("MagicSpells: debug mode " + (debug?"enabled":"disabled"));
@@ -774,8 +792,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	static void registerEvents(Listener listener) {
-		//Bukkit.getPluginManager().registerEvents(listener, plugin);
+	static void registerEvents(final Listener listener) {
 		Method[] methods;
         try {
             methods = listener.getClass().getDeclaredMethods();
@@ -794,12 +811,24 @@ public class MagicSpells extends JavaPlugin {
             final Class<? extends Event> eventClass = checkClass.asSubclass(Event.class);
             method.setAccessible(true);
             EventExecutor executor = new EventExecutor() {
+            	final String eventKey = enableProfiling ? "Event:" + listener.getClass().getName().replace("com.nisovin.magicspells.","") + "." + method.getName() + "(" + eventClass.getSimpleName() + ")" : null;
                 public void execute(Listener listener, Event event) {
                     try {
                         if (!eventClass.isAssignableFrom(event.getClass())) {
                             return;
                         }
+                        long start = System.nanoTime();
                         method.invoke(listener, event);
+                        if (enableProfiling) {
+                        	Long total = profilingTotalTime.get(eventKey);
+                        	if (total == null) total = (long)0;
+                        	total += (System.nanoTime() - start);
+                        	profilingTotalTime.put(eventKey, total);
+                        	Integer runs = profilingRuns.get(eventKey);
+                        	if (runs == null) runs = 0;
+                        	runs += 1;
+                        	profilingRuns.put(eventKey, runs);
+                        }
                     } catch (Exception ex) {
                     	handleException(ex);
                     }
@@ -834,6 +863,31 @@ public class MagicSpells extends JavaPlugin {
 			ex.printStackTrace();
 		}
 		metricErrors++;
+	}
+	
+	static void profilingReport() {
+		if (profilingTotalTime != null && profilingRuns != null) {
+			PrintWriter writer = null;
+			try {
+				writer = new PrintWriter(new File(plugin.getDataFolder(), "profiling_report_" + System.currentTimeMillis() + ".txt"));
+				long totalTime = 0;
+				for (String key : profilingTotalTime.keySet()) {
+					long time = profilingTotalTime.get(key);
+					int runs = profilingRuns.get(key);
+					totalTime += time;
+					writer.println(key + " :: runs: " + runs + "; avg: " + (time/runs/1000000F) + "ms; total: " + (time/1000000F) + "ms");
+				}
+				writer.println();
+				writer.println("TOTAL TIME: " + (totalTime/1000000F) + "ms");
+			} catch (Exception ex) {
+				error("Failed to save profiling report");
+				handleException(ex);
+			} finally {
+				if (writer != null) writer.close();
+			}
+			profilingTotalTime.clear();
+			profilingRuns.clear();
+		}
 	}
 	
 	/**
