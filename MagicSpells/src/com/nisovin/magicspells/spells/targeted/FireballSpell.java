@@ -188,7 +188,7 @@ public class FireballSpell extends TargetedSpell {
 
 	@EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if ((damageMultiplier > 0 || !targetPlayers) && event.getEntity() instanceof LivingEntity && event instanceof EntityDamageByEntityEvent && event.getCause() == DamageCause.ENTITY_EXPLOSION) {
+		if ((damageMultiplier > 0 || !targetPlayers) && event.getEntity() instanceof LivingEntity && event instanceof EntityDamageByEntityEvent && (event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.PROJECTILE)) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 			if (evt.getDamager() instanceof Fireball || evt.getDamager() instanceof SmallFireball) {
 				Fireball fireball = (Fireball)evt.getDamager();
