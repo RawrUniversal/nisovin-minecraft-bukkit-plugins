@@ -11,21 +11,63 @@ Worlds:
 BehaviorSets:
     Default:
         Zombie:
-            Action1: # these names don't matter
-                Priority: 1
-                Type: Swim
-            Action2:
-                Priority: 2
-                Type: MeleeAttack
-                Range: 16.0
-            Action3:
-                Priority: 3
-                Type: Wander
-            Action4:
-                Priority: 4
-                Type: LookAtPlayer
-                Range: 8.0
-            Action5:
-                Priority: 4
-                Type: LookAround
-        
+            Health: 20
+            Targeting:
+                Target1: # these names don't matter
+                    Priority: 1
+                    Type: HurtBy
+                    Flag: false
+                Target2:
+                    Priority: 2
+                    Type: NearestAttackable
+                    Target: Human
+                    Range: 16.0
+                    Var: 0
+                    Flag: true
+                Target2:
+                    Priority: 2
+                    Type: NearestAttackable
+                    Target: Villager
+                    Range: 16.0
+                    Var: 0
+                    Flag: false
+            Pathing:
+                Action0: # these names don't matter
+                    Priority: 0
+                    Type: Swim
+                Action1:
+                    Priority: 1
+                    Type: BreakDoor
+                Action2:
+                    Priority: 2
+                    Type: MeleeAttack
+                    Target: Human
+                    Speed: .23
+                    Flag: false
+                Action3:
+                    Priority: 3
+                    Type: MeleeAttack
+                    Target: Villager
+                    Speed: .23
+                    Flag: true
+                Action4:
+                    Priority: 4
+                    Type: MoveTowardsTarget
+                    Speed: .23
+                Action5:
+                    Priority: 5
+                    Type: MoveThroughVillage
+                    Speed: .23
+                    Flag: false
+                Action6:
+                    Priority: 6
+                    Type: RandomStroll
+                    Speed: .23
+                Action7:
+                    Priority: 7
+                    Type: LookAt
+                    Target: Human
+                    Range: 8.0
+                Action8:
+                    Priority: 8
+                    Type: RandomLookAround

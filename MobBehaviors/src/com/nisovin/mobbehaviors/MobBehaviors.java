@@ -13,7 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
-import org.bukkit.entity.CreatureType;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -79,7 +79,7 @@ public class MobBehaviors extends JavaPlugin implements Listener {
 		registeredBehaviors.put(name, behavior);
 	}
 	
-	private List<Behavior> getApplicableBehaviors(CreatureType creatureType, Location location) {
+	private List<Behavior> getApplicableBehaviors(EntityType creatureType, Location location) {
 		WorldBehaviors behaviors = worldBehaviors.get(location.getWorld().getName());
 		if (behaviors == null) {
 			// no behaviors defined for this world
@@ -110,7 +110,7 @@ public class MobBehaviors extends JavaPlugin implements Listener {
 		if (event.isCancelled()) return;
 		
 		// get creature goals
-		CreatureType creatureType = event.getCreatureType();		
+		EntityType creatureType = event.getEntityType();
 		List<Behavior> behaviors = getApplicableBehaviors(creatureType, event.getLocation());
 		if (behaviors == null) return;
 

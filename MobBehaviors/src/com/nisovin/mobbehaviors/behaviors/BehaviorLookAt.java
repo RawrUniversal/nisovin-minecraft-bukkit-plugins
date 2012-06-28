@@ -1,5 +1,6 @@
 package com.nisovin.mobbehaviors.behaviors;
 
+import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.PathfinderGoalSelector;
@@ -19,7 +20,7 @@ public class BehaviorLookAt extends Behavior {
 
 	@Override
 	public void addGoalToEntity(EntityLiving entity, PathfinderGoalSelector selector) {
-		selector.a(priority, new PathfinderGoalLookAtPlayer(entity, entity.world, range));
+		selector.a(priority, new PathfinderGoalLookAtPlayer(entity, EntityHuman.class, range));
 	}
 
 }

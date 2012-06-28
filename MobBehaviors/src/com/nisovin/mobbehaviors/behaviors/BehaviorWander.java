@@ -11,13 +11,15 @@ import com.nisovin.mobbehaviors.Behavior;
 
 public class BehaviorWander extends Behavior {
 
+	float speed;
+	
 	public BehaviorWander(ConfigurationSection config) {
 		super(config);
 	}
 
 	@Override
 	public void addGoalToEntity(EntityLiving entity, PathfinderGoalSelector selector) {
-		selector.a(priority, new PathfinderGoalRandomStroll((EntityCreature) entity));
+		selector.a(priority, new PathfinderGoalRandomStroll((EntityCreature) entity, speed));
 	}
 
 }

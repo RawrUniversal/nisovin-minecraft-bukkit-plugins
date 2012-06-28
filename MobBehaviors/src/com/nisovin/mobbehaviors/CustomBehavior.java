@@ -32,7 +32,7 @@ public abstract class CustomBehavior extends Behavior {
 	
 	@Override
 	public void addGoalToEntity(EntityLiving entity, PathfinderGoalSelector selector) {
-		selector.a(priority, new PathfinderGoalCustom(entity, this));
+		selector.a(priority, new PathfinderGoalCustom(this));
 		this.entity = (LivingEntity)entity.getBukkitEntity();
 	}
 

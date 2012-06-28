@@ -1,14 +1,12 @@
 package com.nisovin.mobbehaviors;
 
-import net.minecraft.server.EntityLiving;
-import net.minecraft.server.PathfinderGoalFloat;
+import net.minecraft.server.PathfinderGoal;
 
-public class PathfinderGoalCustom extends PathfinderGoalFloat {
+public class PathfinderGoalCustom extends PathfinderGoal {
 
 	private CustomBehavior goal;
 	
-	public PathfinderGoalCustom(EntityLiving entity, CustomBehavior goal) {
-		super(entity);
+	public PathfinderGoalCustom(CustomBehavior goal) {
 		this.goal = goal;
 	}
 	
@@ -17,14 +15,9 @@ public class PathfinderGoalCustom extends PathfinderGoalFloat {
 		return goal.doesBehaviorApply();
 	}
 	
-	/*@Override
-	public boolean b() {
-		return goal.doesGoalStillApply();
-	}*/
-	
 	@Override
-	public void d() { // disable
-		goal.executeGoalLastTime();
+	public boolean b() {
+		return goal.doesBehaviorStillApply();
 	}
 	
 	@Override
@@ -33,8 +26,13 @@ public class PathfinderGoalCustom extends PathfinderGoalFloat {
 	}
 	
 	@Override
-	public void b() { // continuing execute
+	public void c() { // continuing execute
 		goal.executeGoalOngoing();
+	}
+	
+	@Override
+	public void d() { // disable
+		goal.executeGoalLastTime();
 	}
 
 }
