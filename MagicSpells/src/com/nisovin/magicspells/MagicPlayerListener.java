@@ -133,7 +133,7 @@ class MagicPlayerListener implements Listener {
 	
 	@EventHandler
 	public void onItemHeldChange(PlayerItemHeldEvent event) {
-		if (MagicSpells.spellIconSlot >= 0) {
+		if (MagicSpells.spellIconSlot >= 0 && MagicSpells.spellIconSlot <= 8) {
 			Player player = event.getPlayer();
 			if (event.getNewSlot() == MagicSpells.spellIconSlot) {
 				showIcon(player, MagicSpells.spellIconSlot, null);
