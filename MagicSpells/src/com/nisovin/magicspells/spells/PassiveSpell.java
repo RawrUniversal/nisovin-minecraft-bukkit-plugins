@@ -221,7 +221,7 @@ public class PassiveSpell extends Spell {
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onDamage(EntityDamageEvent event) {
-			if (event.getEntityType() == EntityType.PLAYER) {
+			if (event.getEntityType() == EntityType.PLAYER && ((Player)event.getEntity()).getNoDamageTicks() == 0) {
 				Player player = (Player)event.getEntity();
 				if (hasSpell(player)) {
 					DamageCause cause = event.getCause();
@@ -473,7 +473,7 @@ public class PassiveSpell extends Spell {
 		
 		@EventHandler(priority=EventPriority.MONITOR)
 		public void onSpellCasted(SpellCastedEvent event) {
-			if (event.getSpell().getInternalName().equals(spellName) && event.getPostCastAction() != PostCastAction.ALREADY_HANDLED) {
+			if ((spellName == null || event.getSpell().getInternalName().equals(spellName)) && event.getPostCastAction() != PostCastAction.ALREADY_HANDLED) {
 				if (hasSpell(event.getCaster())) {
 					activate(event.getCaster());
 				}
