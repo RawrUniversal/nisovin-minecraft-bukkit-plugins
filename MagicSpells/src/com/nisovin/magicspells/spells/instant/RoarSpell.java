@@ -2,10 +2,11 @@ package com.nisovin.magicspells.spells.instant;
 
 import java.util.List;
 
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -30,8 +31,8 @@ public class RoarSpell extends InstantSpell {
 			int count = 0;
 			List<Entity> entities = player.getNearbyEntities(radius, radius, radius);
 			for (Entity entity : entities) {
-				if (entity instanceof Monster) {
-					((Monster) entity).setTarget(player);
+				if (entity instanceof Creature && !(entity instanceof Player)) {
+					MagicSpells.getVolatileCodeHandler().setTarget((Creature)entity, player);
 					count++;
 					playSpellEffects(EffectPosition.TARGET, entity);
 				}

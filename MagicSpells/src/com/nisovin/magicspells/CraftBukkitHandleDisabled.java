@@ -6,6 +6,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -83,6 +84,13 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	@Override
 	public Fireball shootSmallFireball(Player player) {
 		return player.launchProjectile(SmallFireball.class);
+	}
+
+	@Override
+	public void setTarget(LivingEntity entity, LivingEntity target) {
+		if (entity instanceof Creature) {
+			((Creature)entity).setTarget(target);
+		}
 	}
 
 }

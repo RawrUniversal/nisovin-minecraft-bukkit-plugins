@@ -27,6 +27,7 @@ import org.bukkit.craftbukkit.entity.CraftCreature;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -179,6 +180,14 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
         w.addEntity(entitysmallfireball);
         
         return (Fireball)entitysmallfireball.getBukkitEntity();
+	}
+
+	@Override
+	public void setTarget(LivingEntity entity, LivingEntity target) {
+		if (entity instanceof Creature) {
+			((Creature)entity).setTarget(target);
+		}
+		((CraftLivingEntity)entity).getHandle().b(((CraftLivingEntity)target).getHandle());
 	}
 
 }

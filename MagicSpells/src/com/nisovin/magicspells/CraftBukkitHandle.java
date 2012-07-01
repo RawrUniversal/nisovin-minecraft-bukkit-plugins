@@ -40,4 +40,6 @@ public interface CraftBukkitHandle {
 	
 	public Fireball shootSmallFireball(Player player);
 	
+	public void setTarget(LivingEntity entity, LivingEntity target);
+	
 }

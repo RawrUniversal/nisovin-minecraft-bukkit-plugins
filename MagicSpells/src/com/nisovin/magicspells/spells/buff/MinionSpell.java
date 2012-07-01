@@ -137,7 +137,8 @@ public class MinionSpell extends BuffSpell {
 							event.setCancelled(true);
 						} else {
 							// send the minion after the player's target
-							event.setTarget(targets.get(player.getName()));
+							event.setTarget(target);
+							MagicSpells.getVolatileCodeHandler().setTarget(minion, target);
 							addUse(player);
 							chargeUseCost(player);
 						}
@@ -186,7 +187,7 @@ public class MinionSpell extends BuffSpell {
 						return;
 					}
 					LivingEntity target = (LivingEntity)event.getEntity();
-					((Creature)minions.get(p.getName())).setTarget(target);
+					MagicSpells.getVolatileCodeHandler().setTarget(minions.get(p.getName()), target);
 					targets.put(p.getName(), target);
 					addUse(p);
 					chargeUseCost(p);
