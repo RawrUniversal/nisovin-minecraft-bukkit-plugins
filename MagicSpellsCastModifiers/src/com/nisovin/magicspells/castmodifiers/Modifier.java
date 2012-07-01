@@ -62,8 +62,10 @@ public class Modifier {
 		} else if (check == true && type == ModifierType.DENIED) {
 			event.setCancelled(true);
 			return false;
-		} else if (check == true) { 
-			if (type == ModifierType.POWER) {
+		} else if (check == true) {
+			if (type == ModifierType.STOP) {
+				return false;
+			} else if (type == ModifierType.POWER) {
 				event.increasePower(modifierVarFloat);
 			} else if (type == ModifierType.COOLDOWN) {
 				event.setCooldown(modifierVarFloat);
@@ -84,6 +86,8 @@ public class Modifier {
 			return false;
 		} else if (check == true && type == ModifierType.DENIED) {
 			event.setNewAmount(event.getOldAmount());
+			return false;
+		} else if (check == true && type == ModifierType.STOP) {
 			return false;
 		} else if (check == true && type == ModifierType.POWER) {
 			int gain = event.getNewAmount() - event.getOldAmount();
@@ -108,6 +112,8 @@ public class Modifier {
 			return ModifierType.REAGENTS;
 		} else if (name.equalsIgnoreCase("casttime")) {
 			return ModifierType.CAST_TIME;
+		} else if (name.equalsIgnoreCase("stop")) {
+			return ModifierType.STOP;
 		} else {
 			return null;
 		}
@@ -119,7 +125,8 @@ public class Modifier {
 		POWER,
 		COOLDOWN,
 		REAGENTS,
-		CAST_TIME
+		CAST_TIME,
+		STOP
 	}
 	
 }
