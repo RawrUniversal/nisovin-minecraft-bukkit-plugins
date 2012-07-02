@@ -443,17 +443,19 @@ public class PassiveSpell extends Spell {
 	}
 	
 	public class SpellTargetedListener implements Listener {
-		
-		String spellName;
+
+		String spellNames[] = null;
 		
 		public SpellTargetedListener(String var) {
-			spellName = var;
+			if (var != null) {
+				spellNames = var.split(",");
+			}
 		}
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onSpellTarget(SpellTargetEvent event) {
 			if (event.getTarget() instanceof Player) {
-				if (spellName == null || event.getSpell().getName().equals(spellName)) {
+				if (spellNames == null || Util.arrayContains(spellNames, event.getSpell().getInternalName())) {
 					Player player = (Player)event.getTarget();
 					if (hasSpell(player)) {
 						activate(player, event.getCaster());
@@ -465,15 +467,17 @@ public class PassiveSpell extends Spell {
 	
 	public class SpellCastListener implements Listener {
 		
-		String spellName;
+		String spellNames[] = null;
 		
 		public SpellCastListener(String var) {
-			spellName = var;
+			if (var != null) {
+				spellNames = var.split(",");
+			}
 		}
 		
 		@EventHandler(priority=EventPriority.MONITOR)
 		public void onSpellCasted(SpellCastedEvent event) {
-			if ((spellName == null || event.getSpell().getInternalName().equals(spellName)) && event.getPostCastAction() != PostCastAction.ALREADY_HANDLED) {
+			if ((spellNames == null || Util.arrayContains(spellNames, event.getSpell().getInternalName())) && event.getPostCastAction() != PostCastAction.ALREADY_HANDLED) {
 				if (hasSpell(event.getCaster())) {
 					activate(event.getCaster());
 				}
@@ -483,15 +487,17 @@ public class PassiveSpell extends Spell {
 	
 	public class SpellTargetListener implements Listener {
 		
-		String spellName;
+		String spellNames[] = null;
 		
 		public SpellTargetListener(String var) {
-			spellName = var;
+			if (var != null) {
+				spellNames = var.split(",");
+			}
 		}
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onSpellTarget(SpellTargetEvent event) {
-			if (spellName == null || event.getSpell().getName().equals(spellName)) {
+			if (spellNames == null || Util.arrayContains(spellNames, event.getSpell().getInternalName())) {
 				if (hasSpell(event.getCaster())) {
 					activate(event.getCaster(), event.getTarget());
 				}
