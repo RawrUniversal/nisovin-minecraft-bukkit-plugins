@@ -128,6 +128,12 @@ public class PassiveSpell extends Spell {
 				} else if (type.equalsIgnoreCase("sneak")) {
 					registerEvents(new SneakListener());
 					trigCount++;
+				} else if (type.equalsIgnoreCase("stopsprint")) {
+					registerEvents(new StopSprintListener());
+					trigCount++;
+				} else if (type.equalsIgnoreCase("stopsneak")) {
+					registerEvents(new StopSneakListener());
+					trigCount++;
 				}
 			}
 		}
@@ -518,6 +524,24 @@ public class PassiveSpell extends Spell {
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onSneak(PlayerToggleSneakEvent event) {
 			if (event.isSneaking() && hasSpell(event.getPlayer())) {
+				activate(event.getPlayer());
+			}
+		}
+	}
+	
+	public class StopSprintListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSprint(PlayerToggleSprintEvent event) {
+			if (!event.isSprinting() && hasSpell(event.getPlayer())) {
+				activate(event.getPlayer());
+			}
+		}
+	}
+	
+	public class StopSneakListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSneak(PlayerToggleSneakEvent event) {
+			if (!event.isSneaking() && hasSpell(event.getPlayer())) {
 				activate(event.getPlayer());
 			}
 		}
