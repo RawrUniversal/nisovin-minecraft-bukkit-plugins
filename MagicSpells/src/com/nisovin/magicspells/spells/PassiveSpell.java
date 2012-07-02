@@ -304,9 +304,7 @@ public class PassiveSpell extends Spell {
 					}
 				}
 				if (hasSpell(player)) {
-					if (event.getEntity() instanceof LivingEntity && ((LivingEntity)event.getEntity()).getNoDamageTicks() <= 0) {
-						activate(player, (LivingEntity)event.getEntity());
-					}
+					activate(player, (LivingEntity)event.getEntity());
 				}
 			}
 		}
@@ -399,22 +397,24 @@ public class PassiveSpell extends Spell {
 		boolean checkData[] = new boolean[0];
 		
 		public RightClickListener(String var) {
-			var = var.replace(" ", "");
-			if (var != null && var.matches("[0-9]+(:[0-9]+)?(,[0-9]+(:[0-9]+)?)*")) {
-				String[] vars = var.split(",");
-				typeIds = new int[vars.length];
-				datas = new int[vars.length];
-				checkData = new boolean[vars.length];
-				for (int i = 0; i < vars.length; i++) {
-					if (vars[i].contains(":")) {
-						String[] s = vars[i].split(":");
-						typeIds[i] = Integer.parseInt(s[0]);
-						datas[i] = Integer.parseInt(s[1]);
-						checkData[i] = true;
-					} else {
-						typeIds[i] = Integer.parseInt(vars[i]);
-						datas[i] = 0;
-						checkData[i] = false;
+			if (var != null) {
+				var = var.replace(" ", "");
+				if (var != null && var.matches("[0-9]+(:[0-9]+)?(,[0-9]+(:[0-9]+)?)*")) {
+					String[] vars = var.split(",");
+					typeIds = new int[vars.length];
+					datas = new int[vars.length];
+					checkData = new boolean[vars.length];
+					for (int i = 0; i < vars.length; i++) {
+						if (vars[i].contains(":")) {
+							String[] s = vars[i].split(":");
+							typeIds[i] = Integer.parseInt(s[0]);
+							datas[i] = Integer.parseInt(s[1]);
+							checkData[i] = true;
+						} else {
+							typeIds[i] = Integer.parseInt(vars[i]);
+							datas[i] = 0;
+							checkData[i] = false;
+						}
 					}
 				}
 			}
