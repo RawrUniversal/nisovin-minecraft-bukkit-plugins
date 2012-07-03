@@ -1,0 +1,5 @@
+name: MagicSpellsTeams
+version: 1.0
+main: com.nisovin.magicspells.teams.MagicSpellsTeams
+author: nisovin
+depend: [MagicSpells]
