@@ -1070,6 +1070,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return strWrongCastItem;
 	}
 	
+	public boolean isBeneficial() {
+		return false;
+	}
+	
 	Map<String, Long> getCooldowns() {
 		return nextCast;
 	}

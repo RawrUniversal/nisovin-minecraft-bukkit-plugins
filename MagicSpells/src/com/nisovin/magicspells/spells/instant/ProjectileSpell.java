@@ -55,6 +55,7 @@ public class ProjectileSpell extends InstantSpell {
 	private int aoeRadius;
 	private boolean targetPlayers;
 	private boolean allowTargetChange;
+	private boolean beneficial;
 	private String strHitCaster;
 	private String strHitTarget;
 	
@@ -97,6 +98,7 @@ public class ProjectileSpell extends InstantSpell {
 		aoeRadius = getConfigInt("aoe-radius", 0);
 		targetPlayers = getConfigBoolean("target-players", false);
 		allowTargetChange = getConfigBoolean("allow-target-change", true);
+		beneficial = getConfigBoolean("beneficial", false);
 		strHitCaster = getConfigString("str-hit-caster", "");
 		strHitTarget = getConfigString("str-hit-target", "");
 		
@@ -365,6 +367,11 @@ public class ProjectileSpell extends InstantSpell {
 				Math.abs(loc1.getX() - loc2.getX()) < 0.1
 				&& Math.abs(loc1.getY() - loc2.getY()) < 0.1
 				&& Math.abs(loc1.getZ() - loc2.getZ()) < 0.1;
+	}
+	
+	@Override
+	public boolean isBeneficial() {
+		return beneficial;
 	}
 	
 	private class ProjectileInfo {

@@ -29,6 +29,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 	private boolean targetPlayers;
 	private boolean targetNonPlayers;
 	private int maxTargets;
+	private boolean beneficial;
 	private List<String> spellNames;
 	private List<TargetedSpell> spells;
 	
@@ -43,6 +44,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		targetPlayers = getConfigBoolean("target-players", false);
 		targetNonPlayers = getConfigBoolean("target-non-players", true);
 		maxTargets = getConfigInt("max-targets", 0);
+		beneficial = getConfigBoolean("beneficial", false);
 		spellNames = getConfigStringList("spells", null);
 	}
 	
@@ -149,6 +151,9 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		return doAoe(caster, target, power);
 	}
 
-	
+	@Override
+	public boolean isBeneficial() {
+		return beneficial;
+	}
 	
 }

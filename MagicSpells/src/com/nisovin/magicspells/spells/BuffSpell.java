@@ -234,6 +234,11 @@ public abstract class BuffSpell extends Spell {
 	protected
 	abstract void turnOff();
 	
+	@Override
+	public boolean isBeneficial() {
+		return true;
+	}
+	
 	public class DamageListener implements Listener {
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onPlayerDamage(EntityDamageEvent event) {
