@@ -36,7 +36,6 @@ general:
     cast-on-animate: false
     use-exp-bar-as-cast-time-bar: true
     cooldowns-persist-through-reload: true
-    spell-icon-slot: -1
     
     entity-names:
         zombie: an ugly zombie

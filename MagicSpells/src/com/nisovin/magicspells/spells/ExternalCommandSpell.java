@@ -52,10 +52,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (commandToExecute.equals("")) {
-			Bukkit.getServer().getLogger().severe("MagicSpells: External command spell '" + name + "' has no command to execute.");
-			return PostCastAction.ALREADY_HANDLED;
-		} else if (state == SpellCastState.NORMAL) {
+		if (state == SpellCastState.NORMAL) {
 			// get target if necessary
 			Player target = null;
 			if (requirePlayerTarget) {
@@ -93,22 +90,24 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 		}
 		// perform commands
 		try {
-			for (String comm : commandToExecute) {
-				if (args != null && args.length > 0) {
-					for (int i = 0; i < args.length; i++) {
-						comm = comm.replace("%"+(i+1), args[i]);
+			if (commandToExecute != null && commandToExecute.size() > 0) {
+				for (String comm : commandToExecute) {
+					if (args != null && args.length > 0) {
+						for (int i = 0; i < args.length; i++) {
+							comm = comm.replace("%"+(i+1), args[i]);
+						}
 					}
-				}
-				comm = comm.replace("%a", player.getName());
-				if (target != null) {
-					comm = comm.replace("%t", target.getName());
-				}
-				if (executeAsTargetInstead) {
-					target.performCommand(comm);
-				} else if (executeOnConsoleInstead) {
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
-				} else {
-					player.performCommand(comm);
+					comm = comm.replace("%a", player.getName());
+					if (target != null) {
+						comm = comm.replace("%t", target.getName());
+					}
+					if (executeAsTargetInstead) {
+						target.performCommand(comm);
+					} else if (executeOnConsoleInstead) {
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
+					} else {
+						player.performCommand(comm);
+					}
 				}
 			}
 		} catch (Exception e) {
