@@ -493,6 +493,22 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		cachedPrefix = null;
 	}
 	
+	public void clearDirtyCachesAndSave() {
+		if (dirty) {
+			save();
+			clearCache();
+		}
+		for (Group group : groups) {
+			group.clearDirtyCachesAndSave();
+		}
+		for (String worldName : worldGroups.keySet()) {
+			List<Group> g = worldGroups.get(worldName);
+			for (Group group : g) {
+				group.clearDirtyCachesAndSave();
+			}
+		}
+	}
+	
 	public void loadFromFiles() {
 		MainPlugin.debug("Loading " + type + " '" + name + "'");
 		File dataFolder = MainPlugin.yapp.getDataFolder();
