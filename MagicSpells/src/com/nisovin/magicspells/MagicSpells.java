@@ -563,7 +563,14 @@ public class MagicSpells extends JavaPlugin {
 						}
 					}
 				} else if (sender.isOp() && args[0].equals("resetcd")) {
-					Player p = args.length > 1 ? Bukkit.getPlayer(args[1]) : null;
+					Player p = null;
+					if (args.length > 1) {
+						p = Bukkit.getPlayer(args[1]);
+						if (p == null) {
+							sender.sendMessage(textColor + "No matching player found");
+							return true;
+						}
+					}
 					for (Spell spell : spells.values()) {
 						if (p != null) {
 							spell.setCooldown(p, 0);
@@ -571,7 +578,7 @@ public class MagicSpells extends JavaPlugin {
 							spell.getCooldowns().clear();
 						}
 					}
-					sender.sendMessage(textColor + "Cooldowns reset" + p != null ? " for " + p.getName() : "");
+					sender.sendMessage(textColor + "Cooldowns reset" + (p != null ? " for " + p.getName() : ""));
 				} else if (sender.isOp() && args[0].equals("profilereport")) {
 					sender.sendMessage(textColor + "Creating profiling report");
 					profilingReport();
