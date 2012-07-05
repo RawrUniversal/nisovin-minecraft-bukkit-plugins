@@ -1299,11 +1299,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			Bukkit.getScheduler().cancelTask(taskId);
 			HandlerList.unregisterAll(this);
 			MagicSpells.getExpBarManager().unlock(player, this);
-			if (MagicSpells.mana != null) {
-				MagicSpells.mana.showMana(player);
-			} else {
-				MagicSpells.getExpBarManager().update(player, player.getLevel(), player.getExp());
-			}
+			MagicSpells.getExpBarManager().update(player, player.getLevel(), player.getExp());
 		}
 	}
 

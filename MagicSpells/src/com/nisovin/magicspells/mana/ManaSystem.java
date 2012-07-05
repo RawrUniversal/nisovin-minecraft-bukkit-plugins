@@ -235,6 +235,10 @@ public class ManaSystem extends ManaHandler {
 	private void showManaOnExperienceBar(Player player, ManaBar bar) {
 		MagicSpells.getExpBarManager().update(player, bar.getMana(), (float)bar.getMana()/(float)bar.getMaxMana());
 	}
+	
+	public boolean usingExpBar() {
+		return showManaOnExperienceBar;
+	}
 
 	@Override
 	public void turnOff() {

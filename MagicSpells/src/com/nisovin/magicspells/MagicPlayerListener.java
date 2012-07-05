@@ -50,6 +50,8 @@ class MagicPlayerListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		
 		// first check if player is interacting with a special block
 		boolean noInteract = false;
 		if (event.hasBlock()) {
@@ -60,8 +62,13 @@ class MagicPlayerListener implements Listener {
 					m == Material.CHEST || 
 					m == Material.FURNACE || 
 					m == Material.LEVER ||
-					m == Material.STONE_BUTTON) {
+					m == Material.STONE_BUTTON ||
+					m == Material.ENCHANTMENT_TABLE) {
 				noInteract = true;
+			}
+			if (m == Material.ENCHANTMENT_TABLE) {
+				// force exp bar back to show exp when trying to enchant
+				MagicSpells.getExpBarManager().update(player, player.getLevel(), player.getExp());
 			}
 		}
 		if (noInteract) {
@@ -74,7 +81,6 @@ class MagicPlayerListener implements Listener {
 			}
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			// right click -- cycle spell and/or process mana pots
-			Player player = event.getPlayer();
 			ItemStack inHand = player.getItemInHand();
 			
 			if ((inHand != null && inHand.getType() != Material.AIR) || MagicSpells.allowCastWithFist) {
