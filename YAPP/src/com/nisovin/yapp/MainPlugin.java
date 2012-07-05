@@ -290,16 +290,16 @@ public class MainPlugin extends JavaPlugin {
 			e.printStackTrace();
 			return null;
 		}
-		permissions.clear();
 		
 		// load permissions
+		permissions.clear();
 		debug("  Adding permissions");
 		if (setPlayerGroupPerm && primaryGroup != null) {
-			attachment.setPermission("group." + primaryGroup.getName(), true);
+			permissions.put("group." + primaryGroup.getName(), true);
 		}
 		List<PermissionNode> nodes = user.getAllPermissions(worldName);
 		for (PermissionNode node : nodes) {
-			node.addTo(permissions);
+			permissions.put(node.getNodeName(), node.getValue());
 			debug("    Added: " + node);
 		}
 		player.recalculatePermissions();

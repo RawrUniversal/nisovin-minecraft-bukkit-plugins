@@ -1,7 +1,5 @@
 package com.nisovin.yapp;
 
-import java.util.Map;
-
 public class PermissionNode {
 	
 	private String node;
@@ -41,10 +39,6 @@ public class PermissionNode {
 	
 	public boolean getValue() {
 		return value;
-	}
-	
-	public void addTo(Map<String, Boolean> map) {
-		map.put(node, value);
 	}
 	
 	@Override

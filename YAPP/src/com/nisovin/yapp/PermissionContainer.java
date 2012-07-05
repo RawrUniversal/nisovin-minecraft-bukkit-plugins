@@ -15,7 +15,6 @@ import java.util.Scanner;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 
 public class PermissionContainer implements Comparable<PermissionContainer> {
 
@@ -66,10 +65,6 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		this.prefix = other.prefix;
 		
 		this.dirty = true;
-	}
-	
-	public List<PermissionNode> getAllPermissions(World world) {
-		return getAllPermissions(world.getName());
 	}
 	
 	public List<PermissionNode> getAllPermissions(String world) {
