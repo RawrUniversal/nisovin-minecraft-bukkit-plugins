@@ -486,26 +486,12 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
-	public void clearCache() {
-		cachedPermissions.clear();
-		cachedPrimaryGroup.clear();
-		cachedColor = null;
-		cachedPrefix = null;
-	}
-	
-	public void saveAndResetCache() {
-		if (dirty) {
-			save();
-			clearCache();
-		}
-		for (Group group : groups) {
-			group.saveAndResetCache();
-		}
-		for (String worldName : worldGroups.keySet()) {
-			List<Group> g = worldGroups.get(worldName);
-			for (Group group : g) {
-				group.saveAndResetCache();
-			}
+	public void clearCache(boolean onlyIfDirty) {
+		if (!onlyIfDirty || dirty) {
+			cachedPermissions.clear();
+			cachedPrimaryGroup.clear();
+			cachedColor = null;
+			cachedPrefix = null;
 		}
 	}
 	

@@ -1,6 +1,6 @@
 package com.nisovin.yapp;
 
-import org.bukkit.permissions.PermissionAttachment;
+import java.util.Map;
 
 public class PermissionNode {
 	
@@ -43,8 +43,8 @@ public class PermissionNode {
 		return value;
 	}
 	
-	public void addTo(PermissionAttachment attachment) {
-		attachment.setPermission(node, value);
+	public void addTo(Map<String, Boolean> map) {
+		map.put(node, value);
 	}
 	
 	@Override

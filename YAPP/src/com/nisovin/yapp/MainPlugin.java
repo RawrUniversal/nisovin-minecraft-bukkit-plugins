@@ -1,6 +1,7 @@
 package com.nisovin.yapp;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -258,6 +259,7 @@ public class MainPlugin extends JavaPlugin {
 		return user;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public User loadPlayerPermissions(Player player) {
 		long start = System.nanoTime();
 		
@@ -267,7 +269,8 @@ public class MainPlugin extends JavaPlugin {
 		
 		// prepare user
 		User user = getPlayerUser(playerName);
-		user.clearCache();
+		user.clearCache(true);
+		user.save();
 		user.getColor(worldName);
 		user.getPrefix(worldName);
 		Group primaryGroup = user.getPrimaryGroup(player.getWorld().getName());
@@ -278,7 +281,16 @@ public class MainPlugin extends JavaPlugin {
 			attachment = player.addAttachment(this);
 			attachments.put(playerName, attachment);
 		}
-		attachment.getPermissions().clear();
+		Map<String, Boolean> permissions;
+		try {
+			Field mapField = PermissionAttachment.class.getDeclaredField("permissions");
+			mapField.setAccessible(true);
+			permissions = (Map<String, Boolean>)mapField.get(attachment);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		permissions.clear();
 		
 		// load permissions
 		debug("  Adding permissions");
@@ -287,7 +299,7 @@ public class MainPlugin extends JavaPlugin {
 		}
 		List<PermissionNode> nodes = user.getAllPermissions(worldName);
 		for (PermissionNode node : nodes) {
-			node.addTo(attachment);
+			node.addTo(permissions);
 			debug("    Added: " + node);
 		}
 		player.recalculatePermissions();

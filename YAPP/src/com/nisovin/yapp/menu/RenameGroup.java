@@ -23,6 +23,7 @@ public class RenameGroup extends MenuPrompt {
 			Group group = (Group)getObject(context);
 			String oldName = group.getName();
 			MainPlugin.yapp.renameOrDeleteGroup(group, input);
+			setObject(context, MainPlugin.getGroup(input));
 			return showMessage(context, Menu.TEXT_COLOR + "The group " + Menu.HIGHLIGHT_COLOR + oldName + Menu.TEXT_COLOR + " has been renamed to " + Menu.HIGHLIGHT_COLOR + input, Menu.MODIFY_OPTIONS_MORE);
 		}
 	}
