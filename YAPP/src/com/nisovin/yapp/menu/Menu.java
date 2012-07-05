@@ -47,6 +47,8 @@ public class Menu {
 	
 	public static final Prompt HAS_PERMISSION = new HasPermission();
 	public static final Prompt HAS_GROUP = new HasGroup();
+	public static final Prompt RENAME_GROUP = new RenameGroup();
+	public static final Prompt DELETE_GROUP = new DeleteGroup();
 	
 	// conversation management
 	private static Map<Conversable,Conversation> conversations = new HashMap<Conversable, Conversation>();

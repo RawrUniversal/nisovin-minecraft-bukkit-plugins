@@ -56,7 +56,10 @@ public class CommandMain implements CommandExecutor {
 			String arg = arrayJoin(args, 1);
 			
 			// performing an action
-			if (args[0].equals("+")) {
+			if (args[0].equals("@")) {
+				// refreshing player permissions
+				refresh(sender, args[1]);
+			} else if (args[0].equals("+")) {
 				if (arg.startsWith("n:") || arg.startsWith("N:")) {
 					// adding a permission
 					addPermission(sender, arg.substring(2));
@@ -126,6 +129,16 @@ public class CommandMain implements CommandExecutor {
 			s += array[i];
 		}
 		return s;
+	}
+	
+	private void refresh(CommandSender sender, String name) {
+		Player player = Bukkit.getPlayer(name);
+		if (player != null) {
+			MainPlugin.yapp.loadPlayerPermissions(player);
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "Refreshed permissions for player " + MainPlugin.HIGHLIGHT_COLOR + player.getName());
+		} else {
+			sender.sendMessage("No player found.");
+		}
 	}
 	
 	private void select(CommandSender sender, String search) {

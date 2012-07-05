@@ -259,6 +259,8 @@ public class MainPlugin extends JavaPlugin {
 	}
 	
 	public User loadPlayerPermissions(Player player) {
+		long start = System.nanoTime();
+		
 		String playerName = player.getName().toLowerCase();
 		String worldName = player.getWorld().getName();
 		debug("Loading player permissions for " + playerName + "...");
@@ -299,6 +301,11 @@ public class MainPlugin extends JavaPlugin {
 				player.removeMetadata("group", this);
 				player.setMetadata("group", new FixedMetadataValue(this, primaryGroup.getName()));
 			}
+		}
+		
+		if (debug) {
+			long elapsed = System.nanoTime() - start;
+			debug("  Elapsed time: " + (elapsed / 1000000F) + "ms");
 		}
 		
 		return user;

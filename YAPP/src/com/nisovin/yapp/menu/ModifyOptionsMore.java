@@ -7,6 +7,7 @@ import org.bukkit.conversations.Prompt;
 import com.nisovin.yapp.Group;
 import com.nisovin.yapp.MainPlugin;
 import com.nisovin.yapp.PermissionContainer;
+import com.nisovin.yapp.User;
 
 public class ModifyOptionsMore extends MenuPrompt {
 
@@ -31,6 +32,8 @@ public class ModifyOptionsMore extends MenuPrompt {
 		if (obj instanceof Group) {
 			c.sendRawMessage(Menu.TEXT_COLOR + "  6) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "ename" + Menu.TEXT_COLOR + " this group");
 			c.sendRawMessage(Menu.TEXT_COLOR + "  7) " + Menu.KEYWORD_COLOR + "De" + Menu.KEYLETTER_COLOR + "l" + Menu.KEYWORD_COLOR + "ete" + Menu.TEXT_COLOR + " this group");
+		} else if (obj instanceof User) {
+			c.sendRawMessage(Menu.TEXT_COLOR + "  6) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "efresh" + Menu.TEXT_COLOR + " this player's permissions");
 		}
 		c.sendRawMessage(Menu.TEXT_COLOR + "  0) Show " + Menu.KEYLETTER_COLOR + "m" + Menu.KEYWORD_COLOR + "ore " + Menu.TEXT_COLOR + "options");
 		return MainPlugin.TEXT_COLOR + "Please type your selection:";
@@ -51,9 +54,17 @@ public class ModifyOptionsMore extends MenuPrompt {
 		} else if (input.equals("5") || input.startsWith("d")) {
 			return END_OF_CONVERSATION;
 		} else if ((input.equals("6") || input.startsWith("r")) && obj instanceof Group) {
-			return END_OF_CONVERSATION;
+			return Menu.RENAME_GROUP;
 		} else if ((input.equals("7") || input.equals("l") || input.startsWith("del")) && obj instanceof Group) {
-			return END_OF_CONVERSATION;
+			return Menu.DELETE_GROUP;
+		} else if ((input.equals("6") || input.startsWith("r")) && obj instanceof User) {
+			User user = (User)obj;
+			if (user.isOnline()) {
+				MainPlugin.yapp.loadPlayerPermissions(user.getPlayer());
+				return showMessage(context, Menu.TEXT_COLOR + "Refreshed permissions for player " + Menu.HIGHLIGHT_COLOR + user.getName(), this);
+			} else {
+				return showMessage(context, Menu.ERROR_COLOR + "That player is not online", this);
+			}
 		} else if (input.equals("0") || input.startsWith("m")) {
 			return Menu.MODIFY_OPTIONS;
 		}

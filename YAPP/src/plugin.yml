@@ -1,7 +1,7 @@
 name: YAPP
 description: Yet Another Permission Plugin
 author: nisovin
-version: 0.2
+version: 0.3
 main: com.nisovin.yapp.MainPlugin
 softdepend: [Vault]
 commands:
