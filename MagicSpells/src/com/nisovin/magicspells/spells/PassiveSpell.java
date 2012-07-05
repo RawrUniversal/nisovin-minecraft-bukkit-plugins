@@ -483,7 +483,7 @@ public class PassiveSpell extends Spell {
 		
 		@EventHandler(priority=EventPriority.MONITOR)
 		public void onSpellCasted(SpellCastedEvent event) {
-			if ((spellNames == null || Util.arrayContains(spellNames, event.getSpell().getInternalName())) && event.getPostCastAction() != PostCastAction.ALREADY_HANDLED) {
+			if ((spellNames == null || Util.arrayContains(spellNames, event.getSpell().getInternalName())) && event.getPostCastAction() != PostCastAction.ALREADY_HANDLED && event.getSpellCastState() == SpellCastState.NORMAL) {
 				if (hasSpell(event.getCaster())) {
 					activate(event.getCaster());
 				}
