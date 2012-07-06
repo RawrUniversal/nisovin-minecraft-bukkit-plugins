@@ -25,10 +25,15 @@ public class AddGroup extends MenuPrompt {
 		} else {
 			PermissionContainer obj = getObject(context);
 			String world = getWorld(context);
-			obj.addGroup(world, group);
-			String msg = Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
-			if (world != null) {
-				msg += "\n" + Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
+			boolean added = obj.addGroup(world, group);
+			String msg = "";
+			if (added) {
+				msg = Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
+				if (world != null) {
+					msg += "\n" + Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
+				}
+			} else {
+				msg = Menu.ERROR_COLOR + "Failed to add group!";
 			}
 			return showMessage(context, msg, Menu.MODIFY_OPTIONS);
 		}

@@ -33,8 +33,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	private Map<String, List<PermissionNode>> cachedPermissions = new HashMap<String, List<PermissionNode>>();
 	private Map<String, Group> cachedPrimaryGroup = new HashMap<String,Group>();
-	private ChatColor cachedColor = null;
-	private String cachedPrefix = null;
+	private Map<String, ChatColor> cachedColor = new HashMap<String,ChatColor>();
+	private Map<String, String> cachedPrefix = new HashMap<String,String>();
 	
 	private boolean dirty = false;
 	
@@ -140,22 +140,23 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public ChatColor getColor(String world) {
-		if (cachedColor != null) {
-			return cachedColor;
+		if (cachedColor.containsKey(world)) {
+			return cachedColor.get(world);
 		} else if (color != null) {
-			cachedColor = color;
-			return cachedColor;
+			cachedColor.put(world, color);
+			return color;
 		} else {
 			Group group = getPrimaryGroup(world);
 			if (group != null) {
-				cachedColor = group.getColor(world);
-				if (cachedColor != null) {
-					return cachedColor;
+				ChatColor c = group.getColor(world);
+				if (c != null) {
+					cachedColor.put(world, c);
+					return c;
 				}
 			}
 		}
-		cachedColor = ChatColor.WHITE;
-		return cachedColor;
+		cachedColor.put(world, ChatColor.WHITE);
+		return ChatColor.WHITE;
 	}
 	
 	public void setColor(String color) {
@@ -188,22 +189,24 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public String getPrefix(String world) {
-		if (cachedPrefix != null) {
-			return cachedPrefix;
+		if (cachedPrefix.containsKey(world)) {
+			return cachedPrefix.get(world);
 		} else if (prefix != null) {
-			cachedPrefix = colorify(prefix);
-			return cachedPrefix;
+			String p = colorify(prefix);
+			cachedPrefix.put(world, p);
+			return p;
 		} else {
 			Group group = getPrimaryGroup(world);
 			if (group != null) {
-				cachedPrefix = group.getPrefix(world);
-				if (cachedPrefix != null) {
-					return cachedPrefix;
+				String p = group.getPrefix(world);
+				if (p != null) {
+					cachedPrefix.put(world, p);
+					return p;
 				}
 			}
 		}
-		cachedPrefix = "";
-		return cachedPrefix;
+		cachedPrefix.put(world, "");
+		return "";
 	}
 	
 	public void setPrefix(String prefix) {
@@ -421,7 +424,11 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public boolean addGroup(String world, Group group) {
-		// TODO: check for infinite recursion
+		// check for infinite group recursion
+		if (this instanceof Group && group.inheritsGroup(world, (Group)this)) {
+			MainPlugin.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + this.getName());
+			return false;
+		}
 		if (world == null || world.isEmpty()) {
 			groups.add(group);
 			dirty = true;
@@ -458,6 +465,28 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
+	public boolean inheritsGroup(String world, Group group) {
+		List<Group> groups = this.groups;
+		if (world != null && !world.isEmpty()) {
+			groups = worldGroups.get(world);
+		}
+		if (groups != null) {
+			if (groups.size() == 0) {
+				return false;
+			} else if (groups.contains(group)) {
+				return true;
+			} else {
+				for (Group g : groups) {
+					if (g.inheritsGroup(world, group)) {
+						return true;
+					}
+				}
+				return false;
+			}
+		}
+		return false;
+	}
+	
 	public void replaceGroup(Group oldGroup, Group newGroup) {
 		int index = groups.indexOf(oldGroup);
 		if (index >= 0) {
@@ -485,8 +514,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		if (!onlyIfDirty || dirty) {
 			cachedPermissions.clear();
 			cachedPrimaryGroup.clear();
-			cachedColor = null;
-			cachedPrefix = null;
+			cachedColor.clear();
+			cachedPrefix.clear();
 		}
 	}
 	
@@ -498,7 +527,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		MainPlugin.debug("  Loading base data");
 		File file = new File(dataFolder, type + "s" + File.separator + name + ".txt");
 		if (file.exists()) {
-			loadFromFile(file, groups, permissions);
+			loadFromFile(file, groups, permissions, null);
 		}
 		
 		// get world files
@@ -522,7 +551,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 								worldPermissions.put(worldName, perms);
 								List<Group> wgroups = new ArrayList<Group>();
 								worldGroups.put(worldName, wgroups);
-								loadFromFile(groupFile, wgroups, perms);
+								loadFromFile(groupFile, wgroups, perms, worldName);
 							}
 						}
 					}
@@ -533,7 +562,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		dirty = false;
 	}
 	
-	public void loadFromFile(File file, List<Group> groups, List<PermissionNode> perms) {
+	public void loadFromFile(File file, List<Group> groups, List<PermissionNode> perms, String worldName) {
 		try {
 			String mode = "";
 			Scanner scanner = new Scanner(file);
@@ -591,8 +620,18 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 					// inherited group
 					Group group = MainPlugin.getGroup(line);
 					if (group != null) {
-						groups.add(group);
-						MainPlugin.debug("      Added inherited group: " + line);
+						boolean ok = true;
+						// check for infinite group recursion
+						if (this instanceof Group) {
+							if (group.inheritsGroup(worldName, (Group)this)) {
+								ok = false;
+								MainPlugin.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + this.getName());
+							}
+						}
+						if (ok) {
+							groups.add(group);
+							MainPlugin.debug("      Added inherited group: " + line);
+						}
 					} else {
 						MainPlugin.warning(type + " '" + name + "' has non-existant inherited group '" + line + "'");
 					}

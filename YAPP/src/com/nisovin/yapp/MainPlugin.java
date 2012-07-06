@@ -32,6 +32,7 @@ public class MainPlugin extends JavaPlugin {
 	public static MainPlugin yapp;
 	
 	private static boolean debug = true;
+	private boolean updateDisplayName = true;
 	private boolean updatePlayerList = true;
 	private boolean setPlayerGroupPerm = false;
 	private boolean setPlayerMetadata = false;
@@ -75,6 +76,7 @@ public class MainPlugin extends JavaPlugin {
 		}
 		SimpleConfig config = new SimpleConfig(configFile);
 		debug = config.getboolean("general.debug");
+		updateDisplayName = config.getboolean("general.update display name");
 		updatePlayerList = config.getboolean("general.update player list");
 		setPlayerGroupPerm = config.getboolean("general.set group perm");
 		setPlayerMetadata = config.getboolean("general.set player metadata");
@@ -304,6 +306,11 @@ public class MainPlugin extends JavaPlugin {
 		}
 		player.recalculatePermissions();
 		
+		// set display name
+		if (updateDisplayName) {
+			player.setDisplayName(user.getColor(worldName) + player.getName());
+		}
+		
 		// set player list color
 		setPlayerListName(player, user);
 		
@@ -438,7 +445,12 @@ public class MainPlugin extends JavaPlugin {
 		
 	public void setPlayerListName(Player player, User user) {
 		if (updatePlayerList) {
-			player.setPlayerListName(user.getColor() + player.getName());
+			String world = player.getWorld().getName();
+			String name = user.getColor(world) + player.getName();
+			if (name.length() > 15) {
+				name = name.substring(0, 15);
+			}
+			player.setPlayerListName(name);
 		}		
 	}
 	

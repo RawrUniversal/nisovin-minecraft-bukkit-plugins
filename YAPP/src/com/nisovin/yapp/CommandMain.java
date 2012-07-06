@@ -222,10 +222,14 @@ public class CommandMain implements CommandExecutor {
 			g = MainPlugin.newGroup(group);
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "New group " + MainPlugin.HIGHLIGHT_COLOR + group + MainPlugin.TEXT_COLOR + " created");
 		}
-		obj.addGroup(world, g);
+		boolean added = obj.addGroup(world, g);
 
-		String type = getType(obj);
-		sender.sendMessage(MainPlugin.TEXT_COLOR + "Added group " + MainPlugin.HIGHLIGHT_COLOR + g.getName() + MainPlugin.TEXT_COLOR + " to " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
+		if (added) {
+			String type = getType(obj);
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "Added group " + MainPlugin.HIGHLIGHT_COLOR + g.getName() + MainPlugin.TEXT_COLOR + " to " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
+		} else {
+			sender.sendMessage(MainPlugin.ERROR_COLOR + "Failed to add group!");
+		}
 	}
 	
 	private void removePermission(CommandSender sender, String perm) {
