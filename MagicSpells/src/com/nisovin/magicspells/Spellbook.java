@@ -176,7 +176,7 @@ public class Spellbook {
 		return this.allSpells;
 	}
 	
-	public String tabComplete(String partial) {
+	public String[] tabComplete(String partial) {
 		String[] data = Util.splitParams(partial, 2);
 		if (data.length == 1) {
 			// complete spell name
@@ -198,16 +198,8 @@ public class Spellbook {
 					}
 				}
 			}
-			if (options.size() == 1) {
-				return options.get(0);
-			} else if (options.size() > 1) {
-				Collections.sort(options);
-				String s = "";
-				for (String option : options) {
-					s += option + " ";
-				}
-				MagicSpells.sendMessage(player, s.trim());
-				return null;
+			if (options.size() > 0) {
+				return options.toArray(new String[options.size()]);
 			} else {
 				return null;
 			}
@@ -217,11 +209,11 @@ public class Spellbook {
 			if (spell == null) {
 				return null;
 			} else {
-				String ret = spell.tabComplete(player, data[1]);
-				if (ret == null) {
+				String[] ret = spell.tabComplete(player, data[1]);
+				if (ret == null || ret.length == 0) {
 					return null;
 				} else {
-					return data[0] + " " + ret;
+					return ret;
 				}
 			}
 		}

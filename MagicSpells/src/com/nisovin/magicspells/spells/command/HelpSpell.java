@@ -52,11 +52,10 @@ public class HelpSpell extends CommandSpell {
 	}
 	
 	@Override
-	public String tabComplete(CommandSender sender, String partial) {
+	public String[] tabComplete(CommandSender sender, String partial) {
 		String [] args = Util.splitParams(partial);
 		if (sender instanceof Player && args.length == 1) {
-			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
-			return spellbook.tabComplete(partial);
+			return tabCompleteSpellName(sender, partial);
 		}
 		return null;
 	}

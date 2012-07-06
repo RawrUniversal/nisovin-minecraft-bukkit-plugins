@@ -143,20 +143,14 @@ public class TeachSpell extends CommandSpell {
 	}
 	
 	@Override
-	public String tabComplete(CommandSender sender, String partial) {
+	public String[] tabComplete(CommandSender sender, String partial) {
 		String[] args = Util.splitParams(partial);
 		if (args.length == 1) {
 			// matching player name
-			return tabCompletePlayerName(args[0]);
+			return tabCompletePlayerName(sender, args[0]);
 		} else if (args.length == 2) {
 			// matching spell name
-			if (sender instanceof Player) {
-				Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
-				String spellName = spellbook.tabComplete(args[1]);
-				if (spellName != null) {
-					return args[0] + " " + spellName;
-				}
-			}
+			return tabCompleteSpellName(sender, args[1]);
 		}
 		return null;
 	}

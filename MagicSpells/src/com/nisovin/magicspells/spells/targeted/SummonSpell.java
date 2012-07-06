@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -132,6 +133,14 @@ public class SummonSpell extends TargetedSpell {
 			pendingTimes.remove(player);
 			event.setCancelled(true);
 		}
+	}
+	
+	@Override
+	public String[] tabComplete(CommandSender sender, String partial) {
+		if (partial.contains(" ")) {
+			return null;
+		}
+		return tabCompletePlayerName(sender, partial);
 	}
 
 }

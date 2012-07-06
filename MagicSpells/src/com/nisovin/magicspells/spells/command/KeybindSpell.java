@@ -190,7 +190,7 @@ public class KeybindSpell extends CommandSpell {
 	}
 	
 	@Override
-	public String tabComplete(CommandSender sender, String partial) {
+	public String[] tabComplete(CommandSender sender, String partial) {
 		return null;
 	}
 	

@@ -221,10 +221,9 @@ public class SpellbookSpell extends CommandSpell {
 	}
 	
 	@Override
-	public String tabComplete(CommandSender sender, String partial) {
+	public String[] tabComplete(CommandSender sender, String partial) {
 		if (sender instanceof Player && !partial.contains(" ")) {
-			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
-			return spellbook.tabComplete(partial);
+			return tabCompleteSpellName(sender, partial);
 		}
 		return null;
 	}
