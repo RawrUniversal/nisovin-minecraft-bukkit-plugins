@@ -348,6 +348,8 @@ public class ScrollSpell extends CommandSpell {
 	
 	@EventHandler(ignoreCancelled=true)
 	public void onInventoryClick(InventoryClickEvent event) {
+		if (event.getRawSlot() < 0) return; 
+		
 		ItemStack clicked = event.getCurrentItem();
 		ItemStack cursor = event.getCursor();
 		

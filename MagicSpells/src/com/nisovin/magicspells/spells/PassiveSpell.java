@@ -225,7 +225,7 @@ public class PassiveSpell extends Spell {
 			}
 		}
 		
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onDamage(EntityDamageEvent event) {
 			if (event.getEntityType() == EntityType.PLAYER && ((Player)event.getEntity()).getNoDamageTicks() == 0) {
 				Player player = (Player)event.getEntity();
@@ -288,7 +288,7 @@ public class PassiveSpell extends Spell {
 			}
 		}
 		
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onDamage(EntityDamageByEntityEvent event) {
 			if (event.getDamage() == 0) return;
 			if (event.getEntity() instanceof LivingEntity && (((LivingEntity)event.getEntity()).getHealth() <= 0 || ((LivingEntity)event.getEntity()).getNoDamageTicks() > 0)) return;
@@ -331,7 +331,7 @@ public class PassiveSpell extends Spell {
 			}
 		}
 		
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onDeath(EntityDeathEvent event) {
 			Player killer = event.getEntity().getKiller();
 			if (killer != null && (types == null || Util.arrayContains(types, event.getEntity().getType())) && hasSpell(killer)) {
@@ -358,7 +358,7 @@ public class PassiveSpell extends Spell {
 			}
 		}
 		
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onBlockBreak(BlockBreakEvent event) {
 			if (typeIds == null || Util.arrayContains(typeIds, event.getBlock().getTypeId())) {
 				Player player = event.getPlayer();
@@ -386,7 +386,7 @@ public class PassiveSpell extends Spell {
 			}
 		}
 		
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onBlockPlace(BlockPlaceEvent event) {
 			if (typeIds == null || Util.arrayContains(typeIds, event.getBlock().getTypeId())) {
 				Player player = event.getPlayer();
@@ -512,7 +512,7 @@ public class PassiveSpell extends Spell {
 	}
 	
 	public class SprintListener implements Listener {
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onSprint(PlayerToggleSprintEvent event) {
 			if (event.isSprinting() && hasSpell(event.getPlayer())) {
 				activate(event.getPlayer());
@@ -521,7 +521,7 @@ public class PassiveSpell extends Spell {
 	}
 	
 	public class SneakListener implements Listener {
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onSneak(PlayerToggleSneakEvent event) {
 			if (event.isSneaking() && hasSpell(event.getPlayer())) {
 				activate(event.getPlayer());
@@ -530,7 +530,7 @@ public class PassiveSpell extends Spell {
 	}
 	
 	public class StopSprintListener implements Listener {
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onSprint(PlayerToggleSprintEvent event) {
 			if (!event.isSprinting() && hasSpell(event.getPlayer())) {
 				activate(event.getPlayer());
@@ -539,7 +539,7 @@ public class PassiveSpell extends Spell {
 	}
 	
 	public class StopSneakListener implements Listener {
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onSneak(PlayerToggleSneakEvent event) {
 			if (!event.isSneaking() && hasSpell(event.getPlayer())) {
 				activate(event.getPlayer());

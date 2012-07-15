@@ -21,7 +21,7 @@ public class MagicChatListener implements Listener {
 			final Player player = event.getPlayer();
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			if (spellbook.hasSpell(spell)) {
-				Bukkit.getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					public void run() {
 						spell.cast(player);
 					}
