@@ -62,8 +62,9 @@ public class ManaBar {
 			newAmt += amount;
 			if (newAmt > maxMana) newAmt = maxMana;
 		} else if (amount < 0) {
-			if (-amount > mana) return false;
+			if (mana == 0) return false;
 			newAmt += amount;
+			if (newAmt < 0) newAmt = 0;
 		}
 		if (newAmt == mana) return false;
 		
@@ -74,7 +75,7 @@ public class ManaBar {
 	}
 	
 	public boolean regenerate() {
-		if (mana == maxMana) return false;
+		if ((regenAmount > 0 && mana == maxMana) || (regenAmount < 0 && mana == 0)) return false;
 		return changeMana(regenAmount, ManaChangeReason.REGEN);
 	}
 	
