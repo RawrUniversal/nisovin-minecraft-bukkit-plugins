@@ -43,6 +43,7 @@ public abstract class Condition {
 		conditions.put("outside", OutsideCondition.class);
 		conditions.put("biome", BiomeCondition.class);
 		conditions.put("wearing", WearingCondition.class);
+		conditions.put("holding", HoldingCondition.class);
 		conditions.put("hasitem", HasItemCondition.class);
 		conditions.put("healthabove", HealthAboveCondition.class);
 		conditions.put("healthbelow", HealthBelowCondition.class);
