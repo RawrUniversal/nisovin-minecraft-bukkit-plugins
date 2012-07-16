@@ -51,7 +51,7 @@ public class CastItem {
 			String[] temp = s.split(";");
 			s = temp[0];
 			if (!MagicSpells.ignoreCastItemEnchants()) {
-				String[] split = temp[1].split("+");
+				String[] split = temp[1].split("\\+");
 				enchants = new int[split.length][];
 				for (int i = 0; i < enchants.length; i++) {
 					String[] enchantData = split[i].split("-");

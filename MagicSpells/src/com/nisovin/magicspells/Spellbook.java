@@ -105,7 +105,7 @@ public class Spellbook {
 						Spell spell = MagicSpells.spells.get(data[0]);
 						if (spell != null) {
 							CastItem[] items = null;
-							if (data[1].matches("^(-?[0-9]+(:-?[0-9]+)?)(,(-?[0-9]+(:-?[0-9]+)?))*$")) { // ^(-?[0-9:]+)(,(-?[0-9:]+))*$
+							if (data[1].matches("^(-?[0-9]+(:-?[0-9]+)?(;[0-9]+-[0-9]+(\\+[0-9]+-[0-9]+)*)?)(,(-?[0-9]+(:-?[0-9]+)?(;[0-9]+-[0-9]+(\\+[0-9]+-[0-9]+)*)?))*$")) {
 								String[] s = data[1].split(",");
 								items = new CastItem[s.length];
 								for (int i = 0; i < s.length; i++) {
