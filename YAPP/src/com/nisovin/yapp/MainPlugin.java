@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -99,7 +100,7 @@ public class MainPlugin extends JavaPlugin {
 		}
 		
 		// get promotion ladders
-		ladders = new HashMap<String, List<Group>>();
+		ladders = new LinkedHashMap<String, List<Group>>();
 		Set<String> keys = config.getKeys("ladders");
 		if (keys != null) {
 			for (String key : keys) {

@@ -11,7 +11,8 @@ public class ChatListener implements Listener {
 	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
 	public void onPlayerChat(PlayerChatEvent event) {
 		User user = MainPlugin.getPlayerUser(event.getPlayer().getName());
-		event.setFormat(user.getPrefix() + "<" + user.getColor() + "%1$s" + ChatColor.WHITE + "> %2$s");
+		String world = event.getPlayer().getWorld().getName();
+		event.setFormat(user.getPrefix(world) + "<" + user.getColor(world) + "%1$s" + ChatColor.WHITE + "> %2$s");
 	}
 	
 }
