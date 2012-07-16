@@ -9,14 +9,27 @@ import com.nisovin.magicspells.castmodifiers.Condition;
 public class WearingCondition extends Condition {
 
 	int[] ids;
+	short[] datas;
+	boolean[] checkData;
 
 	@Override
 	public boolean setVar(String var) {
 		try {
 			String[] vardata = var.split(",");
 			ids = new int[vardata.length];
+			datas = new short[vardata.length];
+			checkData = new boolean[vardata.length];
 			for (int i = 0; i < vardata.length; i++) {
-				ids[i] = Integer.parseInt(vardata[i]);
+				if (vardata[i].contains(":")) {
+					String[] subvardata = vardata[i].split(":");
+					ids[i] = Integer.parseInt(subvardata[0]);
+					datas[i] = Short.parseShort(subvardata[1]);
+					checkData[i] = true;
+				} else {
+					ids[i] = Integer.parseInt(vardata[i]);
+					datas[i] = 0;
+					checkData[i] = false;
+				}
 			}
 			return true;
 		} catch (Exception e) {
@@ -43,8 +56,9 @@ public class WearingCondition extends Condition {
 	private boolean check(ItemStack item) {
 		if (item == null) return false;
 		int thisid = item.getTypeId();
+		short thisdata = item.getDurability();
 		for (int i = 0; i < ids.length; i++) {
-			if (ids[i] == thisid) {
+			if (ids[i] == thisid && (!checkData[i] || datas[i] == thisdata)) {
 				return true;
 			}
 		}
