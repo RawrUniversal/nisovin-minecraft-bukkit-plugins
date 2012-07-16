@@ -25,7 +25,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
@@ -134,6 +138,17 @@ public class PassiveSpell extends Spell {
 				} else if (type.equalsIgnoreCase("stopsneak")) {
 					registerEvents(new StopSneakListener());
 					trigCount++;
+				} else if (type.equalsIgnoreCase("buff")) {
+					registerEvents(new BuffListener());
+					trigCount++;
+					for (Spell spell : spells) {
+						if (spell instanceof BuffSpell) {
+							BuffSpell buff = (BuffSpell)spell;
+							buff.duration = 0;
+							buff.numUses = 0;
+							buff.useCostInterval = 0;
+						}
+					}
 				}
 			}
 		}
@@ -543,6 +558,58 @@ public class PassiveSpell extends Spell {
 		public void onSneak(PlayerToggleSneakEvent event) {
 			if (!event.isSneaking() && hasSpell(event.getPlayer())) {
 				activate(event.getPlayer());
+			}
+		}
+	}
+	
+	public class BuffListener implements Listener {
+		@EventHandler
+		public void onPlayerJoin(PlayerJoinEvent event) {
+			on(event.getPlayer());
+		}
+		
+		@EventHandler
+		public void onPlayerQuit(PlayerQuitEvent event) {
+			off(event.getPlayer());
+		}
+		
+		@EventHandler
+		public void onPlayerDeath(PlayerDeathEvent event) {
+			off(event.getEntity());
+		}
+		
+		@EventHandler
+		public void onPlayerRespawn(final PlayerRespawnEvent event) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+				public void run() {
+					on(event.getPlayer());
+				}
+			}, 1);
+		}
+		
+		private void on(Player player) {
+			if (hasSpell(player)) {
+				for (Spell spell : spells) {
+					if (spell instanceof BuffSpell) {
+						BuffSpell buff = (BuffSpell)spell;
+						if (!buff.isActive(player)) {
+							buff.castSpell(player, SpellCastState.NORMAL, 1.0F, null);
+						}
+					}
+				}
+			}
+		}
+		
+		private void off(Player player) {
+			if (hasSpell(player)) {
+				for (Spell spell : spells) {
+					if (spell instanceof BuffSpell) {
+						BuffSpell buff = (BuffSpell)spell;
+						if (buff.isActive(player)) {
+							buff.turnOff(player);
+						}
+					}
+				}
 			}
 		}
 	}
