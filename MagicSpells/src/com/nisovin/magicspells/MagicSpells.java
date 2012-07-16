@@ -80,6 +80,7 @@ public class MagicSpells extends JavaPlugin {
 	static boolean castOnAnimate;
 	static boolean useExpBarAsCastTimeBar;
 	static boolean cooldownsPersistThroughReload;
+	static boolean ignoreCastItemEnchants;
 	
 	static boolean enableManaBars;
 	static int manaPotionCooldown;
@@ -176,6 +177,7 @@ public class MagicSpells extends JavaPlugin {
 		spellIconSlot = config.getInt("general.spell-icon-slot", -1);
 		allowCastWithFist = config.getBoolean("general.allow-cast-with-fist", false);
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
+		ignoreCastItemEnchants = config.getBoolean("general.ignore-cast-item-enchants", true);
 		showStrCostOnMissingReagents = config.getBoolean("general.show-str-cost-on-missing-reagents", true);
 		losTransparentBlocks = new HashSet<Byte>(config.getByteList("general.los-transparent-blocks", new ArrayList<Byte>()));
 		if (losTransparentBlocks.size() == 0) {
@@ -718,6 +720,10 @@ public class MagicSpells extends JavaPlugin {
 		} else {
 			return false;
 		}
+	}
+	
+	public static boolean ignoreCastItemEnchants() {
+		return ignoreCastItemEnchants;
 	}
 	
 	/**
