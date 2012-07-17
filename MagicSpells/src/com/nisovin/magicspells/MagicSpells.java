@@ -431,6 +431,7 @@ public class MagicSpells extends JavaPlugin {
 					addPermission(pm, "learn." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
 					addPermission(pm, "cast." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
 					addPermission(pm, "teach." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
+					addPermission(pm, "tempgrant." + spellName, PermissionDefault.FALSE);
 					permGrantChildren.put("magicspells.grant." + spellName, true);
 					permLearnChildren.put("magicspells.learn." + spellName, true);
 					permCastChildren.put("magicspells.cast." + spellName, true);
@@ -441,13 +442,10 @@ public class MagicSpells extends JavaPlugin {
 					
 				} catch (ClassNotFoundException e) {
 					error("Unable to load spell " + spellName + " (missing class " + className + ")");
-					if (className.contains("instant")) {
-						error("(Maybe try " + className.replace("com.nisovin.magicspells.spells.instant.", ".targeted.") + ")");
-					}
 				} catch (NoSuchMethodException e) {
 					error("Unable to load spell " + spellName + " (malformed class)");
 				} catch (Exception e) {
-					error("Unable to load spell " + spellName + " (unknown error)");
+					error("Unable to load spell " + spellName + " (general error)");
 					e.printStackTrace();
 				}
 			}

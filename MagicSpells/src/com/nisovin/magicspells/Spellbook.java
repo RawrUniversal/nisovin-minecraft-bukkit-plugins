@@ -319,6 +319,8 @@ public class Spellbook {
 			addSpell(spell);
 			save();
 			return true;
+		} else if (player.hasPermission("magicspells.tempgrant." + spell.getInternalName())) {
+			return true;
 		} else {
 			return false;
 		}
