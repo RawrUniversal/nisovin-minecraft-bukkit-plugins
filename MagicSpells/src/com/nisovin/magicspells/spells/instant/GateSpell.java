@@ -47,12 +47,19 @@ public class GateSpell extends InstantSpell {
 			
 			// get location
 			Location location;
-			if (coords.matches("^-?[0-9]+, ?[0-9]+, ?-?[0-9]+$")) {
-				String[] c = coords.replace(" ", "").split(",");
+			coords = coords.replace(" ", "");
+			if (coords.matches("^-?[0-9]+,[0-9]+,-?[0-9]+(,-?[0-9.]+,-?[0-9.]+)?$")) {
+				String[] c = coords.split(",");
 				int x = Integer.parseInt(c[0]);
 				int y = Integer.parseInt(c[1]);
 				int z = Integer.parseInt(c[2]);
-				location = new Location(world, x, y, z);
+				float yaw = 0;
+				float pitch = 0;
+				if (c.length > 3) {
+					yaw = Float.parseFloat(c[3]);
+					pitch = Float.parseFloat(c[4]);
+				}
+				location = new Location(world, x, y, z, yaw, pitch);
 			} else if (coords.equals("SPAWN")) {
 				location = world.getSpawnLocation();
 				location = new Location(world, location.getX(), world.getHighestBlockYAt(location), location.getZ());
@@ -60,7 +67,7 @@ public class GateSpell extends InstantSpell {
 				location = world.getSpawnLocation();
 			} else if (coords.equals("CURRENT")) {
 				Location l = player.getLocation();
-				location = new Location(world, l.getBlockX(), l.getBlockY(), l.getBlockZ());
+				location = new Location(world, l.getBlockX(), l.getBlockY(), l.getBlockZ(), l.getYaw(), l.getPitch());
 			} else {
 				// fail -- no location
 				MagicSpells.error(name + ": " + this.coords + " is not a valid location");
