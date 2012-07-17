@@ -4,19 +4,71 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
 
 public class CastItem {
-	private int type;
-	private short data;
-	private int[][] enchants;
+	private int type = 0;
+	private short data = 0;
+	private int[][] enchants = null;
+	
+	public static CastItem factory(String string) {
+		try {
+			CastItem item = new CastItem();
+			String s = string;
+			if (s.contains(";")) {
+				String[] temp = s.split(";");
+				s = temp[0];
+				if (!MagicSpells.ignoreCastItemEnchants()) {
+					String[] split = temp[1].split("\\+");
+					item.enchants = new int[split.length][];
+					for (int i = 0; i < item.enchants.length; i++) {
+						String[] enchantData = split[i].split("-");
+						int id;
+						if (enchantData[0].matches("[0-9]+")) {
+							id = Integer.parseInt(enchantData[0]);
+						} else {
+							id = Enchantment.getByName(enchantData[0].toUpperCase()).getId();
+						}
+						item.enchants[i] = new int[] { id, Integer.parseInt(enchantData[1]) };
+					}
+					sortEnchants(item.enchants);
+				}
+			}
+			if (s.contains(":")) {
+				String[] split = s.split(":");
+				if (split[0].matches("[0-9]+")) {
+					item.type = Integer.parseInt(split[0]);
+				} else {
+					item.type = Material.getMaterial(split[0].toUpperCase()).getId();
+				}
+				if (MagicSpells.ignoreCastItemDurability(item.type)) {
+					item.data = 0;
+				} else {
+					item.data = Short.parseShort(split[1]);
+				}
+			} else {
+				if (s.matches("[0-9]+")) {
+					item.type = Integer.parseInt(s);
+				} else {
+					item.type = Material.getMaterial(s.toUpperCase()).getId();
+				}
+				item.data = 0;
+			}
+			return item;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public CastItem() {		
+	}
 	
 	public CastItem(int type) {
 		this.type = type;
-		this.data = 0;
 	}
 	
 	public CastItem(int type, short data) {
@@ -139,7 +191,7 @@ public class CastItem {
 		return null;
 	}
 	
-	private void sortEnchants(int[][] enchants) {
+	private static void sortEnchants(int[][] enchants) {
 		Arrays.sort(enchants, new Comparator<int[]>() {
 			public int compare(int[] o1, int[] o2) {
 				if (o1[0] > o2[0]) return 1;

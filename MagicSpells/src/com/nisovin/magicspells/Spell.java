@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -112,7 +113,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		String[] sItems = config.getString(section + "." + spellName + ".cast-item", "-5").trim().replace(" ", "").split(",");
 		this.castItems = new CastItem[sItems.length];
 		for (int i = 0; i < sItems.length; i++) {
-			this.castItems[i] = new CastItem(sItems[i]);
+			this.castItems[i] = CastItem.factory(sItems[i]);
 		}
 		this.requireCastItemOnCommand = config.getBoolean(section + "." + spellName + ".require-cast-item-on-command", false);
 		this.bindable = config.getBoolean(section + "." + spellName + ".bindable", true);
@@ -181,7 +182,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				String costVal = costList.get(i);
 				
 				// validate cost data
-				if (!costVal.matches("^([1-9][0-9]*(:[1-9][0-9]*)?|mana|health|hunger|experience|levels) [1-9][0-9]*$")) {
+				if (!costVal.matches("^([0-9a-zA-Z_]+(:[0-9]+)?|mana|health|hunger|experience|levels) [1-9][0-9]*$")) {
 					MagicSpells.error("Failed to process cost value for " + spellName + " spell: " + costVal);
 					continue;
 				}
@@ -198,11 +199,26 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					reagents.setExperience(Integer.parseInt(data[1]));
 				} else if (data[0].equalsIgnoreCase("levels")) {
 					reagents.setLevels(Integer.parseInt(data[1]));
-				} else if (data[0].contains(":")) {
-					subdata = data[0].split(":");
-					reagents.addItem(new ItemStack(Integer.parseInt(subdata[0]), Integer.parseInt(data[1]), Short.parseShort(subdata[1])));
 				} else {
-					reagents.addItem(new ItemStack(Integer.parseInt(data[0]), Integer.parseInt(data[1])));
+					String itemname = data[0];
+					int id = -1;
+					short dura = 0;
+					if (data[0].contains(":")) {
+						subdata = data[0].split(":");
+						itemname = subdata[0];
+						dura = Short.parseShort(subdata[1]);
+					}
+					if (itemname.matches("[0-9]+")) {
+						id = Integer.parseInt(itemname);
+					} else {
+						Material mat = Material.getMaterial(itemname.toUpperCase());
+						if (mat != null) {
+							id = mat.getId();
+						}
+					}
+					if (id > 0) {
+						reagents.addItem(new ItemStack(id, Integer.parseInt(data[1]), dura));
+					}
 				}
 			}
 		}

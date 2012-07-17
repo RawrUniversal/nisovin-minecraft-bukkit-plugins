@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -341,7 +340,13 @@ public class Spellbook {
 			CastItem[] items = spell.getCastItems();
 			if (castItems != null && castItems.length > 0) {
 				items = castItems;
-				customBindings.put(spell, new HashSet<CastItem>(Arrays.asList(items)));
+				HashSet<CastItem> set = new HashSet<CastItem>();
+				for (CastItem item : items) {
+					if (item != null) {
+						set.add(item);
+					}
+				}
+				customBindings.put(spell, set);
 			} else if (MagicSpells.ignoreDefaultBindings) {
 				return; // no cast item provided and ignoring default, so just stop here
 			}
@@ -349,14 +354,16 @@ public class Spellbook {
 				MagicSpells.debug(3, "        Cast item: " + i + (castItems!=null?" (custom)":" (default)"));
 			}
 			for (CastItem i : items) {
-				ArrayList<Spell> temp = itemSpells.get(i);
-				if (temp != null) {
-					temp.add(spell);
-				} else {
-					temp = new ArrayList<Spell>();
-					temp.add(spell);
-					itemSpells.put(i, temp);
-					activeSpells.put(i, MagicSpells.allowCycleToNoSpell ? -1 : 0);
+				if (i != null) {
+					ArrayList<Spell> temp = itemSpells.get(i);
+					if (temp != null) {
+						temp.add(spell);
+					} else {
+						temp = new ArrayList<Spell>();
+						temp.add(spell);
+						itemSpells.put(i, temp);
+						activeSpells.put(i, MagicSpells.allowCycleToNoSpell ? -1 : 0);
+					}
 				}
 			}
 		}
@@ -381,14 +388,16 @@ public class Spellbook {
 			items = customBindings.remove(spell).toArray(new CastItem[]{});
 		}
 		for (CastItem item : items) {
-			ArrayList<Spell> temp = itemSpells.get(item);
-			if (temp != null) {
-				temp.remove(spell);
-				if (temp.size() == 0) {
-					itemSpells.remove(item);
-					activeSpells.remove(item);
-				} else {
-					activeSpells.put(item, -1);
+			if (item != null) {
+				ArrayList<Spell> temp = itemSpells.get(item);
+				if (temp != null) {
+					temp.remove(spell);
+					if (temp.size() == 0) {
+						itemSpells.remove(item);
+						activeSpells.remove(item);
+					} else {
+						activeSpells.put(item, -1);
+					}
 				}
 			}
 		}
