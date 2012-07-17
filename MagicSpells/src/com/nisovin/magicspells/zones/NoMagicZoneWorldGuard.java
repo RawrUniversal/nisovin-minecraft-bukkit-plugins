@@ -24,6 +24,10 @@ public class NoMagicZoneWorldGuard extends NoMagicZone {
 
 	@Override
 	public boolean inZone(Location location) {
+		// check world
+		if (!worldName.equals(location.getWorld().getName())) {
+			return false;
+		}
 		// get region, if necessary
 		if (region == null) {
 			WorldGuardPlugin worldGuard = null;
