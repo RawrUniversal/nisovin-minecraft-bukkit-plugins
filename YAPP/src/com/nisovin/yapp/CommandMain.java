@@ -358,10 +358,13 @@ public class CommandMain implements CommandExecutor {
 		
 		// get type
 		String type = getType(obj);
+
+		// get world
+		String world = selectedWorld.get(sender);
 		
 		// set the info
-		obj.setInfo(key, value);
-		value = obj.getInfo(key);
+		obj.setInfo(world, key, value);
+		// TODO: value = obj.getInfo(world, key);
 		
 		if (value != null) {
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + "'s " + 

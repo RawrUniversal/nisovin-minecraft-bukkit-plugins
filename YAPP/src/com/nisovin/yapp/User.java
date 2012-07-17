@@ -38,8 +38,8 @@ public class User extends PermissionContainer {
 	}
 	
 	@Override
-	public void setColor(ChatColor color) {
-		super.setColor(color);
+	public void setColor(String world, ChatColor color) {
+		super.setColor(world, color);
 		Player p = getPlayer();
 		if (p != null) {
 			MainPlugin.yapp.setPlayerListName(p, this);

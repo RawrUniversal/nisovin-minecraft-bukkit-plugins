@@ -66,7 +66,8 @@ public class SetColor extends MenuPrompt {
 			}
 		}
 		PermissionContainer obj = getObject(context);
-		obj.setColor(color);
+		String world = getWorld(context);
+		obj.setColor(world, color);
 		String val;
 		if (color != null) {
 			val = color + color.name().replace("_", " ").toLowerCase();

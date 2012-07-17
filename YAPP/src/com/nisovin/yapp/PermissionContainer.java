@@ -26,10 +26,12 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	private Map<String, List<Group>> worldGroups = new HashMap<String, List<Group>>();
 	private Map<String, List<PermissionNode>> worldPermissions = new HashMap<String, List<PermissionNode>>();	
 	
-	private Map<String, String> info = new LinkedHashMap<String, String>();
+	private Map<String, String> info = new LinkedHashMap<String, String>(); // TODO: save by world
 	private String description = "";
 	private ChatColor color = null;
 	private String prefix = null;
+	private Map<String, ChatColor> worldColors = new HashMap<String, ChatColor>();
+	private Map<String, String> worldPrefixes = new HashMap<String, String>();
 	
 	private Map<String, List<PermissionNode>> cachedPermissions = new HashMap<String, List<PermissionNode>>();
 	private Map<String, Group> cachedPrimaryGroup = new HashMap<String,Group>();
@@ -159,26 +161,34 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		return ChatColor.WHITE;
 	}
 	
-	public void setColor(String color) {
+	public void setColor(String world, String color) {
 		if (color == null || color.length() == 0) {
-			setColor((ChatColor)null);
+			setColor(world, (ChatColor)null);
 		} else if (color.length() == 1) {
-			setColor(ChatColor.getByChar(color));
+			setColor(world, ChatColor.getByChar(color));
 		} else {
 			try {
-				setColor(ChatColor.valueOf(color.replace(" ", "_").toUpperCase()));
+				setColor(world, ChatColor.valueOf(color.replace(" ", "_").toUpperCase()));
 			} catch (IllegalArgumentException e) {
-				setColor((ChatColor)null);
+				setColor(world, (ChatColor)null);
 			}
 		}
 	}
 	
-	public void setColor(ChatColor color) {
-		this.color = color;
-		if (color != null) {
-			info.put("color", color.name().replace("_", " ").toLowerCase());
+	public void setColor(String world, ChatColor color) {
+		if (world == null || world.isEmpty()) {
+			this.color = color;
+			if (color != null) {
+				info.put("color", color.name().replace("_", " ").toLowerCase());
+			} else {
+				info.remove("color");
+			}
 		} else {
-			info.remove("color");
+			if (color != null) {
+				this.worldColors.put(world, color);
+			} else {
+				this.worldColors.remove(world);
+			}
 		}
 		cachedColor = null;
 		dirty = true;
@@ -209,32 +219,40 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		return "";
 	}
 	
-	public void setPrefix(String prefix) {
+	public void setPrefix(String world, String prefix) {
 		if (prefix != null && !prefix.isEmpty()) {
 			prefix = prefix.replace("\u00A7$1", "&");
-			this.prefix = prefix;
-			info.put("prefix", prefix);
+			if (world == null || world.isEmpty()) {
+				this.prefix = prefix;
+				info.put("prefix", prefix);
+			} else {
+				this.worldPrefixes.put(world, prefix);
+			}
 		} else {
-			this.prefix = null;
-			info.remove("prefix");
+			if (world == null || world.isEmpty()) {
+				this.prefix = null;
+				info.remove("prefix");
+			} else {
+				this.worldPrefixes.remove(world);
+			}
 		}
 		cachedPrefix = null;
 		dirty = true;
 	}
 	
-	public String getInfo(String key) {
+	public String getInfo(String world, String key) {
 		return info.get(key.toLowerCase());
 	}
 	
-	public void setInfo(String key, String value) {
+	public void setInfo(String world, String key, String value) {
 		key = key.toLowerCase();
 		if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
 			value = value.substring(1, value.length() - 1);
 		}
 		if (key.equals("color")) {
-			setColor(value);
+			setColor(world, value);
 		} else if (key.equals("prefix")) {
-			setPrefix(value);
+			setPrefix(world, value);
 		} else if (key.equals("description")) {
 			setDescription(value);
 		} else {
@@ -604,13 +622,23 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 						if (key.equals("description")) {
 							description = val;
 						} else if (key.equals("color")) {
+							ChatColor c;
 							if (val.length() == 1) {
-								color = ChatColor.getByChar(val);
+								c = ChatColor.getByChar(val);
 							} else {
-								color = ChatColor.valueOf(val.replace(" ", "_").toUpperCase());
+								c = ChatColor.valueOf(val.replace(" ", "_").toUpperCase());
+							}
+							if (worldName == null) {
+								color = c;
+							} else {
+								worldColors.put(worldName, c);
 							}
 						} else if (key.equals("prefix")) {
-							prefix = val;
+							if (worldName == null) {
+								prefix = val;
+							} else {
+								worldPrefixes.put(worldName, val);
+							}
 						}
 						MainPlugin.debug("      Added info: " + key + " = " + val);
 					} else {

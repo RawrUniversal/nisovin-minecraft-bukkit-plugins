@@ -26,13 +26,14 @@ public class SetPrefix extends MenuPrompt {
 	public Prompt accept(ConversationContext context, String input) {
 		input = input.trim();
 		PermissionContainer obj = getObject(context);
+		String world = getWorld(context);
 		if (input.equals("-")) {
-			obj.setPrefix(null);
+			obj.setPrefix(world, null);
 		} else {
 			if ((input.startsWith("\"") && input.endsWith("\"")) || (input.startsWith("'") && input.endsWith("'"))) {
 				input = input.substring(1, input.length() - 1);
 			}
-			obj.setPrefix(input);
+			obj.setPrefix(world, input);
 		}		
 
 		String prefix = obj.getActualPrefix();
