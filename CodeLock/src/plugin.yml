@@ -1,6 +1,6 @@
 name: CodeLock
 main: com.nisovin.codelock.CodeLock
-version: 1.0
+version: 1.2
 author: nisovin
 permissions:
     codelock.bypass:
