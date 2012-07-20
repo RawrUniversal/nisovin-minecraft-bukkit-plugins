@@ -49,7 +49,7 @@ public class LockListener implements Listener {
 					String code = plugin.getCode(block);
 					player.sendMessage(Settings.strLocked + code);
 				}
-			} else if (player.isSneaking()) {
+			} else if (player.isSneaking() && player.hasPermission("codelock.lock")) {
 				// trying to lock
 				if (Settings.checkBuildPerms) {
 					BlockPlaceEvent evt = new BlockPlaceEvent(block, block.getState(), block.getRelative(BlockFace.DOWN), player.getItemInHand(), player, true);
