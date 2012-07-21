@@ -3,6 +3,7 @@ package com.nisovin.codelock;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -40,7 +41,7 @@ public class LockListener implements Listener {
 			if (plugin.isLocked(block) && (!(mat == Material.TRAP_DOOR || mat == Material.WOODEN_DOOR || mat == Material.IRON_DOOR_BLOCK) || Utilities.isDoorClosed(block) )) {
 				// it's locked
 				boolean bypass = player.hasPermission("codelock.bypass");
-				if (player.isSneaking()) {
+				if (player.isSneaking() && player.hasPermission("codelock.lock")) {
 					action = PlayerAction.REMOVING;
 				} else if (!bypass) {
 					action = PlayerAction.UNLOCKING;
@@ -99,8 +100,15 @@ public class LockListener implements Listener {
 								event.getWhoClicked().openInventory(inv);
 							}
 						}, 3);
+					} else if (block.getType() == Material.ENCHANTMENT_TABLE) {
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+							public void run() {
+								event.getWhoClicked().openEnchanting(block.getLocation(), false);
+							}
+						}, 3);
 					} else if (block.getType() == Material.WOODEN_DOOR || block.getType() == Material.IRON_DOOR_BLOCK || block.getType() == Material.TRAP_DOOR) {
 						Utilities.openDoor(block);
+						event.getWhoClicked().getWorld().playEffect(block.getLocation(), Effect.DOOR_TOGGLE, 0);
 						if (Settings.autoDoorClose > 0) {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 								public void run() {

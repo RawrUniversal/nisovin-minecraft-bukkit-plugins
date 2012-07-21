@@ -4,8 +4,8 @@ version: 1.2
 author: nisovin
 permissions:
     codelock.bypass:
-        description: Bypass locks
+        description: Bypass all locks and protections
         default: op
     codelock.lock:
-        description: Allow locking
+        description: Allow adding and removing code locks
         default: true
