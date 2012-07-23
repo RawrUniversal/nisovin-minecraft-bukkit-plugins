@@ -77,8 +77,6 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 
 	@Override
 	public void setExperienceBar(Player player, int level, float percent) {
-		player.setLevel(level);
-		player.setExp(percent);
 	}
 
 	@Override

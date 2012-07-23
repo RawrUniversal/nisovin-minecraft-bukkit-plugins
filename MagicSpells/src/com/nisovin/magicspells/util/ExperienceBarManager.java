@@ -3,6 +3,7 @@ package com.nisovin.magicspells.util;
 import java.util.HashMap;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 
 import com.nisovin.magicspells.MagicSpells;
 
@@ -17,7 +18,9 @@ public class ExperienceBarManager {
 	public void update(Player player, int level, float percent, Object object) {
 		Object lock = locks.get(player);
 		if (lock == null || (object != null && object.equals(lock))) {
-			MagicSpells.getVolatileCodeHandler().setExperienceBar(player, level, percent);
+			if (player.getOpenInventory().getType() != InventoryType.ENCHANTING) {
+				MagicSpells.getVolatileCodeHandler().setExperienceBar(player, level, percent);
+			}
 		}
 	}
 	
