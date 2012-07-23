@@ -14,5 +14,16 @@ letter-codes: [
     G, H, I ]
 auto-door-close: 100
 check-build-perms: true
+lockable:
+    - chest
+    - dispenser
+    - furnace
+    - brewing_stand
+    - enchantment_table
+    - trap_door
+    - wooden_door
+    - iron_door_block
+    - lever
+    - stone_button
 str-locked: "Locked with code: "
 str-removed: "Removed lock."

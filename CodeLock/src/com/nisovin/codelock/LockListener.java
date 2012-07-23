@@ -7,6 +7,7 @@ import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -35,7 +36,7 @@ public class LockListener implements Listener {
 		
 		Block block = event.getClickedBlock();
 		Material mat = block.getType();
-		if (mat == Material.CHEST || mat == Material.DISPENSER || mat == Material.FURNACE || mat == Material.BREWING_STAND || mat == Material.ENCHANTMENT_TABLE || mat == Material.TRAP_DOOR || mat == Material.WOODEN_DOOR || mat == Material.IRON_DOOR_BLOCK) {
+		if (Settings.lockable.contains(mat)) {
 			Player player = event.getPlayer();
 			PlayerAction action = null;
 			if (plugin.isLocked(block) && (!(mat == Material.TRAP_DOOR || mat == Material.WOODEN_DOOR || mat == Material.IRON_DOOR_BLOCK) || Utilities.isDoorClosed(block) )) {
@@ -116,6 +117,8 @@ public class LockListener implements Listener {
 								}
 							}, Settings.autoDoorClose);
 						}
+					} else if (block.getType() == Material.LEVER || block.getType() == Material.STONE_BUTTON) {
+						net.minecraft.server.Block.byId[block.getType().getId()].interact(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null);
 					}
 				} else if (status.getAction() == PlayerAction.REMOVING) {
 					plugin.removeLock(status.getBlock());

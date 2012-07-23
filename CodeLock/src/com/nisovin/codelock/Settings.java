@@ -1,5 +1,8 @@
 package com.nisovin.codelock;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Material;
 
 public class Settings {
@@ -25,6 +28,8 @@ public class Settings {
 	
 	static int autoDoorClose = 100;
 	static boolean checkBuildPerms = true;
+	
+	static List<Material> lockable = new ArrayList<Material>();
 	
 	static String strLocked = "Locked with code: ";
 	static String strRemoved = "Removed lock.";

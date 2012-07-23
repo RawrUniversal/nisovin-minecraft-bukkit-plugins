@@ -49,7 +49,17 @@ public class CodeLock extends JavaPlugin implements Listener {
 			}
 		}
 		Settings.autoDoorClose = config.getInt("aut-door-close", Settings.autoDoorClose);
-		Settings.checkBuildPerms = config.getBoolean("check-build-perms", Settings.checkBuildPerms);
+		Settings.checkBuildPerms = config.getBoolean("check-build-perms", Settings.checkBuildPerms);		
+		Settings.lockable.clear();
+		List<String> list = config.getStringList("lockable");
+		if (list != null) {
+			for (String s : list) {
+				Material mat = Material.getMaterial(s.toUpperCase());
+				if (mat != null) {
+					Settings.lockable.add(mat);
+				}
+			}
+		}		
 		Settings.strLocked = config.getString("str-locked", Settings.strLocked);
 		Settings.strRemoved = config.getString("str-removed", Settings.strRemoved);
 		
