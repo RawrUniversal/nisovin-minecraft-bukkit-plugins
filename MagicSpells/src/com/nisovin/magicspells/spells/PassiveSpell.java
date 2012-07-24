@@ -38,6 +38,8 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellCastedEvent;
+import com.nisovin.magicspells.events.SpellForgetEvent;
+import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.CastItem;
@@ -141,12 +143,23 @@ public class PassiveSpell extends Spell {
 				} else if (type.equalsIgnoreCase("buff")) {
 					registerEvents(new BuffListener());
 					trigCount++;
+					// fix up the buff spells
 					for (Spell spell : spells) {
 						if (spell instanceof BuffSpell) {
 							BuffSpell buff = (BuffSpell)spell;
 							buff.duration = 0;
 							buff.numUses = 0;
 							buff.useCostInterval = 0;
+						}
+					}
+					// add the buff spells any online players with this spell
+					for (Player p : Bukkit.getOnlinePlayers()) {
+						if (MagicSpells.getSpellbook(p).hasSpell(this)) {
+							for (Spell spell : spells) {
+								if (spell instanceof BuffSpell) {
+									spell.castSpell(p, SpellCastState.NORMAL, 1.0F, null);
+								}
+							}
 						}
 					}
 				}
@@ -585,6 +598,20 @@ public class PassiveSpell extends Spell {
 					on(event.getPlayer());
 				}
 			}, 1);
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSpellLearn(final SpellLearnEvent event) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+				public void run() {
+					on(event.getLearner());
+				}
+			}, 1);
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSpellForget(SpellForgetEvent event) {
+			off(event.getForgetter());
 		}
 		
 		private void on(Player player) {
