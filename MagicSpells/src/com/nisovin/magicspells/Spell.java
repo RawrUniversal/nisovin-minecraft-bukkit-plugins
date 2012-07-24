@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -113,7 +112,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		String[] sItems = config.getString(section + "." + spellName + ".cast-item", "-5").trim().replace(" ", "").split(",");
 		this.castItems = new CastItem[sItems.length];
 		for (int i = 0; i < sItems.length; i++) {
-			this.castItems[i] = CastItem.factory(sItems[i]);
+			ItemStack is = Util.getItemStackFromString(sItems[i]);
+			if (is != null) {
+				this.castItems[i] = new CastItem(is);
+			}
 		}
 		this.requireCastItemOnCommand = config.getBoolean(section + "." + spellName + ".require-cast-item-on-command", false);
 		this.bindable = config.getBoolean(section + "." + spellName + ".bindable", true);
@@ -121,7 +123,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		if (bindables != null) {
 			bindableItems = new HashSet<CastItem>();
 			for (String s : bindables) {
-				bindableItems.add(new CastItem(s));
+				ItemStack is = Util.getItemStackFromString(s);
+				if (is != null) {
+					bindableItems.add(new CastItem(is));
+				}
 			}
 		}
 		String icontemp = config.getString(section + "." + spellName + ".spell-icon", null);
@@ -176,48 +181,35 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		reagents = new SpellReagents();
 		List<String> costList = config.getStringList(section + "." + spellName + ".cost", null);
 		if (costList != null && costList.size() > 0) {
-			//cost = new ItemStack [costList.size()];
-			String[] data, subdata;
+			String[] data;
 			for (int i = 0; i < costList.size(); i++) {
 				String costVal = costList.get(i);
 				
 				// validate cost data
-				if (!costVal.matches("^([0-9a-zA-Z_]+(:[0-9]+)?|mana|health|hunger|experience|levels) [1-9][0-9]*$")) {
+				if (!costVal.matches("^([0-9a-zA-Z_]+(:[0-9]+)?|mana|health|hunger|experience|levels)( [1-9][0-9]*)?$")) {
 					MagicSpells.error("Failed to process cost value for " + spellName + " spell: " + costVal);
 					continue;
 				}
 				
 				// parse cost data
 				data = costVal.split(" ");
+				int amt = 1;
+				if (data.length > 1) amt = Integer.parseInt(data[1]);
 				if (data[0].equalsIgnoreCase("health")) {
-					reagents.setHealth(Integer.parseInt(data[1]));
+					reagents.setHealth(amt);
 				} else if (data[0].equalsIgnoreCase("mana")) {
-					reagents.setMana(Integer.parseInt(data[1]));
+					reagents.setMana(amt);
 				} else if (data[0].equalsIgnoreCase("hunger")) {
-					reagents.setHunger(Integer.parseInt(data[1]));
+					reagents.setHunger(amt);
 				} else if (data[0].equalsIgnoreCase("experience")) {
-					reagents.setExperience(Integer.parseInt(data[1]));
+					reagents.setExperience(amt);
 				} else if (data[0].equalsIgnoreCase("levels")) {
-					reagents.setLevels(Integer.parseInt(data[1]));
+					reagents.setLevels(amt);
 				} else {
-					String itemname = data[0];
-					int id = -1;
-					short dura = 0;
-					if (data[0].contains(":")) {
-						subdata = data[0].split(":");
-						itemname = subdata[0];
-						dura = Short.parseShort(subdata[1]);
-					}
-					if (itemname.matches("[0-9]+")) {
-						id = Integer.parseInt(itemname);
-					} else {
-						Material mat = Material.getMaterial(itemname.toUpperCase());
-						if (mat != null) {
-							id = mat.getId();
-						}
-					}
-					if (id > 0) {
-						reagents.addItem(new ItemStack(id, Integer.parseInt(data[1]), dura));
+					ItemStack is = Util.getItemStackFromString(data[0]);
+					if (is != null) {
+						is.setAmount(amt);
+						reagents.addItem(is);
 					}
 				}
 			}

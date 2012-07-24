@@ -13,6 +13,7 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class ConjureSpell extends InstantSpell {
 
@@ -21,8 +22,7 @@ public class ConjureSpell extends InstantSpell {
 	private boolean powerAffectsChance;
 	private boolean calculateDropsIndividually;
 	private boolean autoEquip;
-	private int[] itemTypes;
-	private int[] itemDatas;
+	private ItemStack[] itemTypes;
 	private int[] itemMinQuantities;
 	private int[] itemMaxQuantities;
 	private int[] itemChances;
@@ -37,25 +37,21 @@ public class ConjureSpell extends InstantSpell {
 		autoEquip = getConfigBoolean("auto-equip", false);
 		List<String> list = getConfigStringList("items", null);
 		if (list != null && list.size() > 0) {
-			itemTypes = new int[list.size()];
-			itemDatas = new int[list.size()];
+			itemTypes = new ItemStack[list.size()];
 			itemMinQuantities = new int[list.size()];
 			itemMaxQuantities = new int[list.size()];
 			itemChances = new int[list.size()];
 			
 			for (int i = 0; i < list.size(); i++) {
-				if (list.get(i).matches("^[0-9]+(:[0-9]+)? [0-9]+(-[0-9]+)?( [0-9]+%?)?$")) {
+				try {
 					String[] data = list.get(i).split(" ");
-					String[] typeData = data[0].split(":");
 					String[] quantityData = data[1].split("-");
 					
-					if (typeData.length == 1) {
-						itemTypes[i] = Integer.parseInt(typeData[0]);
-						itemDatas[i] = 0;
-					} else {
-						itemTypes[i] = Integer.parseInt(typeData[0]);
-						itemDatas[i] = Integer.parseInt(typeData[1]);
-					}
+					itemTypes[i] = Util.getItemStackFromString(data[0]);
+					if (itemTypes[i] == null) {
+						MagicSpells.error("Conjure spell '" + spellName + "' has specified invalid item: " + list.get(i));
+						continue;
+					}					
 					
 					if (quantityData.length == 1) {
 						itemMinQuantities[i] = Integer.parseInt(quantityData[0]);
@@ -70,9 +66,9 @@ public class ConjureSpell extends InstantSpell {
 					} else {
 						itemChances[i] = 100;
 					}
-				} else {
-					itemTypes[i] = 0;
+				} catch (Exception e) {
 					MagicSpells.error("Conjure spell '" + spellName + "' has specified invalid item: " + list.get(i));
+					itemTypes[i] = null;
 				}
 			}
 		}
@@ -115,7 +111,7 @@ public class ConjureSpell extends InstantSpell {
 					}
 				}
 				if (!added) {
-					if (addToInventory) {
+					if (addToInventory && inv.firstEmpty() >= 0) {
 						inv.addItem(item);
 						updateInv = true;
 					} else {
@@ -139,7 +135,7 @@ public class ConjureSpell extends InstantSpell {
 		for (int i = 0; i < itemTypes.length; i++) {
 			int r = rand.nextInt(100);
 			if (powerAffectsChance) r = Math.round(r / power);
-			if (itemTypes[i] != 0 && r < itemChances[i]) {
+			if (itemTypes[i] != null && r < itemChances[i]) {
 				addItem(i, items, rand, power);
 			}
 		}
@@ -149,7 +145,7 @@ public class ConjureSpell extends InstantSpell {
 		int r = rand.nextInt(100);
 		int m = 0;
 		for (int i = 0; i < itemTypes.length; i++) {
-			if (itemTypes[i] != 0 && r < itemChances[i] + m) {
+			if (itemTypes[i] != null && r < itemChances[i] + m) {
 				addItem(i, items, rand, power);
 				return;
 			} else {
@@ -167,7 +163,8 @@ public class ConjureSpell extends InstantSpell {
 			quant = Math.round(quant * power);
 		}
 		if (quant > 0) {
-			ItemStack item = new ItemStack(itemTypes[i], quant, (short)itemDatas[i]);
+			ItemStack item = itemTypes[i].clone();
+			item.setAmount(quant);
 			items.add(item);
 		}
 	}

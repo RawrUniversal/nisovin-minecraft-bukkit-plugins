@@ -16,6 +16,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class ArmorSpell extends BuffSpell {
 
@@ -57,21 +58,11 @@ public class ArmorSpell extends BuffSpell {
 	private ItemStack getItem(String s) {
 		if (!s.isEmpty()) {
 			String[] info = s.split(" ");
-			int type;
-			short data;
-			ItemStack item;
 			try {
 				
 				// get type and data
-				if (info[0].contains(":")) {
-					String[] moreinfo = info[0].split(":");
-					type = Integer.parseInt(moreinfo[0]);
-					data = Short.parseShort(moreinfo[1]);
-				} else {
-					type = Integer.parseInt(info[0]);
-					data = 0;
-				}
-				item = new ItemStack(type, 1, data);
+				ItemStack item = Util.getItemStackFromString(info[0]);
+				item.setAmount(1);
 				
 				// get enchantments
 				if (info.length > 1) {

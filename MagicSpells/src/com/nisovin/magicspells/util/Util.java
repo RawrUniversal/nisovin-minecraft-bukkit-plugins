@@ -3,8 +3,58 @@ package com.nisovin.magicspells.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+
+import com.nisovin.magicspells.MagicSpells;
+
 public class Util {
 
+	public static ItemStack getItemStackFromString(String string) {
+		try {
+			ItemStack item = new ItemStack(0);
+			String s = string;
+			if (s.contains(";")) {
+				String[] temp = s.split(";");
+				s = temp[0];
+				if (!MagicSpells.ignoreCastItemEnchants()) {
+					String[] split = temp[1].split("\\+");
+					for (int i = 0; i < split.length; i++) {
+						String[] enchantData = split[i].split("-");
+						Enchantment ench;
+						if (enchantData[0].matches("[0-9]+")) {
+							ench = Enchantment.getById(Integer.parseInt(enchantData[0]));
+						} else {
+							ench = Enchantment.getByName(enchantData[0].toUpperCase());
+						}
+						if (ench != null && enchantData[1].matches("[0-9]+")) {
+							item.addEnchantment(ench, Integer.parseInt(enchantData[1]));
+						}
+					}
+				}
+			}
+			if (s.contains(":")) {
+				String[] split = s.split(":");
+				if (split[0].matches("[0-9]+")) {
+					item.setTypeId(Integer.parseInt(split[0]));
+				} else {
+					item.setTypeId(Material.getMaterial(split[0].toUpperCase()).getId());
+				}
+				item.setDurability(Short.parseShort(split[1]));
+			} else {
+				if (s.matches("[0-9]+")) {
+					item.setTypeId(Integer.parseInt(s));
+				} else {
+					item.setTypeId(Material.getMaterial(s.toUpperCase()).getId());
+				}
+			}
+			return item;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
 	public static boolean arrayContains(int[] array, int value) {
 		for (int i : array) {
 			if (i == value) {
