@@ -59,13 +59,13 @@ public class SummonSpell extends TargetedSpell {
 			Location landLoc = null;
 			if (args != null && args.length > 0) {
 				targetName = args[0];
-				landLoc = player.getLocation();
+				landLoc = player.getLocation().add(0, .25, 0);
 			} else {
 				Block block = player.getTargetBlock(null, 10);
 				if (block != null && (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST)) {
 					Sign sign = (Sign)block.getState();
 					targetName = sign.getLine(0);
-					landLoc = block.getLocation().add(.5, .1, .5);
+					landLoc = block.getLocation().add(.5, .25, .5);
 				}
 			}
 			
