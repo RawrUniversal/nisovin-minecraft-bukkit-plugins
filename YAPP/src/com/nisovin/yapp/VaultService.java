@@ -26,7 +26,7 @@ public class VaultService extends net.milkbowl.vault.permission.Permission {
 
 	@Override
 	public boolean playerAdd(String world, String player, String permission) {
-		return MainPlugin.getPlayerUser(player).removePermission(world, permission);
+		return MainPlugin.getPlayerUser(player).addPermission(world, permission);
 	}
 
 	@Override
