@@ -19,10 +19,12 @@ public class CommandConvert implements CommandExecutor {
 		if (sender.isOp() && sender instanceof ConsoleCommandSender) {
 			if (args.length == 0) {
 				sender.sendMessage("You must specify a plugin to convert from (pex or permbukkit)");
-			} else if (args[0].equalsIgnoreCase("pex")) {
+			} else if (args[0].equalsIgnoreCase("pex") || args[0].equalsIgnoreCase("permissionsex")) {
 				convertFromPex();
-			} else if (args[0].equalsIgnoreCase("permbukkit")) {
+			} else if (args[0].equalsIgnoreCase("permbukkit") || args[0].equalsIgnoreCase("permissionsbukkit")) {
 				convertFromPermissionsBukkit();
+			} else if (args[0].equalsIgnoreCase("gm") || args[0].equalsIgnoreCase("groupmanager")) {
+				convertFromGroupManager();
 			}
 		}
 		
@@ -337,5 +339,178 @@ public class CommandConvert implements CommandExecutor {
 		MainPlugin.yapp.saveAll();
 	}
 
+	private void convertFromGroupManager() {
+		File folder = new File("plugins/GroupManager");
+		if (!folder.exists() || !folder.isDirectory()) return;		
+		
+		// get global groups
+		File globalGroupsFile = new File(folder, "globalgroups.yml");
+		if (globalGroupsFile.exists()) {
+			YamlConfiguration config = new YamlConfiguration();
+			try {
+				config.load(globalGroupsFile);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
+			}
+			
+			// process data
+			ConfigurationSection groupsSection = config.getConfigurationSection("groups");
+			if (groupsSection != null) {
+				Set<String> groupKeys = groupsSection.getKeys(false);
+				for (String groupName : groupKeys) {
+					// get group
+					ConfigurationSection groupSection = groupsSection.getConfigurationSection(groupName);
+					Group group = MainPlugin.getGroup("global_" + groupName);
+					if (group == null) group = MainPlugin.newGroup("global_" + groupName);
+					
+					// get permissions
+					List<String> permissions = groupSection.getStringList("permissions");
+					if (permissions != null) {
+						for (String permission : permissions) {
+							group.addPermission(permission);
+						}
+					}
+				}
+			}
+		}
+		
+		// get world groups
+		File[] worldFolders = folder.listFiles();
+		HashMap<Group, HashMap<String, List<String>>> allInheritedGroups = new HashMap<Group, HashMap<String, List<String>>>(); // gotta handle this later
+		for (File worldFolder : worldFolders) {
+			if (!worldFolder.isDirectory()) continue;
+			
+			String worldName = worldFolder.getName();
+			
+			File groupsFile = new File(worldFolder, "groups.yml");
+			if (groupsFile.exists()) {
+				// load file
+				YamlConfiguration config = new YamlConfiguration();
+				try {
+					config.load(groupsFile);
+				} catch (Exception e) {
+					e.printStackTrace();
+					continue;
+				}
+				
+				// process data
+				ConfigurationSection groupsSection = config.getConfigurationSection("groups");
+				if (groupsSection != null) {
+					Set<String> groupKeys = groupsSection.getKeys(false);
+					for (String groupName : groupKeys) {
+						// get group
+						ConfigurationSection groupSection = groupsSection.getConfigurationSection(groupName);
+						Group group = MainPlugin.getGroup(groupName);
+						if (group == null) group = MainPlugin.newGroup(groupName);
+						
+						// prepare inherited group storage
+						HashMap<String, List<String>> inheritedGroups = new HashMap<String, List<String>>();
+						allInheritedGroups.put(group, inheritedGroups);
+						
+						// get group's inherited groups
+						List<String> inheritedGroupNames = groupSection.getStringList("inheritance");
+						if (inheritedGroupNames != null && inheritedGroupNames.size() > 0) {
+							inheritedGroups.put(worldName, inheritedGroupNames);
+						}
+						
+						// get group's permissions and add to group
+						List<String> permissions = groupSection.getStringList("permissions");
+						if (permissions != null) {
+							for (String permission : permissions) {
+								group.addPermission(worldName, permission);
+							}
+						}
+						
+						// get info
+						if (groupSection.contains("info.prefix")) {
+							group.setPrefix(worldName, groupSection.getString("info.prefix"));
+						}
+					}
+				}				
+				
+			}
+		}
+		
+		// add group inherited groups
+		for (Group group : allInheritedGroups.keySet()) {
+			HashMap<String, List<String>> inheritedGroupsByWorld = allInheritedGroups.get(group);
+			for (String world : inheritedGroupsByWorld.keySet()) {
+				List<String> inheritedGroups = inheritedGroupsByWorld.get(world);
+				for (String groupName : inheritedGroups) {
+					Group g = MainPlugin.getGroup(groupName.startsWith("g:") ? groupName.replace("g:", "global_") : groupName);
+					if (g != null) {
+						group.addGroup(world, g);
+					}
+				}
+			}
+		}
+		
+		// get users
+		for (File worldFolder : worldFolders) {
+			if (!worldFolder.isDirectory()) continue;
+			
+			String worldName = worldFolder.getName();
+			
+			File usersFile = new File(worldFolder, "users.yml");
+			if (usersFile.exists()) {
+				// load file
+				YamlConfiguration config = new YamlConfiguration();
+				try {
+					config.load(usersFile);
+				} catch (Exception e) {
+					e.printStackTrace();
+					continue;
+				}
+				
+				// process data
+				ConfigurationSection usersSection = config.getConfigurationSection("users");
+				if (usersSection != null) {
+					Set<String> userKeys = usersSection.getKeys(false);
+					for (String userName : userKeys) {
+						// get user
+						ConfigurationSection userSection = usersSection.getConfigurationSection(userName);
+						User user = MainPlugin.getPlayerUser(userName);
+						if (MainPlugin.getDefaultGroup() != null && user.getGroups(null).size() == 1 && user.getGroups(null).contains(MainPlugin.getDefaultGroup())) {
+							user.removeGroup(null, MainPlugin.getDefaultGroup());
+						}
+						
+						// get user's inherited groups
+						if (userSection.contains("group")) {
+							String groupName = userSection.getString("group");
+							Group group = MainPlugin.getGroup(groupName.startsWith("g:") ? groupName.replace("g:", "global_") : groupName);
+							if (group != null) {
+								user.addGroup(worldName, group);
+							}
+						}
+						List<String> inheritedGroupNames = userSection.getStringList("subgroups");
+						if (inheritedGroupNames != null && inheritedGroupNames.size() > 0) {
+							for (String groupName : inheritedGroupNames) {
+								Group group = MainPlugin.getGroup(groupName.startsWith("g:") ? groupName.replace("g:", "global_") : groupName);
+								if (group != null) {
+									user.addGroup(worldName, group);
+								}
+							}
+						}
+						
+						// get user's permissions and add to user
+						List<String> permissions = userSection.getStringList("permissions");
+						if (permissions != null) {
+							for (String permission : permissions) {
+								user.addPermission(worldName, permission);
+							}
+						}
+						
+						// get info
+						if (userSection.contains("info.prefix")) {
+							user.setPrefix(worldName, userSection.getString("info.prefix"));
+						}
+					}
+				}
+			}
+		}
+		
+		MainPlugin.yapp.saveAll();
+	}
 
 }
