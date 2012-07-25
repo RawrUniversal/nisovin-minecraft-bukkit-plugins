@@ -56,6 +56,7 @@ public class MainPlugin extends JavaPlugin {
 		CommandPromoteDemote cpd = new CommandPromoteDemote(this);
 		getCommand("yapppromote").setExecutor(cpd);
 		getCommand("yappdemote").setExecutor(cpd);
+		getCommand("yappconvert").setExecutor(new CommandConvert());
 		
 		// register vault hook
 		if (getServer().getPluginManager().isPluginEnabled("Vault")) {
@@ -478,6 +479,10 @@ public class MainPlugin extends JavaPlugin {
 	
 	public static Group getGroup(String name) {
 		return yapp.groups.get(name.toLowerCase());
+	}
+	
+	public static Group getDefaultGroup() {
+		return yapp.defaultGroup;
 	}
 	
 	public static Set<String> getGroupNames() {

@@ -19,6 +19,8 @@ commands:
         usage: /<command> [o:]<player> [world]
         aliases: [demote]
         permission: yapp.demote
+    yappconvert:
+        description: Convert permission data from another plugin
 permissions:
     yapp.build:
         description: Allows the player to build.
