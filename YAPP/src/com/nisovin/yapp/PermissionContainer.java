@@ -23,10 +23,11 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	private List<Group> groups = new ArrayList<Group>();
 	private List<PermissionNode> permissions = new ArrayList<PermissionNode>();
+	private Map<String, String> info = new LinkedHashMap<String, String>();
 	private Map<String, List<Group>> worldGroups = new HashMap<String, List<Group>>();
-	private Map<String, List<PermissionNode>> worldPermissions = new HashMap<String, List<PermissionNode>>();	
+	private Map<String, List<PermissionNode>> worldPermissions = new HashMap<String, List<PermissionNode>>();
+	private Map<String, Map<String, String>> worldInfo = new HashMap<String, Map<String,String>>();
 	
-	private Map<String, String> info = new LinkedHashMap<String, String>(); // TODO: save by world
 	private String description = "";
 	private ChatColor color = null;
 	private String prefix = null;
@@ -184,10 +185,19 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				info.remove("color");
 			}
 		} else {
+			Map<String, String> wInfo = worldInfo.get(world);
 			if (color != null) {
 				this.worldColors.put(world, color);
+				if (wInfo == null) {
+					wInfo = new LinkedHashMap<String, String>();
+					worldInfo.put(world, wInfo);
+				}
+				wInfo.put("color", color.name().replace("_", " ").toLowerCase());
 			} else {
 				this.worldColors.remove(world);
+				if (wInfo != null) {
+					wInfo.remove("color");
+				}
 			}
 		}
 		cachedColor = null;
@@ -227,6 +237,12 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				info.put("prefix", prefix);
 			} else {
 				this.worldPrefixes.put(world, prefix);
+				Map<String, String> wInfo = worldInfo.get(world);
+				if (wInfo == null) {
+					wInfo = new LinkedHashMap<String, String>();
+					worldInfo.put(world, wInfo);
+				}
+				wInfo.put("prefix", prefix);
 			}
 		} else {
 			if (world == null || world.isEmpty()) {
@@ -234,6 +250,10 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				info.remove("prefix");
 			} else {
 				this.worldPrefixes.remove(world);
+				Map<String, String> wInfo = worldInfo.get(world);
+				if (wInfo != null) {
+					wInfo.remove("prefix");
+				}
 			}
 		}
 		cachedPrefix = null;
@@ -712,13 +732,21 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 			Set<String> worldNames = new HashSet<String>();
 			worldNames.addAll(worldPermissions.keySet());
 			worldNames.addAll(worldGroups.keySet());
+			worldNames.addAll(worldPrefixes.keySet());
+			worldNames.addAll(worldColors.keySet());
+			Map<String, String> winfo = null;
 			List<Group> wgroups = null;
 			List<PermissionNode> wperms = null;
 			for (String worldName : worldNames) {
 				try {
 					file = writer(worldName);
+					winfo = worldInfo.get(worldName);
 					wgroups = worldGroups.get(worldName);
 					wperms = worldPermissions.get(worldName);
+					// save info
+					if (winfo != null && winfo.size() > 0) {
+						writeInfo(file, winfo);
+					}
 					// save groups
 					if (wgroups != null && wgroups.size() > 0) {
 						writeGroups(file, wgroups);
