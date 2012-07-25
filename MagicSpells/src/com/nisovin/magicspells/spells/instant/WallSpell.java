@@ -11,8 +11,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.Vector;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
+import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.TemporaryBlockSet;
 import com.nisovin.magicspells.util.TemporaryBlockSet.BlockSetRemovalCallback;
@@ -38,7 +40,9 @@ public class WallSpell extends InstantSpell {
 		wallWidth = getConfigInt("wall-width", 5);
 		wallHeight = getConfigInt("wall-height", 3);
 		wallDepth = getConfigInt("wall-depth", 1);
-		wallType = Material.getMaterial(getConfigInt("wall-type", Material.BRICK.getId()));
+		String type = getConfigString("wall-type", Material.BRICK.getId() + "");
+		ItemTypeAndData t = MagicSpells.getItemNameResolver().resolve(type);
+		wallType = Material.getMaterial(t != null ? t.id : Material.BRICK.getId());
 		wallDuration = getConfigInt("wall-duration", 15);
 		preventBreaking = getConfigBoolean("prevent-breaking", false);
 		preventDrops = getConfigBoolean("prevent-drops", true);

@@ -14,6 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class MaterializeSpell extends TargetedLocationSpell {
@@ -29,13 +30,10 @@ public class MaterializeSpell extends TargetedLocationSpell {
 		super(config, spellName);
 		
 		String s = getConfigString("block-type", "1");
-		if (s.contains(":")) {
-			String[] s2 = s.split(":");
-			type = Integer.parseInt(s2[0]);
-			data = Byte.parseByte(s2[1]);
-		} else {
-			type = Integer.parseInt(s);
-			data = 0;
+		ItemTypeAndData typeAndData = MagicSpells.getItemNameResolver().resolve(s);
+		if (typeAndData != null) {
+			type = typeAndData.id;
+			data = (byte)typeAndData.data;
 		}
 		resetDelay = getConfigInt("reset-delay", 0);
 		applyPhysics = getConfigBoolean("apply-physics", true);
