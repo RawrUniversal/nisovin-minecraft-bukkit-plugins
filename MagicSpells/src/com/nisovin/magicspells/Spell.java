@@ -132,11 +132,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		String icontemp = config.getString(section + "." + spellName + ".spell-icon", null);
 		if (icontemp == null) {
 			spellIcon = null;
-		} else if (icontemp.contains(":")) {
-			String[] icondata = icontemp.split(":");
-			spellIcon = new ItemStack(Integer.parseInt(icondata[0]), 0, Short.parseShort(icondata[1]));
 		} else {
-			spellIcon = new ItemStack(Integer.parseInt(icontemp), 0, (short)0);
+			spellIcon = Util.getItemStackFromString(icontemp);
+			if (spellIcon != null) {
+				spellIcon.setAmount(0);
+			}
 		}
 		this.broadcastRange = config.getInt(section + "." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 		this.experience = config.getInt(section + "." + spellName + ".experience", 0);

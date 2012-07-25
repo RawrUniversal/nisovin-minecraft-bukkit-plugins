@@ -38,12 +38,15 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
+import com.nisovin.magicspells.events.MagicSpellsLoadingEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.mana.ManaHandler;
 import com.nisovin.magicspells.mana.ManaSystem;
 import com.nisovin.magicspells.util.ExperienceBarManager;
+import com.nisovin.magicspells.util.ItemNameResolver;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.MagicItemNameResolver;
 import com.nisovin.magicspells.util.Metrics;
 import com.nisovin.magicspells.util.Metrics.Graph;
 import com.nisovin.magicspells.util.Util;
@@ -120,6 +123,7 @@ public class MagicSpells extends JavaPlugin {
 	static NoMagicZoneManager noMagicZones;
 	static BuffManager buffManager;
 	static ExperienceBarManager expBarManager;
+	static ItemNameResolver itemNameResolver;
 	
 	// profiling
 	static HashMap<String, Long> profilingTotalTime;
@@ -226,6 +230,16 @@ public class MagicSpells extends JavaPlugin {
 		enableManaBars = config.getBoolean("mana.enable-mana-system", true);
 		manaPotionCooldown = config.getInt("mana.mana-potion-cooldown", 30);
 		strManaPotionOnCooldown = config.getString("mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
+		
+		// create handling objects
+		if (enableManaBars) mana = new ManaSystem(config);
+		noMagicZones = new NoMagicZoneManager();
+		buffManager = new BuffManager(config.getInt("general.buff-check-interval", 0));
+		expBarManager = new ExperienceBarManager();
+		itemNameResolver = new MagicItemNameResolver();
+		
+		// call loading event
+		pm.callEvent(new MagicSpellsLoadingEvent(this));
 				
 		// init permissions
 		boolean opsIgnoreReagents = config.getBoolean("general.ops-ignore-reagents", true);
@@ -285,9 +299,6 @@ public class MagicSpells extends JavaPlugin {
 			spell.initialize();
 		}
 		
-		// setup buff manager
-		buffManager = new BuffManager(config.getInt("general.buff-check-interval", 0));
-		
 		// load online player spellbooks
 		for (Player p : getServer().getOnlinePlayers()) {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
@@ -322,37 +333,34 @@ public class MagicSpells extends JavaPlugin {
 			}
 		}
 		
-		// setup exp bar manager
-		expBarManager = new ExperienceBarManager();
-		
-		// setup mana bar manager
+		// setup mana
 		if (enableManaBars) {
-			mana = new ManaSystem(config);
+			// setup online player mana bars
 			for (Player p : getServer().getOnlinePlayers()) {
 				mana.createManaBar(p);
 			}
-		}
-		
-		// load mana potions
-		List<String> manaPots = config.getStringList("mana.mana-potions", null);
-		if (manaPots != null && manaPots.size() > 0) {
-			manaPotions = new HashMap<ItemStack,Integer>();
-			for (int i = 0; i < manaPots.size(); i++) {
-				String[] data = manaPots.get(i).split(" ");
-				ItemStack item;
-				if (data[0].contains(":")) {
-					String[] data2 = data[0].split(":");
-					item = new ItemStack(Integer.parseInt(data2[0]), 1, Short.parseShort(data2[1]));
-				} else {
-					item = new ItemStack(Integer.parseInt(data[0]), 1);					
+			
+			// load mana potions
+			List<String> manaPots = config.getStringList("mana.mana-potions", null);
+			if (manaPots != null && manaPots.size() > 0) {
+				manaPotions = new HashMap<ItemStack,Integer>();
+				for (int i = 0; i < manaPots.size(); i++) {
+					String[] data = manaPots.get(i).split(" ");
+					ItemStack item;
+					if (data[0].contains(":")) {
+						String[] data2 = data[0].split(":");
+						item = new ItemStack(Integer.parseInt(data2[0]), 1, Short.parseShort(data2[1]));
+					} else {
+						item = new ItemStack(Integer.parseInt(data[0]), 1);					
+					}
+					manaPotions.put(item, Integer.parseInt(data[1]));
 				}
-				manaPotions.put(item, Integer.parseInt(data[1]));
+				manaPotionCooldowns = new HashMap<Player,Long>();
 			}
-			manaPotionCooldowns = new HashMap<Player,Long>();
 		}
 		
 		// load no-magic zones
-		noMagicZones = new NoMagicZoneManager(config);
+		noMagicZones.load(config);
 		if (noMagicZones.zoneCount() == 0) {
 			noMagicZones = null;
 		}
@@ -761,6 +769,14 @@ public class MagicSpells extends JavaPlugin {
 		return expBarManager;
 	}
 	
+	public static ItemNameResolver getItemNameResolver() {
+		return itemNameResolver;
+	}
+	
+	public static void setItemNameResolver(ItemNameResolver resolver) {
+		itemNameResolver = resolver;
+	}
+	
 	/**
 	 * Formats a string by performing the specified replacements.
 	 * @param message the string to format
@@ -977,6 +993,7 @@ public class MagicSpells extends JavaPlugin {
 		for (Spell spell : spells.values()) {
 			spell.turnOff();
 		}
+		
 		// save cooldowns
 		if (cooldownsPersistThroughReload) {
 			File file = new File(getDataFolder(), "cooldowns.txt");
@@ -998,11 +1015,13 @@ public class MagicSpells extends JavaPlugin {
 				file.delete();
 			}
 		}
+		
 		// turn off buff manager
 		if (buffManager != null) {
 			buffManager.turnOff();
 			buffManager = null;
 		}
+		
 		// clear memory
 		spells.clear();
 		spells = null;
@@ -1010,17 +1029,28 @@ public class MagicSpells extends JavaPlugin {
 		spellNames = null;
 		spellbooks.clear();
 		spellbooks = null;
+		incantations.clear();
+		incantations = null;
 		if (mana != null) {
 			mana.turnOff();
 			mana = null;
 		}
+		manaPotionCooldowns.clear();
+		manaPotionCooldowns = null;
+		noMagicZones.turnOff();
+		noMagicZones = null;
+		expBarManager = null;
+		itemNameResolver = null;		
+		
 		// remove star permissions (to allow new spells to be added to them)
 		getServer().getPluginManager().removePermission("magicspells.grant.*");
 		getServer().getPluginManager().removePermission("magicspells.cast.*");
 		getServer().getPluginManager().removePermission("magicspells.learn.*");
 		getServer().getPluginManager().removePermission("magicspells.teach.*");
+		
 		// unregister all listeners
 		HandlerList.unregisterAll(this);
+		
 		// cancel all tasks
 		Bukkit.getScheduler().cancelTasks(this);
 	}

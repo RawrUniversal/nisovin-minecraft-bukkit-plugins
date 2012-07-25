@@ -16,13 +16,15 @@ public class NoMagicZoneManager {
 	private HashMap<String, Class<? extends NoMagicZone>> zoneTypes;
 	private HashMap<String, NoMagicZone> zones;
 
-	public NoMagicZoneManager(MagicConfig config) {
+	public NoMagicZoneManager() {
 		// create zone types
 		zoneTypes = new HashMap<String, Class<? extends NoMagicZone>>();
 		zoneTypes.put("cuboid", NoMagicZoneCuboid.class);
 		zoneTypes.put("worldguard", NoMagicZoneWorldGuard.class);
 		zoneTypes.put("residence", NoMagicZoneResidence.class);
-		
+	}
+	
+	public void load(MagicConfig config) {
 		// get zones
 		zones = new HashMap<String, NoMagicZone>();
 				
@@ -89,6 +91,17 @@ public class NoMagicZoneManager {
 	
 	public int zoneCount() {
 		return zones.size();
+	}
+	
+	public void addZoneType(String name, Class<? extends NoMagicZone> clazz) {
+		zoneTypes.put(name, clazz);
+	}
+	
+	public void turnOff() {
+		zoneTypes.clear();
+		zones.clear();
+		zoneTypes = null;
+		zones = null;
 	}
 	
 }

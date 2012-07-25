@@ -3,11 +3,11 @@ package com.nisovin.magicspells.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 
 public class Util {
 
@@ -34,20 +34,12 @@ public class Util {
 					}
 				}
 			}
-			if (s.contains(":")) {
-				String[] split = s.split(":");
-				if (split[0].matches("[0-9]+")) {
-					item.setTypeId(Integer.parseInt(split[0]));
-				} else {
-					item.setTypeId(Material.getMaterial(split[0].toUpperCase()).getId());
-				}
-				item.setDurability(Short.parseShort(split[1]));
+			ItemTypeAndData itemTypeAndData = MagicSpells.getItemNameResolver().resolve(string);
+			if (itemTypeAndData != null) {
+				item.setTypeId(itemTypeAndData.id);
+				item.setDurability(itemTypeAndData.data);
 			} else {
-				if (s.matches("[0-9]+")) {
-					item.setTypeId(Integer.parseInt(s));
-				} else {
-					item.setTypeId(Material.getMaterial(s.toUpperCase()).getId());
-				}
+				return null;
 			}
 			return item;
 		} catch (Exception e) {

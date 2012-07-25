@@ -40,6 +40,7 @@ import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class ProjectileSpell extends InstantSpell {
 
@@ -76,14 +77,12 @@ public class ProjectileSpell extends InstantSpell {
 			projectileClass = EnderPearl.class;
 		} else if (projectileType.equalsIgnoreCase("potion")) {
 			projectileClass = ThrownPotion.class;
-		} else if (projectileType.matches("[0-9]+(:[0-9]+)?")) {
-			String[] s = projectileType.split(":");
-			int type = Integer.parseInt(s[0]);
-			short data = 0;
-			if (s.length > 1) {
-				data = Short.parseShort(s[1]);
+		} else {
+			ItemStack item = Util.getItemStackFromString(projectileType);
+			if (item != null) {
+				item.setAmount(0);
+				projectileItem = item;
 			}
-			projectileItem = new ItemStack(type, 0, data);
 		}
 		if (projectileClass == null && projectileItem == null) {
 			MagicSpells.error("Invalid projectile type on spell '" + internalName + "'");
