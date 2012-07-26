@@ -87,7 +87,6 @@ public class CommandConvert implements CommandExecutor {
 						List<String> worldInheritedGroupNames = worldSection.getStringList("group");
 						if (worldInheritedGroupNames != null && worldInheritedGroupNames.size() > 0) {
 							inheritedGroups.put(worldName, worldInheritedGroupNames);
-							System.out.println("HELLO! " + groupName + " " + worldName + " " + worldInheritedGroupNames.size());
 						}
 						
 						// get world permissions
@@ -100,7 +99,6 @@ public class CommandConvert implements CommandExecutor {
 						
 						// get world data
 						if (worldSection.contains("prefix")) {
-							System.out.println("FOUND WORLD PREFIX! " + groupName + " " + worldName + " " + worldSection.getString("prefix"));
 							group.setPrefix(worldName, worldSection.getString("prefix"));
 						}
 					}
@@ -122,7 +120,6 @@ public class CommandConvert implements CommandExecutor {
 					Group g = MainPlugin.getGroup(groupName);
 					if (g != null) {
 						group.addGroup(world, g);
-						System.out.println("HELLO AGAIN! " + group.getName() + " " + world + " " + groupName);
 					}
 				}
 			}
@@ -273,7 +270,6 @@ public class CommandConvert implements CommandExecutor {
 					Group g = MainPlugin.getGroup(groupName);
 					if (g != null) {
 						group.addGroup(world, g);
-						System.out.println("HELLO AGAIN! " + group.getName() + " " + world + " " + groupName);
 					}
 				}
 			}
