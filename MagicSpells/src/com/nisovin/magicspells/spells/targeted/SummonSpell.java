@@ -77,7 +77,7 @@ public class SummonSpell extends TargetedSpell {
 			}
 			
 			// check location
-			if (landLoc == null || !BlockUtils.isSafeToStand(landLoc)) {
+			if (landLoc == null || !BlockUtils.isSafeToStand(landLoc.clone())) {
 				sendMessage(player, strUsage);
 				return PostCastAction.ALREADY_HANDLED;
 			}
