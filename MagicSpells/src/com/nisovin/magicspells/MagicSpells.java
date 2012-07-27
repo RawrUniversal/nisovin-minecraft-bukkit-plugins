@@ -1037,10 +1037,12 @@ public class MagicSpells extends JavaPlugin {
 		}
 		manaPotionCooldowns.clear();
 		manaPotionCooldowns = null;
-		noMagicZones.turnOff();
-		noMagicZones = null;
+		if (noMagicZones != null) {
+			noMagicZones.turnOff();
+			noMagicZones = null;
+		}
 		expBarManager = null;
-		itemNameResolver = null;		
+		itemNameResolver = null;
 		
 		// remove star permissions (to allow new spells to be added to them)
 		getServer().getPluginManager().removePermission("magicspells.grant.*");
