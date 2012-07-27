@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -254,6 +256,11 @@ public abstract class BuffSpell extends Spell {
 				EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 				if (evt.getDamager() instanceof Player && isActive((Player)evt.getDamager())) {
 					turnOff((Player)evt.getDamager());
+				} else if (evt.getDamager() instanceof Projectile) {
+					LivingEntity shooter = ((Projectile)evt.getDamager()).getShooter();
+					if (shooter instanceof Player && isActive((Player)shooter)) {
+						turnOff((Player)shooter);
+					}
 				}
 			}
 		}

@@ -94,7 +94,9 @@ public class LightwalkSpell extends BuffSpell {
 			Player p = Bukkit.getServer().getPlayer(s);
 			if (p != null) {
 				Block b = lightwalkers.get(s);
-				p.sendBlockChange(b.getLocation(), b.getType(), b.getData());
+				if (b != null) {
+					p.sendBlockChange(b.getLocation(), b.getType(), b.getData());
+				}
 			}
 		}
 		lightwalkers.clear();

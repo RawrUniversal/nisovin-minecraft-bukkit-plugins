@@ -40,7 +40,7 @@ general:
     
     entity-names:
         zombie: an ugly zombie
-        skeleton: a skeleton
+        skeleton: a scary skeleton
         spider: a spider
         cavespider: a nasty little spider
         creeper: a creepy creeper
@@ -58,10 +58,11 @@ general:
         enderdragon: the ender dragon
         cow: a cow
         sheep: a sheep
-        pig: a pig
+        pig: a smelly pig
         chicken: a duck
         mushroomcow: a deformed cow
-        squid: a squid
+        squid: a slimy squid
+        irongolem: a friendly iron golem
     
 mana:
     enable-mana-system: true
