@@ -42,4 +42,10 @@ public interface CraftBukkitHandle {
 	
 	public void setTarget(LivingEntity entity, LivingEntity target);
 	
+	public boolean setStringOnItemStack(ItemStack item, String key, String value);
+	
+	public String getStringOnItemStack(ItemStack item, String key);
+	
+	public void removeStringOnItemStack(ItemStack item, String key);
+	
 }

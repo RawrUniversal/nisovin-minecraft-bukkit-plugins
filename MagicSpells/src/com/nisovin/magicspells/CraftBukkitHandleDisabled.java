@@ -91,4 +91,18 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 		}
 	}
 
+	@Override
+	public boolean setStringOnItemStack(ItemStack item, String key, String value) {
+		return false;
+	}
+
+	@Override
+	public String getStringOnItemStack(ItemStack item, String key) {
+		return null;
+	}
+
+	@Override
+	public void removeStringOnItemStack(ItemStack item, String key) {
+	}
+
 }

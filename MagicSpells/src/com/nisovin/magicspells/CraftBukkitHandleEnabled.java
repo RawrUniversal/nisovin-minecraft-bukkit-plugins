@@ -12,6 +12,7 @@ import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.EntitySmallFireball;
 import net.minecraft.server.EntityTNTPrimed;
 import net.minecraft.server.MobEffect;
+import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.Packet103SetSlot;
 import net.minecraft.server.Packet22Collect;
 import net.minecraft.server.Packet42RemoveMobEffect;
@@ -27,6 +28,7 @@ import org.bukkit.craftbukkit.entity.CraftCreature;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
@@ -188,6 +190,33 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 			((Creature)entity).setTarget(target);
 		}
 		((CraftLivingEntity)entity).getHandle().b(((CraftLivingEntity)target).getHandle());
+	}
+
+	@Override
+	public boolean setStringOnItemStack(ItemStack item, String key, String value) {
+		NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
+		if (tag != null) {
+			tag.setString(key, value);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String getStringOnItemStack(ItemStack item, String key) {
+		NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
+		if (tag != null) {
+			return tag.getString(key);
+		}
+		return null;
+	}
+
+	@Override
+	public void removeStringOnItemStack(ItemStack item, String key) {
+		NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
+		if (tag != null) {
+			tag.remove(key);
+		}
 	}
 
 }

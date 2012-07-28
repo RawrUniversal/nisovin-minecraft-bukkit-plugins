@@ -4,6 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
@@ -13,9 +16,6 @@ import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
-import com.nisovin.bookworm.Book;
-import com.nisovin.bookworm.BookWorm;
-import com.nisovin.bookworm.event.BookReadEvent;
 
 public class TomeSpell extends CommandSpell {
 
@@ -74,12 +74,14 @@ public class TomeSpell extends CommandSpell {
 				}
 			}
 			
-			Book book = BookWorm.getBook(player.getItemInHand());
-			if (book == null) {
+			ItemStack item = player.getItemInHand();
+			if (item.getTypeId() != 386 && item.getTypeId() != 387) {
 				// fail -- no book
 				sendMessage(player, strNoBook);
 				return PostCastAction.ALREADY_HANDLED;
-			} else if (!allowOverwrite && book.hasHiddenData("MagicSpell")) {
+			}
+			
+			if (!allowOverwrite && MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpell") != null) {
 				// fail -- already has a spell
 				sendMessage(player, strAlreadyHasSpell);
 				return PostCastAction.ALREADY_HANDLED;
@@ -91,8 +93,7 @@ public class TomeSpell extends CommandSpell {
 				if (uses > maxUses || (maxUses > 0 && uses < 0)) {
 					uses = maxUses;
 				}
-				book.addHiddenData("MagicSpell", spell.getInternalName() + (uses>0?","+uses:""));
-				book.save();
+				MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpell", spell.getInternalName() + (uses>0?","+uses:""));
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -109,8 +110,13 @@ public class TomeSpell extends CommandSpell {
 	}
 	
 	@EventHandler
-	public void onBookRead(BookReadEvent event) {
-		String spellData = event.getBook().getHiddenData("MagicSpell");
+	public void onInteract(PlayerInteractEvent event) {
+		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+		if (!event.hasItem()) return;
+		ItemStack item = event.getItem();
+		if (item.getTypeId() != 386 && item.getTypeId() != 387) return;
+		
+		String spellData = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpells");
 		if (spellData != null && !spellData.equals("")) {
 			String[] data = spellData.split(",");
 			Spell spell = MagicSpells.getSpellByInternalName(data[0]);
@@ -145,9 +151,9 @@ public class TomeSpell extends CommandSpell {
 						if (uses > 0) {
 							uses--;
 							if (uses > 0) {
-								event.getBook().addHiddenData("MagicSpell", data[0] + "," + uses);
+								MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpells", data[0] + "," + uses);
 							} else {
-								event.getBook().removeHiddenData("MagicSpell");
+								MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, "MagicSpells");
 							}							
 						}
 						// consume
