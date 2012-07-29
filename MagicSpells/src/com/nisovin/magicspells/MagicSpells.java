@@ -1035,8 +1035,10 @@ public class MagicSpells extends JavaPlugin {
 			mana.turnOff();
 			mana = null;
 		}
-		manaPotionCooldowns.clear();
-		manaPotionCooldowns = null;
+		if (manaPotionCooldowns != null) {
+			manaPotionCooldowns.clear();
+			manaPotionCooldowns = null;
+		}
 		if (noMagicZones != null) {
 			noMagicZones.turnOff();
 			noMagicZones = null;

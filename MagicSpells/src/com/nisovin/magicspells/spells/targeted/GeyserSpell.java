@@ -79,7 +79,7 @@ public class GeyserSpell extends TargetedEntitySpell {
 					target.setHealth(health);
 					target.playEffect(EntityEffect.HURT);
 				} else {
-					target.damage(dam);
+					target.damage(dam, player);
 				}
 			}
 			

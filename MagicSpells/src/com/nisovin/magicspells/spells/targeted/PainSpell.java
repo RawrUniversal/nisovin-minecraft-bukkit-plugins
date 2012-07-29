@@ -65,7 +65,7 @@ public class PainSpell extends TargetedEntitySpell {
 			target.setHealth(health);
 			target.playEffect(EntityEffect.HURT);
 		} else {
-			target.damage(dam);
+			target.damage(dam, player);
 		}
 		playSpellEffects(player, target);
 		return true;
