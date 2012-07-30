@@ -29,7 +29,7 @@ public class Util {
 							ench = Enchantment.getByName(enchantData[0].toUpperCase());
 						}
 						if (ench != null && enchantData[1].matches("[0-9]+")) {
-							item.addEnchantment(ench, Integer.parseInt(enchantData[1]));
+							item.addUnsafeEnchantment(ench, Integer.parseInt(enchantData[1]));
 						}
 					}
 				}
