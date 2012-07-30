@@ -2,6 +2,7 @@ package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -13,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
@@ -24,6 +27,7 @@ public class PulseSpell extends TargetedLocationSpell {
 
 	private int totalPulses;
 	private int interval;
+	private int maxDistanceSquared;
 	private int typeId;
 	private byte data;
 	private boolean unbreakable;
@@ -37,6 +41,8 @@ public class PulseSpell extends TargetedLocationSpell {
 		
 		totalPulses = getConfigInt("total-pulses", 5);
 		interval = getConfigInt("interval", 30);
+		maxDistanceSquared = getConfigInt("max-distance", 30);
+		maxDistanceSquared *= maxDistanceSquared;
 		ItemTypeAndData type = MagicSpells.getItemNameResolver().resolve(getConfigString("block-type", "diamond_block"));
 		typeId = type.id;
 		data = (byte)type.data;
@@ -105,12 +111,52 @@ public class PulseSpell extends TargetedLocationSpell {
 	public void onBlockBreak(BlockBreakEvent event) {
 		Pulser pulser = pulsers.get(event.getBlock());
 		if (pulser != null) {
-			if (unbreakable) {
-				event.setCancelled(true);
-			} else {
+			event.setCancelled(true);
+			if (!unbreakable) {
 				pulser.stop();
+				event.getBlock().setType(Material.AIR);
 			}
 		}
+	}
+
+	@EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
+	public void onEntityExplode(EntityExplodeEvent event) {
+		if (pulsers.size() > 0) {
+			Iterator<Block> iter = event.blockList().iterator();
+			while(iter.hasNext()) {
+				Block b = iter.next();
+				Pulser pulser = pulsers.get(b);
+				if (pulser != null) {
+					iter.remove();
+					if (!unbreakable) {
+						pulser.stop();
+					}
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
+	public void onPiston(BlockPistonExtendEvent event) {
+		if (pulsers.size() > 0) {
+			for (Block b : event.getBlocks()) {
+				Pulser pulser = pulsers.get(b);
+				if (pulser != null) {
+					event.setCancelled(true);	
+					if (!unbreakable) {
+						pulser.stop();
+					}
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void turnOff() {
+		for (Pulser p : new ArrayList<Pulser>(pulsers.values())) {
+			p.stop();
+		}
+		pulsers.clear();
 	}
 	
 	public class Pulser implements Runnable {
@@ -133,14 +179,18 @@ public class PulseSpell extends TargetedLocationSpell {
 		}
 		
 		public void run() {
-			if (!caster.isDead() && caster.isOnline()) {
-				for (TargetedLocationSpell spell : spells) {
-					spell.castAtLocation(caster, location, power);
-				}
-				if (totalPulses > 0) {
-					pulseCount += 1;
-					if (pulseCount >= totalPulses) {
-						stop();
+			if (!caster.isDead() && caster.isOnline() && block.getTypeId() == typeId) {
+				if (maxDistanceSquared > 0 && location.distanceSquared(caster.getLocation()) > maxDistanceSquared) {
+					stop();
+				} else {
+					for (TargetedLocationSpell spell : spells) {
+						spell.castAtLocation(caster, location, power);
+					}
+					if (totalPulses > 0) {
+						pulseCount += 1;
+						if (pulseCount >= totalPulses) {
+							stop();
+						}
 					}
 				}
 			} else {

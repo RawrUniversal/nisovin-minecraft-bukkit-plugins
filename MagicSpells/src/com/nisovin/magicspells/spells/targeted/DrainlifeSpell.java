@@ -88,7 +88,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 				target.setHealth(health);
 				target.playEffect(EntityEffect.HURT);
 			} else {
-				target.damage(take);
+				target.damage(take, player);
 			}
 		} else if (takeType.equals("mana")) {
 			if (target instanceof Player) {

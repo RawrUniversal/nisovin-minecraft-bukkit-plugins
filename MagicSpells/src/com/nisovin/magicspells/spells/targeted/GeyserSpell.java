@@ -102,6 +102,7 @@ public class GeyserSpell extends TargetedEntitySpell {
 		// create animation
 		if (geyserHeight > 0) {
 			List<Entity> allNearby = target.getNearbyEntities(50, 50, 50);
+			allNearby.add(target);
 			List<Player> playersNearby = new ArrayList<Player>();
 			for (Entity e : allNearby) {
 				if (e instanceof Player) {
