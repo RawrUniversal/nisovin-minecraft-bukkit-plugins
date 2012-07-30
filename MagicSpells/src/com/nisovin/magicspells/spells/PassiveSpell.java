@@ -193,8 +193,9 @@ public class PassiveSpell extends Spell {
 	}
 	
 	private void activate(Player caster, LivingEntity target, Location location) {
-		MagicSpells.debug(3, "Activating passive spell '" + name + "' for player " + caster.getName());
-		if (!disabled && (chance >= .999 || random.nextFloat() <= chance) && getCastState(caster) == SpellCastState.NORMAL) {
+		SpellCastState state = getCastState(caster);
+		MagicSpells.debug(3, "Activating passive spell '" + name + "' for player " + caster.getName() + " (state: " + state + ")");
+		if (!disabled && (chance >= .999 || random.nextFloat() <= chance) && state == SpellCastState.NORMAL) {
 			disabled = true;
 			SpellCastEvent event = new SpellCastEvent(this, caster, SpellCastState.NORMAL, 1.0F, null, this.cooldown, this.reagents.clone(), 0);
 			Bukkit.getPluginManager().callEvent(event);
@@ -224,6 +225,8 @@ public class PassiveSpell extends Spell {
 				}
 				removeReagents(caster, event.getReagents());
 				sendMessage(caster, strCastSelf);				
+			} else {
+				MagicSpells.debug(3, "   Passive spell canceled");
 			}
 			disabled = false;
 		}

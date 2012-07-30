@@ -21,6 +21,7 @@ public class ForcebombSpell extends TargetedLocationSpell {
 
 	private int radiusSquared;
 	private boolean targetPlayers;
+	private boolean dontPushCaster;
 	private int force;
 	private int yForce;
 	private int maxYForce;
@@ -32,6 +33,7 @@ public class ForcebombSpell extends TargetedLocationSpell {
 		radiusSquared = getConfigInt("radius", 3);
 		radiusSquared *= radiusSquared;
 		targetPlayers = getConfigBoolean("target-players", false);
+		dontPushCaster = getConfigBoolean("dont-push-caster", true);
 		force = getConfigInt("pushback-force", 30);
 		yForce = getConfigInt("additional-vertical-force", 15);
 		maxYForce = getConfigInt("max-vertical-force", 20);
@@ -62,7 +64,7 @@ public class ForcebombSpell extends TargetedLocationSpell {
 		Collection<Entity> entities = location.getWorld().getEntitiesByClasses(LivingEntity.class);
 		Vector e, v;
 		for (Entity entity : entities) {
-			if ((targetPlayers || !(entity instanceof Player)) && entity.getLocation().distanceSquared(location) <= radiusSquared) {
+			if ((targetPlayers || !(entity instanceof Player)) && (!dontPushCaster || !entity.equals(player)) && entity.getLocation().distanceSquared(location) <= radiusSquared) {
 				if (callTargetEvents) {
 					SpellTargetEvent event = new SpellTargetEvent(this, player, (LivingEntity)entity);
 					Bukkit.getPluginManager().callEvent(event);
