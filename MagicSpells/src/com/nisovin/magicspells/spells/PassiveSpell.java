@@ -144,6 +144,10 @@ public class PassiveSpell extends Spell {
 				} else if (type.equalsIgnoreCase("stopsneak")) {
 					registerEvents(new StopSneakListener());
 					trigCount++;
+				} else if (type.equalsIgnoreCase("ticks")) {
+					int interval = Integer.parseInt(var);
+					Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, new Ticker(), interval, interval);
+					trigCount++;
 				} else if (type.equalsIgnoreCase("buff")) {
 					registerEvents(new BuffListener());
 					trigCount++;
@@ -684,6 +688,17 @@ public class PassiveSpell extends Spell {
 							buff.turnOff(player);
 						}
 					}
+				}
+			}
+		}
+	}
+	
+	public class Ticker implements Runnable {
+		@Override
+		public void run() {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				if (hasSpell(player)) {
+					activate(player);
 				}
 			}
 		}
