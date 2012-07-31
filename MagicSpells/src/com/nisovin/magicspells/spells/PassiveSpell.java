@@ -7,6 +7,7 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -118,6 +119,9 @@ public class PassiveSpell extends Spell {
 					trigCount++;
 				} else if (type.equalsIgnoreCase("rightclick")) {
 					registerEvents(new RightClickListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("rightclickblock")) {
+					registerEvents(new RightClickBlockListener(var));
 					trigCount++;
 				} else if (type.equalsIgnoreCase("spellcast")) {
 					registerEvents(new SpellCastListener(var));
@@ -472,6 +476,47 @@ public class PassiveSpell extends Spell {
 		private boolean checkItem(ItemStack item) {
 			for (int i = 0; i < typeIds.length; i++) {
 				if (item.getTypeId() == typeIds[i] && (!checkData[i] || item.getDurability() == datas[i])) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+	
+	public class RightClickBlockListener implements Listener {
+		String[] world;
+		int[] x;
+		int[] y;
+		int[] z;
+		
+		public RightClickBlockListener(String var) {
+			String[] locs = var.split(";");
+			world = new String[locs.length];
+			x = new int[locs.length];
+			y = new int[locs.length];
+			z = new int[locs.length];
+			for (int i = 0; i < locs.length; i++) {
+				String[] data = locs[i].split(",");
+				world[i] = data[0];
+				x[i] = Integer.parseInt(data[1]);
+				y[i] = Integer.parseInt(data[2]);
+				z[i] = Integer.parseInt(data[3]);
+			}
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onRightClick(PlayerInteractEvent event) {
+			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				Block block = event.getClickedBlock();
+				if (check(block.getWorld().getName(), block.getX(), block.getY(), block.getZ())) {
+					activate(event.getPlayer(), event.getPlayer(), block.getLocation());
+				}
+			}
+		}
+		
+		private boolean check(String world, int x, int y, int z) {
+			for (int i = 0; i < this.world.length; i++) {
+				if (this.world[i].equals(world) && this.x[i] == x && this.y[i] == y && this.z[i] == z) {
 					return true;
 				}
 			}
