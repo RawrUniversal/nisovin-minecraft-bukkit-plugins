@@ -25,6 +25,7 @@ import com.nisovin.magicspells.util.Util;
 
 public abstract class BuffSpell extends Spell {
 	
+	protected boolean toggle;
 	protected int healthCost = 0;
 	protected int manaCost = 0;
 	protected int hungerCost = 0;
@@ -48,6 +49,7 @@ public abstract class BuffSpell extends Spell {
 	public BuffSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		toggle = getConfigBoolean("toggle", true);
 		List<String> costList = getConfigStringList("use-cost", null);
 		if (costList != null && costList.size() > 0) {
 			reagents = new SpellReagents();

@@ -60,8 +60,11 @@ public class WindwalkSpell extends BuffSpell {
 	public PostCastAction castSpell(final Player player, SpellCastState state, float power, String[] args) {
 		if (flyers.contains(player)) {
 			turnOff(player);
-			return PostCastAction.ALREADY_HANDLED;
-		} else if (state == SpellCastState.NORMAL) {
+			if (toggle) {
+				return PostCastAction.ALREADY_HANDLED;
+			}
+		}
+		if (state == SpellCastState.NORMAL) {
 			// set flying
 			flyers.add(player);
 			player.setAllowFlight(true);

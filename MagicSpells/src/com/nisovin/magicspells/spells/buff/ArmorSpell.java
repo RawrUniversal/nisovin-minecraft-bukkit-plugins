@@ -20,7 +20,6 @@ import com.nisovin.magicspells.util.Util;
 
 public class ArmorSpell extends BuffSpell {
 
-	private boolean toggle;
 	private boolean permanent;
 	
 	private ItemStack helmet;
@@ -35,7 +34,6 @@ public class ArmorSpell extends BuffSpell {
 	public ArmorSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		toggle = getConfigBoolean("toggle", false);
 		permanent = getConfigBoolean("permanent", false);
 		
 		helmet = getItem(getConfigString("helmet", ""));

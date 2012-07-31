@@ -19,7 +19,6 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class SeeHealthSpell extends BuffSpell {
 
-	private boolean toggle;
 	private String mode;
 	private int interval;
 	private int range;
@@ -33,7 +32,6 @@ public class SeeHealthSpell extends BuffSpell {
 	public SeeHealthSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		toggle = getConfigBoolean("toggle", true);
 		mode = getConfigString("mode", "attack");
 		interval = getConfigInt("update-interval", 5);
 		range = getConfigInt("range", 15);

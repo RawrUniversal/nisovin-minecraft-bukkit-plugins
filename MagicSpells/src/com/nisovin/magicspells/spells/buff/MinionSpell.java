@@ -73,7 +73,9 @@ public class MinionSpell extends BuffSpell {
 			LivingEntity minion = minions.get(player.getName());
 			if (!minion.isDead()) { // don't toggle off if the minion is dead
 				turnOff(player);
-				return PostCastAction.ALREADY_HANDLED;
+				if (toggle) {
+					return PostCastAction.ALREADY_HANDLED;
+				}
 			}
 		} 
 		if (state == SpellCastState.NORMAL) {
