@@ -23,7 +23,7 @@ import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class PulseSpell extends TargetedLocationSpell {
+public class PulserSpell extends TargetedLocationSpell {
 
 	private int totalPulses;
 	private int interval;
@@ -36,7 +36,7 @@ public class PulseSpell extends TargetedLocationSpell {
 	
 	private HashMap<Block, Pulser> pulsers;
 	
-	public PulseSpell(MagicConfig config, String spellName) {
+	public PulserSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		totalPulses = getConfigInt("total-pulses", 5);
