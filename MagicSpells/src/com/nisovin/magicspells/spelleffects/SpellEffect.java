@@ -75,6 +75,8 @@ public abstract class SpellEffect {
 		effects.put("smoke", new SmokeEffect());
 		effects.put("smokeswirl", new SmokeSwirlEffect());
 		effects.put("smoketrail", new SmokeTrailEffect());
+		effects.put("sound", new SoundEffect());
+		effects.put("soundpersonal", new SoundPersonalEffect());
 		effects.put("spawn", new MobSpawnerEffect());
 		effects.put("splash", new SplashPotionEffect());
 	}
