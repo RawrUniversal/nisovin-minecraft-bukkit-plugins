@@ -959,3 +959,16 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 }
+
+/*
+ * TODO for version 3.0:
+ * 
+ * - Use MagicPlayer across the entire plugin
+ * - Create a method for task scheduling and use it across the entire plugin
+ * - Make BuffSpell handle more stuff automatically
+ *   - Implement castSpell
+ *   - Handle toggling
+ *   - Start spell duration
+ * - Move NoMagicZoneWorldGuard and NoMagicZoneResidence outside of the core plugin
+ * 
+ */

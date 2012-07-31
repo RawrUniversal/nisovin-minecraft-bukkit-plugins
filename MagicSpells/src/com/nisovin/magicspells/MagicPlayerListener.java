@@ -165,10 +165,11 @@ class MagicPlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerAnimation(PlayerAnimationEvent event) {		
-		if (event.isCancelled() || !MagicSpells.castOnAnimate) return;
+		if (!MagicSpells.castOnAnimate) return;
 		
 		Player p = event.getPlayer();
 		if (noCast.contains(p)) {
+			// clicking on special block -- don't cast
 			noCast.remove(p);
 			lastCast.put(p, System.currentTimeMillis());
 		} else {
