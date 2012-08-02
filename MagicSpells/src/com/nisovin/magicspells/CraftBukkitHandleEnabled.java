@@ -113,7 +113,7 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 
 	@Override
 	public void toggleLeverOrButton(Block block) {
-		net.minecraft.server.Block.byId[block.getType().getId()].interact(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null);
+		net.minecraft.server.Block.byId[block.getType().getId()].interact(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);
 	}
 
 	@Override

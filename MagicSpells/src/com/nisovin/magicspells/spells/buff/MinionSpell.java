@@ -97,7 +97,7 @@ public class MinionSpell extends BuffSpell {
 				loc.setX(loc.getX()-1);
 				
 				// spawn creature
-				LivingEntity minion = player.getWorld().spawnCreature(loc, creatureType);
+				LivingEntity minion = (LivingEntity)player.getWorld().spawnEntity(loc, creatureType);
 				if (minion instanceof Creature) {
 					minions.put(player.getName(), minion);
 					targets.put(player.getName(), null);
