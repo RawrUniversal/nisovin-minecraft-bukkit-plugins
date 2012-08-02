@@ -16,3 +16,13 @@ set player metadata : false
 == LADDERS ==
 
 main : default, vips, mods, admins
+
+== DENY PERMISSIONS ==
+
+place    : false
+break    : false
+craft    : false
+pickup   : false
+drop     : false
+useitem  : false
+useblock : false

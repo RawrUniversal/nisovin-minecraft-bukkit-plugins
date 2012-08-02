@@ -22,6 +22,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.nisovin.yapp.denyperms.*;
 import com.nisovin.yapp.menu.Menu;
 
 public class MainPlugin extends JavaPlugin {
@@ -138,6 +139,26 @@ public class MainPlugin extends JavaPlugin {
 		}
 		if (config.getboolean("general.use chat formatting")) {
 			pm.registerEvents(new ChatListener(), this);
+		}
+		
+		// register deny perms
+		if (config.getboolean("deny permissions.place")) {
+			pm.registerEvents(new PlaceListener(), this);
+		}
+		if (config.getboolean("deny permissions.break")) {
+			pm.registerEvents(new BreakListener(), this);
+		}
+		if (config.getboolean("deny permissions.craft")) {
+			pm.registerEvents(new CraftListener(), this);
+		}
+		if (config.getboolean("deny permissions.pickup")) {
+			pm.registerEvents(new PickupListener(), this);
+		}
+		if (config.getboolean("deny permissions.drop")) {
+			pm.registerEvents(new DropListener(), this);
+		}
+		if (config.getboolean("deny permissions.useitem") || config.getboolean("deny permissions.useblock")) {
+			pm.registerEvents(new UseListener(config.getboolean("deny permissions.useitem"), config.getboolean("deny permissions.useblock")), this);
 		}
 		
 		// create converation factory
