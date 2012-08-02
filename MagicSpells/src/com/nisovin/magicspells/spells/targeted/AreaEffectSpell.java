@@ -18,14 +18,16 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class AreaEffectSpell extends TargetedLocationSpell {
 
-	private int radiusSquared;
+	private int radius;
 	private int verticalRadius;
 	private boolean pointBlank;
 	private boolean failIfNoTargets;
+	private boolean targetCaster;
 	private boolean targetPlayers;
 	private boolean targetNonPlayers;
 	private int maxTargets;
@@ -36,11 +38,12 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 	public AreaEffectSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		radiusSquared = getConfigInt("horizontal-radius", 10);
-		radiusSquared *= radiusSquared;
+		radius = getConfigInt("horizontal-radius", 10);
+		//radiusSquared *= radiusSquared;
 		verticalRadius = getConfigInt("vertical-radius", 5);
 		pointBlank = getConfigBoolean("point-blank", true);
 		failIfNoTargets = getConfigBoolean("fail-if-no-targets", true);
+		targetCaster = getConfigBoolean("target-caster", false);
 		targetPlayers = getConfigBoolean("target-players", false);
 		targetNonPlayers = getConfigBoolean("target-non-players", true);
 		maxTargets = getConfigInt("max-targets", 0);
@@ -113,11 +116,12 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 	private boolean doAoe(Player player, Location location, float power) {
 		int count = 0;
 		
+		BoundingBox box = new BoundingBox(location, radius, verticalRadius);
 		Collection<Entity> entities = location.getWorld().getEntitiesByClasses(LivingEntity.class);
 		for (Entity e : entities) {
-			if (e.getLocation().distanceSquared(location) <= radiusSquared && Math.abs(e.getLocation().getY() - location.getY()) <= verticalRadius) {
+			if (box.contains(e)) {
 				boolean isPlayer = (e instanceof Player);
-				if (!((LivingEntity)e).isDead() && !(isPlayer && ((Player)e).getName().equals(player.getName())) && (targetPlayers || !isPlayer) && (targetNonPlayers || isPlayer)) {
+				if (!((LivingEntity)e).isDead() && !(isPlayer && !targetCaster && ((Player)e).getName().equals(player.getName())) && (targetPlayers || !isPlayer) && (targetNonPlayers || isPlayer)) {
 					LivingEntity target = (LivingEntity)e;
 					SpellTargetEvent event = new SpellTargetEvent(this, player, target);
 					Bukkit.getPluginManager().callEvent(event);
