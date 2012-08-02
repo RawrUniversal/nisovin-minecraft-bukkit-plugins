@@ -62,6 +62,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected int castTime;
 	protected boolean interruptOnMove;
 	protected boolean interruptOnDamage;
+	protected boolean interruptOnCast;
 	protected String spellOnInterrupt;
 	
 	protected SpellReagents reagents;
@@ -145,6 +146,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.castTime = config.getInt(section + "." + spellName + ".cast-time", 0);
 		this.interruptOnMove = config.getBoolean(section + "." + spellName + ".interrupt-on-move", true);
 		this.interruptOnDamage = config.getBoolean(section + "." + spellName + ".interrupt-on-damage", false);
+		this.interruptOnCast = config.getBoolean(section + "." + spellName + ".interrupt-on-cast", true);
 		this.spellOnInterrupt = config.getString(section + "." + spellName + ".spell-on-interrupt", null);
 		
 		// graphical effects
@@ -1246,9 +1248,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			this.reagents = reagents;
 			
 			taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, this, castTime);
-			if (interruptOnDamage) {
-				registerEvents(this);
-			}
+			registerEvents(this);
 		}
 		
 		@Override
@@ -1264,14 +1264,22 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					interrupt();
 				}
 			}
-			HandlerList.unregisterAll(this);
+			unregisterEvents(this);
 		}
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onDamage(EntityDamageEvent event) {
-			if (event.getEntity().equals(player)) {
+			if (interruptOnDamage && !cancelled && event.getEntity().equals(player)) {
 				cancelled = true;
 				Bukkit.getScheduler().cancelTask(taskId);
+				interrupt();
+			}
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSpellCast(SpellCastEvent event) {
+			if (interruptOnCast && !cancelled) {
+				cancelled = true;
 				interrupt();
 			}
 		}
@@ -1315,9 +1323,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			MagicSpells.getExpBarManager().lock(player, this);
 			
 			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, interval, interval);
-			if (interruptOnDamage) {
-				registerEvents(this);
-			}
+			registerEvents(this);
 		}
 		
 		@Override
@@ -1344,7 +1350,15 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onDamage(EntityDamageEvent event) {
-			if (!cancelled && event.getEntity().equals(player)) {
+			if (interruptOnDamage && !cancelled && event.getEntity().equals(player)) {
+				cancelled = true;
+				interrupt();
+			}
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onSpellCast(SpellCastEvent event) {
+			if (interruptOnCast && !cancelled) {
 				cancelled = true;
 				interrupt();
 			}
@@ -1364,7 +1378,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		private void end() {
 			cancelled = true;
 			Bukkit.getScheduler().cancelTask(taskId);
-			HandlerList.unregisterAll(this);
+			unregisterEvents(this);
 			MagicSpells.getExpBarManager().unlock(player, this);
 			MagicSpells.getExpBarManager().update(player, player.getLevel(), player.getExp());
 		}
