@@ -111,6 +111,12 @@ public class PassiveSpell extends Spell {
 				} else if (type.equalsIgnoreCase("kill")) {
 					registerEvents(new KillListener(var));
 					trigCount++;
+				} else if (type.equalsIgnoreCase("death")) {
+					registerEvents(new DeathListener());
+					trigCount++;
+				} else if (type.equalsIgnoreCase("respawn")) {
+					registerEvents(new RespawnListener());
+					trigCount++;
 				} else if (type.equalsIgnoreCase("blockbreak")) {
 					registerEvents(new BlockBreakListener(var));
 					trigCount++;
@@ -378,6 +384,28 @@ public class PassiveSpell extends Spell {
 			}
 		}
 		
+	}
+	
+	public class DeathListener implements Listener {		
+		@EventHandler
+		public void onDeath(PlayerDeathEvent event) {
+			if (hasSpell(event.getEntity())) {
+				activate(event.getEntity());
+			}
+		}		
+	}
+	
+	public class RespawnListener implements Listener {
+		@EventHandler
+		public void onRespawn(final PlayerRespawnEvent event) {
+			if (hasSpell(event.getPlayer())) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+					public void run() {
+						activate(event.getPlayer());
+					}
+				}, 1);
+			}
+		}
 	}
 	
 	public class BlockBreakListener implements Listener {
