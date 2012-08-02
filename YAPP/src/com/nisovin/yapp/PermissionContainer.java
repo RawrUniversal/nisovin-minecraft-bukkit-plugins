@@ -145,6 +145,10 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	public ChatColor getColor(String world) {
 		if (cachedColor.containsKey(world)) {
 			return cachedColor.get(world);
+		} else if (worldColors.containsKey(world)) {
+			ChatColor c = worldColors.get(world);
+			cachedColor.put(world, c);
+			return c;
 		} else if (color != null) {
 			cachedColor.put(world, color);
 			return color;
@@ -211,6 +215,10 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	public String getPrefix(String world) {
 		if (cachedPrefix.containsKey(world)) {
 			return cachedPrefix.get(world);
+		} else if (worldPrefixes.containsKey(world)) {
+			String p = colorify(worldPrefixes.get(world));
+			cachedPrefix.put(world, p);
+			return p;
 		} else if (prefix != null) {
 			String p = colorify(prefix);
 			cachedPrefix.put(world, p);
