@@ -16,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
@@ -146,6 +147,18 @@ public class PulserSpell extends TargetedLocationSpell {
 					if (!unbreakable) {
 						pulser.stop();
 					}
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onDeath(PlayerDeathEvent event) {
+		if (pulsers.size() > 0) {
+			Player player = event.getEntity();
+			for (Pulser pulser : new ArrayList<Pulser>(pulsers.values())) {
+				if (pulser.caster.equals(player)) {
+					pulser.stop();
 				}
 			}
 		}
