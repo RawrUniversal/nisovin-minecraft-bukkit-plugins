@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import net.minecraft.server.Packet20NamedEntitySpawn;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -36,6 +38,7 @@ public class MainPlugin extends JavaPlugin {
 	private static boolean debug = true;
 	private boolean updateDisplayName = true;
 	private boolean updatePlayerList = true;
+	private boolean setNameplateColor = false;
 	private boolean setPlayerGroupPerm = false;
 	private boolean setPlayerMetadata = false;
 
@@ -81,6 +84,7 @@ public class MainPlugin extends JavaPlugin {
 		debug = config.getboolean("general.debug");
 		updateDisplayName = config.getboolean("general.update display name");
 		updatePlayerList = config.getboolean("general.update player list");
+		setNameplateColor = config.getboolean("general.set nameplate color");
 		setPlayerGroupPerm = config.getboolean("general.set group perm");
 		setPlayerMetadata = config.getboolean("general.set player metadata");
 		boolean modalMenu = config.getboolean("general.modal menu");
@@ -110,13 +114,10 @@ public class MainPlugin extends JavaPlugin {
 				List<Group> ladderGroups = new ArrayList<Group>();
 				for (String s : groupList) {
 					Group g = getGroup(s);
-					if (g != null) {
-						ladderGroups.add(g);
-					} else {
-						error("Group '" + s + "' in ladder '" + key + "' does not exist, ignoring this ladder");
-						ladderGroups = null;
-						break;
+					if (g == null) {
+						g = newGroup(s);
 					}
+					ladderGroups.add(g);
 				}
 				if (ladderGroups != null) {
 					ladders.put(key, ladderGroups);
@@ -342,6 +343,16 @@ public class MainPlugin extends JavaPlugin {
 			if (primaryGroup != null) {
 				player.removeMetadata("group", this);
 				player.setMetadata("group", new FixedMetadataValue(this, primaryGroup.getName()));
+			}
+		}
+		
+		// set nameplate
+		if (setNameplateColor) {
+			try {
+				Map<String, String> nameMap = (Map<String, String>)Packet20NamedEntitySpawn.class.getDeclaredField("yappMap").get(null);
+				nameMap.put(playerName, user.getColor(worldName) + playerName);
+			} catch (Exception e) {
+				error("Option 'set nameplate color' is enabled, but the mod is not installed!");
 			}
 		}
 		

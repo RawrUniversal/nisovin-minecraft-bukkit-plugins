@@ -59,11 +59,7 @@ public class CommandConvert implements CommandExecutor {
 				allInheritedGroups.put(group, inheritedGroups);
 				
 				// get group's inherited groups
-				List<String> inheritedGroupNames = groupSection.getStringList("inheritence");
-				if (inheritedGroupNames != null && inheritedGroupNames.size() > 0) {
-					inheritedGroups.put(null, inheritedGroupNames);
-				}
-				inheritedGroupNames = groupSection.getStringList("inheritance");
+				List<String> inheritedGroupNames = groupSection.getStringList("inheritance");
 				if (inheritedGroupNames != null && inheritedGroupNames.size() > 0) {
 					inheritedGroups.put(null, inheritedGroupNames);
 				}
@@ -84,7 +80,7 @@ public class CommandConvert implements CommandExecutor {
 						ConfigurationSection worldSection = worldsSection.getConfigurationSection(worldName);
 						
 						// get world inherited groups
-						List<String> worldInheritedGroupNames = worldSection.getStringList("group");
+						List<String> worldInheritedGroupNames = worldSection.getStringList("inheritance");
 						if (worldInheritedGroupNames != null && worldInheritedGroupNames.size() > 0) {
 							inheritedGroups.put(worldName, worldInheritedGroupNames);
 						}

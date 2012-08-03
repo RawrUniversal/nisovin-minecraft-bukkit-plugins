@@ -138,10 +138,6 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		dirty = true;
 	}
 	
-	public ChatColor getColor() {
-		return getColor(null);
-	}
-	
 	public ChatColor getColor(String world) {
 		if (cachedColor.containsKey(world)) {
 			return cachedColor.get(world);
@@ -204,7 +200,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				}
 			}
 		}
-		cachedColor = null;
+		cachedColor.clear();
 		dirty = true;
 	}
 	
@@ -264,7 +260,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 				}
 			}
 		}
-		cachedPrefix = null;
+		cachedPrefix.clear();
 		dirty = true;
 	}
 	
@@ -656,10 +652,12 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 							} else {
 								c = ChatColor.valueOf(val.replace(" ", "_").toUpperCase());
 							}
-							if (worldName == null) {
-								color = c;
-							} else {
-								worldColors.put(worldName, c);
+							if (c != null) {
+								if (worldName == null) {
+									color = c;
+								} else {
+									worldColors.put(worldName, c);
+								}
 							}
 						} else if (key.equals("prefix")) {
 							if (worldName == null) {
@@ -728,9 +726,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 					writeGroups(file, groups);
 				}
 				// save perms
-				if (permissions.size() > 0) {
-					writePermissions(file, permissions);
-				}
+				writePermissions(file, permissions);
 				file.close();
 			} catch (IOException e) {
 				MainPlugin.error("Failed to write file for " + type + " '" + name + "'!");
@@ -760,7 +756,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 						writeGroups(file, wgroups);
 					}
 					// save perms
-					if (wperms != null && wperms.size() > 0) {
+					if (wperms != null) {
 						writePermissions(file, wperms);
 					}
 					file.close();
