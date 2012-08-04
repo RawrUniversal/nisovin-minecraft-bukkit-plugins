@@ -1359,7 +1359,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onSpellCast(SpellCastEvent event) {
-			if (interruptOnCast && !cancelled) {
+			if (interruptOnCast && !cancelled && event.getCaster().equals(player)) {
 				cancelled = true;
 				interrupt();
 			}
