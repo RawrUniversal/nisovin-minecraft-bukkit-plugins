@@ -3,6 +3,7 @@ package com.nisovin.yapp;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -126,7 +127,7 @@ public class MainPlugin extends JavaPlugin {
 		}
 		
 		// load logged in players
-		players = new HashMap<String, User>();
+		players = Collections.synchronizedMap(new HashMap<String, User>());
 		attachments = new HashMap<String, PermissionAttachment>();
 		for (Player player : getServer().getOnlinePlayers()) {
 			loadPlayerPermissions(player);
@@ -231,9 +232,9 @@ public class MainPlugin extends JavaPlugin {
 			for (File f : groupFiles) {
 				if (f.getName().endsWith(".txt")) {
 					String name = f.getName().replace(".txt", "");
-					if (!groups.containsKey(name)) {
+					if (!groups.containsKey(name.toLowerCase())) {
 						Group group = new Group(name);
-						groups.put(name, group);
+						groups.put(name.toLowerCase(), group);
 						debug("  Found group: " + name);
 					}
 				}
@@ -251,10 +252,10 @@ public class MainPlugin extends JavaPlugin {
 						File[] groupFiles = worldGroupsFolder.listFiles();
 						for (File f : groupFiles) {
 							if (f.getName().endsWith(".txt")) {
-								String name = f.getName().replace(".txt", "");
-								if (!groups.containsKey(name)) {
+								String name = f.getName().replace(".txt", "").toLowerCase();
+								if (!groups.containsKey(name.toLowerCase())) {
 									Group group = new Group(name);
-									groups.put(name, group);
+									groups.put(name.toLowerCase(), group);
 									debug("  Found group: " + name);
 								}
 							}
