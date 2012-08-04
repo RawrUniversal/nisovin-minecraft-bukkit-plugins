@@ -9,6 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
@@ -63,6 +64,13 @@ public class CastCommand implements CommandExecutor {
 						}
 					}
 					sender.sendMessage(MagicSpells.textColor + "Cooldowns reset" + (p != null ? " for " + p.getName() : ""));
+				} else if (sender.isOp() && args[0].equals("resetmana") && args.length > 1 && MagicSpells.mana != null) {
+					Player p = Bukkit.getPlayer(args[1]);
+					if (p != null) {
+						MagicSpells.mana.createManaBar(p);
+						MagicSpells.mana.addMana(p, MagicSpells.mana.getMaxMana(p), ManaChangeReason.OTHER);
+						sender.sendMessage(MagicSpells.textColor + p.getName() + "'s mana reset.");
+					}
 				} else if (sender.isOp() && args[0].equals("profilereport")) {
 					sender.sendMessage(MagicSpells.textColor + "Creating profiling report");
 					MagicSpells.profilingReport();

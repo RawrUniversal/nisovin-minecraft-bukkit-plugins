@@ -26,6 +26,7 @@ import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.mana.ManaChangeReason;
+import com.nisovin.magicspells.mana.ManaHandler;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spelleffects.SpellEffect;
 import com.nisovin.magicspells.spells.BuffSpell;
@@ -1255,7 +1256,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		public void run() {
 			if (!cancelled && player.isOnline() && !player.isDead()) {
 				Location currLoc = player.getLocation();
-				if (!interruptOnMove || (Math.abs(currLoc.getX() - prevLoc.getX()) < .01 && Math.abs(currLoc.getY() - prevLoc.getY()) < .01 && Math.abs(currLoc.getZ() - prevLoc.getZ()) < .01)) {
+				if (!interruptOnMove || (Math.abs(currLoc.getX() - prevLoc.getX()) < .2 && Math.abs(currLoc.getY() - prevLoc.getY()) < .2 && Math.abs(currLoc.getZ() - prevLoc.getZ()) < .2)) {
 					if (!hasReagents(player)) {
 						state = SpellCastState.MISSING_REAGENTS;
 					}
@@ -1331,7 +1332,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			if (!cancelled && player.isOnline() && !player.isDead()) {
 				elapsed += interval;
 				Location currLoc = player.getLocation();
-				if (!interruptOnMove || (Math.abs(currLoc.getX() - prevLoc.getX()) < .01 && Math.abs(currLoc.getY() - prevLoc.getY()) < .01 && Math.abs(currLoc.getZ() - prevLoc.getZ()) < .01)) {
+				if (!interruptOnMove || (Math.abs(currLoc.getX() - prevLoc.getX()) < .2 && Math.abs(currLoc.getY() - prevLoc.getY()) < .2 && Math.abs(currLoc.getZ() - prevLoc.getZ()) < .2)) {
 					if (elapsed >= castTime) {
 						if (!hasReagents(player)) {
 							state = SpellCastState.MISSING_REAGENTS;
@@ -1381,6 +1382,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			unregisterEvents(this);
 			MagicSpells.getExpBarManager().unlock(player, this);
 			MagicSpells.getExpBarManager().update(player, player.getLevel(), player.getExp());
+			ManaHandler mana = MagicSpells.getManaHandler();
+			if (mana != null) {
+				mana.showMana(player);
+			}
 		}
 	}
 

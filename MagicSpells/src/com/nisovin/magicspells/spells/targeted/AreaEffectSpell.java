@@ -1,7 +1,7 @@
 package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -117,7 +117,8 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		int count = 0;
 		
 		BoundingBox box = new BoundingBox(location, radius, verticalRadius);
-		Collection<Entity> entities = location.getWorld().getEntitiesByClasses(LivingEntity.class);
+		List<Entity> entities = new ArrayList<Entity>(location.getWorld().getEntitiesByClasses(LivingEntity.class));
+		Collections.shuffle(entities);
 		for (Entity e : entities) {
 			if (box.contains(e)) {
 				boolean isPlayer = (e instanceof Player);
