@@ -1,7 +1,9 @@
 package com.nisovin.muddersmilk;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -9,7 +11,7 @@ import org.bukkit.configuration.Configuration;
 
 public class MuddersMilk extends JavaPlugin {
 
-	private HashMap<String,Integer> drunks;
+	private Map<String,Integer> drunks;
 	private DrunkEffects effects;
 	private int taskId;
 	
@@ -38,7 +40,7 @@ public class MuddersMilk extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		drunks = new HashMap<String,Integer>();
+		drunks = Collections.synchronizedMap(new HashMap<String,Integer>());
 		
 		loadConfigFromJar();
 		Configuration config = getConfig();
@@ -83,7 +85,7 @@ public class MuddersMilk extends JavaPlugin {
 		return lvl;
 	}
 	
-	public HashMap<String,Integer> getDrunks() {
+	public Map<String,Integer> getDrunks() {
 		return drunks;
 	}
 	

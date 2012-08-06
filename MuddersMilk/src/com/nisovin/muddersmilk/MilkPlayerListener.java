@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -71,7 +71,7 @@ public class MilkPlayerListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOW)
-	public void onPlayerChat(PlayerChatEvent event) {
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (!event.isCancelled()) {
 			int drunkLevel = plugin.getDrunkLevel(event.getPlayer());
 			if (drunkLevel > 0) {
@@ -99,7 +99,7 @@ public class MilkPlayerListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		if (plugin.soberOnDeath) { 
+		if (plugin.soberOnDeath) {
 			plugin.getDrunks().remove(event.getPlayer().getName());
 		}
 	}
