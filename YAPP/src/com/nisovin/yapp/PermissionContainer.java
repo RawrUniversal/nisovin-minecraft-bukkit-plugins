@@ -129,79 +129,89 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public String getDescription() {
-		return description;
+		synchronized (info) {
+			return description;
+		}
 	}
 	
 	public void setDescription(String desc) {
-		this.description = desc;
-		info.put("description", desc);
-		dirty = true;
+		synchronized (info) {
+			this.description = desc;
+			info.put("description", desc);
+			dirty = true;
+		}
 	}
 	
 	public ChatColor getColor(String world) {
-		if (cachedColor.containsKey(world)) {
-			return cachedColor.get(world);
-		} else if (worldColors.containsKey(world)) {
-			ChatColor c = worldColors.get(world);
-			cachedColor.put(world, c);
-			return c;
-		} else if (color != null) {
-			cachedColor.put(world, color);
-			return color;
-		} else {
-			Group group = getPrimaryGroup(world);
-			if (group != null) {
-				ChatColor c = group.getColor(world);
-				if (c != null) {
-					cachedColor.put(world, c);
-					return c;
+		synchronized (info) {
+			if (cachedColor.containsKey(world)) {
+				return cachedColor.get(world);
+			} else if (worldColors.containsKey(world)) {
+				ChatColor c = worldColors.get(world);
+				cachedColor.put(world, c);
+				return c;
+			} else if (color != null) {
+				cachedColor.put(world, color);
+				return color;
+			} else {
+				Group group = getPrimaryGroup(world);
+				if (group != null) {
+					ChatColor c = group.getColor(world);
+					if (c != null) {
+						cachedColor.put(world, c);
+						return c;
+					}
 				}
 			}
+			cachedColor.put(world, ChatColor.WHITE);
+			return ChatColor.WHITE;
 		}
-		cachedColor.put(world, ChatColor.WHITE);
-		return ChatColor.WHITE;
 	}
 	
 	public void setColor(String world, String color) {
-		if (color == null || color.length() == 0) {
-			setColor(world, (ChatColor)null);
-		} else if (color.length() == 1) {
-			setColor(world, ChatColor.getByChar(color));
-		} else {
-			try {
-				setColor(world, ChatColor.valueOf(color.replace(" ", "_").toUpperCase()));
-			} catch (IllegalArgumentException e) {
+		synchronized (info) {
+			if (color == null || color.length() == 0) {
 				setColor(world, (ChatColor)null);
+			} else if (color.length() == 1) {
+				setColor(world, ChatColor.getByChar(color));
+			} else {
+				try {
+					setColor(world, ChatColor.valueOf(color.replace(" ", "_").toUpperCase()));
+				} catch (IllegalArgumentException e) {
+					setColor(world, (ChatColor)null);
+				}
 			}
 		}
 	}
 	
 	public void setColor(String world, ChatColor color) {
-		if (world == null || world.isEmpty()) {
-			this.color = color;
-			if (color != null) {
-				info.put("color", color.name().replace("_", " ").toLowerCase());
-			} else {
-				info.remove("color");
-			}
-		} else {
-			Map<String, String> wInfo = worldInfo.get(world);
-			if (color != null) {
-				this.worldColors.put(world, color);
-				if (wInfo == null) {
-					wInfo = new LinkedHashMap<String, String>();
-					worldInfo.put(world, wInfo);
+		synchronized (info) {
+			if (world == null || world.isEmpty()) {
+				this.color = color;
+				if (color != null) {
+					info.put("color", color.name().replace("_", " ").toLowerCase());
+				} else {
+					info.remove("color");
 				}
-				wInfo.put("color", color.name().replace("_", " ").toLowerCase());
 			} else {
-				this.worldColors.remove(world);
-				if (wInfo != null) {
-					wInfo.remove("color");
+				Map<String, String> wInfo = worldInfo.get(world);
+				if (color != null) {
+					this.worldColors.put(world, color);
+					if (wInfo == null) {
+						wInfo = new LinkedHashMap<String, String>();
+						worldInfo.put(world, wInfo);
+					}
+					wInfo.put("color", color.name().replace("_", " ").toLowerCase());
+				} else {
+					this.worldColors.remove(world);
+					if (wInfo != null) {
+						wInfo.remove("color");
+					}
 				}
 			}
+			cachedColor.clear();
+			dirty = true;
 		}
-		cachedColor.clear();
-		dirty = true;
 	}
 	
 	public String getPrefix() {
@@ -209,83 +219,91 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public String getPrefix(String world) {
-		if (cachedPrefix.containsKey(world)) {
-			return cachedPrefix.get(world);
-		} else if (worldPrefixes.containsKey(world)) {
-			String p = colorify(worldPrefixes.get(world));
-			cachedPrefix.put(world, p);
-			return p;
-		} else if (prefix != null) {
-			String p = colorify(prefix);
-			cachedPrefix.put(world, p);
-			return p;
-		} else {
-			Group group = getPrimaryGroup(world);
-			if (group != null) {
-				String p = group.getPrefix(world);
-				if (p != null) {
-					cachedPrefix.put(world, p);
-					return p;
+		synchronized (info) {
+			if (cachedPrefix.containsKey(world)) {
+				return cachedPrefix.get(world);
+			} else if (worldPrefixes.containsKey(world)) {
+				String p = colorify(worldPrefixes.get(world));
+				cachedPrefix.put(world, p);
+				return p;
+			} else if (prefix != null) {
+				String p = colorify(prefix);
+				cachedPrefix.put(world, p);
+				return p;
+			} else {
+				Group group = getPrimaryGroup(world);
+				if (group != null) {
+					String p = group.getPrefix(world);
+					if (p != null) {
+						cachedPrefix.put(world, p);
+						return p;
+					}
 				}
 			}
+			cachedPrefix.put(world, "");
+			return "";
 		}
-		cachedPrefix.put(world, "");
-		return "";
 	}
 	
 	public void setPrefix(String world, String prefix) {
-		if (prefix != null && !prefix.isEmpty()) {
-			prefix = prefix.replace("\u00A7$1", "&");
-			if (world == null || world.isEmpty()) {
-				this.prefix = prefix;
-				info.put("prefix", prefix);
-			} else {
-				this.worldPrefixes.put(world, prefix);
-				Map<String, String> wInfo = worldInfo.get(world);
-				if (wInfo == null) {
-					wInfo = new LinkedHashMap<String, String>();
-					worldInfo.put(world, wInfo);
+		synchronized (info) {
+			if (prefix != null && !prefix.isEmpty()) {
+				prefix = prefix.replace("\u00A7$1", "&");
+				if (world == null || world.isEmpty()) {
+					this.prefix = prefix;
+					info.put("prefix", prefix);
+				} else {
+					this.worldPrefixes.put(world, prefix);
+					Map<String, String> wInfo = worldInfo.get(world);
+					if (wInfo == null) {
+						wInfo = new LinkedHashMap<String, String>();
+						worldInfo.put(world, wInfo);
+					}
+					wInfo.put("prefix", prefix);
 				}
-				wInfo.put("prefix", prefix);
-			}
-		} else {
-			if (world == null || world.isEmpty()) {
-				this.prefix = null;
-				info.remove("prefix");
 			} else {
-				this.worldPrefixes.remove(world);
-				Map<String, String> wInfo = worldInfo.get(world);
-				if (wInfo != null) {
-					wInfo.remove("prefix");
+				if (world == null || world.isEmpty()) {
+					this.prefix = null;
+					info.remove("prefix");
+				} else {
+					this.worldPrefixes.remove(world);
+					Map<String, String> wInfo = worldInfo.get(world);
+					if (wInfo != null) {
+						wInfo.remove("prefix");
+					}
 				}
 			}
+			cachedPrefix.clear();
+			dirty = true;
 		}
-		cachedPrefix.clear();
-		dirty = true;
 	}
 	
 	public String getInfo(String world, String key) {
-		return info.get(key.toLowerCase());
+		synchronized (info) {
+			return info.get(key.toLowerCase());
+		}
 	}
 	
 	public void setInfo(String world, String key, String value) {
-		key = key.toLowerCase();
-		if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-			value = value.substring(1, value.length() - 1);
-		}
-		if (key.equals("color")) {
-			setColor(world, value);
-		} else if (key.equals("prefix")) {
-			setPrefix(world, value);
-		} else if (key.equals("description")) {
-			setDescription(value);
-		} else {
-			if (value != null && !value.isEmpty()) {
-				info.put(key, value);
-			} else {
-				info.remove(key);
+		synchronized (info) {
+			key = key.toLowerCase();
+			if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+				value = value.substring(1, value.length() - 1);
 			}
-			dirty = true;
+			if (key.equals("color")) {
+				setColor(world, value);
+			} else if (key.equals("prefix")) {
+				setPrefix(world, value);
+			} else if (key.equals("description")) {
+				setDescription(value);
+			} else {
+				if (value != null && !value.isEmpty()) {
+					info.put(key, value);
+				} else {
+					info.remove(key);
+				}
+				dirty = true;
+			}
 		}
 	}
 	
