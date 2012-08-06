@@ -67,7 +67,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 						MagicSpells.error("AreaEffect spell '" + name + "' attempted to use non-targeted spell '" + spellName + "'");
 					}
 				} else {
-					MagicSpells.error("AreaEffect spell '" + name + "' attempted to use invalid spell '" + spellName + "'");
+					MagicSpells.error("AreaEffect spell '" + name + "' attempted to use non-existant spell '" + spellName + "'");
 				}
 			}
 			spellNames.clear();

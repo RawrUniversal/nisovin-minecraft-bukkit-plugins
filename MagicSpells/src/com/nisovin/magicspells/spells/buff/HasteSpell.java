@@ -51,7 +51,6 @@ public class HasteSpell extends BuffSpell {
 		Player player = event.getPlayer();
 		if (hasted.containsKey(player)) {
 			if (isExpired(player)) {
-				playSpellEffects(EffectPosition.DISABLED, player);
 				turnOff(player);
 			} else if (event.isSprinting()) {
 				event.setCancelled(true);

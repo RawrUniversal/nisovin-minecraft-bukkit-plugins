@@ -116,8 +116,6 @@ public class InvisibilitySpell extends BuffSpell {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				p.showPlayer(player);
 			}
-			// spell effect
-			playSpellEffects(EffectPosition.DISABLED, player);
 			sendMessage(player, strFade);
 		}
 	}
