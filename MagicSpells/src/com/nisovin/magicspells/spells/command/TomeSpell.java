@@ -90,7 +90,7 @@ public class TomeSpell extends CommandSpell {
 				if (args.length > 1 && args[1].matches("^[0-9]+$")) {
 					uses = Integer.parseInt(args[1]);
 				}
-				if (uses > maxUses || (maxUses > 0 && uses < 0)) {
+				if (maxUses > 0 && (uses > maxUses || uses < 0)) {
 					uses = maxUses;
 				}
 				MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpell", spell.getInternalName() + (uses>0?","+uses:""));
