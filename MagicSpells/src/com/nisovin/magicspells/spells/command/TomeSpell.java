@@ -116,7 +116,7 @@ public class TomeSpell extends CommandSpell {
 		ItemStack item = event.getItem();
 		if (item.getTypeId() != 386 && item.getTypeId() != 387) return;
 		
-		String spellData = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpells");
+		String spellData = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpell");
 		if (spellData != null && !spellData.equals("")) {
 			String[] data = spellData.split(",");
 			Spell spell = MagicSpells.getSpellByInternalName(data[0]);
@@ -151,9 +151,9 @@ public class TomeSpell extends CommandSpell {
 						if (uses > 0) {
 							uses--;
 							if (uses > 0) {
-								MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpells", data[0] + "," + uses);
+								MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpell", data[0] + "," + uses);
 							} else {
-								MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, "MagicSpells");
+								MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, "MagicSpell");
 							}							
 						}
 						// consume

@@ -206,7 +206,9 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	public String getStringOnItemStack(ItemStack item, String key) {
 		NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
 		if (tag != null) {
-			return tag.getString(key);
+			if (tag.hasKey(key)) {
+				return tag.getString(key);
+			}
 		}
 		return null;
 	}
