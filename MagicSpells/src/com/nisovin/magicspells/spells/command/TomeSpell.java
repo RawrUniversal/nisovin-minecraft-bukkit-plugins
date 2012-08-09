@@ -81,7 +81,7 @@ public class TomeSpell extends CommandSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
-			if (!allowOverwrite && MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpell") != null) {
+			if (!allowOverwrite && MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpellsTome_" + internalName) != null) {
 				// fail -- already has a spell
 				sendMessage(player, strAlreadyHasSpell);
 				return PostCastAction.ALREADY_HANDLED;
@@ -93,7 +93,7 @@ public class TomeSpell extends CommandSpell {
 				if (maxUses > 0 && (uses > maxUses || uses < 0)) {
 					uses = maxUses;
 				}
-				MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpell", spell.getInternalName() + (uses>0?","+uses:""));
+				MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpellsTome_" + internalName, spell.getInternalName() + (uses>0?","+uses:""));
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -116,7 +116,7 @@ public class TomeSpell extends CommandSpell {
 		ItemStack item = event.getItem();
 		if (item.getTypeId() != 386 && item.getTypeId() != 387) return;
 		
-		String spellData = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpell");
+		String spellData = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpellsTome_" + internalName);
 		if (spellData != null && !spellData.equals("")) {
 			String[] data = spellData.split(",");
 			Spell spell = MagicSpells.getSpellByInternalName(data[0]);
@@ -151,9 +151,9 @@ public class TomeSpell extends CommandSpell {
 						if (uses > 0) {
 							uses--;
 							if (uses > 0) {
-								MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpell", data[0] + "," + uses);
+								MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpellsTome_" + internalName, data[0] + "," + uses);
 							} else {
-								MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, "MagicSpell");
+								MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, "MagicSpellsTome_" + internalName);
 							}							
 						}
 						// consume
