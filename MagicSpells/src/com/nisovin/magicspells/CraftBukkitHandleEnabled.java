@@ -17,6 +17,7 @@ import net.minecraft.server.Packet103SetSlot;
 import net.minecraft.server.Packet22Collect;
 import net.minecraft.server.Packet42RemoveMobEffect;
 import net.minecraft.server.Packet43SetExperience;
+import net.minecraft.server.Packet62NamedSoundEffect;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -219,6 +220,18 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 		if (tag != null) {
 			tag.remove(key);
 		}
+	}
+
+	@Override
+	public void playSound(Location location, String sound, float volume, float pitch) {
+		((CraftWorld)location.getWorld()).getHandle().makeSound(location.getX(), location.getY(), location.getZ(), sound, volume, pitch);
+	}
+
+	@Override
+	public void playSound(Player player, String sound, float volume, float pitch) {
+		Location loc = player.getLocation();
+		Packet62NamedSoundEffect packet = new Packet62NamedSoundEffect(sound, loc.getX(), loc.getY(), loc.getZ(), volume, pitch);
+		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
 	}
 
 }

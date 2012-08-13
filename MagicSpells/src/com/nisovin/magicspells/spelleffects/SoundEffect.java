@@ -4,7 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.CraftWorld;
+
+import com.nisovin.magicspells.MagicSpells;
 
 public class SoundEffect extends SpellEffect {
 	
@@ -22,8 +23,13 @@ public class SoundEffect extends SpellEffect {
 			if (data.length > 2) {
 				pitch = Float.parseFloat(data[2]);
 			}
+			if (sound.equals("random.wood_click")) {
+				sound = "random.wood click";
+			} else if (sound.equals("mob.ghast.affectionate_scream")) {
+				sound = "mob.ghast.affectionate scream";
+			}
 		}
-		((CraftWorld)location.getWorld()).getHandle().makeSound(location.getX(), location.getY(), location.getZ(), sound, volume, pitch);
+		MagicSpells.getVolatileCodeHandler().playSound(location, sound, volume, pitch);
 	}
 	
 	public static void main(String[] args) {

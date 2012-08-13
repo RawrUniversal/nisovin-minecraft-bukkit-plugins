@@ -105,4 +105,12 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	public void removeStringOnItemStack(ItemStack item, String key) {
 	}
 
+	@Override
+	public void playSound(Location location, String sound, float volume, float pitch) {
+	}
+
+	@Override
+	public void playSound(Player player, String sound, float volume, float pitch) {
+	}
+
 }

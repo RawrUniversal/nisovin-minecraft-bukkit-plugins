@@ -3,6 +3,8 @@ package com.nisovin.magicspells.spelleffects;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.MagicSpells;
+
 public class SoundPersonalEffect extends SpellEffect {
 
 	public void playEffect(Entity entity, String param) {
@@ -20,7 +22,12 @@ public class SoundPersonalEffect extends SpellEffect {
 					pitch = Float.parseFloat(data[2]);
 				}
 			}
-			System.out.println("Playing personal sound " + sound + " " + volume + " " + pitch);
+			if (sound.equals("random.wood_click")) {
+				sound = "random.wood click";
+			} else if (sound.equals("mob.ghast.affectionate_scream")) {
+				sound = "mob.ghast.affectionate scream";
+			}
+			MagicSpells.getVolatileCodeHandler().playSound((Player)entity, sound, volume, pitch);
 		}
 	}
 	
