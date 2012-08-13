@@ -3,6 +3,7 @@ package com.nisovin.yapp.menu;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.Conversation;
@@ -90,7 +91,11 @@ public class Menu {
 			c.sendRawMessage(Menu.TEXT_COLOR + "Exiting YAPP menu");
 			sendLine(c);
 			conversations.remove(c);
-			MainPlugin.yapp.reload();
+			Bukkit.getScheduler().scheduleSyncDelayedTask(MainPlugin.yapp, new Runnable() {
+				public void run() {
+					MainPlugin.yapp.reload();
+				}
+			});
 		}
 		
 	}

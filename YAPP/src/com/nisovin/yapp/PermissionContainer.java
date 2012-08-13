@@ -728,6 +728,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	public void save(boolean force) {
 		if (dirty || force) {
+			MainPlugin.debug("Saving " + type + " " + name + " (dirty: " + dirty + ", forced: " + force + ")");
 			dirty = false;
 			
 			BufferedWriter file = null;

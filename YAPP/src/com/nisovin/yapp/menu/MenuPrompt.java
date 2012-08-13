@@ -1,20 +1,25 @@
 package com.nisovin.yapp.menu;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import org.bukkit.Bukkit;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
 
 import com.nisovin.yapp.Group;
+import com.nisovin.yapp.MainPlugin;
 import com.nisovin.yapp.PermissionContainer;
 import com.nisovin.yapp.User;
 
 public abstract class MenuPrompt extends StringPrompt {
 
 	@Override
-	public final Prompt acceptInput(ConversationContext context, String input) {
+	public final Prompt acceptInput(final ConversationContext context, final String input) {
 		if (input.equals("<")) {
 			cleanup(context);
 			return getPreviousPrompt(context);
@@ -26,7 +31,22 @@ public abstract class MenuPrompt extends StringPrompt {
 		} else if (input.toLowerCase().equals("quit")) {
 			return END_OF_CONVERSATION;
 		} else {
-			return accept(context, input);
+			Future<Prompt> future = Bukkit.getScheduler().callSyncMethod(MainPlugin.yapp, new Callable<Prompt> () {
+				@Override
+				public Prompt call() throws Exception {
+					return accept(context, input);
+				}
+			});
+			while (!future.isDone()){}
+			try {
+				return future.get();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				return END_OF_CONVERSATION;
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+				return END_OF_CONVERSATION;
+			}
 		}
 	}
 	

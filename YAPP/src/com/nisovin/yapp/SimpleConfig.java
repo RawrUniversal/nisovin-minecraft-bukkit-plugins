@@ -55,6 +55,7 @@ public class SimpleConfig {
 				}
 				scanner.close();
 			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
