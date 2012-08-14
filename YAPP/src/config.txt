@@ -11,7 +11,7 @@ use chat formatting : true
 
 set group perm      : false
 set player metadata : false
-
+set nameplate color : false
 
 == LADDERS ==
 
@@ -26,3 +26,6 @@ pickup   : false
 drop     : false
 useitem  : false
 useblock : false
+interact : false
+attack   : false
+damage   : false

@@ -48,10 +48,13 @@ public class ModifyOptionsMore extends MenuPrompt {
 		} else if (input.equals("2") || input.startsWith("i")) {
 			return Menu.HAS_GROUP;
 		} else if (input.equals("3") || input.startsWith("p")) {
+			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Not yet implemented.");
 			return END_OF_CONVERSATION;
 		} else if (input.equals("4") || input.startsWith("g")) {
+			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Not yet implemented.");
 			return END_OF_CONVERSATION;
 		} else if (input.equals("5") || input.startsWith("d")) {
+			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Not yet implemented.");
 			return END_OF_CONVERSATION;
 		} else if ((input.equals("6") || input.startsWith("r")) && obj instanceof Group) {
 			return Menu.RENAME_GROUP;

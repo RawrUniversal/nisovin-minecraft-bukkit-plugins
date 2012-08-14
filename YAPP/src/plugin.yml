@@ -1,9 +1,12 @@
 name: YAPP
-description: Yet Another Permission Plugin
-author: nisovin
 version: 0.9
+description: Yet Another Permissions Plugin
+author: nisovin
+website: http://nisovin.com/yapp
+
 main: com.nisovin.yapp.MainPlugin
 softdepend: [Vault, TagAPI]
+
 commands:
     yapp:
         description: Modify permission settings.
@@ -21,7 +24,19 @@ commands:
         permission: yapp.demote
     yappconvert:
         description: Convert permission data from another plugin
+        usage: /<command> <pex|permbukkit|gm>
+        permission: yapp.admin
 permissions:
+    yapp.*:
+        description: All YAPP permissions.
+        default: op
+        children:
+            yapp.build: true
+            yapp.admin: true
+            yapp.promote: true
+            yapp.demote: true
+            yapp.promote.*: true
+            yapp.demote.*: true
     yapp.build:
         description: Allows the player to build.
         default: false

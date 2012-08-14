@@ -271,15 +271,15 @@ public class MainPlugin extends JavaPlugin {
 	}
 	
 	public static User getPlayerUser(String playerName) {
-		User user = yapp.players.get(playerName);
+		User user = yapp.players.get(playerName.toLowerCase());
 		if (user == null) {
 			user = new User(playerName);
 			yapp.players.put(playerName, user);
 			user.loadFromFiles();
 			if (yapp.defaultGroup != null && user.getGroups(null).size() == 0) {
 				user.addGroup(null, yapp.defaultGroup);
-				user.save();
 				debug("Added default group '" + yapp.defaultGroup.getName() + "' to player '" + playerName + "'");
+				user.save();
 			}
 		}
 		return user;
