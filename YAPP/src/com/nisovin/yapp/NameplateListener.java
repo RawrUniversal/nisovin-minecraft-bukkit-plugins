@@ -13,7 +13,7 @@ public class NameplateListener implements Listener {
 		String world = event.getPlayer().getWorld().getName();
 		ChatColor color = user.getColor(world);
 		if (color != null && color != ChatColor.WHITE) {
-			event.setTag(color + user.getName());
+			event.setTag(color + event.getTag());
 		}
 	}
 	

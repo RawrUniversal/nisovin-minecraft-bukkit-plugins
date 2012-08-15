@@ -33,6 +33,7 @@ public class MainPlugin extends JavaPlugin {
 	public static ChatColor ERROR_COLOR = ChatColor.DARK_RED;
 	
 	public static MainPlugin yapp;
+	public static long mainThreadId;
 	
 	private static boolean debug = true;
 	private boolean updateDisplayName = true;
@@ -50,6 +51,7 @@ public class MainPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		yapp = this;
+		mainThreadId = Thread.currentThread().getId();
 		
 		load();
 		

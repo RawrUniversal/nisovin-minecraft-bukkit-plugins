@@ -20,7 +20,10 @@ public abstract class MenuPrompt extends StringPrompt {
 
 	@Override
 	public final Prompt acceptInput(final ConversationContext context, final String input) {
-		if (input.equals("<")) {
+		if (input.startsWith("/")) {
+			// ignore slash commands
+			return this;
+		} else if (input.equals("<")) {
 			cleanup(context);
 			return getPreviousPrompt(context);
 		} else if (input.equals("!")) {
@@ -31,21 +34,27 @@ public abstract class MenuPrompt extends StringPrompt {
 		} else if (input.toLowerCase().equals("quit")) {
 			return END_OF_CONVERSATION;
 		} else {
-			Future<Prompt> future = Bukkit.getScheduler().callSyncMethod(MainPlugin.yapp, new Callable<Prompt> () {
-				@Override
-				public Prompt call() throws Exception {
-					return accept(context, input);
+			if (Thread.currentThread().getId() == MainPlugin.mainThreadId) {
+				// we're on main thread, just handle normally
+				return accept(context, input);
+			} else {
+				// not on main thread, so pass to main thread and wait for response
+				Future<Prompt> future = Bukkit.getScheduler().callSyncMethod(MainPlugin.yapp, new Callable<Prompt> () {
+					@Override
+					public Prompt call() throws Exception {
+						return accept(context, input);
+					}
+				});
+				while (!future.isDone()){}
+				try {
+					return future.get();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					return END_OF_CONVERSATION;
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+					return END_OF_CONVERSATION;
 				}
-			});
-			while (!future.isDone()){}
-			try {
-				return future.get();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				return END_OF_CONVERSATION;
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-				return END_OF_CONVERSATION;
 			}
 		}
 	}
