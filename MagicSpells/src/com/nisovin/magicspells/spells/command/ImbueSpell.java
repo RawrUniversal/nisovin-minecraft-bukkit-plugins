@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -22,12 +23,16 @@ import com.nisovin.magicspells.util.SpellReagents;
 
 public class ImbueSpell extends CommandSpell {
 
+	private String key;
+	
 	private int defaultUses;
 	private int maxUses;
 	private boolean allowSpecifyUses;
 	private boolean chargeReagentsForSpellPerUse;
 	private boolean requireTeachPerm;
 	private boolean consumeItem;
+	private boolean rightClickCast;
+	private boolean leftClickCast;
 	private Set<Integer> allowedItems;
 	
 	private String strUsage;
@@ -37,12 +42,15 @@ public class ImbueSpell extends CommandSpell {
 	public ImbueSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		key = "MagicSpellsImbue_" + internalName;
 		defaultUses = getConfigInt("default-uses", 5);
 		maxUses = getConfigInt("max-uses", 10);
 		allowSpecifyUses = getConfigBoolean("allow-specify-uses", true);
 		chargeReagentsForSpellPerUse = getConfigBoolean("charge-reagents-for-spell-per-use", true);
 		requireTeachPerm = getConfigBoolean("require-teach-perm", true);
 		consumeItem = getConfigBoolean("consume-item", false);
+		rightClickCast = getConfigBoolean("right-click-cast", false);
+		leftClickCast = getConfigBoolean("left-click-cast", true);
 
 		allowedItems = new HashSet<Integer>();
 		List<String> allowed = getConfigStringList("allowed-items", null);
@@ -55,6 +63,10 @@ public class ImbueSpell extends CommandSpell {
 				}
 			}
 		}
+		
+		strUsage = getConfigString("str-usage", "Usage: /cast imbue <spell> [uses]");
+		strCantImbueItem = getConfigString("str-cant-imbue-item", "You can't imbue that item.");
+		strCantImbueSpell = getConfigString("str-cant-imbue-spell", "You can't imbue that spell.");
 	}
 
 	@Override
@@ -75,7 +87,7 @@ public class ImbueSpell extends CommandSpell {
 			}
 			
 			// check for already imbued
-			if (MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, "MagicSpellsImbue_" + internalName) != null) {
+			if (MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, key) != null) {
 				// already imbued
 				sendMessage(player, strCantImbueItem);
 				return PostCastAction.ALREADY_HANDLED;
@@ -126,18 +138,22 @@ public class ImbueSpell extends CommandSpell {
 			}
 			
 			// imbue item
-			MagicSpells.getVolatileCodeHandler().setStringOnItemStack(inHand, "MagicSpellsImbue_" + internalName, spell.getInternalName() + "," + uses);
+			MagicSpells.getVolatileCodeHandler().setStringOnItemStack(inHand, key, spell.getInternalName() + "," + uses);
 			player.setItemInHand(inHand);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onInteract(PlayerInteractEvent event) {
-		if (event.hasItem() && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (event.useItemInHand() == Result.DENY) return;
+		if (event.hasItem() && (
+				(rightClickCast && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) ||
+				(leftClickCast && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))
+				)) {
 			ItemStack item = event.getItem();
 			if (allowedItems.contains(item.getTypeId())) {
-				String imbueData = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpellsImbue_" + internalName);
+				String imbueData = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, key);
 				if (imbueData != null && !imbueData.isEmpty()) {
 					String[] data = imbueData.split(",");
 					Spell spell = MagicSpells.getSpellByInternalName(data[0]);
@@ -147,15 +163,15 @@ public class ImbueSpell extends CommandSpell {
 						spell.castSpell(event.getPlayer(), SpellCastState.NORMAL, 1.0F, null);
 						uses--;
 						if (uses <= 0) {
-							MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, "MagicSpellsImbue_" + internalName);
+							MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, key);
 							if (consumeItem) {
 								event.getPlayer().setItemInHand(null);
 							}
 						} else {
-							MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpellsImbue_" + internalName, spell.getInternalName() + "," + uses);
+							MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, key, spell.getInternalName() + "," + uses);
 						}						
 					} else {
-						MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, "MagicSpellsImbue_" + internalName);
+						MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, key);
 					}
 				}
 			}
@@ -164,13 +180,11 @@ public class ImbueSpell extends CommandSpell {
 	
 	@Override
 	public boolean castFromConsole(CommandSender sender, String[] args) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public String[] tabComplete(CommandSender sender, String partial) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

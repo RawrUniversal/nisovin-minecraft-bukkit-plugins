@@ -59,21 +59,17 @@ public class KeybindSpell extends CommandSpell {
 	}
 
 	private void loadKeybinds(Player player) {
-		System.out.println("test");
 		File file = new File(MagicSpells.plugin.getDataFolder(), "spellbooks" + File.separator + "keybinds-" + player.getName().toLowerCase() + ".txt");
-		if (file.exists()) {		
-			System.out.println("test2");	
+		if (file.exists()) {
 			try {
 				Keybinds keybinds = new Keybinds(player);				
 				YamlConfiguration conf = new YamlConfiguration();
 				conf.load(file);
 				for (String key : conf.getKeys(false)) {
-					System.out.println("test"+key);
 					int slot = Integer.parseInt(key);
 					String spellName = conf.getString(key);
 					Spell spell = MagicSpells.getSpellByInternalName(spellName);
 					if (spell != null) {
-						System.out.println("test"+key+" "+spellName);
 						keybinds.setKeybind(slot, spell);
 					}
 				}

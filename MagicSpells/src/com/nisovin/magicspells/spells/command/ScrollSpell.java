@@ -369,11 +369,7 @@ public class ScrollSpell extends CommandSpell {
 				}
 			} else if (event.isShiftClick()) {
 				// trying to shift move
-				// TODO: make this better
 				event.setCancelled(true);
-				//System.out.println("inv: " + event.getInventory().getType());
-				//System.out.println("top: " + event.getView().getTopInventory().getType());
-				//System.out.println("bottom: " + event.getView().getBottomInventory().getType());
 			}
 		}
 	}

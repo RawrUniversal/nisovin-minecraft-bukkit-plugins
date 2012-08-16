@@ -196,11 +196,12 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	@Override
 	public boolean setStringOnItemStack(ItemStack item, String key, String value) {
 		NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
-		if (tag != null) {
-			tag.setString(key, value);
-			return true;
+		if (tag == null) {
+			tag = new NBTTagCompound();
+			((CraftItemStack)item).getHandle().tag = tag;
 		}
-		return false;
+		tag.setString(key, value);
+		return true;
 	}
 
 	@Override
