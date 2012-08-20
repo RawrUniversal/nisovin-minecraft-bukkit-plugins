@@ -3,8 +3,11 @@ package com.nisovin.magicspells.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
@@ -45,6 +48,17 @@ public class Util {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	public static void setFacing(Player player, Vector vector) {
+		double yaw = Math.toDegrees(Math.atan2(-vector.getX(), vector.getZ()));
+		double pitch = Math.toDegrees(-Math.asin(vector.getY()));
+				
+		Location loc = player.getLocation();
+		loc.setYaw((float)yaw);
+		loc.setPitch((float)pitch);
+		
+		player.teleport(loc);
 	}
 	
 	public static boolean arrayContains(int[] array, int value) {

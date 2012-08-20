@@ -34,6 +34,7 @@ public class PulserSpell extends TargetedLocationSpell {
 	private int typeId;
 	private byte data;
 	private boolean unbreakable;
+	private boolean onlyCountOnSuccess;
 	private List<String> spellNames;
 	private List<TargetedLocationSpell> spells;
 
@@ -54,6 +55,7 @@ public class PulserSpell extends TargetedLocationSpell {
 		typeId = type.id;
 		data = (byte) type.data;
 		unbreakable = getConfigBoolean("unbreakable", false);
+		onlyCountOnSuccess = getConfigBoolean("only-count-on-success", false);
 		spellNames = getConfigStringList("spells", null);
 
 		strAtCap = getConfigString("str-at-cap", "You have too many effects at once.");
@@ -233,11 +235,12 @@ public class PulserSpell extends TargetedLocationSpell {
 					stop();
 					return true;
 				} else {
+					boolean activated = false;
 					for (TargetedLocationSpell spell : spells) {
-						spell.castAtLocation(caster, location, power);
+						activated = spell.castAtLocation(caster, location, power) || activated;
 					}
 					playSpellEffects(EffectPosition.DELAYED, location);
-					if (totalPulses > 0) {
+					if (totalPulses > 0 && (activated || !onlyCountOnSuccess)) {
 						pulseCount += 1;
 						if (pulseCount >= totalPulses) {
 							stop();
