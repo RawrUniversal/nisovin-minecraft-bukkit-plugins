@@ -394,6 +394,23 @@ spells:
         str-invalid-item: Your target could not be disarmed.
         str-cast-self: You have disarmed %t.
         str-cast-target: "%a has disarmed you."
+    dowse:
+        spell-class: ".instant.DowseSpell"
+        name: dowse
+        spell-icon: compass
+        description: Dowse for iron ore.
+        cast-item: book
+        cooldown: 60
+        type: iron_ore
+        radius: 4
+        rotate-player: true
+        set-compass: true
+        cost:
+            - mana 35
+            - stone 2
+        str-cost: 35 mana and 2 stone blocks
+        str-cast-self: There is iron ore nearby.
+        str-not-found: No iron ore found nearby.
     drainlife:
         spell-class: ".targeted.DrainlifeSpell"
         name: drainlife
@@ -585,6 +602,24 @@ spells:
             - mana 25
         str-cost: 25 mana
         str-cast-self: You feel less hungry.
+    forcebomb:
+        spell-class: ".targeted.ForcebombSpell"
+        name: forcepush
+        spell-icon: record_4
+        description: Push back your enemies.
+        cast-item: blaze_rod
+        cooldown: 8
+        range: 15
+        radius: 3
+        pushback-force: 30
+        additional-vertical-force: 15
+        max-vertical-force: 20
+        target-players: false
+        dont-target-caster: true
+        cost:
+            - mana 30
+        str-cost: 30 mana
+        str-cast-self: An explosion of energy pushes your enemies around.
     forcepush:
         spell-class: ".instant.ForcepushSpell"
         name: forcepush
@@ -1302,6 +1337,25 @@ spells:
             - mana 35
         str-cost: 35 mana
         str-cast-self: You call down a lightning storm!
+    stormblock:
+        spell-class: ".targeted.PulserSpell"
+        name: stormblock
+        spell-icon: diamond_block
+        description: Summons a diamond block that calls lightning down upon nearby enemies.
+        cast-item: blaze_rod
+        cooldown: 30
+        total-pulses: 5
+        interval: 30
+        max-distance: 15
+        cap-per-player: 2
+        block-type: diamond_block
+        unbreakable: false
+        only-count-on-success: false
+        spells:
+            - storm
+        str-cast-self: You have summoned a storm block!
+        str-cast-others: "%a has summoned a storm block!"
+        str-at-cap: You have too many effects at once.
     summon_helper:
         spell-class: ".targeted.SummonSpell"
         can-cast-with-item: false
@@ -1357,6 +1411,21 @@ spells:
         str-cost: 75 mana, 5 redstone dust and a clock
         time-to-set: 0
         str-announce: The sun has suddenly appeared in the sky!
+    switch:
+        spell-class: ".targeted.SwitchSpell"
+        name: switch
+        spell-icon: eye_of_ender
+        description: Switch places with your target.
+        cast-item: stick
+        cooldown: 6
+        switch-back: 0
+        target-players: true
+        obey-los: true
+        cost:
+            - mana 10
+        str-cost: 10 mana
+        str-cast-self: You have switched places with %t.
+        str-cast-target: "%a has switched places with you."
     telekinesis:
         spell-class: ".targeted.TelekinesisSpell"
         name: telekinesis

@@ -46,7 +46,7 @@ public class DowseSpell extends InstantSpell {
 			int cx = loc.getBlockX();
 			int cy = loc.getBlockY();
 			int cz = loc.getBlockZ();
-			for (int r = 1; r <= radius; r++) {
+			for (int r = 1; r <= Math.round(radius * power); r++) {
 				for (int x = -r; x <= r; x++) {
 					for (int y = -r; y <= r; y++) {
 						for (int z = -r; z <= r; z++) {
