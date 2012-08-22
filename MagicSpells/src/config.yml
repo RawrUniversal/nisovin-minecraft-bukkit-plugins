@@ -1293,6 +1293,8 @@ spells:
         fail-if-no-targets: true
         target-players: false
         target-non-players: true
+        target-caster: false
+        target-invisible-players: false
         spells:
             - lightning
         cooldown: 15

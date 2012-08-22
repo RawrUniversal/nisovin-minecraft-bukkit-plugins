@@ -30,6 +30,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 	private boolean targetCaster;
 	private boolean targetPlayers;
 	private boolean targetNonPlayers;
+	private boolean targetInvisiblePlayers;
 	private int maxTargets;
 	private boolean beneficial;
 	private List<String> spellNames;
@@ -46,6 +47,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		targetCaster = getConfigBoolean("target-caster", false);
 		targetPlayers = getConfigBoolean("target-players", false);
 		targetNonPlayers = getConfigBoolean("target-non-players", true);
+		targetInvisiblePlayers = getConfigBoolean("target-invisible-players", true);
 		maxTargets = getConfigInt("max-targets", 0);
 		beneficial = getConfigBoolean("beneficial", false);
 		spellNames = getConfigStringList("spells", null);
@@ -122,7 +124,7 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 		for (Entity e : entities) {
 			if (box.contains(e)) {
 				boolean isPlayer = (e instanceof Player);
-				if (!((LivingEntity)e).isDead() && !(isPlayer && !targetCaster && ((Player)e).getName().equals(player.getName())) && (targetPlayers || !isPlayer) && (targetNonPlayers || isPlayer)) {
+				if (!((LivingEntity)e).isDead() && !(isPlayer && !targetCaster && ((Player)e).getName().equals(player.getName())) && (targetPlayers || !isPlayer) && (targetNonPlayers || isPlayer) && (targetInvisiblePlayers || !isPlayer || player.canSee((Player)e))) {
 					LivingEntity target = (LivingEntity)e;
 					SpellTargetEvent event = new SpellTargetEvent(this, player, target);
 					Bukkit.getPluginManager().callEvent(event);
