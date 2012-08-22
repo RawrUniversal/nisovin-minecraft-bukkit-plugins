@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -369,8 +370,10 @@ public class MagicSpells extends JavaPlugin {
 			registerEvents(new MagicChatListener(this));
 		}
 		
-		// register command
-		getCommand("magicspellcast").setExecutor(new CastCommand(this));
+		// register commands
+		CommandExecutor exec = new CastCommand(this);
+		getCommand("magicspellcast").setExecutor(exec);
+		getCommand("magicspellmana").setExecutor(exec);
 		
 		// setup metrics
 		metricsEnabled = config.getBoolean("general.enable-stat-collection", true);

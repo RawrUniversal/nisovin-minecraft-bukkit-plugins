@@ -33,7 +33,8 @@ public class SwitchSpell extends TargetedEntitySpell {
 			}
 			
 			// teleport
-			switchPlaces(player, target);
+			playSpellEffects(player, target);
+			switchPlaces(player, target);			
 			
 			// send messages
 			sendMessages(player, target);

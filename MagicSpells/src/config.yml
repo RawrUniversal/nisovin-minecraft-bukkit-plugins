@@ -582,7 +582,7 @@ spells:
         food: 4
         saturation: 2.5
         cost:
-            - 25 mana
+            - mana 25
         str-cost: 25 mana
         str-cast-self: You feel less hungry.
     forcepush:
