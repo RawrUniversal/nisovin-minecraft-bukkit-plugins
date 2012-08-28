@@ -401,7 +401,8 @@ spells:
         description: Dowse for iron ore.
         cast-item: book
         cooldown: 60
-        type: iron_ore
+        block-type: iron_ore
+        entity-type: ""
         radius: 4
         rotate-player: true
         set-compass: true
