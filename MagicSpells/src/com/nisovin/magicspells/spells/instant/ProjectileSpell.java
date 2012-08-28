@@ -416,7 +416,7 @@ public class ProjectileSpell extends InstantSpell {
 					stop();
 				}
 			}
-			if (++count > 100) {
+			if (++count > 300) {
 				stop();
 			}
 		}

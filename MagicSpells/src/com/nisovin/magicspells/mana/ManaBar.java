@@ -44,6 +44,9 @@ public class ManaBar {
 	
 	public void setMaxMana(int max) {
 		this.maxMana = max;
+		if (mana > maxMana) {
+			mana = maxMana;
+		}
 	}
 	
 	public void setRegenAmount(int amount) {
