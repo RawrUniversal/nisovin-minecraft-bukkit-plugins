@@ -35,7 +35,7 @@ public class HelpSpell extends CommandSpell {
 				sendMessage(player, strUsage);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
-				Spell spell = MagicSpells.getSpellByInGameName(args[0]);
+				Spell spell = MagicSpells.getSpellByInGameName(Util.arrayJoin(args, ' '));
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spell == null || (requireKnownSpell && (spellbook == null || !spellbook.hasSpell(spell)))) {
 					sendMessage(player, strNoSpell);
