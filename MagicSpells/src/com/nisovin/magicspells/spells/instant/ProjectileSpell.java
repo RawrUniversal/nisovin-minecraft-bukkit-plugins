@@ -145,6 +145,7 @@ public class ProjectileSpell extends InstantSpell {
 		if (state == SpellCastState.NORMAL) {
 			if (projectileClass != null) {
 				Projectile projectile = player.launchProjectile(projectileClass);
+				projectile.setBounce(false);
 				if (velocity > 0) {
 					projectile.setVelocity(player.getLocation().getDirection().multiply(velocity));
 				}

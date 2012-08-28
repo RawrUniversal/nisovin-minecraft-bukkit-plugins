@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.spells;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -7,6 +8,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public abstract class TargetedSpell extends InstantSpell {
@@ -14,6 +16,7 @@ public abstract class TargetedSpell extends InstantSpell {
 	protected int range;
 	protected boolean alwaysActivate;
 	protected boolean playFizzleSound;
+	protected boolean targetSelf;
 	protected String strCastTarget;
 	protected String strNoTarget;
 
@@ -23,6 +26,7 @@ public abstract class TargetedSpell extends InstantSpell {
 		range = getConfigInt("range", 20);
 		alwaysActivate = getConfigBoolean("always-activate", false);
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
+		targetSelf = getConfigBoolean("target-self", false);
 		strCastTarget = getConfigString("str-cast-target", "");
 		strNoTarget = getConfigString("str-no-target", "No target found.");
 	}
@@ -68,6 +72,15 @@ public abstract class TargetedSpell extends InstantSpell {
 	protected void fizzle(Player player) {
 		if (playFizzleSound) {
 			player.playEffect(player.getLocation(), Effect.EXTINGUISH, 0);
+		}
+	}
+	
+	@Override
+	protected LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
+		if (targetSelf) {
+			return player;
+		} else {
+			return super.getTargetedEntity(player, range, targetPlayers, targetNonPlayers, checkLos, callSpellTargetEvent);
 		}
 	}
 	
