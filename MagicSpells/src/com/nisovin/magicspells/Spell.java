@@ -703,7 +703,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		if (healthCost > 0 && player.getHealth() <= healthCost) {
 			return false;
 		}
-		if (manaCost > 0 && !MagicSpells.mana.hasMana(player, manaCost)) {
+		if (manaCost > 0 && (MagicSpells.mana == null || !MagicSpells.mana.hasMana(player, manaCost))) {
 			return false;
 		}
 		if (hungerCost > 0 && player.getFoodLevel() < hungerCost) {

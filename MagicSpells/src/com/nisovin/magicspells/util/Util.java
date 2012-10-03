@@ -37,7 +37,7 @@ public class Util {
 					}
 				}
 			}
-			ItemTypeAndData itemTypeAndData = MagicSpells.getItemNameResolver().resolve(string);
+			ItemTypeAndData itemTypeAndData = MagicSpells.getItemNameResolver().resolve(s);
 			if (itemTypeAndData != null) {
 				item.setTypeId(itemTypeAndData.id);
 				item.setDurability(itemTypeAndData.data);

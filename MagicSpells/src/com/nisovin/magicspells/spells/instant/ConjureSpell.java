@@ -45,7 +45,7 @@ public class ConjureSpell extends InstantSpell {
 			for (int i = 0; i < list.size(); i++) {
 				try {
 					String[] data = list.get(i).split(" ");
-					String[] quantityData = data[1].split("-");
+					String[] quantityData = data.length == 1 ? new String[]{"1"} : data[1].split("-");
 					
 					itemTypes[i] = Util.getItemStackFromString(data[0]);
 					if (itemTypes[i] == null) {
