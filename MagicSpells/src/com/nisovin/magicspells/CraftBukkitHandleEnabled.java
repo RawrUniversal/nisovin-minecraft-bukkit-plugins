@@ -13,6 +13,8 @@ import net.minecraft.server.EntitySmallFireball;
 import net.minecraft.server.EntityTNTPrimed;
 import net.minecraft.server.MobEffect;
 import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.NBTTagList;
+import net.minecraft.server.NBTTagString;
 import net.minecraft.server.Packet103SetSlot;
 import net.minecraft.server.Packet22Collect;
 import net.minecraft.server.Packet42RemoveMobEffect;
@@ -233,6 +235,69 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 		Location loc = player.getLocation();
 		Packet62NamedSoundEffect packet = new Packet62NamedSoundEffect(sound, loc.getX(), loc.getY(), loc.getZ(), volume, pitch);
 		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
+	}
+
+	@Override
+	public String getItemName(ItemStack item) {
+		if (item instanceof CraftItemStack) {
+			NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
+			if (tag != null) {
+				NBTTagCompound disp = tag.getCompound("display");
+				if (disp != null && disp.hasKey("Name")) {
+					return disp.getString("Name");
+				}
+			}
+		}
+		return "";
+	}
+
+	@Override
+	public ItemStack setItemName(ItemStack item, String name) {
+		CraftItemStack craftItem;
+		net.minecraft.server.ItemStack nmsItem;
+		
+		if (item instanceof CraftItemStack) {
+			craftItem = (CraftItemStack)item;
+			nmsItem = craftItem.getHandle();
+		} else {
+			craftItem = new CraftItemStack(item);
+			nmsItem = craftItem.getHandle();
+		}
+		
+		NBTTagCompound tag = nmsItem.tag;
+		if (tag == null) {
+			tag = new NBTTagCompound();
+			nmsItem.tag = tag;
+		}
+		NBTTagCompound disp = tag.getCompound("display");
+		if (disp == null) {
+			disp = new NBTTagCompound("display");
+			tag.setCompound("display", disp);
+		}
+		disp.setString("Name", name);
+		
+		return craftItem;
+	}
+
+	@Override
+	public void setItemLore(ItemStack item, String... lore) {
+		if (item instanceof CraftItemStack) {
+			NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
+			if (tag == null) {
+				tag = new NBTTagCompound();
+				((CraftItemStack)item).getHandle().tag = tag;
+			}
+			NBTTagCompound disp = tag.getCompound("display");
+			if (disp == null) {
+				disp = new NBTTagCompound("display");
+				tag.setCompound("display", disp);
+			}
+			NBTTagList list = new NBTTagList("Lore");
+			disp.set("Lore", list);
+			for (String l : lore) {
+				list.add(new NBTTagString(l));
+			}
+		}
 	}
 
 }

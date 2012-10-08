@@ -12,6 +12,7 @@ import com.nisovin.magicspells.MagicSpells;
 public class CastItem {
 	private int type = 0;
 	private short data = 0;
+	private String name = "";
 	private int[][] enchants = null;
 	
 	public CastItem() {
@@ -41,6 +42,7 @@ public class CastItem {
 			} else {
 				this.data = item.getDurability();
 			}
+			this.name = MagicSpells.getVolatileCodeHandler().getItemName(item);
 			if (!MagicSpells.ignoreCastItemEnchants()) {
 				enchants = getEnchants(item);
 			}
@@ -49,6 +51,11 @@ public class CastItem {
 	
 	public CastItem(String string) {
 		String s = string;
+		if (s.contains("|")) {
+			String[] temp = s.split("\\|");
+			s = temp[0];
+			name = temp[1];
+		}
 		if (s.contains(";")) {
 			String[] temp = s.split(";");
 			s = temp[0];
@@ -81,11 +88,11 @@ public class CastItem {
 	}
 	
 	public boolean equals(CastItem i) {
-		return i.type == this.type && i.data == this.data && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, i.enchants));
+		return i.type == this.type && i.data == this.data && i.name.equals(this.name) && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, i.enchants));
 	}
 	
 	public boolean equals(ItemStack i) {
-		return i.getTypeId() == type && i.getDurability() == data && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, getEnchants(i)));
+		return i.getTypeId() == type && i.getDurability() == data && MagicSpells.getVolatileCodeHandler().getItemName(i).equals(name) && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, getEnchants(i)));
 	}
 	
 	@Override

@@ -51,7 +51,7 @@ public class ConjureSpell extends InstantSpell {
 					if (itemTypes[i] == null) {
 						MagicSpells.error("Conjure spell '" + spellName + "' has specified invalid item: " + list.get(i));
 						continue;
-					}					
+					}
 					
 					if (quantityData.length == 1) {
 						itemMinQuantities[i] = Integer.parseInt(quantityData[0]);

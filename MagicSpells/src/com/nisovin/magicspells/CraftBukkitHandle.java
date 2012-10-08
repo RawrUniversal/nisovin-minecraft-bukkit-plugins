@@ -52,4 +52,10 @@ public interface CraftBukkitHandle {
 	
 	public void playSound(Player player, String sound, float volume, float pitch);
 	
+	public String getItemName(ItemStack item);
+	
+	public ItemStack setItemName(ItemStack item, String name);
+	
+	public void setItemLore(ItemStack item, String... lore);
+	
 }

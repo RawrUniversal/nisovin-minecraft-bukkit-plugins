@@ -19,7 +19,13 @@ public class Util {
 		try {
 			ItemStack item;
 			String s = string;
+			String name = null;
 			HashMap<Enchantment, Integer> enchants = null;
+			if (s.contains("|")) {
+				String[] temp = s.split("\\|");
+				s = temp[0];
+				name = temp[1];
+			}
 			if (s.contains(";")) {
 				String[] temp = s.split(";");
 				s = temp[0];
@@ -46,6 +52,9 @@ public class Util {
 			}
 			if (enchants != null && enchants.size() > 0 && item != null) {
 				item.addEnchantments(enchants);
+			}
+			if (name != null) {
+				item = MagicSpells.getVolatileCodeHandler().setItemName(item, name);
 			}
 			return item;
 		} catch (Exception e) {
@@ -96,7 +105,7 @@ public class Util {
 			return "";
 		}
 		int len = array.length;
-		StringBuilder sb = new StringBuilder(len * 12);
+		StringBuilder sb = new StringBuilder(16 + len * 8);
 		sb.append(array[0]);
 		for (int i = 1; i < len; i++) {
 			sb.append(with);
