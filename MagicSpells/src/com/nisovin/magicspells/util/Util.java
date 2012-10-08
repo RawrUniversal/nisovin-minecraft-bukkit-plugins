@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -16,33 +17,35 @@ public class Util {
 
 	public static ItemStack getItemStackFromString(String string) {
 		try {
-			ItemStack item = new ItemStack(0);
+			ItemStack item;
 			String s = string;
+			HashMap<Enchantment, Integer> enchants = null;
 			if (s.contains(";")) {
 				String[] temp = s.split(";");
 				s = temp[0];
-				if (!MagicSpells.ignoreCastItemEnchants()) {
-					String[] split = temp[1].split("\\+");
-					for (int i = 0; i < split.length; i++) {
-						String[] enchantData = split[i].split("-");
-						Enchantment ench;
-						if (enchantData[0].matches("[0-9]+")) {
-							ench = Enchantment.getById(Integer.parseInt(enchantData[0]));
-						} else {
-							ench = Enchantment.getByName(enchantData[0].toUpperCase());
-						}
-						if (ench != null && enchantData[1].matches("[0-9]+")) {
-							item.addUnsafeEnchantment(ench, Integer.parseInt(enchantData[1]));
-						}
+				enchants = new HashMap<Enchantment, Integer>();
+				String[] split = temp[1].split("\\+");
+				for (int i = 0; i < split.length; i++) {
+					String[] enchantData = split[i].split("-");
+					Enchantment ench;
+					if (enchantData[0].matches("[0-9]+")) {
+						ench = Enchantment.getById(Integer.parseInt(enchantData[0]));
+					} else {
+						ench = Enchantment.getByName(enchantData[0].toUpperCase());
+					}
+					if (ench != null && enchantData[1].matches("[0-9]+")) {
+						enchants.put(ench, Integer.parseInt(enchantData[1]));
 					}
 				}
 			}
 			ItemTypeAndData itemTypeAndData = MagicSpells.getItemNameResolver().resolve(s);
 			if (itemTypeAndData != null) {
-				item.setTypeId(itemTypeAndData.id);
-				item.setDurability(itemTypeAndData.data);
+				item = new ItemStack(itemTypeAndData.id, 1, itemTypeAndData.data);
 			} else {
 				return null;
+			}
+			if (enchants != null && enchants.size() > 0 && item != null) {
+				item.addEnchantments(enchants);
 			}
 			return item;
 		} catch (Exception e) {
