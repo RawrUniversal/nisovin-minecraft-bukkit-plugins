@@ -1397,7 +1397,7 @@ spells:
         str-ritual-joined: You have joined the summoning ritual.
         str-ritual-success: The summoning ritual is a success!
         str-ritual-interrupted: The summoning ritual has been interrupted.
-        str-ritual-fail: The summoning ritual has failed.
+        str-ritual-failed: The summoning ritual has failed.
     sun:
         spell-class: ".instant.TimeSpell"
         name: sun
