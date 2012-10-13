@@ -42,7 +42,9 @@ public class CastItem {
 			} else {
 				this.data = item.getDurability();
 			}
-			this.name = MagicSpells.getVolatileCodeHandler().getItemName(item);
+			if (!MagicSpells.ignoreCastItemNames()) {
+				this.name = MagicSpells.getVolatileCodeHandler().getItemName(item);
+			}
 			if (!MagicSpells.ignoreCastItemEnchants()) {
 				enchants = getEnchants(item);
 			}
@@ -54,7 +56,9 @@ public class CastItem {
 		if (s.contains("|")) {
 			String[] temp = s.split("\\|");
 			s = temp[0];
-			name = temp[1];
+			if (!MagicSpells.ignoreCastItemNames()) {
+				name = temp[1];
+			}
 		}
 		if (s.contains(";")) {
 			String[] temp = s.split(";");
@@ -88,11 +92,11 @@ public class CastItem {
 	}
 	
 	public boolean equals(CastItem i) {
-		return i.type == this.type && i.data == this.data && i.name.equals(this.name) && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, i.enchants));
+		return i.type == this.type && i.data == this.data && (MagicSpells.ignoreCastItemNames() || i.name.equals(this.name)) && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, i.enchants));
 	}
 	
 	public boolean equals(ItemStack i) {
-		return i.getTypeId() == type && i.getDurability() == data && MagicSpells.getVolatileCodeHandler().getItemName(i).equals(name) && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, getEnchants(i)));
+		return i.getTypeId() == type && i.getDurability() == data && (MagicSpells.ignoreCastItemNames() || MagicSpells.getVolatileCodeHandler().getItemName(i).equals(name)) && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, getEnchants(i)));
 	}
 	
 	@Override
@@ -127,6 +131,9 @@ public class CastItem {
 					s += "+";
 				}
 			}
+		}
+		if (name != null) {
+			s += "|" + name;
 		}
 		return s;
 	}

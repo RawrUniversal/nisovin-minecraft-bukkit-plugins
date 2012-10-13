@@ -101,7 +101,7 @@ public class CastCommand implements CommandExecutor {
 						MagicSpells.sendMessage(player, MagicSpells.strUnknownSpell);
 					}
 				} else { // not a player
-					Spell spell = MagicSpells.spellNames.get(args[0]);
+					Spell spell = MagicSpells.spellNames.get(args[0].toLowerCase());
 					if (spell == null) {
 						sender.sendMessage("Unknown spell.");
 					} else {

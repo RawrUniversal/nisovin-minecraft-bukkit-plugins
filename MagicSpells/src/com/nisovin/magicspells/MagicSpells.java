@@ -82,6 +82,7 @@ public class MagicSpells extends JavaPlugin {
 	static boolean useExpBarAsCastTimeBar;
 	static boolean cooldownsPersistThroughReload;
 	static boolean ignoreCastItemEnchants;
+	static boolean ignoreCastItemNames;
 	
 	static boolean enableManaBars;
 	static int manaPotionCooldown;
@@ -180,6 +181,7 @@ public class MagicSpells extends JavaPlugin {
 		allowCastWithFist = config.getBoolean("general.allow-cast-with-fist", false);
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
 		ignoreCastItemEnchants = config.getBoolean("general.ignore-cast-item-enchants", true);
+		ignoreCastItemNames = config.getBoolean("general.ignore-cast-item-names", false);
 		showStrCostOnMissingReagents = config.getBoolean("general.show-str-cost-on-missing-reagents", true);
 		losTransparentBlocks = new HashSet<Byte>(config.getByteList("general.los-transparent-blocks", new ArrayList<Byte>()));
 		if (losTransparentBlocks.size() == 0) {
@@ -279,12 +281,12 @@ public class MagicSpells extends JavaPlugin {
 		
 		// load in-game spell names, incantations, and initialize spells
 		for (Spell spell : spells.values()) {
-			spellNames.put(spell.getName(), spell);
+			spellNames.put(spell.getName().toLowerCase(), spell);
 			String[] aliases = spell.getAliases();
 			if (aliases != null && aliases.length > 0) {
 				for (String alias : aliases) {
-					if (!spellNames.containsKey(alias)) {
-						spellNames.put(alias, spell);
+					if (!spellNames.containsKey(alias.toLowerCase())) {
+						spellNames.put(alias.toLowerCase(), spell);
 					}
 				}
 			}
@@ -434,7 +436,7 @@ public class MagicSpells extends JavaPlugin {
 					Constructor<? extends Spell> constructor = spellClass.getConstructor(MagicConfig.class, String.class);
 					constructor.setAccessible(true);
 					Spell spell = constructor.newInstance(config, spellName);
-					spells.put(spellName, spell);
+					spells.put(spellName.toLowerCase(), spell);
 					spellsOrdered.add(spell);
 					
 					// add permissions
@@ -565,7 +567,7 @@ public class MagicSpells extends JavaPlugin {
 	 * @return the Spell found, or null if no spell with that name was found
 	 */
 	public static Spell getSpellByInternalName(String spellName) {
-		return spells.get(spellName);
+		return spells.get(spellName.toLowerCase());
 	}
 	
 	/**
@@ -574,7 +576,7 @@ public class MagicSpells extends JavaPlugin {
 	 * @return the Spell found, or null if no spell with that name was found
 	 */
 	public static Spell getSpellByInGameName(String spellName) {
-		return spellNames.get(spellName);
+		return spellNames.get(spellName.toLowerCase());
 	}
 	
 	/**
@@ -627,6 +629,10 @@ public class MagicSpells extends JavaPlugin {
 	
 	public static boolean ignoreCastItemEnchants() {
 		return ignoreCastItemEnchants;
+	}
+	
+	public static boolean ignoreCastItemNames() {
+		return ignoreCastItemNames;
 	}
 	
 	/**
@@ -859,9 +865,9 @@ public class MagicSpells extends JavaPlugin {
 	 * @return whether the spell was taught to the player
 	 */
 	public static boolean teachSpell(Player player, String spellName) {
-		Spell spell = spellNames.get(spellName);
+		Spell spell = spellNames.get(spellName.toLowerCase());
 		if (spell == null) {
-			spell = spells.get(spellName);
+			spell = spells.get(spellName.toLowerCase());
 			if (spell == null) {
 				return false;
 			}
