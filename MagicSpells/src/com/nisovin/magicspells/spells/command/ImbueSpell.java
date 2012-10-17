@@ -184,7 +184,7 @@ public class ImbueSpell extends CommandSpell {
 	}
 
 	@Override
-	public String[] tabComplete(CommandSender sender, String partial) {
+	public List<String> tabComplete(CommandSender sender, String partial) {
 		return null;
 	}
 

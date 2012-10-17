@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 
 public class Util {
@@ -179,6 +182,48 @@ public class Util {
 	
 	public static String[] splitParams(String[] split) {
 		return splitParams(arrayJoin(split, ' '), 0);
+	}
+	
+	public static List<String> tabCompleteSpellName(CommandSender sender, String partial) {
+		List<String> matches = new ArrayList<String>();
+		if (sender instanceof Player) {
+			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
+			for (Spell spell : spellbook.getSpells()) {
+				if (spellbook.canTeach(spell)) {
+					if (spell.getName().toLowerCase().startsWith(partial)) {
+						matches.add(spell.getName());
+					} else {
+						String[] aliases = spell.getAliases();
+						if (aliases != null && aliases.length > 0) {
+							for (String alias : aliases) {
+								if (alias.toLowerCase().startsWith(partial)) {
+									matches.add(alias);
+								}
+							}
+						}
+					}
+				}
+			}
+		} else if (sender.isOp()) {
+			for (Spell spell : MagicSpells.spells()) {
+				if (spell.getName().toLowerCase().startsWith(partial)) {
+					matches.add(spell.getName());
+				} else {
+					String[] aliases = spell.getAliases();
+					if (aliases != null && aliases.length > 0) {
+						for (String alias : aliases) {
+							if (alias.toLowerCase().startsWith(partial)) {
+								matches.add(alias);
+							}
+						}
+					}
+				}
+			}
+		}
+		if (matches.size() > 0) {
+			return matches;
+		}
+		return null;
 	}
 	
 }

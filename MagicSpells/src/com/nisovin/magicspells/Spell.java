@@ -481,11 +481,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 */
 	public abstract PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args);
 	
-	public String[] tabComplete(CommandSender sender, String partial) {
+	public List<String> tabComplete(CommandSender sender, String partial) {
 		return null;
 	}
 	
-	protected String[] tabCompletePlayerName(CommandSender sender, String partial) {
+	protected List<String> tabCompletePlayerName(CommandSender sender, String partial) {
 		ArrayList<String> matches = new ArrayList<String>();
 		partial = partial.toLowerCase();
 		for (Player p : Bukkit.getOnlinePlayers()) {
@@ -496,52 +496,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			}
 		}
 		if (matches.size() > 0) {
-			return matches.toArray(new String[matches.size()]);
+			return matches;
 		} else {
 			return null;
 		}
 	}
 	
-	protected String[] tabCompleteSpellName(CommandSender sender, String partial) {
-		List<String> matches = new ArrayList<String>();
-		if (sender instanceof Player) {
-			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
-			for (Spell spell : spellbook.getSpells()) {
-				if (spellbook.canTeach(spell)) {
-					if (spell.getName().toLowerCase().startsWith(partial)) {
-						matches.add(spell.getName());
-					} else {
-						String[] aliases = spell.getAliases();
-						if (aliases != null && aliases.length > 0) {
-							for (String alias : aliases) {
-								if (alias.toLowerCase().startsWith(partial)) {
-									matches.add(alias);
-								}
-							}
-						}
-					}
-				}
-			}
-		} else if (sender.isOp()) {
-			for (Spell spell : MagicSpells.spells()) {
-				if (spell.getName().toLowerCase().startsWith(partial)) {
-					matches.add(spell.getName());
-				} else {
-					String[] aliases = spell.getAliases();
-					if (aliases != null && aliases.length > 0) {
-						for (String alias : aliases) {
-							if (alias.toLowerCase().startsWith(partial)) {
-								matches.add(alias);
-							}
-						}
-					}
-				}
-			}
-		}
-		if (matches.size() > 0) {
-			return matches.toArray(new String[matches.size()]);
-		}
-		return null;
+	protected List<String> tabCompleteSpellName(CommandSender sender, String partial) {
+		return Util.tabCompleteSpellName(sender, partial);
 	}
 	
 	/**

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.bukkit.Bukkit;
@@ -221,7 +222,7 @@ public class SpellbookSpell extends CommandSpell {
 	}
 	
 	@Override
-	public String[] tabComplete(CommandSender sender, String partial) {
+	public List<String> tabComplete(CommandSender sender, String partial) {
 		if (sender instanceof Player && !partial.contains(" ")) {
 			return tabCompleteSpellName(sender, partial);
 		}

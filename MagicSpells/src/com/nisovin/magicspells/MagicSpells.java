@@ -373,8 +373,9 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// register commands
-		CommandExecutor exec = new CastCommand(this);
+		CastCommand exec = new CastCommand(this);
 		getCommand("magicspellcast").setExecutor(exec);
+		getCommand("magicspellcast").setTabCompleter(exec);
 		getCommand("magicspellmana").setExecutor(exec);
 		
 		// setup metrics

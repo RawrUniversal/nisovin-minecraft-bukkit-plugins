@@ -92,7 +92,7 @@ public class BindSpell extends CommandSpell {
 	}
 
 	@Override
-	public String[] tabComplete(CommandSender sender, String partial) {
+	public List<String> tabComplete(CommandSender sender, String partial) {
 		if (sender instanceof Player) {
 			// only one arg
 			if (partial.contains(" ")) {

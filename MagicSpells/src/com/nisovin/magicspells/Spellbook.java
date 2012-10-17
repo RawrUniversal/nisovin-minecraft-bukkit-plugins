@@ -174,11 +174,11 @@ public class Spellbook {
 		return this.allSpells;
 	}
 	
-	public String[] tabComplete(String partial) {
+	public List<String> tabComplete(String partial) {
 		String[] data = Util.splitParams(partial, 2);
 		if (data.length == 1) {
 			// complete spell name
-			partial = data[0];
+			partial = data[0].toLowerCase();
 			List<String> options = new ArrayList<String>();
 			for (Spell spell : allSpells) {
 				if (spell.canCastByCommand()) {
@@ -197,7 +197,7 @@ public class Spellbook {
 				}
 			}
 			if (options.size() > 0) {
-				return options.toArray(new String[options.size()]);
+				return options;
 			} else {
 				return null;
 			}
@@ -207,8 +207,8 @@ public class Spellbook {
 			if (spell == null) {
 				return null;
 			} else {
-				String[] ret = spell.tabComplete(player, data[1]);
-				if (ret == null || ret.length == 0) {
+				List<String> ret = spell.tabComplete(player, data[1]);
+				if (ret == null || ret.size() == 0) {
 					return null;
 				} else {
 					return ret;

@@ -1,5 +1,7 @@
 package com.nisovin.magicspells.spells.command;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -67,7 +69,7 @@ public class UnbindSpell extends CommandSpell {
 	}
 
 	@Override
-	public String[] tabComplete(CommandSender sender, String partial) {
+	public List<String> tabComplete(CommandSender sender, String partial) {
 		if (sender instanceof Player) {
 			// only one arg
 			if (partial.contains(" ")) {

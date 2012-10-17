@@ -1,5 +1,7 @@
 package com.nisovin.magicspells;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -7,13 +9,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
-public class CastCommand implements CommandExecutor {
+public class CastCommand implements CommandExecutor, TabCompleter {
 
 	MagicSpells plugin;
 	
@@ -132,6 +135,16 @@ public class CastCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.RED + "An error has occured.");
 			return true;
 		}
+	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+		if (sender instanceof Player) {
+			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
+			String partial = Util.arrayJoin(args, ' ');
+			return spellbook.tabComplete(partial);
+		}
+		return null;
 	}
 
 }
