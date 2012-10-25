@@ -196,14 +196,15 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	}
 
 	@Override
-	public boolean setStringOnItemStack(ItemStack item, String key, String value) {
+	public ItemStack setStringOnItemStack(ItemStack item, String key, String value) {
+		if (!(item instanceof CraftItemStack)) item = new CraftItemStack(item);
 		NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
 		if (tag == null) {
 			tag = new NBTTagCompound();
 			((CraftItemStack)item).getHandle().tag = tag;
 		}
 		tag.setString(key, value);
-		return true;
+		return item;
 	}
 
 	@Override
@@ -280,24 +281,35 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	}
 
 	@Override
-	public void setItemLore(ItemStack item, String... lore) {
+	public ItemStack setItemLore(ItemStack item, String... lore) {
+		CraftItemStack craftItem;
+		net.minecraft.server.ItemStack nmsItem;
+		
 		if (item instanceof CraftItemStack) {
-			NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
-			if (tag == null) {
-				tag = new NBTTagCompound();
-				((CraftItemStack)item).getHandle().tag = tag;
-			}
-			NBTTagCompound disp = tag.getCompound("display");
-			if (disp == null) {
-				disp = new NBTTagCompound("display");
-				tag.setCompound("display", disp);
-			}
-			NBTTagList list = new NBTTagList("Lore");
-			disp.set("Lore", list);
-			for (String l : lore) {
-				list.add(new NBTTagString(l));
-			}
+			craftItem = (CraftItemStack)item;
+			nmsItem = craftItem.getHandle();
+		} else {
+			craftItem = new CraftItemStack(item);
+			nmsItem = craftItem.getHandle();
 		}
+		
+		NBTTagCompound tag = nmsItem.tag;
+		if (tag == null) {
+			tag = new NBTTagCompound();
+			nmsItem.tag = tag;
+		}
+		NBTTagCompound disp = tag.getCompound("display");
+		if (disp == null) {
+			disp = new NBTTagCompound("display");
+			tag.setCompound("display", disp);
+		}
+		NBTTagList list = new NBTTagList("Lore");
+		disp.set("Lore", list);
+		for (String l : lore) {
+			list.add(new NBTTagString(l));
+		}
+		
+		return craftItem;
 	}
 
 }

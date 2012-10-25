@@ -92,8 +92,8 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	}
 
 	@Override
-	public boolean setStringOnItemStack(ItemStack item, String key, String value) {
-		return false;
+	public ItemStack setStringOnItemStack(ItemStack item, String key, String value) {
+		return item;
 	}
 
 	@Override
@@ -124,7 +124,8 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	}
 
 	@Override
-	public void setItemLore(ItemStack item, String... lore) {
+	public ItemStack setItemLore(ItemStack item, String... lore) {
+		return item;
 	}
 
 }

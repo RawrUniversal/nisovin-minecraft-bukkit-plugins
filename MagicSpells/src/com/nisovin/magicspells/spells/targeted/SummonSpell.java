@@ -136,7 +136,7 @@ public class SummonSpell extends TargetedSpell {
 	}
 	
 	@Override
-	public String[] tabComplete(CommandSender sender, String partial) {
+	public List<String> tabComplete(CommandSender sender, String partial) {
 		if (partial.contains(" ")) {
 			return null;
 		}

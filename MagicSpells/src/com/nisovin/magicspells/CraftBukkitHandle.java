@@ -42,7 +42,7 @@ public interface CraftBukkitHandle {
 	
 	public void setTarget(LivingEntity entity, LivingEntity target);
 	
-	public boolean setStringOnItemStack(ItemStack item, String key, String value);
+	public ItemStack setStringOnItemStack(ItemStack item, String key, String value);
 	
 	public String getStringOnItemStack(ItemStack item, String key);
 	
@@ -56,6 +56,6 @@ public interface CraftBukkitHandle {
 	
 	public ItemStack setItemName(ItemStack item, String name);
 	
-	public void setItemLore(ItemStack item, String... lore);
+	public ItemStack setItemLore(ItemStack item, String... lore);
 	
 }
