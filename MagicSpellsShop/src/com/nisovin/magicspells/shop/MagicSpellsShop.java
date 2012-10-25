@@ -36,10 +36,8 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 	
 	private String firstLineScroll;
 	private String scrollSpellName;
-	private int scrollItemType;
 	private String strCantAffordScroll;
 	private String strPurchasedScroll;
-	private String strScrollFail;
 	
 	private CurrencyHandler currency;
 	
@@ -68,10 +66,8 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		
 		firstLineScroll = config.getString("first-line-scroll", "[SCROLL SHOP]");
 		scrollSpellName = config.getString("scroll-spell-name", "scroll");
-		scrollItemType = config.getInt("scroll-item-type", Material.PAPER.getId());
 		strCantAffordScroll = config.getString("str-cant-afford-scroll", "You cannot afford that scroll.");
 		strPurchasedScroll = config.getString("str-purchased-scroll", "You have purchased a scroll for the %s spell.");
-		strScrollFail = config.getString("str-scroll-fail", "You cannot purchase a scroll at this time.");
 		
 		currency = new CurrencyHandler(config);
 		
@@ -170,12 +166,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		
 		// create scroll
 		ScrollSpell scrollSpell = (ScrollSpell)MagicSpells.getSpellByInternalName(scrollSpellName);
-		short scrollId = scrollSpell.createScroll(spell, uses);
-		if (scrollId == 0) {
-			MagicSpells.sendMessage(player, strScrollFail);
-			return;
-		}
-		ItemStack scroll = new ItemStack(scrollItemType, 1, scrollId);
+		ItemStack scroll = scrollSpell.createScroll(spell, uses, null);
 		
 		// remove currency
 		currency.remove(player, cost.amount, cost.currency);
