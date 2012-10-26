@@ -181,16 +181,45 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		// cost
-		reagents = new SpellReagents();
-		List<String> costList = config.getStringList(section + "." + spellName + ".cost", null);
+		reagents = getConfigReagents("cost");
+		
+		// cooldowns
+		this.cooldown = (float)config.getDouble(section + "." + spellName + ".cooldown", 0);
+		this.rawSharedCooldowns = config.getStringList(section + "." + spellName + ".shared-cooldowns", null);
+		this.ignoreGlobalCooldown = config.getBoolean(section + "." + spellName + ".ignore-global-cooldown", false);
+		this.nextCast = new HashMap<String, Long>();
+
+		// hierarchy options
+		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
+		this.replaces = config.getStringList(section + "." + spellName + ".replaces", null);
+		this.worldRestrictions = config.getStringList(section + "." + spellName + ".restrict-to-worlds", null);
+		
+		// strings
+		this.strCost = config.getString(section + "." + spellName + ".str-cost", null);
+		this.strCastSelf = config.getString(section + "." + spellName + ".str-cast-self", null);
+		this.strCastOthers = config.getString(section + "." + spellName + ".str-cast-others", null);
+		this.strOnCooldown = config.getString(section + "." + spellName + ".str-on-cooldown", MagicSpells.strOnCooldown);
+		this.strMissingReagents = config.getString(section + "." + spellName + ".str-missing-reagents", MagicSpells.strMissingReagents);
+		this.strCantCast = config.getString(section + "." + spellName + ".str-cant-cast", MagicSpells.strCantCast);
+		this.strCantBind = config.getString(section + "." + spellName + ".str-cant-bind", null);
+		this.strWrongWorld = config.getString(section + "." + spellName + ".str-wrong-world", MagicSpells.strWrongWorld);
+		this.strWrongCastItem = config.getString(section + "." + spellName + ".str-wrong-cast-item", strCantCast);
+		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
+		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
+	}
+	
+	protected SpellReagents getConfigReagents(String option) {
+		SpellReagents reagents = null;
+		List<String> costList = config.getStringList("spells." + internalName + "." + option, null);
 		if (costList != null && costList.size() > 0) {
+			reagents = new SpellReagents();
 			String[] data;
 			for (int i = 0; i < costList.size(); i++) {
 				String costVal = costList.get(i);
 				
 				// validate cost data
 				if (!costVal.matches("^([0-9a-zA-Z_]+(:[0-9]+)?|mana|health|hunger|experience|levels)( [1-9][0-9]*)?$")) {
-					MagicSpells.error("Failed to process cost value for " + spellName + " spell: " + costVal);
+					MagicSpells.error("Failed to process cost value for " + internalName + " spell: " + costVal);
 					continue;
 				}
 				
@@ -217,30 +246,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				}
 			}
 		}
-		
-		// cooldowns
-		this.cooldown = (float)config.getDouble(section + "." + spellName + ".cooldown", 0);
-		this.rawSharedCooldowns = config.getStringList(section + "." + spellName + ".shared-cooldowns", null);
-		this.ignoreGlobalCooldown = config.getBoolean(section + "." + spellName + ".ignore-global-cooldown", false);
-		this.nextCast = new HashMap<String, Long>();
-
-		// hierarchy options
-		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
-		this.replaces = config.getStringList(section + "." + spellName + ".replaces", null);
-		this.worldRestrictions = config.getStringList(section + "." + spellName + ".restrict-to-worlds", null);
-		
-		// strings
-		this.strCost = config.getString(section + "." + spellName + ".str-cost", null);
-		this.strCastSelf = config.getString(section + "." + spellName + ".str-cast-self", null);
-		this.strCastOthers = config.getString(section + "." + spellName + ".str-cast-others", null);
-		this.strOnCooldown = config.getString(section + "." + spellName + ".str-on-cooldown", MagicSpells.strOnCooldown);
-		this.strMissingReagents = config.getString(section + "." + spellName + ".str-missing-reagents", MagicSpells.strMissingReagents);
-		this.strCantCast = config.getString(section + "." + spellName + ".str-cant-cast", MagicSpells.strCantCast);
-		this.strCantBind = config.getString(section + "." + spellName + ".str-cant-bind", null);
-		this.strWrongWorld = config.getString(section + "." + spellName + ".str-wrong-world", MagicSpells.strWrongWorld);
-		this.strWrongCastItem = config.getString(section + "." + spellName + ".str-wrong-cast-item", strCantCast);
-		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
-		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
+		return reagents;
 	}
 	
 	/**
@@ -677,9 +683,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		if (levelsCost > 0 && player.getLevel() < levelsCost) {
 			return false;
 		}
-		for (ItemStack item : reagents) {
-			if (item != null && !inventoryContains(player.getInventory(), item)) {
-				return false;
+		if (reagents != null) {
+			for (ItemStack item : reagents) {
+				if (item != null && !inventoryContains(player.getInventory(), item)) {
+					return false;
+				}
 			}
 		}
 		return true;		

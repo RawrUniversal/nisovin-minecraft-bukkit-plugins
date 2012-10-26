@@ -1,7 +1,6 @@
 package com.nisovin.magicspells.spells;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
@@ -13,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.BuffManager;
 import com.nisovin.magicspells.MagicSpells;
@@ -21,7 +19,6 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
-import com.nisovin.magicspells.util.Util;
 
 public abstract class BuffSpell extends Spell {
 	
@@ -50,40 +47,7 @@ public abstract class BuffSpell extends Spell {
 		super(config, spellName);
 		
 		toggle = getConfigBoolean("toggle", true);
-		List<String> costList = getConfigStringList("use-cost", null);
-		if (costList != null && costList.size() > 0) {
-			reagents = new SpellReagents();
-			for (int i = 0; i < costList.size(); i++) {
-				if (costList.get(i).contains(" ")) {
-					String [] data = costList.get(i).split(" ");
-					if (data[0].equalsIgnoreCase("health")) {
-						reagents.setHealth(Integer.parseInt(data[1]));
-					} else if (data[0].equalsIgnoreCase("mana")) {
-						reagents.setMana(Integer.parseInt(data[1]));
-					} else if (data[0].equalsIgnoreCase("hunger")) {
-						reagents.setHunger(Integer.parseInt(data[1]));
-					} else if (data[0].equalsIgnoreCase("experience")) {
-						reagents.setExperience(Integer.parseInt(data[1]));
-					} else if (data[0].equalsIgnoreCase("levels")) {
-						reagents.setLevels(Integer.parseInt(data[1]));
-					} else {
-						ItemStack item = Util.getItemStackFromString(data[0]);
-						if (item != null) {
-							item.setAmount(Integer.parseInt(data[1]));
-							reagents.addItem(item);
-						}
-					}
-				} else {
-					ItemStack item = Util.getItemStackFromString(costList.get(i));
-					if (item != null) {
-						item.setAmount(1);
-						reagents.addItem(item);
-					}
-				}
-			}
-		} else {
-			reagents = null;
-		}
+		reagents = getConfigReagents("use-cost");
 		useCostInterval = getConfigInt("use-cost-interval", 0);
 		numUses = getConfigInt("num-uses", 0);
 		duration = getConfigInt("duration", 0);
