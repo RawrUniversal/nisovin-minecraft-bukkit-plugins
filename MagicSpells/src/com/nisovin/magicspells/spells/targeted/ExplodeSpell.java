@@ -86,7 +86,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 		currentTick = Bukkit.getWorlds().get(0).getFullTime();
 		currentPower = power;
 		// cause explosion
-		boolean ret = MagicSpells.getVolatileCodeHandler().createExplosionByPlayer(player, target, explosionSize * power, addFire);
+		boolean ret = MagicSpells.getVolatileCodeHandler().createExplosionByPlayer(player, target, explosionSize * power, addFire, !preventBlockDamage);
 		if (ret) {
 			playSpellEffects(player, target);
 		}

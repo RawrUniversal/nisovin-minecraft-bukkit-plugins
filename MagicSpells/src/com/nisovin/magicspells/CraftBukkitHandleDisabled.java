@@ -71,7 +71,7 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	}
 
 	@Override
-	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire) {
+	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire, boolean breakBlocks) {
 		return location.getWorld().createExplosion(location, size, fire);
 	}
 

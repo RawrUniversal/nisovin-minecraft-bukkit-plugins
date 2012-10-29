@@ -48,7 +48,7 @@ public class BossHealthBar {
 				create();
 			}
 			dw.watch(16, Integer.valueOf(Math.round(percent * 200)));		
-			Packet40EntityMetadata packet = new Packet40EntityMetadata(dragonId, dw);
+			Packet40EntityMetadata packet = new Packet40EntityMetadata(dragonId, dw, true);
 			((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
 		}
 	}

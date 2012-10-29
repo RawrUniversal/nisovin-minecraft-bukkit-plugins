@@ -160,8 +160,8 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 	}
 
 	@Override
-	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire) {
-		return !((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftPlayer)player).getHandle(), location.getX(), location.getY(), location.getZ(), size, fire).wasCanceled;
+	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire, boolean breakBlocks) {
+		return !((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftPlayer)player).getHandle(), location.getX(), location.getY(), location.getZ(), size, fire, breakBlocks).wasCanceled;
 	}
 
 	@Override
