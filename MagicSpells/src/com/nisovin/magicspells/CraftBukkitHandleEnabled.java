@@ -22,6 +22,7 @@ import net.minecraft.server.Packet43SetExperience;
 import net.minecraft.server.Packet62NamedSoundEffect;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -273,9 +274,9 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 		NBTTagCompound disp = tag.getCompound("display");
 		if (disp == null) {
 			disp = new NBTTagCompound("display");
-			tag.setCompound("display", disp);
 		}
-		disp.setString("Name", name);
+		disp.setString("Name", ChatColor.translateAlternateColorCodes('&', name));
+		tag.setCompound("display", disp);
 		
 		return craftItem;
 	}
@@ -301,12 +302,51 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 		NBTTagCompound disp = tag.getCompound("display");
 		if (disp == null) {
 			disp = new NBTTagCompound("display");
-			tag.setCompound("display", disp);
 		}
-		NBTTagList list = new NBTTagList("Lore");
-		disp.set("Lore", list);
+		NBTTagList list = new NBTTagList();
 		for (String l : lore) {
-			list.add(new NBTTagString(l));
+			list.add(new NBTTagString("", ChatColor.translateAlternateColorCodes('&', l)));
+		}
+		disp.set("Lore", list);
+		tag.setCompound("display", disp);
+		
+		return craftItem;
+	}
+
+	@Override
+	public boolean itemStackTagsEqual(ItemStack item1, ItemStack item2) {
+		NBTTagCompound tag1 = null, tag2 = null;
+		if (item1 != null && item1 instanceof CraftItemStack) {
+			tag1 = ((CraftItemStack)item1).getHandle().tag;
+		}
+		if (item2 != null && item2 instanceof CraftItemStack) {
+			tag2 = ((CraftItemStack)item2).getHandle().tag;
+		}
+		if (tag1 == null && tag2 == null) return true;
+		if (tag1 == null || tag2 == null) return false;
+		return tag1.equals(tag2);
+	}
+
+	@Override
+	public ItemStack addFakeEnchantment(ItemStack item) {
+		CraftItemStack craftItem;
+		net.minecraft.server.ItemStack nmsItem;
+		
+		if (item instanceof CraftItemStack) {
+			craftItem = (CraftItemStack)item;
+			nmsItem = craftItem.getHandle();
+		} else {
+			craftItem = new CraftItemStack(item);
+			nmsItem = craftItem.getHandle();
+		}
+		
+		NBTTagCompound tag = nmsItem.tag;
+		if (tag == null) {
+			tag = new NBTTagCompound();
+			nmsItem.tag = tag;
+		}
+		if (!tag.hasKey("ench")) {
+			tag.set("ench", new NBTTagList());
 		}
 		
 		return craftItem;

@@ -107,8 +107,11 @@ public class Spellbook {
 							String[] s = data[1].split(",");
 							for (int i = 0; i < s.length; i++) {
 								try {
-									items.add(new CastItem(s[i]));
-								} catch (Exception e) {}
+									CastItem castItem = new CastItem(s[i]);
+									items.add(castItem);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 							}
 							addSpell(spell, items.toArray(new CastItem[items.size()]));
 						}
@@ -353,8 +356,6 @@ public class Spellbook {
 			}
 			for (CastItem i : items) {
 				MagicSpells.debug(3, "        Cast item: " + i + (castItems!=null?" (custom)":" (default)"));
-			}
-			for (CastItem i : items) {
 				if (i != null) {
 					ArrayList<Spell> temp = itemSpells.get(i);
 					if (temp != null) {

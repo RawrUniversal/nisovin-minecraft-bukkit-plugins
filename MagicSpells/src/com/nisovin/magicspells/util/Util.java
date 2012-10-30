@@ -57,12 +57,18 @@ public class Util {
 				item.addEnchantments(enchants);
 			}
 			if (name != null) {
-				item = MagicSpells.getVolatileCodeHandler().setItemName(item, name);
+				item = MagicSpells.getVolatileCodeHandler().setItemName(item, name.replace("__", " "));
 			}
 			return item;
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	public static boolean itemStackTypesEqual(ItemStack item1, ItemStack item2) {
+		if (item1.getTypeId() != item2.getTypeId()) return false;
+		if (item1.getDurability() != item2.getDurability()) return false;
+		return MagicSpells.getVolatileCodeHandler().itemStackTagsEqual(item1, item2);
 	}
 	
 	public static void setFacing(Player player, Vector vector) {

@@ -6,6 +6,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
@@ -125,6 +126,17 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 
 	@Override
 	public ItemStack setItemLore(ItemStack item, String... lore) {
+		return item;
+	}
+
+	@Override
+	public boolean itemStackTagsEqual(ItemStack item1, ItemStack item2) {
+		return true;
+	}
+
+	@Override
+	public ItemStack addFakeEnchantment(ItemStack item) {
+		item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
 		return item;
 	}
 

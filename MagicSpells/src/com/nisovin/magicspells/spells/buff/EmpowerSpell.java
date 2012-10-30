@@ -40,7 +40,7 @@ public class EmpowerSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@EventHandler(priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onSpellCast(SpellCastEvent event) {
 		Player player = event.getCaster();
 		if (empowered.containsKey(player)) {

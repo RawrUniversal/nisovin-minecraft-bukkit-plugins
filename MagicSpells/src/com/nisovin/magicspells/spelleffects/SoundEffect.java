@@ -1,7 +1,8 @@
 package com.nisovin.magicspells.spelleffects;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.TreeSet;
 
 import org.bukkit.Location;
 
@@ -33,21 +34,23 @@ public class SoundEffect extends SpellEffect {
 	}
 	
 	public static void main(String[] args) {
+		Collection<String> sounds = new TreeSet<String>();
 		File file = new File("C:\\Users\\Justin.Baker\\AppData\\Roaming\\.minecraft\\resources\\newsound");
-		ArrayList<String> sounds = new ArrayList<String>();
+		parseFolder(file, "", sounds);
+		file = new File("C:\\Users\\Justin.Baker\\AppData\\Roaming\\.minecraft\\resources\\sound3");
 		parseFolder(file, "", sounds);
 		for (String sound : sounds) {
 			System.out.println("   * " + sound);
 		}
 	}
 	
-	static void parseFolder(File folder, String path, ArrayList<String> sounds) {
+	static void parseFolder(File folder, String path, Collection<String> sounds) {
 		File[] files = folder.listFiles();
 		for (File file : files) {			
 			if (file.isDirectory()) {
 				parseFolder(file, path + file.getName() + ".", sounds);
 			} else if (file.getName().endsWith(".ogg")) {
-				String name = path + file.getName().replace(".ogg", "").replaceAll("[0-9]+$", "");
+				String name = path + file.getName().replace(".ogg", "").replaceAll("[0-9]+$", "").replace(" ", "_");
 				if (!sounds.contains(name)) {
 					sounds.add(name);
 				}

@@ -58,4 +58,8 @@ public interface CraftBukkitHandle {
 	
 	public ItemStack setItemLore(ItemStack item, String... lore);
 	
+	public boolean itemStackTagsEqual(ItemStack item1, ItemStack item2);
+	
+	public ItemStack addFakeEnchantment(ItemStack item);
+	
 }

@@ -972,7 +972,7 @@ public class MagicSpells extends JavaPlugin {
 /*
  * TODO for version 3.0:
  * 
- * - Use MagicPlayer across the entire plugin
+ * - Use MagicPlayer (Caster/PlayerCaster) across the entire plugin
  * - Allow spells to be cast by something other than players, like blocks and other entities
  * - Create a method for task scheduling and use it across the entire plugin
  * - Make BuffSpell handle more stuff automatically

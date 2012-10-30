@@ -139,6 +139,7 @@ public class ScrollSpell extends CommandSpell {
 		if (strScrollSubtext != null && !strScrollSubtext.isEmpty()) {
 			item = handle.setItemLore(item, strScrollSubtext.replace("%s", spell.getName()).replace("%u", uses+""));
 		}
+		handle.addFakeEnchantment(item);
 		return item;
 	}
 	

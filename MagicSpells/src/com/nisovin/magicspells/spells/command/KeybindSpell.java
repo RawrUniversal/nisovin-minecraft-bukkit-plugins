@@ -149,7 +149,6 @@ public class KeybindSpell extends CommandSpell {
 	public void onItemHeldChange(PlayerItemHeldEvent event) {
 		Keybinds keybinds = playerKeybinds.get(event.getPlayer().getName());
 		if (keybinds != null) {
-			System.out.println("old: " + event.getPreviousSlot() + "; new: " + event.getNewSlot());
 			keybinds.deselect(event.getPreviousSlot());
 			keybinds.select(event.getNewSlot());
 		}

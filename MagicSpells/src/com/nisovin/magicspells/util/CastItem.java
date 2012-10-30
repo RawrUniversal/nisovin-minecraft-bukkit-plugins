@@ -56,7 +56,7 @@ public class CastItem {
 		if (s.contains("|")) {
 			String[] temp = s.split("\\|");
 			s = temp[0];
-			if (!MagicSpells.ignoreCastItemNames()) {
+			if (!MagicSpells.ignoreCastItemNames() && temp.length > 1) {
 				name = temp[1];
 			}
 		}
@@ -132,7 +132,7 @@ public class CastItem {
 				}
 			}
 		}
-		if (name != null) {
+		if (name != null && !name.isEmpty()) {
 			s += "|" + name;
 		}
 		return s;
@@ -175,4 +175,5 @@ public class CastItem {
 		}
 		return true;
 	}
+	
 }

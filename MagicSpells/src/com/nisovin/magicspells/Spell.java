@@ -182,6 +182,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		// cost
 		reagents = getConfigReagents("cost");
+		if (reagents == null) reagents = new SpellReagents();
 		
 		// cooldowns
 		this.cooldown = (float)config.getDouble(section + "." + spellName + ".cooldown", 0);
@@ -218,7 +219,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				String costVal = costList.get(i);
 				
 				// validate cost data
-				if (!costVal.matches("^([0-9a-zA-Z_]+(:[0-9]+)?|mana|health|hunger|experience|levels)( [1-9][0-9]*)?$")) {
+				if (!costVal.matches("^([0-9a-zA-Z_]+(:[0-9]+)?(\\|[A-Za-z0-9_\\-:,./&]+)?|mana|health|hunger|experience|levels)( [1-9][0-9]*)?$")) {
 					MagicSpells.error("Failed to process cost value for " + internalName + " spell: " + costVal);
 					continue;
 				}
@@ -640,6 +641,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @return true if the player has the reagents, false otherwise
 	 */
 	protected boolean hasReagents(Player player, SpellReagents reagents) {
+		if (reagents == null) return true;
 		return hasReagents(player, reagents.getItemsAsArray(), reagents.getHealth(), reagents.getMana(), reagents.getHunger(), reagents.getExperience(), reagents.getLevels());
 	}
 	
@@ -758,7 +760,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		int count = 0;
 		ItemStack[] items = inventory.getContents();
 		for (int i = 0; i < items.length; i++) {
-			if (items[i] != null && items[i].getType() == item.getType() && items[i].getDurability() == item.getDurability()) {
+			if (items[i] != null && Util.itemStackTypesEqual(item, items[i])) {
 				count += items[i].getAmount();
 			}
 			if (count >= item.getAmount()) {
@@ -772,7 +774,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		int amt = item.getAmount();
 		ItemStack[] items = inventory.getContents();
 		for (int i = 0; i < items.length; i++) {
-			if (items[i] != null && items[i].getType() == item.getType() && items[i].getDurability() == item.getDurability()) {
+			if (items[i] != null && Util.itemStackTypesEqual(item, items[i])) {
 				if (items[i].getAmount() > amt) {
 					items[i].setAmount(items[i].getAmount() - amt);
 					break;
