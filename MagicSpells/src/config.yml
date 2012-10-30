@@ -1555,6 +1555,7 @@ spells:
         enabled: true
         description: Fly through the air.
         cast-item: book
+        fly-speed: 0.1
         launch-speed: 1
         cancel-on-land: false
         cancel-on-logout: true

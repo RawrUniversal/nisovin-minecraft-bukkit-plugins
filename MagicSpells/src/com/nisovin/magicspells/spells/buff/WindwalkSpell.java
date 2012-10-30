@@ -22,6 +22,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class WindwalkSpell extends BuffSpell {
 
 	private int launchSpeed;
+	private float flySpeed;
     private boolean cancelOnLand;
 	private boolean cancelOnTeleport;
 	
@@ -32,6 +33,7 @@ public class WindwalkSpell extends BuffSpell {
 		super(config, spellName);
 
 		launchSpeed = getConfigInt("launch-speed", 1);
+		flySpeed = getConfigFloat("fly-speed", 0.1F);
         cancelOnLand = getConfigBoolean("cancel-on-land", true);
 		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
 		
@@ -69,6 +71,7 @@ public class WindwalkSpell extends BuffSpell {
 			flyers.add(player);
 			player.setAllowFlight(true);
 			player.setFlying(true);
+			player.setFlySpeed(flySpeed);
 			if (launchSpeed > 0) {
 				player.setVelocity(new Vector(0,launchSpeed,0));
 			}
@@ -123,6 +126,7 @@ public class WindwalkSpell extends BuffSpell {
 			if (player.getGameMode() != GameMode.CREATIVE) {
 				player.setAllowFlight(false);
 			}
+			player.setFlySpeed(0.1F);
 			player.setFallDistance(0);
 			flyers.remove(player);
 			sendMessage(player, strFade);
