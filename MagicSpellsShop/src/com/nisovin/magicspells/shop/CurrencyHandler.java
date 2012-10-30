@@ -54,7 +54,7 @@ public class CurrencyHandler {
 	}
 	
 	public boolean has(Player player, double amount, String currency) {
-		String c = currencies.get(currency.toLowerCase());
+		String c = currency == null ? null : currencies.get(currency.toLowerCase());
 		if (c == null) c = currencies.get(defaultCurrency);
 		
 		if (c == null) {
@@ -83,10 +83,11 @@ public class CurrencyHandler {
 	
 	@SuppressWarnings("deprecation")
 	public void remove(Player player, double amount, String currency) {
-		String c = currencies.get(currency.toLowerCase());
+		String c = currency == null ? null : currencies.get(currency.toLowerCase());
 		if (c == null) c = currencies.get(defaultCurrency);
 		
-		if (c.equalsIgnoreCase("vault") && economy != null) {
+		if (c == null) {
+		} else if (c.equalsIgnoreCase("vault") && economy != null) {
 			economy.withdrawPlayer(player.getName(), amount);
 		} else if (c.equalsIgnoreCase("levels")) {
 			player.setLevel(player.getLevel() - (int)amount);
