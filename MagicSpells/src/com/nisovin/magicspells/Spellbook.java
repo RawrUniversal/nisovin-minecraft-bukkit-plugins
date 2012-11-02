@@ -95,13 +95,13 @@ public class Spellbook {
 				String line = scanner.nextLine();
 				if (!line.equals("")) {
 					if (!line.contains(":")) {
-						Spell spell = MagicSpells.getSpellByInGameName(line);
+						Spell spell = MagicSpells.getSpellByInternalName(line);
 						if (spell != null) {
 							addSpell(spell);
 						}
 					} else {
 						String[] data = line.split(":", 2);
-						Spell spell = MagicSpells.getSpellByInGameName(data[0]);
+						Spell spell = MagicSpells.getSpellByInternalName(data[0]);
 						if (spell != null) {
 							ArrayList<CastItem> items = new ArrayList<CastItem>();
 							String[] s = data[1].split(",");
@@ -482,6 +482,12 @@ public class Spellbook {
 		}
 		
 		return removed;
+	}
+	
+	public void removeAllCustomBindings() {
+		customBindings.clear();
+		save();
+		reload();
 	}
 	
 	public void removeAllSpells() {

@@ -453,7 +453,18 @@ spells:
         str-cost: 15 mana, plus 5 mana for each spell cast
         str-cast-self: You begin to glow with magical energy.
         str-cast-others: "%a begins to glow with magical energy."
-        str-fade: You are no longer glowing with magical energy.
+        str-fade: You are no longer glowing with magical energy.        
+    enderchest:
+        spell-class: ".instant.EnderchestSpell"
+        name: enderchest
+        spell-icon: ender_chest
+        description: Opens your ender chest inventory.
+        cast-item: book
+        cooldown: 300
+        cost:
+        	- mana 50
+            - ender_pearl 1
+        str-cost: 50 mana and 1 ender pearl
     entomb:
         spell-class: ".targeted.EntombSpell"
         name: entomb
@@ -841,6 +852,7 @@ spells:
         damage-causes:
             - block explosion
             - contact
+            - custom
             - drowning
             - entity attack
             - entity explosion
@@ -849,10 +861,13 @@ spells:
             - fire tick
             - lava
             - lightning
-            - projectile
-            - suffocation
             - magic
+            - poison
+            - projectile
+            - starvation
+            - suffocation
             - void
+            - wither
         duration: 60
         cooldown: 300
         cost: 
@@ -1548,6 +1563,25 @@ spells:
         str-cost: 10 mana
         str-no-target: No target.
         str-failed: ""
+    waterwalk:
+        spell-class: ".buff.WaterwalkSpell"
+        name: waterwalk
+        spell-icon: boat
+        description: Walk across the water.
+        cast-item: book
+        speed: 0.05
+        duration: 60
+        cancel-on-logout: true
+        cancel-on-teleport: true
+        cost:
+        	- mana 25
+        	- boat 1
+        use-cost:
+        	- water_lily 1
+        use-cost-interval: 50
+        str-cost: 25 mana and 1 boat, plus 1 water lily every 50 blocks moved
+        str-cast-self: You can now walk on water!
+        str-fade: You can no longer walk on water.
     windwalk:
         spell-class: ".buff.WindwalkSpell"
         name: windwalk

@@ -226,7 +226,7 @@ public class MagicSpells extends JavaPlugin {
 		strWrongWorld = config.getString("general.str-wrong-world", "You cannot cast that spell here.");
 		strConsoleName = config.getString("general.console-name", "Admin");
 		
-		enableManaBars = config.getBoolean("mana.enable-mana-system", true);
+		enableManaBars = config.getBoolean("mana.enable-mana-system", false);
 		manaPotionCooldown = config.getInt("mana.mana-potion-cooldown", 30);
 		strManaPotionOnCooldown = config.getString("mana.str-mana-potion-on-cooldown", "You cannot use another mana potion yet.");
 		
@@ -350,7 +350,7 @@ public class MagicSpells extends JavaPlugin {
 						String[] data2 = data[0].split(":");
 						item = new ItemStack(Integer.parseInt(data2[0]), 1, Short.parseShort(data2[1]));
 					} else {
-						item = new ItemStack(Integer.parseInt(data[0]), 1);					
+						item = new ItemStack(Integer.parseInt(data[0]), 1);
 					}
 					manaPotions.put(item, Integer.parseInt(data[1]));
 				}
@@ -980,5 +980,7 @@ public class MagicSpells extends JavaPlugin {
  *   - Handle toggling
  *   - Start spell duration
  * - Move NoMagicZoneWorldGuard and NoMagicZoneResidence outside of the core plugin
+ * - Remove alt-config and explode config options
+ * - Pull spell and no-magic-zone config values from any yml files in the MagicSpells folder
  * 
  */
