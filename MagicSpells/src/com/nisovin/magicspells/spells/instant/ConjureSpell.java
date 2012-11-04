@@ -111,11 +111,11 @@ public class ConjureSpell extends InstantSpell {
 					}
 				}
 				if (!added) {
-					int firstEmpty = inv.firstEmpty();
-					if (addToInventory && firstEmpty >= 0) {
-						inv.setItem(firstEmpty, item);
-						updateInv = true;
-					} else {
+					if (addToInventory) {
+						added = Util.addToInventory(inv, item);
+						if (added) updateInv = true;
+					}
+					if (!added) {
 						player.getWorld().dropItem(loc, item).setItemStack(item);
 					}
 				} else {

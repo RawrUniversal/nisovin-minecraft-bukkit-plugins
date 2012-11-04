@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -230,6 +231,73 @@ public class Util {
 			return matches;
 		}
 		return null;
+	}
+	
+	public static boolean removeFromInventory(Inventory inventory, ItemStack item) {
+		int amt = item.getAmount();
+		ItemStack[] items = inventory.getContents();
+		for (int i = 0; i < items.length; i++) {
+			if (items[i] != null && Util.itemStackTypesEqual(item, items[i])) {
+				if (items[i].getAmount() > amt) {
+					items[i].setAmount(items[i].getAmount() - amt);
+					amt = 0;
+					break;
+				} else if (items[i].getAmount() == amt) {
+					items[i] = null;
+					amt = 0;
+					break;
+				} else {
+					amt -= items[i].getAmount();
+					items[i] = null;
+				}
+			}
+		}
+		if (amt == 0) {
+			inventory.setContents(items);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public static boolean addToInventory(Inventory inventory, ItemStack item) {
+		int amt = item.getAmount();
+		ItemStack[] items = inventory.getContents();
+		for (int i = 0; i < items.length; i++) {
+			if (items[i] != null && Util.itemStackTypesEqual(item, items[i])) {
+				if (items[i].getAmount() + amt <= items[i].getMaxStackSize()) {
+					items[i].setAmount(items[i].getAmount() + amt);
+					amt = 0;
+					break;
+				} else {
+					int diff = items[i].getMaxStackSize() - items[i].getAmount();
+					items[i].setAmount(items[i].getMaxStackSize());
+					amt -= diff;
+				}
+			}
+		}
+		if (amt > 0) {
+			for (int i = 0; i < items.length; i++) {
+				if (items[i] == null) {
+					if (amt > item.getMaxStackSize()) {
+						items[i] = item.clone();
+						items[i].setAmount(item.getMaxStackSize());
+						amt -= item.getMaxStackSize();
+					} else {
+						items[i] = item.clone();
+						items[i].setAmount(amt);
+						amt = 0;
+						break;
+					}
+				}
+			}
+		}
+		if (amt == 0) {
+			inventory.setContents(items);
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

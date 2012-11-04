@@ -462,7 +462,7 @@ spells:
         cast-item: book
         cooldown: 300
         cost:
-        	- mana 50
+            - mana 50
             - ender_pearl 1
         str-cost: 50 mana and 1 ender pearl
     entomb:
@@ -1574,10 +1574,10 @@ spells:
         cancel-on-logout: true
         cancel-on-teleport: true
         cost:
-        	- mana 25
-        	- boat 1
+            - mana 25
+            - boat 1
         use-cost:
-        	- water_lily 1
+            - water_lily 1
         use-cost-interval: 50
         str-cost: 25 mana and 1 boat, plus 1 water lily every 50 blocks moved
         str-cast-self: You can now walk on water!

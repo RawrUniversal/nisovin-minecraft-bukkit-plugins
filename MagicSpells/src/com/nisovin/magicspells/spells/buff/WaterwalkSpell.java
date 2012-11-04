@@ -118,20 +118,22 @@ public class WaterwalkSpell extends BuffSpell {
 					if (feet.getType() == Material.STATIONARY_WATER) {
 						loc.setY(Math.floor(loc.getY() + 1) + .1);
 						p.teleport(loc);
-					} else if (underfeet.getType() == Material.AIR) {
+					} else if (p.isFlying() && underfeet.getType() == Material.AIR) {
 						loc.setY(Math.floor(loc.getY() - 1) + .1);
 						p.teleport(loc);
 					}
 					feet = p.getLocation().getBlock();
 					underfeet = feet.getRelative(BlockFace.DOWN);
 					if (feet.getType() == Material.AIR && underfeet.getType() == Material.STATIONARY_WATER) {
-						p.setAllowFlight(true);
-						p.setFlying(true);
-						p.setFlySpeed(speed);
+						if (!p.isFlying()) {
+							p.setAllowFlight(true);
+							p.setFlying(true);
+							p.setFlySpeed(speed);
+						}
 						if (count == 0) {
 							addUseAndChargeCost(p);
 						}
-					} else {
+					} else if (p.isFlying()) {
 						p.setFlying(false);
 						if (p.getGameMode() != GameMode.CREATIVE) {
 							p.setAllowFlight(false);
