@@ -27,6 +27,8 @@ public class DowseSpell extends InstantSpell {
 	private boolean setCompass;
 	private String strNotFound;
 	
+	private boolean getDistance;
+	
 	public DowseSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
@@ -46,6 +48,8 @@ public class DowseSpell extends InstantSpell {
 		setCompass = getConfigBoolean("set-compass", true);
 		strNotFound = getConfigString("str-not-found", "No dowsing target found.");
 		
+		getDistance = strCastSelf.contains("%d");
+		
 		if (typeId <= 0 && entityType == null) {
 			MagicSpells.error("DowseSpell '" + internalName + "' has no dowse target (block or entity) defined");
 		}
@@ -54,6 +58,8 @@ public class DowseSpell extends InstantSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
+			
+			int distance = -1;
 			
 			if (typeId > 0) {
 			
@@ -94,7 +100,9 @@ public class DowseSpell extends InstantSpell {
 					if (setCompass) {
 						player.setCompassTarget(foundBlock.getLocation());
 					}
-					
+					if (getDistance) {
+						distance = (int)Math.round(player.getLocation().distance(foundBlock.getLocation()));
+					}
 				}
 				
 			} else if (entityType != null) {
@@ -125,10 +133,18 @@ public class DowseSpell extends InstantSpell {
 					if (setCompass) {
 						player.setCompassTarget(foundEntity.getLocation());
 					}
+					if (getDistance) {
+						distance = (int)Math.round(player.getLocation().distance(foundEntity.getLocation()));
+					}
 				}
 			}
 			
 			playSpellEffects(EffectPosition.CASTER, player);
+			if (getDistance) {
+				sendMessage(player, strCastSelf, "%d", distance+"");
+				sendMessageNear(player, strCastOthers);
+				return PostCastAction.NO_MESSAGES;
+			}
 		}
 		
 		return PostCastAction.HANDLE_NORMALLY;
