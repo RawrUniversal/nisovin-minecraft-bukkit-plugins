@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -40,7 +41,11 @@ public class DowseSpell extends InstantSpell {
 		}
 		String entityName = getConfigString("entity-type", "");
 		if (!entityName.isEmpty()) {
-			entityType = EntityType.fromName(entityName);
+			if (entityName.equalsIgnoreCase("player")) {
+				entityType = EntityType.PLAYER;
+			} else {
+				entityType = EntityType.fromName(entityName);
+			}
 		}
 		
 		radius = getConfigInt("radius", 4);
@@ -110,7 +115,7 @@ public class DowseSpell extends InstantSpell {
 				// find nearest entity
 				List<Entity> nearby = player.getNearbyEntities(radius, radius, radius);
 				Entity foundEntity = null;
-				double distanceSq = radius * 2;
+				double distanceSq = radius * radius;
 				Location playerLoc = player.getLocation();
 				for (Entity e : nearby) {
 					if (e.getType() == entityType) {
@@ -127,7 +132,8 @@ public class DowseSpell extends InstantSpell {
 					return PostCastAction.ALREADY_HANDLED;
 				} else {
 					if (rotatePlayer) {
-						Vector v = foundEntity.getLocation().subtract(player.getEyeLocation()).toVector().normalize();
+						Location l = (foundEntity instanceof LivingEntity ? ((LivingEntity)foundEntity).getEyeLocation() : foundEntity.getLocation());
+						Vector v = l.subtract(player.getEyeLocation()).toVector().normalize();
 						Util.setFacing(player, v);
 					}
 					if (setCompass) {
