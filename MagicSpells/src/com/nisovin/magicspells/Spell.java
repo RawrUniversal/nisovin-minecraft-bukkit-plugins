@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -861,6 +862,12 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					if ((bx-.75 <= ex && ex <= bx+1.75) && (bz-.75 <= ez && ez <= bz+1.75) && (by-1 <= ey && ey <= by+2.5)) {
 						// entity is close enough, set target and stop
 						target = e;
+						
+						// check for invalid target
+						if (target != null && target instanceof Player && ((Player)target).getGameMode() == GameMode.CREATIVE) {
+							target = null;
+							continue;
+						}
 						
 						// check for anti-magic-zone
 						if (target != null && MagicSpells.getNoMagicZoneManager() != null && MagicSpells.getNoMagicZoneManager().willFizzle(target.getLocation(), this)) {
