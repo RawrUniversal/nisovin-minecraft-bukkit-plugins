@@ -982,5 +982,6 @@ public class MagicSpells extends JavaPlugin {
  * - Move NoMagicZoneWorldGuard and NoMagicZoneResidence outside of the core plugin
  * - Remove alt-config and explode config options
  * - Pull spell and no-magic-zone config values from any yml files in the MagicSpells folder
+ * - Remove default strings from all string configs (default should be empty)
  * 
  */

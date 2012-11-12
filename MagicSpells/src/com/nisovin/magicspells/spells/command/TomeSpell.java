@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spells.command;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -92,13 +93,24 @@ public class TomeSpell extends CommandSpell {
 				if (args.length > 1 && args[1].matches("^[0-9]+$")) {
 					uses = Integer.parseInt(args[1]);
 				}
-				if (maxUses > 0 && (uses > maxUses || uses < 0)) {
-					uses = maxUses;
-				}
-				MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpellsTome_" + internalName, spell.getInternalName() + (uses>0?","+uses:""));
+				createTome(spell, uses, item);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	public ItemStack createTome(Spell spell, int uses, ItemStack item) {
+		if (maxUses > 0 && uses > maxUses) {
+			uses = maxUses;
+		} else if (uses < 0) {
+			uses = defaultUses;
+		}
+		if (item == null) {
+			item = new ItemStack(Material.WRITTEN_BOOK, 1);
+			MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "title", getName() + ": " + spell.getName());
+		}
+		MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpellsTome_" + internalName, spell.getInternalName() + (uses>0?","+uses:""));
+		return item;
 	}
 
 	@Override

@@ -10,8 +10,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
+import com.nisovin.magicspells.spells.command.ScrollSpell;
+import com.nisovin.magicspells.spells.command.TomeSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
@@ -47,7 +50,21 @@ public class ConjureSpell extends InstantSpell {
 					String[] data = list.get(i).split(" ");
 					String[] quantityData = data.length == 1 ? new String[]{"1"} : data[1].split("-");
 					
-					itemTypes[i] = Util.getItemStackFromString(data[0]);
+					if (data[0].startsWith("TOME:")) {
+						String[] tomeData = data[0].split(":");
+						TomeSpell tomeSpell = (TomeSpell)MagicSpells.getSpellByInternalName(data[1]);
+						Spell spell = MagicSpells.getSpellByInternalName(data[2]);
+						int uses = tomeData.length > 3 ? Integer.parseInt(data[3]) : -1;
+						itemTypes[i] = tomeSpell.createTome(spell, uses, null);
+					} else if (data[0].startsWith("SCROLL:")) {
+						String[] scrollData = data[0].split(":");
+						ScrollSpell scrollSpell = (ScrollSpell)MagicSpells.getSpellByInternalName(data[1]);
+						Spell spell = MagicSpells.getSpellByInternalName(data[2]);
+						int uses = scrollData.length > 3 ? Integer.parseInt(data[3]) : -1;
+						itemTypes[i] = scrollSpell.createScroll(spell, uses, null);
+					} else {
+						itemTypes[i] = Util.getItemStackFromString(data[0]);
+					}
 					if (itemTypes[i] == null) {
 						MagicSpells.error("Conjure spell '" + spellName + "' has specified invalid item: " + list.get(i));
 						continue;
