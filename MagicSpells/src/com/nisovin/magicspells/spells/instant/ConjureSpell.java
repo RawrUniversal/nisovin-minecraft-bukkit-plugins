@@ -25,6 +25,7 @@ public class ConjureSpell extends InstantSpell {
 	private boolean powerAffectsChance;
 	private boolean calculateDropsIndividually;
 	private boolean autoEquip;
+	List<String> itemList;
 	private ItemStack[] itemTypes;
 	private int[] itemMinQuantities;
 	private int[] itemMaxQuantities;
@@ -38,35 +39,41 @@ public class ConjureSpell extends InstantSpell {
 		powerAffectsChance = getConfigBoolean("power-affects-chance", true);
 		calculateDropsIndividually = getConfigBoolean("calculate-drops-individually", true);
 		autoEquip = getConfigBoolean("auto-equip", false);
-		List<String> list = getConfigStringList("items", null);
-		if (list != null && list.size() > 0) {
-			itemTypes = new ItemStack[list.size()];
-			itemMinQuantities = new int[list.size()];
-			itemMaxQuantities = new int[list.size()];
-			itemChances = new int[list.size()];
+		itemList = getConfigStringList("items", null);
+	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+
+		if (itemList != null && itemList.size() > 0) {
+			itemTypes = new ItemStack[itemList.size()];
+			itemMinQuantities = new int[itemList.size()];
+			itemMaxQuantities = new int[itemList.size()];
+			itemChances = new int[itemList.size()];
 			
-			for (int i = 0; i < list.size(); i++) {
+			for (int i = 0; i < itemList.size(); i++) {
 				try {
-					String[] data = list.get(i).split(" ");
+					String[] data = itemList.get(i).split(" ");
 					String[] quantityData = data.length == 1 ? new String[]{"1"} : data[1].split("-");
 					
 					if (data[0].startsWith("TOME:")) {
 						String[] tomeData = data[0].split(":");
-						TomeSpell tomeSpell = (TomeSpell)MagicSpells.getSpellByInternalName(data[1]);
-						Spell spell = MagicSpells.getSpellByInternalName(data[2]);
-						int uses = tomeData.length > 3 ? Integer.parseInt(data[3]) : -1;
+						TomeSpell tomeSpell = (TomeSpell)MagicSpells.getSpellByInternalName(tomeData[1]);
+						Spell spell = MagicSpells.getSpellByInternalName(tomeData[2]);
+						int uses = tomeData.length > 3 ? Integer.parseInt(tomeData[3]) : -1;
 						itemTypes[i] = tomeSpell.createTome(spell, uses, null);
 					} else if (data[0].startsWith("SCROLL:")) {
 						String[] scrollData = data[0].split(":");
-						ScrollSpell scrollSpell = (ScrollSpell)MagicSpells.getSpellByInternalName(data[1]);
-						Spell spell = MagicSpells.getSpellByInternalName(data[2]);
-						int uses = scrollData.length > 3 ? Integer.parseInt(data[3]) : -1;
+						ScrollSpell scrollSpell = (ScrollSpell)MagicSpells.getSpellByInternalName(scrollData[1]);
+						Spell spell = MagicSpells.getSpellByInternalName(scrollData[2]);
+						int uses = scrollData.length > 3 ? Integer.parseInt(scrollData[3]) : -1;
 						itemTypes[i] = scrollSpell.createScroll(spell, uses, null);
 					} else {
 						itemTypes[i] = Util.getItemStackFromString(data[0]);
 					}
 					if (itemTypes[i] == null) {
-						MagicSpells.error("Conjure spell '" + spellName + "' has specified invalid item: " + list.get(i));
+						MagicSpells.error("Conjure spell '" + internalName + "' has specified invalid item: " + itemList.get(i));
 						continue;
 					}
 					
@@ -84,11 +91,13 @@ public class ConjureSpell extends InstantSpell {
 						itemChances[i] = 100;
 					}
 				} catch (Exception e) {
-					MagicSpells.error("Conjure spell '" + spellName + "' has specified invalid item: " + list.get(i));
+					e.printStackTrace();
+					MagicSpells.error("Conjure spell '" + internalName + "' has specified invalid item: " + itemList.get(i));
 					itemTypes[i] = null;
 				}
 			}
 		}
+		itemList = null;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -144,7 +153,7 @@ public class ConjureSpell extends InstantSpell {
 			}
 			
 			playSpellEffects(EffectPosition.CASTER, player);
-		}		
+		}
 		return PostCastAction.HANDLE_NORMALLY;
 		
 	}

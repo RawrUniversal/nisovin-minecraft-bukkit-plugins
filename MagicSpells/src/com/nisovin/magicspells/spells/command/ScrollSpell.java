@@ -164,7 +164,7 @@ public class ScrollSpell extends CommandSpell {
 			(leftClickCast && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK))) {
 			Player player = event.getPlayer();
 			ItemStack inHand = player.getItemInHand();
-			if (inHand.getTypeId() != itemId) return;
+			if (inHand.getTypeId() != itemId || inHand.getAmount() > 1) return;
 			
 			// get scroll data (spell and uses)
 			String scrollDataString = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, "MagicSpellsScroll_" + internalName);
