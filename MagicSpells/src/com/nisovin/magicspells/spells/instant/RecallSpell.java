@@ -2,6 +2,7 @@ package com.nisovin.magicspells.spells.instant;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -52,7 +53,22 @@ public class RecallSpell extends InstantSpell {
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Location mark = null;
-			if (useBedLocation) {
+			if (player.hasPermission("magicspells.advanced." + internalName) && args != null && args.length == 1) {
+				Player target = Bukkit.getPlayer(args[0]);
+				if (target == null) {
+					player.sendMessage("Invalid target player");
+					return PostCastAction.ALREADY_HANDLED;
+				} else {
+					if (useBedLocation) {
+						mark = target.getBedSpawnLocation();
+					} else if (marks != null) {
+						MagicLocation loc = marks.get(target.getName());
+						if (loc != null) {
+							mark = loc.getLocation();
+						}
+					}
+				}
+			} else if (useBedLocation) {
 				mark = player.getBedSpawnLocation();
 			} else if (marks != null) {
 				MagicLocation loc = marks.get(player.getName());

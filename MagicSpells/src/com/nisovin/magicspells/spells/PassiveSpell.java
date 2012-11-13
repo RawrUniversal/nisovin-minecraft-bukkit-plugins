@@ -465,14 +465,17 @@ public class PassiveSpell extends Spell {
 	}
 	
 	public class RightClickListener implements Listener {
+		boolean simple = true;
 		int typeIds[] = new int[0];
 		int datas[] = new int[0];
 		boolean checkData[] = new boolean[0];
+		ItemStack items[] = new ItemStack[0];
 		
 		public RightClickListener(String var) {
 			if (var != null) {
 				var = var.replace(" ", "");
 				if (var != null && var.matches("[0-9]+(:[0-9]+)?(,[0-9]+(:[0-9]+)?)*")) {
+					simple = true;
 					String[] vars = var.split(",");
 					typeIds = new int[vars.length];
 					datas = new int[vars.length];
@@ -487,6 +490,16 @@ public class PassiveSpell extends Spell {
 							typeIds[i] = Integer.parseInt(vars[i]);
 							datas[i] = 0;
 							checkData[i] = false;
+						}
+					}
+				} else {
+					simple = false;
+					String[] vars = var.split(",");
+					items = new ItemStack[vars.length];
+					for (int i = 0; i < vars.length; i++) {
+						items[i] = Util.getItemStackFromString(vars[i]);
+						if (items[i] == null) {
+							MagicSpells.error("Item type '" + vars[i] + "' for passive spell '" + internalName + "' is invalid");
 						}
 					}
 				}
@@ -506,9 +519,17 @@ public class PassiveSpell extends Spell {
 		}
 		
 		private boolean checkItem(ItemStack item) {
-			for (int i = 0; i < typeIds.length; i++) {
-				if (item.getTypeId() == typeIds[i] && (!checkData[i] || item.getDurability() == datas[i])) {
-					return true;
+			if (simple) {
+				for (int i = 0; i < typeIds.length; i++) {
+					if (item.getTypeId() == typeIds[i] && (!checkData[i] || item.getDurability() == datas[i])) {
+						return true;
+					}
+				}
+			} else {
+				for (int i = 0; i < items.length; i++) {
+					if (items[i] != null && Util.itemStackTypesEqual(items[i], item)) {
+						return true;
+					}
 				}
 			}
 			return false;
