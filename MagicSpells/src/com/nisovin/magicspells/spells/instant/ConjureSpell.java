@@ -91,7 +91,6 @@ public class ConjureSpell extends InstantSpell {
 						itemChances[i] = 100;
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
 					MagicSpells.error("Conjure spell '" + internalName + "' has specified invalid item: " + itemList.get(i));
 					itemTypes[i] = null;
 				}

@@ -53,25 +53,22 @@ public class RecallSpell extends InstantSpell {
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Location mark = null;
-			if (player.hasPermission("magicspells.advanced." + internalName) && args != null && args.length == 1) {
-				Player target = Bukkit.getPlayer(args[0]);
-				if (target == null) {
-					player.sendMessage("Invalid target player");
-					return PostCastAction.ALREADY_HANDLED;
-				} else {
-					if (useBedLocation) {
+			if (args != null && args.length == 1 && player.hasPermission("magicspells.advanced." + internalName)) {
+				Player target = Bukkit.getPlayer(args[0]);				
+				if (useBedLocation) {
+					if (target != null) {
 						mark = target.getBedSpawnLocation();
-					} else if (marks != null) {
-						MagicLocation loc = marks.get(target.getName());
-						if (loc != null) {
-							mark = loc.getLocation();
-						}
+					}
+				} else if (marks != null) {
+					MagicLocation loc = marks.get(target != null ? target.getName().toLowerCase() : args[0]);
+					if (loc != null) {
+						mark = loc.getLocation();
 					}
 				}
 			} else if (useBedLocation) {
 				mark = player.getBedSpawnLocation();
 			} else if (marks != null) {
-				MagicLocation loc = marks.get(player.getName());
+				MagicLocation loc = marks.get(player.getName().toLowerCase());
 				if (loc != null) {
 					mark = loc.getLocation();
 				}

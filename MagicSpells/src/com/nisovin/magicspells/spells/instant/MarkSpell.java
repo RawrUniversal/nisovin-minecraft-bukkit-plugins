@@ -38,7 +38,7 @@ public class MarkSpell extends InstantSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			marks.put(player.getName(), new MagicLocation(player.getLocation()));
+			marks.put(player.getName().toLowerCase(), new MagicLocation(player.getLocation()));
 			if (permanentMarks) {
 				saveMarks();
 			}
@@ -50,7 +50,7 @@ public class MarkSpell extends InstantSpell {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (!permanentMarks) {
-			marks.remove(event.getPlayer().getName());
+			marks.remove(event.getPlayer().getName().toLowerCase());
 		}
 	}
 	
@@ -67,7 +67,7 @@ public class MarkSpell extends InstantSpell {
 					try {
 						String[] data = line.split(":");
 						MagicLocation loc = new MagicLocation(data[1], Double.parseDouble(data[2]), Double.parseDouble(data[3]), Double.parseDouble(data[4]), Float.parseFloat(data[5]), Float.parseFloat(data[6]));
-						marks.put(data[0], loc);
+						marks.put(data[0].toLowerCase(), loc);
 					} catch (Exception e) {
 						MagicSpells.plugin.getServer().getLogger().severe("MagicSpells: Failed to load mark: " + line);
 					}
