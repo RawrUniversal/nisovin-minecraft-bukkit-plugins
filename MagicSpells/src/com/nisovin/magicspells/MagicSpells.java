@@ -46,6 +46,7 @@ import com.nisovin.magicspells.util.ItemNameResolver;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MagicItemNameResolver;
 import com.nisovin.magicspells.util.Metrics;
+import com.nisovin.magicspells.util.Util;
 import com.nisovin.magicspells.util.Metrics.Graph;
 import com.nisovin.magicspells.zones.NoMagicZoneManager;
 
@@ -345,14 +346,16 @@ public class MagicSpells extends JavaPlugin {
 				manaPotions = new HashMap<ItemStack,Integer>();
 				for (int i = 0; i < manaPots.size(); i++) {
 					String[] data = manaPots.get(i).split(" ");
-					ItemStack item;
-					if (data[0].contains(":")) {
-						String[] data2 = data[0].split(":");
-						item = new ItemStack(Integer.parseInt(data2[0]), 1, Short.parseShort(data2[1]));
+					if (data.length == 2 && data[1].matches("^[0-9]+$")) {
+						ItemStack item = Util.getItemStackFromString(data[0]);
+						if (item != null) {
+							manaPotions.put(item, Integer.parseInt(data[1]));
+						} else {
+							error("Invalid mana potion: " + manaPots.get(i));
+						}
 					} else {
-						item = new ItemStack(Integer.parseInt(data[0]), 1);
+						error("Invalid mana potion: " + manaPots.get(i));
 					}
-					manaPotions.put(item, Integer.parseInt(data[1]));
 				}
 				manaPotionCooldowns = new HashMap<Player,Long>();
 			}
