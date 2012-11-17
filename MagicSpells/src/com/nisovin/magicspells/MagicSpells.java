@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -87,7 +88,7 @@ public class MagicSpells extends JavaPlugin {
 	static boolean enableManaBars;
 	static int manaPotionCooldown;
 	static String strManaPotionOnCooldown;
-	static HashMap<ItemStack,Integer> manaPotions;
+	static HashMap<ItemStack, Integer> manaPotions;
 	
 	// strings
 	static String strCastUsage;
@@ -110,15 +111,16 @@ public class MagicSpells extends JavaPlugin {
 	static int metricSpellCastsBuff;
 	static int metricErrors;
 	
-	static HashMap<String,Spell> spells; // map internal names to spells
-	static HashMap<String,Spell> spellNames; // map configured names to spells
+	// spell containers
+	static HashMap<String, Spell> spells; // map internal names to spells
+	static HashMap<String, Spell> spellNames; // map configured names to spells
 	static ArrayList<Spell> spellsOrdered; // spells in loaded order
-	static HashMap<String,Spellbook> spellbooks; // player spellbooks
-	static HashMap<String,Spell> incantations; // map incantation strings to spells
+	static HashMap<String, Spellbook> spellbooks; // player spellbooks
+	static HashMap<String, Spell> incantations; // map incantation strings to spells
 		
 	// container vars
 	static ManaHandler mana;
-	static HashMap<Player,Long> manaPotionCooldowns;
+	static HashMap<Player, Long> manaPotionCooldowns;
 	static NoMagicZoneManager noMagicZones;
 	static BuffManager buffManager;
 	static ExperienceBarManager expBarManager;
@@ -343,7 +345,7 @@ public class MagicSpells extends JavaPlugin {
 			// load mana potions
 			List<String> manaPots = config.getStringList("mana.mana-potions", null);
 			if (manaPots != null && manaPots.size() > 0) {
-				manaPotions = new HashMap<ItemStack,Integer>();
+				manaPotions = new LinkedHashMap<ItemStack,Integer>();
 				for (int i = 0; i < manaPots.size(); i++) {
 					String[] data = manaPots.get(i).split(" ");
 					if (data.length == 2 && data[1].matches("^[0-9]+$")) {

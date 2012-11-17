@@ -2,6 +2,7 @@ package com.nisovin.magicspells;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,6 +19,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.mana.ManaChangeReason;
+import com.nisovin.magicspells.util.Util;
 
 class MagicPlayerListener implements Listener {
 	
@@ -103,8 +105,15 @@ class MagicPlayerListener implements Listener {
 				
 				// check for mana pots
 				if (MagicSpells.enableManaBars && MagicSpells.manaPotions != null) {
-					ItemStack item = new ItemStack(inHand.getType(), 1, inHand.getDurability());
-					if (MagicSpells.manaPotions.containsKey(item)) {
+					// find mana potion TODO: fix this, it's not good
+					int restoreAmt = 0;
+					for (Map.Entry<ItemStack, Integer> entry : MagicSpells.manaPotions.entrySet()) {
+						if (Util.itemStackTypesEqual(inHand, entry.getKey())) {
+							restoreAmt = entry.getValue();
+							break;
+						}
+					}
+					if (restoreAmt > 0) {
 						// check cooldown
 						if (MagicSpells.manaPotionCooldown > 0) {
 							Long c = MagicSpells.manaPotionCooldowns.get(player);
@@ -114,8 +123,7 @@ class MagicPlayerListener implements Listener {
 							}
 						}
 						// add mana
-						int amt = MagicSpells.manaPotions.get(item);
-						boolean added = MagicSpells.mana.addMana(player, amt, ManaChangeReason.POTION);
+						boolean added = MagicSpells.mana.addMana(player, restoreAmt, ManaChangeReason.POTION);
 						if (added) {
 							// set cooldown
 							if (MagicSpells.manaPotionCooldown > 0) {
