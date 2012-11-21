@@ -336,7 +336,9 @@ public class PassiveSpell extends Spell {
 		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onDamage(EntityDamageByEntityEvent event) {
 			if (event.getDamage() == 0) return;
-			if (event.getEntity() instanceof LivingEntity && (((LivingEntity)event.getEntity()).getHealth() <= 0 || ((LivingEntity)event.getEntity()).getNoDamageTicks() > 0)) return;
+			if (!(event.getEntity() instanceof LivingEntity)) return;
+			LivingEntity entity = (LivingEntity)event.getEntity();
+			if (!entity.isValid() || entity.getNoDamageTicks() > 0) return;
 			Player player = null;
 			if (event.getDamager().getType() == EntityType.PLAYER) {
 				player = (Player)event.getDamager();
@@ -355,7 +357,7 @@ public class PassiveSpell extends Spell {
 					}
 				}
 				if (hasSpell(player)) {
-					activate(player, (LivingEntity)event.getEntity());
+					activate(player, entity);
 				}
 			}
 		}

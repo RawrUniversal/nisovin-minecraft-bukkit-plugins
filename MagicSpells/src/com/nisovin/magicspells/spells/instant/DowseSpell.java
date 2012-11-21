@@ -53,7 +53,7 @@ public class DowseSpell extends InstantSpell {
 		setCompass = getConfigBoolean("set-compass", true);
 		strNotFound = getConfigString("str-not-found", "No dowsing target found.");
 		
-		getDistance = strCastSelf.contains("%d");
+		getDistance = strCastSelf != null && strCastSelf.contains("%d");
 		
 		if (typeId <= 0 && entityType == null) {
 			MagicSpells.error("DowseSpell '" + internalName + "' has no dowse target (block or entity) defined");
