@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -138,6 +139,15 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	public ItemStack addFakeEnchantment(ItemStack item) {
 		item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
 		return item;
+	}
+
+	@Override
+	public ItemStack setArmorColor(ItemStack item, int color) {
+		return item;
+	}
+
+	@Override
+	public void setFallingBlockHurtEntities(FallingBlock block, float damage, int max) {
 	}
 
 }

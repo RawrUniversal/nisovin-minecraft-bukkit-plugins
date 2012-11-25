@@ -7,6 +7,7 @@ import java.util.Set;
 import net.minecraft.server.ChunkCoordIntPair;
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.EntityCreature;
+import net.minecraft.server.EntityFallingBlock;
 import net.minecraft.server.EntityLiving;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.EntitySmallFireball;
@@ -29,11 +30,13 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftCreature;
+import org.bukkit.craftbukkit.entity.CraftFallingSand;
 import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -350,6 +353,54 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 		}
 		
 		return craftItem;
+	}
+
+	@Override
+	public ItemStack setArmorColor(ItemStack item, int color) {
+		CraftItemStack craftItem;
+		net.minecraft.server.ItemStack nmsItem;
+		
+		if (item instanceof CraftItemStack) {
+			craftItem = (CraftItemStack)item;
+			nmsItem = craftItem.getHandle();
+		} else {
+			craftItem = new CraftItemStack(item);
+			nmsItem = craftItem.getHandle();
+		}
+		
+		NBTTagCompound tag = nmsItem.tag;
+		if (tag == null) {
+			tag = new NBTTagCompound();
+			nmsItem.tag = tag;
+		}
+		NBTTagCompound disp = tag.getCompound("display");
+		if (disp == null) {
+			disp = new NBTTagCompound("display");
+		}
+		disp.setInt("color", color);
+		tag.setCompound("display", disp);
+		
+		return craftItem;
+	}
+
+	@Override
+	public void setFallingBlockHurtEntities(FallingBlock block, float damage, int max) {
+		EntityFallingBlock efb = ((CraftFallingSand)block).getHandle();
+		try {
+			Field field = EntityFallingBlock.class.getDeclaredField("hurtEntities");
+			field.setAccessible(true);
+			field.setBoolean(efb, true);
+			
+			field = EntityFallingBlock.class.getDeclaredField("fallHurtAmount");
+			field.setAccessible(true);
+			field.setFloat(efb, damage);
+			
+			field = EntityFallingBlock.class.getDeclaredField("fallHurtMax");
+			field.setAccessible(true);
+			field.setInt(efb, max);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

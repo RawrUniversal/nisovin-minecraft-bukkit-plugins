@@ -25,6 +25,7 @@ public class Util {
 			String s = string;
 			String name = null;
 			HashMap<Enchantment, Integer> enchants = null;
+			int color = -1;
 			if (s.contains("|")) {
 				String[] temp = s.split("\\|");
 				s = temp[0];
@@ -48,6 +49,13 @@ public class Util {
 					}
 				}
 			}
+			if (s.contains("#")) {
+				String[] temp = s.split("#");
+				s = temp[0];
+				if (temp[1].matches("[0-9A-Fa-f]+")) {
+					color = Integer.parseInt(temp[1], 16);
+				}
+			}
 			ItemTypeAndData itemTypeAndData = MagicSpells.getItemNameResolver().resolve(s);
 			if (itemTypeAndData != null) {
 				item = new ItemStack(itemTypeAndData.id, 1, itemTypeAndData.data);
@@ -59,6 +67,9 @@ public class Util {
 			}
 			if (name != null) {
 				item = MagicSpells.getVolatileCodeHandler().setItemName(item, name.replace("__", " "));
+			}
+			if (color >= 0 && item.getType().name().startsWith("LEATHER_")) {
+				item = MagicSpells.getVolatileCodeHandler().setArmorColor(item, color);
 			}
 			return item;
 		} catch (Exception e) {

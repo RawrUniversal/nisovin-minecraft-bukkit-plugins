@@ -5,6 +5,7 @@ import java.util.Set;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -61,5 +62,9 @@ public interface CraftBukkitHandle {
 	public boolean itemStackTagsEqual(ItemStack item1, ItemStack item2);
 	
 	public ItemStack addFakeEnchantment(ItemStack item);
+	
+	public ItemStack setArmorColor(ItemStack item, int color);
+	
+	public void setFallingBlockHurtEntities(FallingBlock block, float damage, int max);
 	
 }
