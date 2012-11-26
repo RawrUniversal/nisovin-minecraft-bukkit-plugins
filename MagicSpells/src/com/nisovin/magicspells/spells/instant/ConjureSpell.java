@@ -73,7 +73,7 @@ public class ConjureSpell extends InstantSpell {
 						itemTypes[i] = Util.getItemStackFromString(data[0]);
 					}
 					if (itemTypes[i] == null) {
-						MagicSpells.error("Conjure spell '" + internalName + "' has specified invalid item: " + itemList.get(i));
+						MagicSpells.error("Conjure spell '" + internalName + "' has specified invalid item (e1): " + itemList.get(i));
 						continue;
 					}
 					
@@ -91,7 +91,7 @@ public class ConjureSpell extends InstantSpell {
 						itemChances[i] = 100;
 					}
 				} catch (Exception e) {
-					MagicSpells.error("Conjure spell '" + internalName + "' has specified invalid item: " + itemList.get(i));
+					MagicSpells.error("Conjure spell '" + internalName + "' has specified invalid item (e2): " + itemList.get(i));
 					itemTypes[i] = null;
 				}
 			}

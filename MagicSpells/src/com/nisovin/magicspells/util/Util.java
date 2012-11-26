@@ -27,25 +27,27 @@ public class Util {
 			HashMap<Enchantment, Integer> enchants = null;
 			int color = -1;
 			if (s.contains("|")) {
-				String[] temp = s.split("\\|");
+				String[] temp = s.split("\\|", 2);
 				s = temp[0];
 				name = temp[1];
 			}
 			if (s.contains(";")) {
-				String[] temp = s.split(";");
+				String[] temp = s.split(";", 2);
 				s = temp[0];
 				enchants = new HashMap<Enchantment, Integer>();
-				String[] split = temp[1].split("\\+");
-				for (int i = 0; i < split.length; i++) {
-					String[] enchantData = split[i].split("-");
-					Enchantment ench;
-					if (enchantData[0].matches("[0-9]+")) {
-						ench = Enchantment.getById(Integer.parseInt(enchantData[0]));
-					} else {
-						ench = Enchantment.getByName(enchantData[0].toUpperCase());
-					}
-					if (ench != null && enchantData[1].matches("[0-9]+")) {
-						enchants.put(ench, Integer.parseInt(enchantData[1]));
+				if (temp[1].length() > 0) {
+					String[] split = temp[1].split("\\+");
+					for (int i = 0; i < split.length; i++) {
+						String[] enchantData = split[i].split("-");
+						Enchantment ench;
+						if (enchantData[0].matches("[0-9]+")) {
+							ench = Enchantment.getById(Integer.parseInt(enchantData[0]));
+						} else {
+							ench = Enchantment.getByName(enchantData[0].toUpperCase());
+						}
+						if (ench != null && enchantData[1].matches("[0-9]+")) {
+							enchants.put(ench, Integer.parseInt(enchantData[1]));
+						}
 					}
 				}
 			}
@@ -62,8 +64,12 @@ public class Util {
 			} else {
 				return null;
 			}
-			if (enchants != null && enchants.size() > 0 && item != null) {
-				item.addEnchantments(enchants);
+			if (enchants != null) {
+				if (enchants.size() > 0) {
+					item.addEnchantments(enchants);
+				} else {
+					item = MagicSpells.getVolatileCodeHandler().addFakeEnchantment(item);
+				}
 			}
 			if (name != null) {
 				item = MagicSpells.getVolatileCodeHandler().setItemName(item, name.replace("__", " "));

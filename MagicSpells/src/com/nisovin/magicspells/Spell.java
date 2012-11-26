@@ -140,6 +140,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			if (spellIcon != null) {
 				spellIcon.setAmount(0);
 			}
+			if (!icontemp.contains("|")) {
+				spellIcon = MagicSpells.getVolatileCodeHandler().setItemName(spellIcon, "&" + MagicSpells.getTextColor().getChar() + name);
+			}
 		}
 		this.broadcastRange = config.getInt(section + "." + spellName + ".broadcast-range", MagicSpells.broadcastRange);
 		this.experience = config.getInt(section + "." + spellName + ".experience", 0);
@@ -208,6 +211,16 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strWrongCastItem = config.getString(section + "." + spellName + ".str-wrong-cast-item", strCantCast);
 		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
 		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
+		
+		/*if (spellIcon != null) {
+			if (description != null && strCost != null && !description.isEmpty() && !strCost.isEmpty()) {
+				spellIcon = MagicSpells.getVolatileCodeHandler().setItemLore(spellIcon, description, strCost);
+			} else if (description != null && !description.isEmpty()) {
+				spellIcon = MagicSpells.getVolatileCodeHandler().setItemLore(spellIcon, description);
+			} else if (strCost != null && !strCost.isEmpty()) {
+				spellIcon = MagicSpells.getVolatileCodeHandler().setItemLore(spellIcon, strCost);
+			}
+		}*/
 	}
 	
 	protected SpellReagents getConfigReagents(String option) {
