@@ -789,8 +789,11 @@ public class MagicSpells extends JavaPlugin {
 					t = t.getCause();
 				}
 				plugin.getLogger().severe("This error has been saved in the errors folder");
+				writer.println("Version: " + plugin.getDescription().getVersion());
 			} catch (Exception x) {
 				plugin.getLogger().severe("ERROR HANDLING EXCEPTION");
+				x.printStackTrace();
+				ex.printStackTrace();
 			} finally {
 				if (writer != null) writer.close();
 			}
