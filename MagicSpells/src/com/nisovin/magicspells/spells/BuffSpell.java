@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.BuffManager;
@@ -56,8 +57,11 @@ public abstract class BuffSpell extends Spell {
 		cancelOnTakeDamage = getConfigBoolean("cancel-on-take-damage", false);
 		cancelOnDeath = getConfigBoolean("cancel-on-death", false);
 		cancelOnLogout = getConfigBoolean("cancel-on-logout", false);
-		if (cancelOnGiveDamage || cancelOnTakeDamage || cancelOnDeath) {
+		if (cancelOnGiveDamage || cancelOnTakeDamage) {
 			registerEvents(new DamageListener());
+		}
+		if (cancelOnDeath) {
+			registerEvents(new DeathListener());
 		}
 		if (cancelOnLogout) {
 			registerEvents(new QuitListener());
@@ -88,13 +92,15 @@ public abstract class BuffSpell extends Spell {
 	 * Begins counting the spell duration for a player
 	 * @param player the player to begin counting duration
 	 */
-	protected void startSpellDuration(final Player player) {
+	protected void startSpellDuration(Player player) {
 		if (duration > 0 && durationStartTime != null) {
 			durationStartTime.put(player.getName(), System.currentTimeMillis());
+			final String name = player.getName();
 			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 				public void run() {
-					if (isExpired(player)) {
-						turnOff(player);
+					Player p = Bukkit.getPlayerExact(name);
+					if (p != null && isExpired(p)) {
+						turnOff(p);
 					}
 				}
 			}, duration * 20 + 20); // overestimate ticks, since the duration is real-time ms based
@@ -214,10 +220,8 @@ public abstract class BuffSpell extends Spell {
 	public class DamageListener implements Listener {
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onPlayerDamage(EntityDamageEvent event) {
-			if ((cancelOnTakeDamage || cancelOnDeath) && event.getEntity() instanceof Player && isActive((Player)event.getEntity())) {
-				if (cancelOnTakeDamage || event.getDamage() >= ((Player)event.getEntity()).getHealth()) {
-					turnOff((Player)event.getEntity());
-				}
+			if (cancelOnTakeDamage && event.getEntity() instanceof Player && isActive((Player)event.getEntity())) {
+				turnOff((Player)event.getEntity());
 			} else if (cancelOnGiveDamage && event instanceof EntityDamageByEntityEvent) {
 				EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 				if (evt.getDamager() instanceof Player && isActive((Player)evt.getDamager())) {
@@ -228,6 +232,15 @@ public abstract class BuffSpell extends Spell {
 						turnOff((Player)shooter);
 					}
 				}
+			}
+		}
+	}
+	
+	public class DeathListener implements Listener {
+		@EventHandler
+		public void onPlayerDeath(PlayerDeathEvent event) {
+			if (isActive(event.getEntity())) {
+				turnOff(event.getEntity());
 			}
 		}
 	}
