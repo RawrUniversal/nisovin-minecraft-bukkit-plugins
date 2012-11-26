@@ -59,6 +59,8 @@ public class PassiveSpell extends Spell {
 	private List<String> spellNames;
 	private List<Spell> spells;
 	
+	private int tickerTask = -1;
+	
 	public PassiveSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
@@ -152,7 +154,7 @@ public class PassiveSpell extends Spell {
 					trigCount++;
 				} else if (type.equalsIgnoreCase("ticks")) {
 					int interval = Integer.parseInt(var);
-					Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, new Ticker(), interval, interval);
+					tickerTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, new Ticker(), interval, interval);
 					trigCount++;
 				} else if (type.equalsIgnoreCase("buff")) {
 					registerEvents(new BuffListener());
@@ -272,7 +274,7 @@ public class PassiveSpell extends Spell {
 		
 		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onDamage(EntityDamageEvent event) {
-			if (event.getEntityType() == EntityType.PLAYER && ((Player)event.getEntity()).getNoDamageTicks() == 0) {
+			if (event.getEntityType() == EntityType.PLAYER && ((Player)event.getEntity()).getNoDamageTicks() < ((Player)event.getEntity()).getMaximumNoDamageTicks() / 2.0F) {
 				Player player = (Player)event.getEntity();
 				if (hasSpell(player)) {
 					DamageCause cause = event.getCause();
@@ -338,7 +340,7 @@ public class PassiveSpell extends Spell {
 			if (event.getDamage() == 0) return;
 			if (!(event.getEntity() instanceof LivingEntity)) return;
 			LivingEntity entity = (LivingEntity)event.getEntity();
-			if (!entity.isValid() || entity.getNoDamageTicks() > 0) return;
+			if (!entity.isValid() || entity.getNoDamageTicks() > entity.getMaximumNoDamageTicks() / 2.0F) return;
 			Player player = null;
 			if (event.getDamager().getType() == EntityType.PLAYER) {
 				player = (Player)event.getDamager();
@@ -768,6 +770,14 @@ public class PassiveSpell extends Spell {
 	@Override
 	public boolean canCastByCommand() {
 		return false;
+	}
+	
+	@Override
+	public void turnOff() {
+		if (tickerTask > -1) {
+			Bukkit.getScheduler().cancelTask(tickerTask);
+		}
+		unregisterEvents(this);
 	}
 
 }
