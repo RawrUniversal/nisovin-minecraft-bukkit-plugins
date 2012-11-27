@@ -228,10 +228,11 @@ public class PulserSpell extends TargetedLocationSpell {
 		}
 
 		public boolean pulse() {
-			if (!caster.isDead() && caster.isOnline()
-					&& block.getTypeId() == typeId) {
+			if (caster.isValid() && caster.isOnline()
+					&& block.getTypeId() == typeId
+					&& block.getChunk().isLoaded()) {
 				if (maxDistanceSquared > 0
-						&& location.distanceSquared(caster.getLocation()) > maxDistanceSquared) {
+						&& (!location.getWorld().equals(caster.getLocation().getWorld()) || location.distanceSquared(caster.getLocation()) > maxDistanceSquared)) {
 					stop();
 					return true;
 				} else {
