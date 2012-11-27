@@ -151,9 +151,14 @@ public class MagicSpells extends JavaPlugin {
 		new File(this.getDataFolder(), "spellbooks").mkdir();
 		
 		// load config
-		File configFile = new File(getDataFolder(), "config.yml");
-		if (!configFile.exists()) saveDefaultConfig();
-		MagicConfig config = new MagicConfig(configFile);
+		if (!(new File(getDataFolder(), "config.yml")).exists() && !(new File(getDataFolder(), "general.yml")).exists()) {
+			saveResource("general.yml", false);
+			if (!(new File(getDataFolder(), "mana.yml")).exists()) saveResource("mana.yml", false);
+			if (!(new File(getDataFolder(), "spells-command.yml")).exists()) saveResource("spells-command.yml", false);
+			if (!(new File(getDataFolder(), "spells-regular.yml")).exists()) saveResource("spells-regular.yml", false);
+			if (!(new File(getDataFolder(), "zones.yml")).exists()) saveResource("zones.yml", false);
+		}
+		MagicConfig config = new MagicConfig(this);
 		if (!config.isLoaded()) {
 			MagicSpells.log(Level.SEVERE, "Error in config file, stopping config load");
 			return;
@@ -261,7 +266,7 @@ public class MagicSpells extends JavaPlugin {
 		loadSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
 		log("Spells loaded: " + spells.size());
 		if (spells.size() == 0) {
-			MagicSpells.log(Level.SEVERE, "No spells loaded!");
+			MagicSpells.error("No spells loaded!");
 			return;
 		}
 		

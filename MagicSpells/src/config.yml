@@ -4,7 +4,6 @@ general:
     enable-error-logging: true
     enable-stat-collection: true
     enable-volatile-features: true
-    alt-config: altConfig.yml
     str-cast-usage: |
         Usage: /cast <spell>. 
         Use /cast list to see a list of spells.

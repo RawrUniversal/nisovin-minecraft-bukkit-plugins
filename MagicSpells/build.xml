@@ -23,6 +23,11 @@
 			executable="C:\Program Files\Java\jdk1.6.0_26\bin\javac" fork="true" />
 		<copy file="${src.dir}\plugin.yml" tofile="${build.dir}\plugin.yml" />
 		<copy file="${src.dir}\config.yml" tofile="${build.dir}\config.yml" />
+		<copy file="${src.dir}\general.yml" tofile="${build.dir}\general.yml" />
+		<copy file="${src.dir}\mana.yml" tofile="${build.dir}\mana.yml" />
+		<copy file="${src.dir}\spells-command.yml" tofile="${build.dir}\spells-command.yml" />
+		<copy file="${src.dir}\spells-regular.yml" tofile="${build.dir}\spells-regular.yml" />
+		<copy file="${src.dir}\zones.yml" tofile="${build.dir}\zones.yml" />
 	</target>
 
 	<!-- Creates the deployable jar file  -->
