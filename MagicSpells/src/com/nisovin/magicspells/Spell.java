@@ -1271,7 +1271,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			if (!cancelled && player.isOnline() && !player.isDead()) {
 				Location currLoc = player.getLocation();
 				if (!interruptOnMove || (Math.abs(currLoc.getX() - prevLoc.getX()) < .2 && Math.abs(currLoc.getY() - prevLoc.getY()) < .2 && Math.abs(currLoc.getZ() - prevLoc.getZ()) < .2)) {
-					if (!hasReagents(player)) {
+					if (!spell.hasReagents(player, reagents)) {
 						state = SpellCastState.MISSING_REAGENTS;
 					}
 					spell.handleCast(player, state, power, cooldown, reagents, args);
@@ -1350,7 +1350,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				Location currLoc = player.getLocation();
 				if (!interruptOnMove || (Math.abs(currLoc.getX() - prevLoc.getX()) < .2 && Math.abs(currLoc.getY() - prevLoc.getY()) < .2 && Math.abs(currLoc.getZ() - prevLoc.getZ()) < .2)) {
 					if (elapsed >= castTime) {
-						if (!hasReagents(player)) {
+						if (!spell.hasReagents(player, reagents)) {
 							state = SpellCastState.MISSING_REAGENTS;
 						}
 						spell.handleCast(player, state, power, cooldown, reagents, args);
