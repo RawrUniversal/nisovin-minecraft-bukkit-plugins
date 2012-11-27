@@ -70,11 +70,12 @@ public class WindwalkSpell extends BuffSpell {
 			// set flying
 			flyers.add(player);
 			player.setAllowFlight(true);
-			player.setFlying(true);
 			player.setFlySpeed(flySpeed);
 			if (launchSpeed > 0) {
+				player.teleport(player.getLocation().add(0, .25, 0));
 				player.setVelocity(new Vector(0,launchSpeed,0));
 			}
+			player.setFlying(true);
 			// set cost interval
 			if (useCostInterval > 0 || numUses > 0) {
 				int taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, new Runnable() {
