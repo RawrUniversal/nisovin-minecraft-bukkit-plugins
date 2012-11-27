@@ -11,7 +11,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.mana.ManaChangeReason;
-import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
 public class CastCommand implements CommandExecutor, TabCompleter {
@@ -78,9 +77,6 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 				} else if (sender.isOp() && args[0].equals("debug")) {
 					MagicSpells.debug = !MagicSpells.debug;
 					sender.sendMessage("MagicSpells: debug mode " + (MagicSpells.debug?"enabled":"disabled"));
-				} else if (sender.isOp() && args[0].equals("configexplode")) {
-					MagicConfig.explode();
-					sender.sendMessage("MagicSpells: spell config exploded");
 				} else if (sender instanceof Player) {
 					Player player = (Player)sender;
 					Spellbook spellbook = MagicSpells.getSpellbook(player);

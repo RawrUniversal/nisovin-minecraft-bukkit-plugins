@@ -202,30 +202,4 @@ public class MagicConfig {
 		}
 	}
 	
-	public static void explode() {
-		try {
-			File spellConfFolder = new File(MagicSpells.plugin.getDataFolder(), "spellconfigs");
-			if (!spellConfFolder.exists()) {
-				spellConfFolder.mkdir();
-			}
-			
-			YamlConfiguration config = new YamlConfiguration();
-			config.load(new File(MagicSpells.plugin.getDataFolder(), "config.yml"));
-			for (String spellName : config.getConfigurationSection("spells").getKeys(false)) {
-				File spellFile = new File(spellConfFolder, spellName + ".yml");
-				if (!spellFile.exists()) {
-					YamlConfiguration spellConf = new YamlConfiguration();
-					ConfigurationSection spellSec = config.getConfigurationSection("spells." + spellName);
-					for (String key : spellSec.getKeys(false)) {
-						spellConf.set(key, spellSec.get(key));
-					}
-					spellConf.save(spellFile);
-				}
-			}
-		} catch (Exception e) {
-			MagicSpells.error("Failed to explode config");
-			e.printStackTrace();
-		}
-	}
-	
 }
