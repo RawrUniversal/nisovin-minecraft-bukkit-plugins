@@ -411,9 +411,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			sendMessage(player, strCastStart);
 			playSpellEffects(EffectPosition.START_CAST, player);
 			if (MagicSpells.useExpBarAsCastTimeBar) {
-				new DelayedSpellCastWithBar(player, this, state, power, cooldown, reagents, castTime);
+				new DelayedSpellCastWithBar(player, this, state, power, cooldown, reagents, castTime, args);
 			} else {
-				new DelayedSpellCast(player, this, state, power, cooldown, reagents, castTime);
+				new DelayedSpellCast(player, this, state, power, cooldown, reagents, castTime, args);
 			}
 		}
 		
@@ -1248,10 +1248,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		private float power;
 		private float cooldown;
 		private SpellReagents reagents;
+		private String[] args;
 		private int taskId;
 		private boolean cancelled = false;
 		
-		public DelayedSpellCast(Player player, Spell spell, SpellCastState state, float power, float cooldown, SpellReagents reagents, int castTime) {
+		public DelayedSpellCast(Player player, Spell spell, SpellCastState state, float power, float cooldown, SpellReagents reagents, int castTime, String[] args) {
 			this.player = player;
 			this.prevLoc = player.getLocation().clone();
 			this.spell = spell;
@@ -1259,6 +1260,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			this.power = power;
 			this.cooldown = cooldown;
 			this.reagents = reagents;
+			this.args = args;
 			
 			taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, this, castTime);
 			registerEvents(this);
@@ -1272,7 +1274,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					if (!hasReagents(player)) {
 						state = SpellCastState.MISSING_REAGENTS;
 					}
-					spell.handleCast(player, state, power, cooldown, reagents, null);
+					spell.handleCast(player, state, power, cooldown, reagents, args);
 				} else {
 					interrupt();
 				}
@@ -1317,13 +1319,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		private float cooldown;
 		private SpellReagents reagents;
 		private int castTime;
+		private String[] args;
 		private int taskId;
 		private boolean cancelled = false;
 		
 		private int interval = 5;
 		private int elapsed = 0;
 		
-		public DelayedSpellCastWithBar(Player player, Spell spell, SpellCastState state, float power, float cooldown, SpellReagents reagents, int castTime) {
+		public DelayedSpellCastWithBar(Player player, Spell spell, SpellCastState state, float power, float cooldown, SpellReagents reagents, int castTime, String[] args) {
 			this.player = player;
 			this.prevLoc = player.getLocation().clone();
 			this.spell = spell;
@@ -1332,6 +1335,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			this.cooldown = cooldown;
 			this.reagents = reagents;
 			this.castTime = castTime;
+			this.args = args;
 			
 			MagicSpells.getExpBarManager().lock(player, this);
 			
@@ -1349,7 +1353,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 						if (!hasReagents(player)) {
 							state = SpellCastState.MISSING_REAGENTS;
 						}
-						spell.handleCast(player, state, power, cooldown, reagents, null);
+						spell.handleCast(player, state, power, cooldown, reagents, args);
 						cancelled = true;
 					}
 					MagicSpells.getExpBarManager().update(player, 0, ((float)elapsed / (float)castTime), this);

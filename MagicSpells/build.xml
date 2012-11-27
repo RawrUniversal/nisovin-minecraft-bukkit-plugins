@@ -2,7 +2,7 @@
 <project name="MagicSpells" default="build" basedir=".">
 	<!-- Sets variables which can later be used. -->
 	<!-- The value of a property is accessed via ${} -->
-	<property name="version" value="2.10.1" />
+	<property name="version" value="2.11" />
 	<property name="src.dir" location="src" />
 	<property name="build.dir" location="bin" />
 	<property name="dist.dir" location="dist" />

@@ -104,10 +104,10 @@ public class SummonSpell extends TargetedSpell {
 			if (requireAcceptance) {
 				pendingSummons.put(target, landLoc);
 				pendingTimes.put(target, System.currentTimeMillis());
-				sendMessage(target, strSummonPending);
+				sendMessage(target, strSummonPending, "%a", player.getDisplayName());
 			} else {
 				target.teleport(landLoc);
-				sendMessage(target, strSummonAccepted);
+				sendMessage(target, strSummonAccepted, "%a", player.getDisplayName());
 			}
 			
 			sendMessages(player, target);
