@@ -317,4 +317,14 @@ public class Util {
 		}
 	}
 	
+	public static void rotateVector(Vector v, float degrees) {
+		double rad = Math.toRadians(degrees);
+		double sin = Math.sin(rad);
+		double cos = Math.cos(rad);
+		double x = (v.getX() * cos) - (v.getZ() * sin);
+		double z = (v.getX() * sin) + (v.getZ() * cos);
+		v.setX(x);
+		v.setZ(z);
+	}
+	
 }

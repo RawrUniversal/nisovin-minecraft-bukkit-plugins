@@ -13,18 +13,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class ThrowBlockSpell extends InstantSpell {
 
 	int blockType;
 	byte blockData;
 	float velocity;
+	float verticalAdjustment;
+	int rotationOffset;
 	float fallDamage;
 	int fallDamageMax;
 	boolean dropItem;
@@ -43,6 +47,8 @@ public class ThrowBlockSpell extends InstantSpell {
 		blockType = typeAndData.id;
 		blockData = (byte)typeAndData.data;
 		velocity = getConfigFloat("velocity", 1);
+		verticalAdjustment = getConfigFloat("vertical-adjustment", 0.5F);
+		rotationOffset = getConfigInt("rotation-offset", 0);
 		fallDamage = getConfigFloat("fall-damage", 2.0F);
 		fallDamageMax = getConfigInt("fall-damage-max", 20);
 		dropItem = getConfigBoolean("drop-item", false);
@@ -64,8 +70,16 @@ public class ThrowBlockSpell extends InstantSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation().add(player.getLocation().getDirection()), blockType, blockData);
-			block.setVelocity(player.getLocation().getDirection().multiply(velocity));
+			Vector v = player.getLocation().getDirection();
+			if (verticalAdjustment != 0) {
+				v.setY(v.getY() + verticalAdjustment);
+			}
+			if (rotationOffset != 0) {
+				Util.rotateVector(v, rotationOffset);
+			}
+			v.normalize().multiply(velocity);
+			FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation().add(v), blockType, blockData);
+			block.setVelocity(v);
 			block.setDropItem(dropItem);
 			if (fallDamage > 0) {
 				MagicSpells.getVolatileCodeHandler().setFallingBlockHurtEntities(block, fallDamage, fallDamageMax);
@@ -90,7 +104,7 @@ public class ThrowBlockSpell extends InstantSpell {
 						iter.remove();
 						if (removeBlocks) {
 							Block b = block.getLocation().getBlock();
-							if (b.getTypeId() == blockType && b.getData() == blockData) {
+							if (b.getTypeId() == blockType && (b.getData() == blockData || blockType == Material.ANVIL.getId())) {
 								b.setType(Material.AIR);
 							}
 						}
@@ -134,7 +148,7 @@ public class ThrowBlockSpell extends InstantSpell {
 			event.setDamage(damage);
 		}
 	}
-	
+		
 	@Override
 	public void turnOff() {
 		if (fallingBlocks != null) {
