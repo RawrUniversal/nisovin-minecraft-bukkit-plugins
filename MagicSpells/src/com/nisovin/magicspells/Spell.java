@@ -400,12 +400,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		if (player.hasPermission("magicspells.nocasttime")) {
 			castTime = 0;
 		}
-		
+				
 		// cast spell
 		PostCastAction action;
 		MagicSpells.debug(3, "    Cast time: " + castTime);
 		if (castTime <= 0 || state != SpellCastState.NORMAL) {
 			action = handleCast(player, state, power, cooldown, reagents, args);
+		} else if (!preCastTimeCheck(player, args)) {
+			action = PostCastAction.ALREADY_HANDLED;
 		} else {
 			action = PostCastAction.DELAYED;
 			sendMessage(player, strCastStart);
@@ -494,6 +496,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return action;
 	}
 
+	protected boolean preCastTimeCheck(Player player, String[] args) {
+		return true;
+	}
+	
 	/**
 	 * This method is called when a player casts a spell, either by command, with a wand item, or otherwise.
 	 * @param player the player casting the spell
@@ -703,7 +709,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		if (durabilityCost > 0) {
 			ItemStack inHand = player.getItemInHand();
-			if (inHand == null || inHand.getDurability() + durabilityCost > inHand.getType().getMaxDurability()) {
+			if (inHand == null || inHand.getDurability() + durabilityCost - 1 > inHand.getType().getMaxDurability()) {
 				return false;
 			}
 		}
