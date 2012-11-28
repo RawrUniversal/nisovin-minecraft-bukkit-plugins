@@ -709,7 +709,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		if (durabilityCost > 0) {
 			ItemStack inHand = player.getItemInHand();
-			if (inHand == null || inHand.getDurability() + durabilityCost - 1 > inHand.getType().getMaxDurability()) {
+			if (inHand == null || inHand.getDurability() >= inHand.getType().getMaxDurability()) {
 				return false;
 			}
 		}
@@ -781,7 +781,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			ItemStack inHand = player.getItemInHand();
 			if (inHand != null && inHand.getType().getMaxDurability() > 0) {
 				short newDura = (short) (inHand.getDurability() + durabilityCost);
-				if (newDura > inHand.getType().getMaxDurability()) {
+				if (newDura >= inHand.getType().getMaxDurability()) {
 					player.setItemInHand(null);
 				} else {
 					inHand.setDurability(newDura);
