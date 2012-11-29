@@ -55,6 +55,7 @@ public class PassiveSpell extends Spell {
 	private List<String> triggers;
 	private float chance;
 	private boolean castWithoutTarget;
+	private int delay = -1;
 	
 	private List<String> spellNames;
 	private List<Spell> spells;
@@ -208,7 +209,19 @@ public class PassiveSpell extends Spell {
 		activate(caster, null, location);
 	}
 	
-	private void activate(Player caster, LivingEntity target, Location location) {
+	private void activate(final Player caster, final LivingEntity target, final Location location) {
+		if (delay >= 0) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+				public void run() {
+					activateSpells(caster, target, location);
+				}
+			}, delay);
+		} else {
+			activateSpells(caster, target, location);
+		}
+	}
+	
+	private void activateSpells(Player caster, LivingEntity target, Location location) {
 		SpellCastState state = getCastState(caster);
 		MagicSpells.debug(3, "Activating passive spell '" + name + "' for player " + caster.getName() + " (state: " + state + ")");
 		if (!disabled && (chance >= .999 || random.nextFloat() <= chance) && state == SpellCastState.NORMAL) {

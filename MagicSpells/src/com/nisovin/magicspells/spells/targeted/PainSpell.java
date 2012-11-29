@@ -49,6 +49,7 @@ public class PainSpell extends TargetedEntitySpell {
 	}
 	
 	private boolean causePain(Player player, LivingEntity target, float power) {
+		if (target.isDead()) return false;
 		int dam = Math.round(damage*power);
 		if (target instanceof Player && checkPlugins) {
 			// handle the event myself so I can detect cancellation properly
