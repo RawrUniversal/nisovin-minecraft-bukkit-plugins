@@ -24,15 +24,18 @@ public class PrayerSpell extends InstantSpell {
 			if (player.getHealth() == 20 && amountHealed > 0) {
 				sendMessage(player, strAtFullHealth);
 				return PostCastAction.ALREADY_HANDLED;
-			} else {
-				int health = player.getHealth() + Math.round(amountHealed*power);
-				if (health > 20) {
-					health = 20;
-				} else if (health < 0) {
-					health = 0;
+			} else if (player.isValid()) {
+				int health = player.getHealth();
+				if (health > 0) {
+					health += Math.round(amountHealed*power);
+					if (health > 20) {
+						health = 20;
+					} else if (health < 0) {
+						health = 0;
+					}
+					player.setHealth(health);
+					playSpellEffects(EffectPosition.CASTER, player);
 				}
-				player.setHealth(health);
-				playSpellEffects(EffectPosition.CASTER, player);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

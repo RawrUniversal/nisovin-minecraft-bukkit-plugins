@@ -55,7 +55,7 @@ public class PassiveSpell extends Spell {
 	private List<String> triggers;
 	private float chance;
 	private boolean castWithoutTarget;
-	private int delay = -1;
+	private int delay;
 	
 	private List<String> spellNames;
 	private List<Spell> spells;
@@ -68,6 +68,7 @@ public class PassiveSpell extends Spell {
 		triggers = getConfigStringList("triggers", null);
 		chance = getConfigFloat("chance", 100F) / 100F;
 		castWithoutTarget = getConfigBoolean("cast-without-target", false);
+		delay = getConfigInt("delay", -1);
 		
 		spellNames = getConfigStringList("spells", null);
 	}
@@ -210,14 +211,14 @@ public class PassiveSpell extends Spell {
 	}
 	
 	private void activate(final Player caster, final LivingEntity target, final Location location) {
-		if (delay >= 0) {
+		if (delay < 0) {
+			activateSpells(caster, target, location);
+		} else {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 				public void run() {
 					activateSpells(caster, target, location);
 				}
 			}, delay);
-		} else {
-			activateSpells(caster, target, location);
 		}
 	}
 	
