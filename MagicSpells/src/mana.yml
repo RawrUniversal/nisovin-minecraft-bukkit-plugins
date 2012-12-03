@@ -1,7 +1,7 @@
 enable-mana-system: true
 mana-bar-prefix: "Mana:"
 mana-bar-size: 35
-color-full: 10
+color-full: 1
 color-empty: 0
 
 default-max-mana: 100
@@ -12,12 +12,21 @@ ranks:
     master:
         max-mana: 200
         regen-amount: 10
+        prefix: "Mana:"
+        color-full: 1
+        color-empty: 0
     adept:
         max-mana: 150
         regen-amount: 7
+        prefix: "Mana:"
+        color-full: 1
+        color-empty: 0
     novice:
         max-mana: 100
         regen-amount: 5
+        prefix: "Mana:"
+        color-full: 1
+        color-empty: 0
 
 show-mana-on-use: false
 show-mana-on-regen: false
