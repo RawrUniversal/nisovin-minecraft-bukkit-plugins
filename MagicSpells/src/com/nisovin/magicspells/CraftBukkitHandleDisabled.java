@@ -10,7 +10,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
@@ -61,10 +60,6 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	public void removeMobEffect(LivingEntity entity, PotionEffectType type) {
 		entity.addPotionEffect(new PotionEffect(type, 1, 0), true);
 		entity.removePotionEffect(type);
-	}
-
-	@Override
-	public void collectItem(Player player, Item item) {
 	}
 
 	@Override

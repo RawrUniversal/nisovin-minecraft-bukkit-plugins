@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -30,8 +29,6 @@ public interface CraftBukkitHandle {
 	public void pressPressurePlate(Block block);
 	
 	public void removeMobEffect(LivingEntity entity, PotionEffectType type);
-	
-	public void collectItem(Player player, Item item);
 	
 	public boolean simulateTnt(Location target, float explosionSize, boolean fire);
 	

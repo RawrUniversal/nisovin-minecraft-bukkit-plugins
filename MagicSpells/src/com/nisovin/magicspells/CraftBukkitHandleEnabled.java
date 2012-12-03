@@ -17,7 +17,6 @@ import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.NBTTagList;
 import net.minecraft.server.NBTTagString;
 import net.minecraft.server.Packet103SetSlot;
-import net.minecraft.server.Packet22Collect;
 import net.minecraft.server.Packet42RemoveMobEffect;
 import net.minecraft.server.Packet43SetExperience;
 import net.minecraft.server.Packet62NamedSoundEffect;
@@ -38,7 +37,6 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
@@ -146,12 +144,6 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
         } catch (Exception e) {
             e.printStackTrace();
         }
-	}
-
-	@Override
-	public void collectItem(Player player, Item item) {
-		Packet22Collect packet = new Packet22Collect(item.getEntityId(), player.getEntityId());
-		((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package com.nisovin.magicspells.spells.command;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -9,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.CraftBukkitHandle;
@@ -37,11 +40,16 @@ public class ScrollSpell extends CommandSpell {
 	private boolean textContainsUses;
 	private String strScrollName;
 	private String strScrollSubtext;
+	private String strScrollOver;
 	private String strUsage;
 	private String strNoSpell;
 	private String strCantTeach;
 	private String strOnUse;
 	private String strUseFail;
+	
+	private List<String> predefinedScrolls;
+	private Map<Integer, Spell> predefinedScrollSpells;
+	private Map<Integer, Integer> predefinedScrollUses;
 		
 	public ScrollSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -60,13 +68,42 @@ public class ScrollSpell extends CommandSpell {
 		requireScrollCastPermOnUse = getConfigBoolean("require-scroll-cast-perm-on-use", true);
 		strScrollName = getConfigString("str-scroll-name", "Magic Scroll: %s");
 		strScrollSubtext = getConfigString("str-scroll-subtext", "Uses remaining: %u");
+		strScrollOver = getConfigString("str-scroll-over", "");
 		strUsage = getConfigString("str-usage", "You must hold a single blank paper \nand type /cast scroll <spell> <uses>.");
 		strNoSpell = getConfigString("str-no-spell", "You do not know a spell by that name.");
 		strCantTeach = getConfigString("str-cant-teach", "You cannot create a scroll with that spell.");
 		strOnUse = getConfigString("str-on-use", "Spell Scroll: %s used. %u uses remaining.");
 		strUseFail = getConfigString("str-use-fail", "Unable to use this scroll right now.");
 		
+		predefinedScrolls = getConfigStringList("predefined-scrolls", null);
+		
 		textContainsUses = strScrollName.contains("%u") || strScrollSubtext.contains("%u");
+	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+		if (predefinedScrolls != null && predefinedScrolls.size() > 0) {
+			predefinedScrollSpells = new HashMap<Integer, Spell>();
+			predefinedScrollUses = new HashMap<Integer, Integer>();
+			for (String s : predefinedScrolls) {
+				String[] data = s.split(" ");
+				try {
+					int id = Integer.parseInt(data[0]);
+					Spell spell = MagicSpells.getSpellByInternalName(data[1]);
+					int uses = defaultUses;
+					if (data.length > 2) uses = Integer.parseInt(data[2]);
+					if (id > 0 && spell != null) {
+						predefinedScrollSpells.put(id, spell);
+						predefinedScrollUses.put(id, uses);
+					} else {
+						MagicSpells.error("Scroll spell has invalid predefined scroll: " + s);
+					}
+				} catch (Exception e) {
+					MagicSpells.error("Scroll spell has invalid predefined scroll: " + s);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -133,11 +170,12 @@ public class ScrollSpell extends CommandSpell {
 	
 	public ItemStack createScroll(Spell spell, int uses, ItemStack item) {
 		if (item == null) item = new ItemStack(itemId, 1);
+		item.setDurability((short)0);
 		CraftBukkitHandle handle = MagicSpells.getVolatileCodeHandler();
 		item = handle.setStringOnItemStack(item, "MagicSpellsScroll_" + internalName, spell.getInternalName() + (uses > 0 ? "," + uses : ""));
-		item = handle.setItemName(item, strScrollName.replace("%s", spell.getName()).replace("%u", uses+""));
+		item = handle.setItemName(item, strScrollName.replace("%s", spell.getName()).replace("%u", (uses>=0?uses+"":"many")));
 		if (strScrollSubtext != null && !strScrollSubtext.isEmpty()) {
-			item = handle.setItemLore(item, strScrollSubtext.replace("%s", spell.getName()).replace("%u", uses+""));
+			item = handle.setItemLore(item, strScrollSubtext.replace("%s", spell.getName()).replace("%u", (uses>=0?uses+"":"many")));
 		}
 		handle.addFakeEnchantment(item);
 		return item;
@@ -165,6 +203,16 @@ public class ScrollSpell extends CommandSpell {
 			Player player = event.getPlayer();
 			ItemStack inHand = player.getItemInHand();
 			if (inHand.getTypeId() != itemId || inHand.getAmount() > 1) return;
+			
+			// check for predefined scroll
+			if (inHand.getDurability() > 0 && predefinedScrollSpells != null) {
+				Spell spell = predefinedScrollSpells.get(Integer.valueOf(inHand.getDurability()));
+				if (spell != null) {
+					int uses = predefinedScrollUses.get(Integer.valueOf(inHand.getDurability()));
+					inHand = createScroll(spell, uses, inHand);
+					player.setItemInHand(inHand);
+				}
+			}
 			
 			// get scroll data (spell and uses)
 			String scrollDataString = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, "MagicSpellsScroll_" + internalName);
@@ -223,6 +271,40 @@ public class ScrollSpell extends CommandSpell {
 				// send msg
 				sendMessage(player, formatMessage(strOnUse, "%s", spell.getName(), "%u", (uses>=0?uses+"":"many")));
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onItemSwitch(PlayerItemHeldEvent event) {
+		Player player = event.getPlayer();
+		ItemStack inHand = player.getInventory().getItem(event.getNewSlot());
+		
+		if (inHand.getTypeId() != itemId) return;
+		
+		// check for predefined scroll
+		if (inHand.getDurability() > 0 && predefinedScrollSpells != null) {
+			Spell spell = predefinedScrollSpells.get(Integer.valueOf(inHand.getDurability()));
+			if (spell != null) {
+				int uses = predefinedScrollUses.get(Integer.valueOf(inHand.getDurability()));
+				inHand = createScroll(spell, uses, inHand);
+				player.getInventory().setItem(event.getNewSlot(), inHand);
+			}
+		}
+		
+		// send scroll over message
+		if (!strScrollOver.isEmpty()) {
+			// get scroll data (spell and uses)
+			String scrollDataString = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, "MagicSpellsScroll_" + internalName);
+			if (scrollDataString == null || scrollDataString.isEmpty()) return;
+			String[] scrollData = scrollDataString.split(",");
+			Spell spell = MagicSpells.getSpellByInternalName(scrollData[0]);
+			if (spell == null) return;
+			int uses = 0;
+			if (scrollData.length > 1 && scrollData[1].matches("^[0-9]+$")) {
+				uses = Integer.parseInt(scrollData[1]);
+			}
+			// send message
+			sendMessage(player, strScrollOver, "%s", spell.getName(), "%u", (uses>=0?uses+"":"many"));
 		}
 	}
 

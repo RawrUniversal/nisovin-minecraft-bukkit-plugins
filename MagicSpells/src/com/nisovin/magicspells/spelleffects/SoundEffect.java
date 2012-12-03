@@ -35,9 +35,7 @@ public class SoundEffect extends SpellEffect {
 	
 	public static void main(String[] args) {
 		Collection<String> sounds = new TreeSet<String>();
-		File file = new File("C:\\Users\\Justin.Baker\\AppData\\Roaming\\.minecraft\\resources\\newsound");
-		parseFolder(file, "", sounds);
-		file = new File("C:\\Users\\Justin.Baker\\AppData\\Roaming\\.minecraft\\resources\\sound3");
+		File file = new File("C:\\Users\\Justin.Baker\\AppData\\Roaming\\.minecraft\\resources\\sound3");
 		parseFolder(file, "", sounds);
 		for (String sound : sounds) {
 			System.out.println("   * " + sound);

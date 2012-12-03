@@ -76,17 +76,16 @@ scroll:
     right-click-cast: true
     left-click-cast: false
     ignore-cast-perm: false
-    set-unstackable: true
     remove-scroll-when-depleted: true
     charge-reagents-for-spell-per-charge: false
     require-teach-perm: true
     require-scroll-cast-perm-on-use: true
-    stack-by-data-fn: "a"
+    str-scroll-name: "Magic Scroll: %s"
+    str-scroll-subtext: "Uses remaining: %u"
     str-scroll-over: "Spell Scroll: %s (%u uses remaining)"
     str-usage: |
         You must hold a single blank paper 
         and type /cast scroll <spell> <uses>.
-    str-fail: You cannot create a spell scroll at this time.
     str-no-spell: You do not know a spell by that name.
     str-cant-teach: You cannot create a tome with that spell.
     str-cast-self: You have created a spell scroll for %s.
