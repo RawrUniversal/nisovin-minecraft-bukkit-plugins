@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,12 +25,23 @@ public class Util {
 			ItemStack item;
 			String s = string;
 			String name = null;
+			String[] lore = null;
 			HashMap<Enchantment, Integer> enchants = null;
 			int color = -1;
 			if (s.contains("|")) {
-				String[] temp = s.split("\\|", 2);
+				String[] temp = s.split("\\|");
 				s = temp[0];
-				name = temp[1];
+				if (temp.length == 1) {
+					name = "";
+				} else {
+					name = temp[1];
+					if (temp.length > 2) {
+						lore = Arrays.copyOfRange(temp, 2, temp.length);
+						for (int i = 0; i < lore.length; i++) {
+							lore[i] = lore[i].replace("__", " ");
+						}
+					}
+				}
 			}
 			if (s.contains(";")) {
 				String[] temp = s.split(";", 2);
@@ -73,6 +85,9 @@ public class Util {
 			}
 			if (name != null) {
 				item = MagicSpells.getVolatileCodeHandler().setItemName(item, name.replace("__", " "));
+			}
+			if (lore != null) {
+				item = MagicSpells.getVolatileCodeHandler().setItemLore(item, lore);
 			}
 			if (color >= 0 && item.getType().name().startsWith("LEATHER_")) {
 				item = MagicSpells.getVolatileCodeHandler().setArmorColor(item, color);
