@@ -130,8 +130,11 @@ public class PassiveSpell extends Spell {
 				} else if (type.equalsIgnoreCase("rightclick")) {
 					registerEvents(new RightClickListener(var));
 					trigCount++;
-				} else if (type.equalsIgnoreCase("rightclickblock")) {
-					registerEvents(new RightClickBlockListener(var));
+				} else if (type.equalsIgnoreCase("rightclickblock") || type.equalsIgnoreCase("rightclickblockcoord")) {
+					registerEvents(new RightClickBlockCoordListener(var));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("rightclickblocktype")) {
+					registerEvents(new RightClickBlockTypeListener(var));
 					trigCount++;
 				} else if (type.equalsIgnoreCase("spellcast")) {
 					registerEvents(new SpellCastListener(var));
@@ -554,13 +557,13 @@ public class PassiveSpell extends Spell {
 		}
 	}
 	
-	public class RightClickBlockListener implements Listener {
+	public class RightClickBlockCoordListener implements Listener {
 		String[] world;
 		int[] x;
 		int[] y;
 		int[] z;
 		
-		public RightClickBlockListener(String var) {
+		public RightClickBlockCoordListener(String var) {
 			String[] locs = var.split(";");
 			world = new String[locs.length];
 			x = new int[locs.length];
@@ -580,7 +583,10 @@ public class PassiveSpell extends Spell {
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				Block block = event.getClickedBlock();
 				if (check(block.getWorld().getName(), block.getX(), block.getY(), block.getZ())) {
-					activate(event.getPlayer(), event.getPlayer(), block.getLocation());
+					Player player = event.getPlayer();
+					if (hasSpell(player)) {
+						activate(player, player, block.getLocation());
+					}
 				}
 			}
 		}
@@ -592,6 +598,52 @@ public class PassiveSpell extends Spell {
 				}
 			}
 			return false;
+		}
+	}
+	
+	public class RightClickBlockTypeListener implements Listener {
+		int[] ids;
+		byte[] datas;
+		boolean[] checkData;
+		
+		public RightClickBlockTypeListener(String var) {
+			if (var != null) {
+				var = var.replace(" ", "");
+				if (var != null && var.matches("[0-9]+(:[0-9]+)?(,[0-9]+(:[0-9]+)?)*")) {
+					String[] vars = var.split(",");
+					ids = new int[vars.length];
+					datas = new byte[vars.length];
+					checkData = new boolean[vars.length];
+					for (int i = 0; i < vars.length; i++) {
+						if (vars[i].contains(":")) {
+							String[] s = vars[i].split(":");
+							ids[i] = Integer.parseInt(s[0]);
+							datas[i] = Byte.parseByte(s[1]);
+							checkData[i] = true;
+						} else {
+							ids[i] = Integer.parseInt(vars[i]);
+							datas[i] = 0;
+							checkData[i] = false;
+						}
+					}
+				}
+			}
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onRightClick(PlayerInteractEvent event) {
+			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				Block block = event.getClickedBlock();
+				for (int i = 0; i < ids.length; i++) {
+					if (block.getTypeId() == ids[i] && (!checkData[i] || datas[i] == block.getData())) {
+						Player player = event.getPlayer();
+						if (hasSpell(player)) {
+							activate(player, player, block.getLocation());
+						}
+						return;
+					}
+				}
+			}
 		}
 	}
 	
