@@ -10,6 +10,7 @@ import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public interface CraftBukkitHandle {
@@ -63,5 +64,7 @@ public interface CraftBukkitHandle {
 	public ItemStack setArmorColor(ItemStack item, int color);
 	
 	public void setFallingBlockHurtEntities(FallingBlock block, float damage, int max);
+	
+	public void addPotionEffect(LivingEntity entity, PotionEffect effect, boolean ambient);
 	
 }

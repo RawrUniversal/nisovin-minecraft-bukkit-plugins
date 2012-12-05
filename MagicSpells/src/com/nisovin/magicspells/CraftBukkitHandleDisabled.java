@@ -145,4 +145,9 @@ class CraftBukkitHandleDisabled implements CraftBukkitHandle {
 	public void setFallingBlockHurtEntities(FallingBlock block, float damage, int max) {
 	}
 
+	@Override
+	public void addPotionEffect(LivingEntity entity, PotionEffect effect, boolean ambient) {
+		entity.addPotionEffect(effect, true);
+	}
+
 }

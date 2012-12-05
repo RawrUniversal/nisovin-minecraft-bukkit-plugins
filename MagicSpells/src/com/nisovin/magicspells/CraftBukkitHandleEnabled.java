@@ -41,6 +41,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
@@ -392,6 +393,18 @@ class CraftBukkitHandleEnabled implements CraftBukkitHandle {
 			field.setInt(efb, max);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void addPotionEffect(LivingEntity entity, PotionEffect effect, boolean ambient) {
+		if (!ambient) {
+			entity.addPotionEffect(effect, true);
+		} else {
+			if (entity.hasPotionEffect(effect.getType())) {
+				entity.removePotionEffect(effect.getType());
+			}
+			((CraftLivingEntity)entity).getHandle().addEffect(new MobEffect(effect.getType().getId(), effect.getDuration(), effect.getAmplifier(), true));
 		}
 	}
 

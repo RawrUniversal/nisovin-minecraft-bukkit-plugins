@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -17,6 +18,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 	private int type;
 	private int duration;
 	private int amplifier;
+	private boolean ambient;
 	private boolean targeted;
 	private boolean targetPlayers;
 	private boolean targetNonPlayers;
@@ -29,6 +31,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 		type = getConfigInt("type", 0);
 		duration = getConfigInt("duration", 0);
 		amplifier = getConfigInt("strength", 0);
+		ambient = getConfigBoolean("ambient", false);
 		targeted = getConfigBoolean("targeted", false);
 		targetPlayers = getConfigBoolean("target-players", false);
 		targetNonPlayers = getConfigBoolean("target-non-players", true);
@@ -50,7 +53,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 				return noTarget(player);
 			}
 			
-			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier));
+			MagicSpells.getVolatileCodeHandler().addPotionEffect(target, new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier), ambient);
 			if (targeted) {
 				playSpellEffects(player, target);
 			} else {
