@@ -1,5 +1,6 @@
 package com.nisovin.magicspells;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -32,6 +33,23 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 					} else {
 						sender.sendMessage(MagicSpells.textColor + MagicSpells.strCastUsage);
 					}
+				} else if (sender.isOp() && args[0].equals("forcecast") && args.length >= 3) {
+					Player target = Bukkit.getPlayer(args[1]);
+					if (target == null) {
+						sender.sendMessage(MagicSpells.textColor + "No matching player found");
+						return true;
+					}
+					Spell spell = MagicSpells.getSpellByInGameName(args[2]);
+					if (spell == null) {
+						sender.sendMessage(MagicSpells.textColor + "No such spell");
+						return true;
+					}
+					String[] spellArgs = null;
+					if (args.length > 3) {
+						spellArgs = Arrays.copyOfRange(args, 3, args.length);
+					}
+					spell.cast(target, spellArgs);
+					sender.sendMessage(MagicSpells.textColor + "Player " + target.getName() + " forced to cast " + spell.getName());
 				} else if (sender.isOp() && args[0].equals("reload")) {
 					if (args.length == 1) {
 						plugin.unload();

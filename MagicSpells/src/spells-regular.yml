@@ -350,7 +350,7 @@ explosivearrow:
     spells: [explode]
     cost:
         - mana 25
-        - sulpher 1
+        - sulphur 1
         - arrow 1
     str-cost: 25 mana, 1 gunpowder, and 1 arrow
     str-cast-self: You fire an explosive arrow.
@@ -1227,7 +1227,7 @@ sun:
     cost:
         - mana 75
         - redstone 8
-        - clock 1
+        - watch 1
     str-cost: 75 mana, 5 redstone dust and a clock
     time-to-set: 0
     str-announce: The sun has suddenly appeared in the sky!
