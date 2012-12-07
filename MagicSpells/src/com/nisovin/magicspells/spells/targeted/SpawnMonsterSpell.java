@@ -125,6 +125,7 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 			if (holding > 0 && entity instanceof Enderman) {
 				((Enderman)entity).setCarriedMaterial(new MaterialData(holding));
 			}
+			playSpellEffects(player, entity);
 		}
 	}
 	
