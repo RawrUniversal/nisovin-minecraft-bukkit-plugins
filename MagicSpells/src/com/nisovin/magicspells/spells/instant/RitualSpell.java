@@ -237,10 +237,9 @@ public class RitualSpell extends InstantSpell {
 		
 		private void resetManaBar(Player player) {
 			MagicSpells.getExpBarManager().unlock(player, this);
+			MagicSpells.getExpBarManager().update(player, player.getLevel(), player.getExp());
 			if (MagicSpells.getManaHandler() != null) {
 				MagicSpells.getManaHandler().showMana(player);
-			} else {
-				MagicSpells.getExpBarManager().update(player, player.getLevel(), player.getExp());
 			}
 			
 		}
