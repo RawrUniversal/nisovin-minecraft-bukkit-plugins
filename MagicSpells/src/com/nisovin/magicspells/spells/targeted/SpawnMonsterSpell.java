@@ -13,6 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Zombie;
 import org.bukkit.material.MaterialData;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -110,8 +111,12 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 	private void spawnMob(Player player, Location loc) {
 		if (entityType != null) {
 			Entity entity = loc.getWorld().spawnEntity(loc.add(.5, .1, .5), entityType);
-			if (baby && entity instanceof Ageable) {
-				((Ageable)entity).setBaby();
+			if (baby) {
+				if (entity instanceof Ageable) {
+					((Ageable)entity).setBaby();
+				} else if (entity instanceof Zombie) {
+					((Zombie)entity).setBaby(true);
+				}
 			}
 			if (tamed && entity instanceof Tameable) {
 				((Tameable)entity).setTamed(true);
