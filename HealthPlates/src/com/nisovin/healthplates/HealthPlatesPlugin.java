@@ -77,10 +77,7 @@ public class HealthPlatesPlugin extends JavaPlugin implements Listener {
 			public void run() {
 				ChatColor newColor = getColor(player.getHealth());
 				if (currentColor != newColor) {
-					debug("Updating plate color due to damage for player " + player.getName());
 					protocolManager.updateEntity(player, getNearbyPlayers(player));
-					//Packet20NamedEntitySpawn packet = new Packet20NamedEntitySpawn(((CraftPlayer)player).getHandle());
-					//packet.b = newColor + packet.b;
 				}
 			}
 		}, 1);
@@ -98,7 +95,6 @@ public class HealthPlatesPlugin extends JavaPlugin implements Listener {
 		if (currentColor != newColor) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
-					debug("Updating plate color due to health gain for player " + player.getName());
 					protocolManager.updateEntity(player, getNearbyPlayers(player));
 				}
 			}, 1);
@@ -106,11 +102,13 @@ public class HealthPlatesPlugin extends JavaPlugin implements Listener {
 	}
 	
 	public ChatColor getColor(int health) {
-		if (health > 14) {
+		if (health > 16) {
 			return null;
+		} else if (health > 12) {
+			return ChatColor.YELLOW;
 		} else if (health > 8) {
 			return ChatColor.GOLD;
-		} else if (health > 3) {
+		} else if (health > 4) {
 			return ChatColor.RED;
 		} else {
 			return ChatColor.DARK_RED;
