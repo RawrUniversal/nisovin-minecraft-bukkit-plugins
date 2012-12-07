@@ -232,34 +232,34 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			for (int i = 0; i < costList.size(); i++) {
 				String costVal = costList.get(i);
 				
-				// validate cost data
-				if (!costVal.matches("^([0-9a-zA-Z_]+(:[0-9]+)?(\\|[A-Za-z0-9_\\-:,./&]+)?|mana|health|hunger|experience|levels|durability)( [1-9][0-9]*)?$")) {
-					MagicSpells.error("Failed to process cost value for " + internalName + " spell: " + costVal);
-					continue;
-				}
-				
-				// parse cost data
-				data = costVal.split(" ");
-				int amt = 1;
-				if (data.length > 1) amt = Integer.parseInt(data[1]);
-				if (data[0].equalsIgnoreCase("health")) {
-					reagents.setHealth(amt);
-				} else if (data[0].equalsIgnoreCase("mana")) {
-					reagents.setMana(amt);
-				} else if (data[0].equalsIgnoreCase("hunger")) {
-					reagents.setHunger(amt);
-				} else if (data[0].equalsIgnoreCase("experience")) {
-					reagents.setExperience(amt);
-				} else if (data[0].equalsIgnoreCase("levels")) {
-					reagents.setLevels(amt);
-				} else if (data[0].equalsIgnoreCase("durability")) {
-					reagents.setDurability(amt);
-				} else {
-					ItemStack is = Util.getItemStackFromString(data[0]);
-					if (is != null) {
-						is.setAmount(amt);
-						reagents.addItem(is);
+				try {
+					// parse cost data
+					data = costVal.split(" ");
+					int amt = 1;
+					if (data.length > 1) amt = Integer.parseInt(data[1]);
+					if (data[0].equalsIgnoreCase("health")) {
+						reagents.setHealth(amt);
+					} else if (data[0].equalsIgnoreCase("mana")) {
+						reagents.setMana(amt);
+					} else if (data[0].equalsIgnoreCase("hunger")) {
+						reagents.setHunger(amt);
+					} else if (data[0].equalsIgnoreCase("experience")) {
+						reagents.setExperience(amt);
+					} else if (data[0].equalsIgnoreCase("levels")) {
+						reagents.setLevels(amt);
+					} else if (data[0].equalsIgnoreCase("durability")) {
+						reagents.setDurability(amt);
+					} else {
+						ItemStack is = Util.getItemStackFromString(data[0]);
+						if (is != null) {
+							is.setAmount(amt);
+							reagents.addItem(is);
+						} else {
+							MagicSpells.error("Failed to process cost value for " + internalName + " spell: " + costVal);
+						}
 					}
+				} catch (Exception e) {
+					MagicSpells.error("Failed to process cost value for " + internalName + " spell: " + costVal);
 				}
 			}
 		}

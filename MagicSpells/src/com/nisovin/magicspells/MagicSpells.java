@@ -262,6 +262,25 @@ public class MagicSpells extends JavaPlugin {
 		HashMap<String, Boolean> permCastChildren = new HashMap<String,Boolean>();
 		HashMap<String, Boolean> permTeachChildren = new HashMap<String,Boolean>();
 		
+		// load predefined items
+		Util.predefinedItems.clear();
+		if (config.contains("general.predefined-items")) {
+			Set<String> predefinedItems = config.getKeys("general.predefined-items");
+			if (predefinedItems != null) {
+				for (String key : predefinedItems) {
+					String s = config.getString("general.predefined-items." + key, null);
+					if (s != null) {
+						ItemStack is = Util.getItemStackFromString(s);
+						if (is != null) {
+							Util.predefinedItems.put(key, is);
+						} else {
+							MagicSpells.error("Invalid predefined item: " + s);
+						}
+					}
+				}
+			}
+		}
+		
 		// load spells
 		loadSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
 		log("Spells loaded: " + spells.size());
@@ -778,7 +797,7 @@ public class MagicSpells extends JavaPlugin {
         }
 	}
 	
-	static void handleException(Exception ex) {
+	public static void handleException(Exception ex) {
 		if (enableErrorLogging) {
 			plugin.getLogger().severe("AN EXCEPTION HAS OCCURED:");
 			PrintWriter writer = null;

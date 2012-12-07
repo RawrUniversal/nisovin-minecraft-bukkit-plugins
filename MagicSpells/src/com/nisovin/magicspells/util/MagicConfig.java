@@ -36,10 +36,15 @@ public class MagicConfig {
 			File generalConfigFile = new File(folder, "general.yml");
 			if (generalConfigFile.exists()) {
 				YamlConfiguration generalConfig = new YamlConfiguration();
-				generalConfig.load(generalConfigFile);
-				Set<String> keys = generalConfig.getKeys(true);
-				for (String key : keys) {
-					mainConfig.set("general." + key, generalConfig.get(key));
+				try {
+					generalConfig.load(generalConfigFile);
+					Set<String> keys = generalConfig.getKeys(true);
+					for (String key : keys) {
+						mainConfig.set("general." + key, generalConfig.get(key));
+					}
+				} catch (Exception e) {
+					MagicSpells.error("Error loading config file general.yml");
+					MagicSpells.handleException(e);
 				}
 			}
 			
@@ -47,10 +52,15 @@ public class MagicConfig {
 			File manaConfigFile = new File(folder, "mana.yml");
 			if (manaConfigFile.exists()) {
 				YamlConfiguration manaConfig = new YamlConfiguration();
-				manaConfig.load(manaConfigFile);
-				Set<String> keys = manaConfig.getKeys(true);
-				for (String key : keys) {
-					mainConfig.set("mana." + key, manaConfig.get(key));
+				try {
+					manaConfig.load(manaConfigFile);
+					Set<String> keys = manaConfig.getKeys(true);
+					for (String key : keys) {
+						mainConfig.set("mana." + key, manaConfig.get(key));
+					}
+				} catch (Exception e) {
+					MagicSpells.error("Error loading config file mana.yml");
+					MagicSpells.handleException(e);
 				}
 			}
 			
@@ -58,24 +68,34 @@ public class MagicConfig {
 			File zonesConfigFile = new File(folder, "zones.yml");
 			if (zonesConfigFile.exists()) {
 				YamlConfiguration zonesConfig = new YamlConfiguration();
-				zonesConfig.load(zonesConfigFile);
-				Set<String> keys = zonesConfig.getKeys(true);
-				for (String key : keys) {
-					mainConfig.set("no-magic-zones." + key, zonesConfig.get(key));
+				try {
+					zonesConfig.load(zonesConfigFile);
+					Set<String> keys = zonesConfig.getKeys(true);
+					for (String key : keys) {
+						mainConfig.set("no-magic-zones." + key, zonesConfig.get(key));
+					}
+				} catch (Exception e) {
+					MagicSpells.error("Error loading config file zones.yml");
+					MagicSpells.handleException(e);
 				}
 			}
 			
 			// load spell configs
 			for (File spellConfigFile : folder.listFiles(new FilenameFilter() {
 				public boolean accept(File dir, String name) {
-					return name.startsWith("spells") && name.endsWith(".yml");
+					return name.startsWith("spell") && name.endsWith(".yml");
 				}
 			})) {
 				YamlConfiguration spellConfig = new YamlConfiguration();
-				spellConfig.load(spellConfigFile);
-				Set<String> keys = spellConfig.getKeys(true);
-				for (String key : keys) {
-					mainConfig.set("spells." + key, spellConfig.get(key));
+				try {
+					spellConfig.load(spellConfigFile);
+					Set<String> keys = spellConfig.getKeys(true);
+					for (String key : keys) {
+						mainConfig.set("spells." + key, spellConfig.get(key));
+					}
+				} catch (Exception e) {
+					MagicSpells.error("Error loading config file " + spellConfigFile.getName() + ".yml");
+					MagicSpells.handleException(e);
 				}
 			}
 			
@@ -85,7 +105,7 @@ public class MagicConfig {
 				loadSpellConfigs(spellConfigsFolder);
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			MagicSpells.handleException(ex);
 		}
 	}
 	

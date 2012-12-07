@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -20,8 +21,12 @@ import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 
 public class Util {
 
+	public static Map<String, ItemStack> predefinedItems = new HashMap<String, ItemStack>();
+	
 	public static ItemStack getItemStackFromString(String string) {
 		try {
+			if (predefinedItems.containsKey(string)) return predefinedItems.get(string).clone();
+
 			ItemStack item;
 			String s = string;
 			String name = null;
