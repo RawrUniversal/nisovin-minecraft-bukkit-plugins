@@ -204,6 +204,7 @@ public class RitualSpell extends InstantSpell {
 				if (count >= reqParticipants && !caster.isDead() && caster.isOnline()) {
 					if (chargeReagentsImmediately || hasReagents(caster)) {
 						stop(strRitualSuccess);
+						playSpellEffects(EffectPosition.DELAYED, caster);
 						PostCastAction action = spell.castSpell(caster, SpellCastState.NORMAL, power, args);
 						if (!chargeReagentsImmediately && action.chargeReagents()) {
 							removeReagents(caster);
