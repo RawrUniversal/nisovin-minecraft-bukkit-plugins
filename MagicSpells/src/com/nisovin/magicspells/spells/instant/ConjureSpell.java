@@ -21,6 +21,7 @@ import com.nisovin.magicspells.util.Util;
 public class ConjureSpell extends InstantSpell {
 
 	private boolean addToInventory;
+	private boolean addToEnderChest;
 	private boolean powerAffectsQuantity;
 	private boolean powerAffectsChance;
 	private boolean calculateDropsIndividually;
@@ -35,6 +36,7 @@ public class ConjureSpell extends InstantSpell {
 		super(config, spellName);
 		
 		addToInventory = getConfigBoolean("add-to-inventory", false);
+		addToEnderChest = getConfigBoolean("add-to-ender-chest", false);
 		powerAffectsQuantity = getConfigBoolean("power-affects-quantity", false);
 		powerAffectsChance = getConfigBoolean("power-affects-chance", true);
 		calculateDropsIndividually = getConfigBoolean("calculate-drops-individually", true);
@@ -54,7 +56,7 @@ public class ConjureSpell extends InstantSpell {
 			
 			for (int i = 0; i < itemList.size(); i++) {
 				try {
-					String[] data = itemList.get(i).split(" ");
+					String[] data = Util.splitParams(itemList.get(i));
 					String[] quantityData = data.length == 1 ? new String[]{"1"} : data[1].split("-");
 					
 					if (data[0].startsWith("TOME:")) {
@@ -136,7 +138,10 @@ public class ConjureSpell extends InstantSpell {
 					}
 				}
 				if (!added) {
-					if (addToInventory) {
+					if (addToEnderChest) {
+						added = Util.addToInventory(player.getEnderChest(), item);
+					}
+					if (!added && addToInventory) {
 						added = Util.addToInventory(inv, item);
 						if (added) updateInv = true;
 					}
