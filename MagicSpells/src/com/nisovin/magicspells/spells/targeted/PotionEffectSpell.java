@@ -74,10 +74,10 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 		} else {
 			PotionEffect effect = new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier);
 			if (targeted) {
-				target.addPotionEffect(effect);
+				MagicSpells.getVolatileCodeHandler().addPotionEffect(target, effect, ambient);
 				playSpellEffects(caster, target);
 			} else {
-				caster.addPotionEffect(effect);
+				MagicSpells.getVolatileCodeHandler().addPotionEffect(caster, effect, ambient);
 				playSpellEffects(EffectPosition.CASTER, caster);
 			}
 			return true;
