@@ -279,7 +279,7 @@ public class ScrollSpell extends CommandSpell {
 		Player player = event.getPlayer();
 		ItemStack inHand = player.getInventory().getItem(event.getNewSlot());
 		
-		if (inHand.getTypeId() != itemId) return;
+		if (inHand == null || inHand.getTypeId() != itemId) return;
 		
 		// check for predefined scroll
 		if (inHand.getDurability() > 0 && predefinedScrollSpells != null) {

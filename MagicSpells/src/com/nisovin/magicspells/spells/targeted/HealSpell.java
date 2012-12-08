@@ -51,7 +51,7 @@ public class HealSpell extends TargetedEntitySpell {
 	private boolean heal(Player player, Player target, float power) {
 		int health = target.getHealth();
 		int amt = Math.round(healAmount*power);
-		if (checkPlugins && health > player.getHealth()) {
+		if (checkPlugins) {
 			EntityRegainHealthEvent evt = new EntityRegainHealthEvent(target, amt, RegainReason.CUSTOM);
 			Bukkit.getPluginManager().callEvent(evt);
 			if (evt.isCancelled()) {
