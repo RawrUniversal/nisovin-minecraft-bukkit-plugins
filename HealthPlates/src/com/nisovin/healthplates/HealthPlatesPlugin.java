@@ -75,9 +75,11 @@ public class HealthPlatesPlugin extends JavaPlugin implements Listener {
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
-				ChatColor newColor = getColor(player.getHealth());
-				if (currentColor != newColor) {
-					protocolManager.updateEntity(player, getNearbyPlayers(player));
+				if (player.isValid()) {
+					ChatColor newColor = getColor(player.getHealth());
+					if (currentColor != newColor) {
+						protocolManager.updateEntity(player, getNearbyPlayers(player));
+					}
 				}
 			}
 		}, 1);
