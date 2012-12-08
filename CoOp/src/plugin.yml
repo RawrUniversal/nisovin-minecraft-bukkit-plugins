@@ -1,0 +1,12 @@
+name: CoopPlay
+main: com.nisovin.coop.CoopPlugin
+version: 1.0
+commands:
+    coopparty:
+        description: Party!
+        aliases: [party]
+    coopinvite:
+        description: Invite a player to your party.
+        usage: /<command> <name>
+        aliases: invite
+    
