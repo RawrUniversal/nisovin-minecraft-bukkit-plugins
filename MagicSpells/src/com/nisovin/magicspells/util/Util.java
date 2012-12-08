@@ -83,7 +83,7 @@ public class Util {
 			}
 			if (enchants != null) {
 				if (enchants.size() > 0) {
-					item.addEnchantments(enchants);
+					item.addUnsafeEnchantments(enchants);
 				} else {
 					item = MagicSpells.getVolatileCodeHandler().addFakeEnchantment(item);
 				}
