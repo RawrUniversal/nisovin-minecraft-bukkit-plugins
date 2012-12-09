@@ -74,7 +74,7 @@ public class MagicSpells extends JavaPlugin {
 	static int spellIconSlot;
 	static boolean allowCastWithFist;
 	static boolean ignoreDefaultBindings;
-	static boolean showStrCostOnMissingReagents;
+	public static boolean showStrCostOnMissingReagents;
 	static HashSet<Byte> losTransparentBlocks;
 	static List<Integer> ignoreCastItemDurability;
 	static HashMap<EntityType, String> entityNames;

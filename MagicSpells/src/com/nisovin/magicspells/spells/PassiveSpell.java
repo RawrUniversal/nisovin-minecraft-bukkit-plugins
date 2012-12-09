@@ -56,6 +56,7 @@ public class PassiveSpell extends Spell {
 	private float chance;
 	private boolean castWithoutTarget;
 	private int delay;
+	private boolean sendFailureMessages;
 	
 	private List<String> spellNames;
 	private List<Spell> spells;
@@ -69,6 +70,7 @@ public class PassiveSpell extends Spell {
 		chance = getConfigFloat("chance", 100F) / 100F;
 		castWithoutTarget = getConfigBoolean("cast-without-target", false);
 		delay = getConfigInt("delay", -1);
+		sendFailureMessages = getConfigBoolean("send-failure-messages", false);
 		
 		spellNames = getConfigStringList("spells", null);
 	}
@@ -262,6 +264,15 @@ public class PassiveSpell extends Spell {
 				MagicSpells.debug(3, "   Passive spell canceled");
 			}
 			disabled = false;
+		} else if (state != SpellCastState.NORMAL && sendFailureMessages) {
+			if (state == SpellCastState.ON_COOLDOWN) {
+				MagicSpells.sendMessage(caster, formatMessage(strOnCooldown, "%c", Math.round(getCooldown(caster))+""));
+			} else if (state == SpellCastState.MISSING_REAGENTS) {
+				MagicSpells.sendMessage(caster, strMissingReagents);
+				if (MagicSpells.showStrCostOnMissingReagents && strCost != null && !strCost.isEmpty()) {
+					MagicSpells.sendMessage(caster, "    (" + strCost + ")");
+				}
+			}
 		}
 	}
 	
@@ -392,7 +403,11 @@ public class PassiveSpell extends Spell {
 				String[] s = var.split(",");
 				types = new EntityType[s.length];
 				for (int i = 0; i < s.length; i++) {
-					types[i] = EntityType.fromName(s[i].toUpperCase());
+					if (s[i].equalsIgnoreCase("player") || s[i].equalsIgnoreCase("human")) {
+						types[i] = EntityType.PLAYER;
+					} else {
+						types[i] = EntityType.fromName(s[i].toUpperCase());
+					}
 				}
 			}
 		}
