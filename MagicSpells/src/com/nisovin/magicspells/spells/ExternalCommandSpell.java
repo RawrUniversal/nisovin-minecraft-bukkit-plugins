@@ -25,6 +25,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 	private List<String> temporaryPermissions;
 	private boolean temporaryOp;
 	private boolean requirePlayerTarget;
+	private boolean beneficial;
 	private boolean executeAsTargetInstead;
 	private boolean executeOnConsoleInstead;
 	private boolean obeyLos;
@@ -43,6 +44,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 		temporaryPermissions = getConfigStringList("temporary-permissions", null);
 		temporaryOp = getConfigBoolean("temporary-op", false);
 		requirePlayerTarget = getConfigBoolean("require-player-target", false);
+		beneficial = getConfigBoolean("beneficial", false);
 		executeAsTargetInstead = getConfigBoolean("execute-as-target-instead", false);
 		executeOnConsoleInstead = getConfigBoolean("execute-on-console-instead", false);
 		obeyLos = getConfigBoolean("obey-los", true);
@@ -163,6 +165,11 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 	@Override
 	public boolean canCastWithItem() {
 		return castWithItem;
+	}
+	
+	@Override
+	public boolean isBeneficial() {
+		return beneficial;
 	}
 	
 	private class DelayedCommand implements Runnable {
