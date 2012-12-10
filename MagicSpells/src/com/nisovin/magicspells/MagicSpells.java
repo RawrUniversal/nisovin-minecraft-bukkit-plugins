@@ -403,8 +403,10 @@ public class MagicSpells extends JavaPlugin {
 		// register commands
 		CastCommand exec = new CastCommand(this);
 		getCommand("magicspellcast").setExecutor(exec);
-		getCommand("magicspellcast").setTabCompleter(exec);
 		getCommand("magicspellmana").setExecutor(exec);
+		if (!config.getBoolean("general.disable-tab-completion", false)) {
+			getCommand("magicspellcast").setTabCompleter(exec);
+		}
 		
 		// setup metrics
 		metricsEnabled = config.getBoolean("general.enable-stat-collection", true);
