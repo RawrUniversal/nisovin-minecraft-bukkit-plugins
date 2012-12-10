@@ -93,10 +93,18 @@ public class DisguiseSpell extends TargetedEntitySpell {
 				MagicSpells.error("Invalid sheep color on disguise spell '" + spellName + "'");
 			}
 			type = "sheep";
-		} else if (type.equalsIgnoreCase("irongolem") || type.equalsIgnoreCase("iron golem")) {
+		} else if (type.equalsIgnoreCase("irongolem")) {
 			type = "villagergolem";
 		} else if (type.equalsIgnoreCase("mooshroom")) {
 			type = "mushroomcow";
+		} else if (type.equalsIgnoreCase("magmacube")) {
+			type = "lavaslime";
+		} else if (type.toLowerCase().contains("ocelot")) {
+			type = type.toLowerCase().replace("ocelot", "ozelot");
+		}
+		if (type.toLowerCase().matches("ozelot [0-3]")) {
+			var = Integer.parseInt(type.split(" ")[1]);
+			type = "ozelot";
 		}
 		entityType = EntityType.fromName(type);
 		preventPickups = getConfigBoolean("prevent-pickups", true);
@@ -117,18 +125,22 @@ public class DisguiseSpell extends TargetedEntitySpell {
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		Disguise oldDisguise = disguised.remove(player.getName().toLowerCase());
-		manager.removeDisguise(player);
-		if (oldDisguise != null && toggle) {
-			sendMessage(player, strFade);
-			return PostCastAction.ALREADY_HANDLED;
-		}
 		if (state == SpellCastState.NORMAL) {
-			Player target = getTargetPlayer(player);
-			if (target != null) {
-				disguise(target);
-			} else {
-				return noTarget(player);
+			Disguise oldDisguise = disguised.remove(player.getName().toLowerCase());
+			manager.removeDisguise(player);
+			if (oldDisguise != null && toggle) {
+				sendMessage(player, strFade);
+				return PostCastAction.ALREADY_HANDLED;
+			}
+			if (state == SpellCastState.NORMAL) {
+				Player target = getTargetPlayer(player);
+				if (target != null) {
+					disguise(target);
+					sendMessages(player, target);
+					return PostCastAction.NO_MESSAGES;
+				} else {
+					return noTarget(player);
+				}
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;

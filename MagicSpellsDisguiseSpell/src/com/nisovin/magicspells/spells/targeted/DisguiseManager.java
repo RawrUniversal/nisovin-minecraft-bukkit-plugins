@@ -186,9 +186,12 @@ public class DisguiseManager implements Listener {
 			
 		} else if (entityType == EntityType.WOLF) {
 			entity = new EntityWolf(world);
+			((EntityAgeable)entity).setAge(flag ? -24000 : 0);
 			
 		} else if (entityType == EntityType.OCELOT) {
 			entity = new EntityOcelot(world);
+			((EntityAgeable)entity).setAge(flag ? -24000 : 0);
+			((EntityOcelot)entity).setCatType(var);
 			
 		} else if (entityType == EntityType.BLAZE) {
 			entity = new EntityBlaze(world);
@@ -246,9 +249,6 @@ public class DisguiseManager implements Listener {
 			
 		} else if (entityType == EntityType.SQUID) {
 			entity = new EntitySquid(world);
-			
-		} else if (entityType == EntityType.BAT) {
-			entity = new EntityBat(world);
 			
 		}
 		
