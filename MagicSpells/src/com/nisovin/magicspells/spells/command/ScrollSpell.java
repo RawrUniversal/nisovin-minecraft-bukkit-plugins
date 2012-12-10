@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.nisovin.magicspells.CraftBukkitHandle;
+import com.nisovin.magicspells.VolatileCodeHandle;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
@@ -171,7 +171,7 @@ public class ScrollSpell extends CommandSpell {
 	public ItemStack createScroll(Spell spell, int uses, ItemStack item) {
 		if (item == null) item = new ItemStack(itemId, 1);
 		item.setDurability((short)0);
-		CraftBukkitHandle handle = MagicSpells.getVolatileCodeHandler();
+		VolatileCodeHandle handle = MagicSpells.getVolatileCodeHandler();
 		item = handle.setStringOnItemStack(item, "MagicSpellsScroll_" + internalName, spell.getInternalName() + (uses > 0 ? "," + uses : ""));
 		item = handle.setItemName(item, strScrollName.replace("%s", spell.getName()).replace("%u", (uses>=0?uses+"":"many")));
 		if (strScrollSubtext != null && !strScrollSubtext.isEmpty()) {
