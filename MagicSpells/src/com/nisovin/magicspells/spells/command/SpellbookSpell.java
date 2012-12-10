@@ -194,7 +194,7 @@ public class SpellbookSpell extends CommandSpell {
 		if (event.getBlock().getType() == spellbookBlock) {
 			MagicLocation loc = new MagicLocation(event.getBlock().getLocation());
 			if (bookLocations.contains(loc)) {
-				if (event.getPlayer().isOp()) {
+				if (event.getPlayer().isOp() || event.getPlayer().hasPermission("magicspells.advanced.spellbook")) {
 					// remove the bookcase
 					int i = bookLocations.indexOf(loc);
 					removeSpellbook(i);
