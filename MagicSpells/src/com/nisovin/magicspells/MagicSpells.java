@@ -55,7 +55,7 @@ public class MagicSpells extends JavaPlugin {
 
 	public static MagicSpells plugin;
 
-	static CraftBukkitHandle craftbukkit;
+	static VolatileCodeHandle craftbukkit;
 	
 	static boolean debug;
 	static int debugLevel;
@@ -165,9 +165,9 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		if (config.getBoolean("general.enable-volatile-features", true)) {
-			craftbukkit = new CraftBukkitHandleEnabled();
+			craftbukkit = new VolatileCodeEnabled();
 		} else {
-			craftbukkit = new CraftBukkitHandleDisabled();
+			craftbukkit = new VolatileCodeDisabled();
 		}
 		
 		debug = config.getBoolean("general.debug", false);
@@ -693,7 +693,7 @@ public class MagicSpells extends JavaPlugin {
 		mana = handler;
 	}
 	
-	public static CraftBukkitHandle getVolatileCodeHandler() {
+	public static VolatileCodeHandle getVolatileCodeHandler() {
 		return craftbukkit;
 	}
 	
