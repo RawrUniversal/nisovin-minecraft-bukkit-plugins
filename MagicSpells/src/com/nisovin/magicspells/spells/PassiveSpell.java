@@ -27,7 +27,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -158,6 +160,12 @@ public class PassiveSpell extends Spell {
 					trigCount++;
 				} else if (type.equalsIgnoreCase("stopsneak")) {
 					registerEvents(new StopSneakListener());
+					trigCount++;
+				} else if (type.equalsIgnoreCase("hotbarselect")) {
+					registerEvents(new HotbarSelectListener(var, false));
+					trigCount++;
+				} else if (type.equalsIgnoreCase("hotbardeselect")) {
+					registerEvents(new HotbarSelectListener(var, true));
 					trigCount++;
 				} else if (type.equalsIgnoreCase("ticks")) {
 					int interval = Integer.parseInt(var);
@@ -761,6 +769,99 @@ public class PassiveSpell extends Spell {
 		}
 	}
 	
+	public class HotbarSelectListener implements Listener {
+
+		boolean deselect = false;
+		boolean simple = true;
+		int typeIds[] = new int[0];
+		int datas[] = new int[0];
+		boolean checkData[] = new boolean[0];
+		ItemStack items[] = new ItemStack[0];
+		
+		public HotbarSelectListener(String var, boolean deselect) {
+			this.deselect = deselect;
+			if (var != null) {
+				var = var.replace(" ", "");
+				if (var != null && var.matches("[0-9]+(:[0-9]+)?(,[0-9]+(:[0-9]+)?)*")) {
+					simple = true;
+					String[] vars = var.split(",");
+					typeIds = new int[vars.length];
+					datas = new int[vars.length];
+					checkData = new boolean[vars.length];
+					for (int i = 0; i < vars.length; i++) {
+						if (vars[i].contains(":")) {
+							String[] s = vars[i].split(":");
+							typeIds[i] = Integer.parseInt(s[0]);
+							datas[i] = Integer.parseInt(s[1]);
+							checkData[i] = true;
+						} else {
+							typeIds[i] = Integer.parseInt(vars[i]);
+							datas[i] = 0;
+							checkData[i] = false;
+						}
+					}
+				} else {
+					simple = false;
+					String[] vars = var.split(",");
+					items = new ItemStack[vars.length];
+					for (int i = 0; i < vars.length; i++) {
+						items[i] = Util.getItemStackFromString(vars[i]);
+						if (items[i] == null) {
+							MagicSpells.error("Item type '" + vars[i] + "' for passive spell '" + internalName + "' is invalid");
+						}
+					}
+				}
+			}
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR)
+		public void onPlayerScroll(PlayerItemHeldEvent event) {
+			int slot = deselect ? event.getPreviousSlot() : event.getNewSlot();
+			ItemStack item = event.getPlayer().getInventory().getItem(slot);
+			if (item != null && checkItem(item) && hasSpell(event.getPlayer())) {
+				activate(event.getPlayer());
+			}
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onInvClick(InventoryClickEvent event) {
+			if (event.getSlot() != event.getWhoClicked().getInventory().getHeldItemSlot()) return;
+			ItemStack item = deselect ? event.getCurrentItem() : event.getCursor();
+			if (item != null && checkItem(item) && hasSpell((Player)event.getWhoClicked())) {
+				activate((Player)event.getWhoClicked());
+			}
+		}
+		
+		@EventHandler(priority=EventPriority.LOW)
+		public void onQuit(PlayerQuitEvent event) {
+			if (!deselect) return;
+			Player player = event.getPlayer();
+			if (player.getInventory().getHeldItemSlot() == 0) return;
+			ItemStack item = player.getItemInHand();
+			if (item == null) return;
+			if (checkItem(item) && hasSpell(player)) {
+				activate(player);
+			}
+		}
+		
+		private boolean checkItem(ItemStack item) {
+			if (simple) {
+				for (int i = 0; i < typeIds.length; i++) {
+					if (item.getTypeId() == typeIds[i] && (!checkData[i] || item.getDurability() == datas[i])) {
+						return true;
+					}
+				}
+			} else {
+				for (int i = 0; i < items.length; i++) {
+					if (items[i] != null && Util.itemStackTypesEqual(items[i], item)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
+	
 	public class BuffListener implements Listener {
 		@EventHandler
 		public void onPlayerJoin(PlayerJoinEvent event) {
@@ -837,7 +938,7 @@ public class PassiveSpell extends Spell {
 			}
 		}
 	}
-
+	
 	@Override
 	public boolean canBind(CastItem item) {
 		return false;
