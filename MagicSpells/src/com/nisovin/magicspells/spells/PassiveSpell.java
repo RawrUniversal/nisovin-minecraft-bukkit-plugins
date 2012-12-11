@@ -28,6 +28,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -829,6 +830,16 @@ public class PassiveSpell extends Spell {
 			ItemStack item = deselect ? event.getCurrentItem() : event.getCursor();
 			if (item != null && checkItem(item) && hasSpell((Player)event.getWhoClicked())) {
 				activate((Player)event.getWhoClicked());
+			}
+		}
+		
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onItemDrop(PlayerDropItemEvent event) {
+			if (!deselect) return;
+			Player player = event.getPlayer();
+			ItemStack inHand = player.getItemInHand();
+			if ((inHand == null || inHand.getTypeId() == 0) && checkItem(event.getItemDrop().getItemStack()) && hasSpell(event.getPlayer())) {
+				activate(event.getPlayer());
 			}
 		}
 		
