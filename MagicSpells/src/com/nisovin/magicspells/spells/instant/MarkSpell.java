@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
@@ -20,6 +21,7 @@ import com.nisovin.magicspells.util.MagicLocation;
 public class MarkSpell extends InstantSpell {
 	
 	private boolean permanentMarks;
+	private boolean useAsRespawnLocation;
 	
 	private HashMap<String,MagicLocation> marks;
 
@@ -27,6 +29,7 @@ public class MarkSpell extends InstantSpell {
 		super(config, spellName);
 		
 		permanentMarks = getConfigBoolean("permanent-marks", true);
+		useAsRespawnLocation = getConfigBoolean("use-as-respawn-location", false);
 		
 		marks = new HashMap<String,MagicLocation>();
 		
@@ -51,6 +54,16 @@ public class MarkSpell extends InstantSpell {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (!permanentMarks) {
 			marks.remove(event.getPlayer().getName().toLowerCase());
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		if (useAsRespawnLocation) {
+			MagicLocation loc = marks.get(event.getPlayer().getName().toLowerCase());
+			if (loc != null) {
+				event.setRespawnLocation(loc.getLocation());
+			}
 		}
 	}
 	
