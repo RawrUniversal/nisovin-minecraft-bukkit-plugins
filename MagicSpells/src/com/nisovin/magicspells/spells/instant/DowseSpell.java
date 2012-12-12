@@ -2,6 +2,7 @@ package com.nisovin.magicspells.spells.instant;
 
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -23,6 +24,7 @@ public class DowseSpell extends InstantSpell {
 	private int typeId;
 	private byte data;
 	private EntityType entityType;
+	private String playerName;
 	private int radius;
 	private boolean rotatePlayer;
 	private boolean setCompass;
@@ -43,6 +45,9 @@ public class DowseSpell extends InstantSpell {
 		if (!entityName.isEmpty()) {
 			if (entityName.equalsIgnoreCase("player")) {
 				entityType = EntityType.PLAYER;
+			} else if (entityName.toLowerCase().startsWith("player:")) {
+				entityType = EntityType.PLAYER;
+				playerName = entityName.split(":")[1];
 			} else {
 				entityType = EntityType.fromName(entityName);
 			}
@@ -111,18 +116,31 @@ public class DowseSpell extends InstantSpell {
 				}
 				
 			} else if (entityType != null) {
-				
-				// find nearest entity
-				List<Entity> nearby = player.getNearbyEntities(radius, radius, radius);
+
+				// find entity
 				Entity foundEntity = null;
 				double distanceSq = radius * radius;
-				Location playerLoc = player.getLocation();
-				for (Entity e : nearby) {
-					if (e.getType() == entityType) {
-						double d = e.getLocation().distanceSquared(playerLoc);
-						if (d < distanceSq) {
-							foundEntity = e;
-							distanceSq = d;
+				if (entityType == EntityType.PLAYER && playerName != null) {
+					// find specific player
+					foundEntity = Bukkit.getPlayerExact(playerName);
+					if (foundEntity != null) {
+						if (!foundEntity.getWorld().equals(player.getWorld())) {
+							foundEntity = null;
+						} else if (radius > 0 && player.getLocation().distanceSquared(foundEntity.getLocation()) > distanceSq) {
+							foundEntity = null;
+						}
+					}
+				} else {
+					// find nearest entity
+					List<Entity> nearby = player.getNearbyEntities(radius, radius, radius);
+					Location playerLoc = player.getLocation();
+					for (Entity e : nearby) {
+						if (e.getType() == entityType) {
+							double d = e.getLocation().distanceSquared(playerLoc);
+							if (d < distanceSq) {
+								foundEntity = e;
+								distanceSq = d;
+							}
 						}
 					}
 				}
