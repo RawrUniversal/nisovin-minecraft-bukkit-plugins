@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,24 +18,31 @@ public class CoopPlugin extends JavaPlugin implements Listener {
 
 	static ChatColor chatColor = ChatColor.AQUA;
 	static ChatColor highlightColor = ChatColor.DARK_AQUA;
-	
+
+	private HealthPlateManager healthPlateManager;
 	private AltarListener altarListener;
 	
 	private Map<String, String> partyInvites;
 	
 	@Override
 	public void onEnable() {
+		healthPlateManager = new HealthPlateManager(this);
 		altarListener = new AltarListener(this);
 		getServer().getPluginManager().registerEvents(altarListener, this);
 		getServer().getPluginManager().registerEvents(new DropListener(this), this);
 		getServer().getPluginManager().registerEvents(this, this);
 		
 		partyInvites = new HashMap<String, String>();
+		
+		for (World w : getServer().getWorlds()) {
+			w.setGameRuleValue("keepInventory", "true");
+		}
 	}
 	
 	@Override
 	public void onDisable() {
 		altarListener.removeAllBeacons();
+		healthPlateManager.destroy();
 	}
 	
 	@Override
@@ -58,9 +66,11 @@ public class CoopPlugin extends JavaPlugin implements Listener {
 				Player target = Bukkit.getPlayer(args[0]);
 				if (target == null) {
 					player.sendMessage(chatColor + "That player could not be found.");
+					return true;
 				}
 				if (Party.getParty(target) != null) {
 					player.sendMessage(chatColor + "That player is already in a party.");
+					return true;
 				}
 				
 				// send invite
@@ -89,6 +99,7 @@ public class CoopPlugin extends JavaPlugin implements Listener {
 					party.sendMessage(player.getName() + " has joined the party.");
 					party.addMember(player);
 					player.sendMessage(chatColor + "You have joined the party.");
+					healthPlateManager.updatePartyHealthPlates(party);
 					event.setCancelled(true);
 				}
 			}
