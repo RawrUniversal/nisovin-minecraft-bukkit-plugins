@@ -3,14 +3,17 @@ package com.nisovin.magicspells;
 import java.util.Set;
 
 import org.bukkit.Chunk;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Ocelot;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.inventory.ItemStack;
@@ -149,5 +152,14 @@ class VolatileCodeDisabled implements VolatileCodeHandle {
 	public void addPotionEffect(LivingEntity entity, PotionEffect effect, boolean ambient) {
 		entity.addPotionEffect(effect, true);
 	}
-
+	
+	@Override
+	public void playEntityAnimation(Location location, EntityType entityType, int animationId, boolean instant) {
+		if (entityType == EntityType.OCELOT && animationId == 7) {
+			Ocelot entity = (Ocelot)location.getWorld().spawnEntity(location, entityType);
+			entity.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 10, 0));
+			entity.playEffect(EntityEffect.WOLF_HEARTS);
+			entity.remove();
+		}
+	}
 }

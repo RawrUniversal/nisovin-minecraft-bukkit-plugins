@@ -139,9 +139,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			spellIcon = Util.getItemStackFromString(icontemp);
 			if (spellIcon != null) {
 				spellIcon.setAmount(0);
-			}
-			if (!icontemp.contains("|")) {
-				spellIcon = MagicSpells.getVolatileCodeHandler().setItemName(spellIcon, "&" + MagicSpells.getTextColor().getChar() + name);
+				if (!icontemp.contains("|")) {
+					spellIcon = MagicSpells.getVolatileCodeHandler().setItemName(spellIcon, "&" + MagicSpells.getTextColor().getChar() + name);
+				}
 			}
 		}
 		this.broadcastRange = config.getInt(section + "." + spellName + ".broadcast-range", MagicSpells.broadcastRange);

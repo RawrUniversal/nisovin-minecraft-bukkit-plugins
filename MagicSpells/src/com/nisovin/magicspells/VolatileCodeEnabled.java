@@ -9,9 +9,12 @@ import net.minecraft.server.DataWatcher;
 import net.minecraft.server.EntityCreature;
 import net.minecraft.server.EntityFallingBlock;
 import net.minecraft.server.EntityLiving;
+import net.minecraft.server.EntityOcelot;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.EntitySmallFireball;
 import net.minecraft.server.EntityTNTPrimed;
+import net.minecraft.server.EntityVillager;
+import net.minecraft.server.EntityWitch;
 import net.minecraft.server.MobEffect;
 import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.NBTTagList;
@@ -35,6 +38,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
@@ -405,6 +409,37 @@ class VolatileCodeEnabled implements VolatileCodeHandle {
 				entity.removePotionEffect(effect.getType());
 			}
 			((CraftLivingEntity)entity).getHandle().addEffect(new MobEffect(effect.getType().getId(), effect.getDuration(), effect.getAmplifier(), true));
+		}
+	}
+
+	@Override
+	public void playEntityAnimation(final Location location, final EntityType entityType, final int animationId, boolean instant) {
+		final EntityLiving entity;
+		if (entityType == EntityType.VILLAGER) {
+			entity = new EntityVillager(((CraftWorld)location.getWorld()).getHandle());
+		} else if (entityType == EntityType.WITCH) {
+			entity = new EntityWitch(((CraftWorld)location.getWorld()).getHandle());
+		} else if (entityType == EntityType.OCELOT) {
+			entity = new EntityOcelot(((CraftWorld)location.getWorld()).getHandle());
+		} else {
+			entity = null;
+		}
+		if (entity == null) return;
+		
+		entity.setPosition(location.getX(), instant ? location.getY() : -5, location.getZ());
+		((CraftWorld)location.getWorld()).getHandle().addEntity(entity);
+		entity.addEffect(new MobEffect(14, 40));
+		if (instant) {
+			((CraftWorld)location.getWorld()).getHandle().broadcastEntityEffect(entity, (byte)animationId);
+			entity.getBukkitEntity().remove();
+		} else {
+			entity.setPosition(location.getX(), location.getY(), location.getZ());
+			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+				public void run() {
+					((CraftWorld)location.getWorld()).getHandle().broadcastEntityEffect(entity, (byte)animationId);
+					entity.getBukkitEntity().remove();
+				}
+			}, 8);
 		}
 	}
 

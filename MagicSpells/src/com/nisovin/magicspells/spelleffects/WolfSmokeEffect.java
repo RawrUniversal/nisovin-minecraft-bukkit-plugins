@@ -8,12 +8,12 @@ import org.bukkit.entity.Tameable;
 
 import com.nisovin.magicspells.MagicSpells;
 
-class HeartsEffect extends SpellEffect {
-	
+class WolfSmokeEffect extends SpellEffect {
+
 	@Override
 	public void playEffect(Entity entity, String param) {
 		if (entity instanceof Tameable) {
-			entity.playEffect(EntityEffect.WOLF_HEARTS);
+			entity.playEffect(EntityEffect.WOLF_SMOKE);
 		} else {
 			playEffect(entity.getLocation(), param);
 		}
@@ -21,7 +21,7 @@ class HeartsEffect extends SpellEffect {
 	
 	@Override
 	public void playEffect(Location location, String param) {
-		MagicSpells.getVolatileCodeHandler().playEntityAnimation(location, EntityType.OCELOT, EntityEffect.WOLF_HEARTS.getData(), param != null && param.equals("instant"));
+		MagicSpells.getVolatileCodeHandler().playEntityAnimation(location, EntityType.OCELOT, EntityEffect.WOLF_SMOKE.getData(), param != null && param.equals("instant"));
 	}
 	
 }

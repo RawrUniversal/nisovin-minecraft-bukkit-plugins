@@ -62,11 +62,14 @@ public abstract class SpellEffect {
 	}
 	
 	static {
+		effects.put("angry", new AngryEffect());
 		effects.put("bigsmoke", new BigSmokeEffect());
 		effects.put("blockbreak", new BlockBreakEffect());
+		effects.put("bluesparkle", new BlueSparkleEffect());
 		effects.put("cloud", new CloudEffect());
 		effects.put("ender", new EnderSignalEffect());
 		effects.put("explosion", new ExplosionEffect());
+		effects.put("greensparkle", new GreenSparkleEffect());
 		effects.put("hearts", new HeartsEffect());
 		effects.put("itemspray", new ItemSprayEffect());
 		effects.put("lightning", new LightningEffect());
@@ -79,6 +82,7 @@ public abstract class SpellEffect {
 		effects.put("soundpersonal", new SoundPersonalEffect());
 		effects.put("spawn", new MobSpawnerEffect());
 		effects.put("splash", new SplashPotionEffect());
+		effects.put("wolfsmoke", new WolfSmokeEffect());
 	}
 	
 }

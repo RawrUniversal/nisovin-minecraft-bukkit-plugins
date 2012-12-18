@@ -5,6 +5,7 @@ import java.util.Set;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
@@ -66,5 +67,7 @@ public interface VolatileCodeHandle {
 	public void setFallingBlockHurtEntities(FallingBlock block, float damage, int max);
 	
 	public void addPotionEffect(LivingEntity entity, PotionEffect effect, boolean ambient);
+	
+	public void playEntityAnimation(Location location, EntityType entityType, int animationId, boolean instant);
 	
 }
