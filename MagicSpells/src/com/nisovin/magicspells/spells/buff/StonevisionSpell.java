@@ -161,7 +161,12 @@ public class StonevisionSpell extends BuffSpell {
 							dy = Math.abs(y - py);
 							dz = Math.abs(z - pz);
 							block = center.getWorld().getBlockAt(x,y,z);
-							if (block.getType() == Material.getMaterial(type) && dx <= range && dy <= range && dz <= range) {
+							id = block.getTypeId();
+							if ((
+									(type != 0 && id == type) ||
+									(types != null && Arrays.binarySearch(types, id) >= 0)
+								) && 
+								dx <= range && dy <= range && dz <= range) {
 								player.sendBlockChange(block.getLocation(), Material.GLASS, (byte)0);
 								newBlocks.add(block);
 							} else {
