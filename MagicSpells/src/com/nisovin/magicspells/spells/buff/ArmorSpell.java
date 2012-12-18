@@ -170,7 +170,7 @@ public class ArmorSpell extends BuffSpell {
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (event.getSlotType() == SlotType.ARMOR && event.getWhoClicked() instanceof Player) {
 			Player p = (Player)event.getWhoClicked();
-			if (armored.contains(p)) {
+			if (isActive(p)) {
 				event.setCancelled(true);
 			}
 		}
