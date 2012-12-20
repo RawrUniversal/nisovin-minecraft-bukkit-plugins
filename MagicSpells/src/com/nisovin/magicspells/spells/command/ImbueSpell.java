@@ -20,6 +20,7 @@ import com.nisovin.magicspells.util.ItemNameResolver;
 import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
+import com.nisovin.magicspells.util.Util;
 
 public class ImbueSpell extends CommandSpell {
 
@@ -42,7 +43,7 @@ public class ImbueSpell extends CommandSpell {
 	public ImbueSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		key = "MagicSpellsImbue_" + internalName;
+		key = "Imb" + internalName;
 		defaultUses = getConfigInt("default-uses", 5);
 		maxUses = getConfigInt("max-uses", 10);
 		allowSpecifyUses = getConfigBoolean("allow-specify-uses", true);
@@ -87,7 +88,7 @@ public class ImbueSpell extends CommandSpell {
 			}
 			
 			// check for already imbued
-			if (true) {//MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, key) != null) {
+			if (getImbueData(inHand) != null) {
 				// already imbued
 				sendMessage(player, strCantImbueItem);
 				return PostCastAction.ALREADY_HANDLED;
@@ -138,7 +139,7 @@ public class ImbueSpell extends CommandSpell {
 			}
 			
 			// imbue item
-			//MagicSpells.getVolatileCodeHandler().setStringOnItemStack(inHand, key, spell.getInternalName() + "," + uses);
+			setImbueData(inHand, spell.getInternalName() + "," + uses);
 			player.setItemInHand(inHand);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -153,7 +154,7 @@ public class ImbueSpell extends CommandSpell {
 				)) {
 			ItemStack item = event.getItem();
 			if (allowedItems.contains(item.getTypeId())) {
-				String imbueData = null;// MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, key);
+				String imbueData = getImbueData(item);
 				if (imbueData != null && !imbueData.isEmpty()) {
 					String[] data = imbueData.split(",");
 					Spell spell = MagicSpells.getSpellByInternalName(data[0]);
@@ -163,19 +164,32 @@ public class ImbueSpell extends CommandSpell {
 						spell.castSpell(event.getPlayer(), SpellCastState.NORMAL, 1.0F, null);
 						uses--;
 						if (uses <= 0) {
-							//MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, key);
 							if (consumeItem) {
 								event.getPlayer().setItemInHand(null);
+							} else {
+								Util.removeLoreData(item);
 							}
 						} else {
-							//MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, key, spell.getInternalName() + "," + uses);
+							setImbueData(item, spell.getInternalName() + "," + uses);
 						}						
 					} else {
-						//MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, key);
+						Util.removeLoreData(item);
 					}
 				}
 			}
 		}
+	}
+	
+	private void setImbueData(ItemStack item, String data) {
+		Util.setLoreData(item, key + ":" + data);
+	}
+	
+	private String getImbueData(ItemStack item) {
+		String s = Util.getLoreData(item);
+		if (s != null && s.startsWith(key + ":")) {
+			return s.replace(key + ":", "");
+		}
+		return null;
 	}
 	
 	@Override
