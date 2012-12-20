@@ -69,6 +69,7 @@ public abstract class SpellEffect {
 		effects.put("cloud", new CloudEffect());
 		effects.put("ender", new EnderSignalEffect());
 		effects.put("explosion", new ExplosionEffect());
+		effects.put("fireworks", new FireworksEffect());
 		effects.put("greensparkle", new GreenSparkleEffect());
 		effects.put("hearts", new HeartsEffect());
 		effects.put("itemspray", new ItemSprayEffect());

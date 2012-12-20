@@ -124,4 +124,9 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 			entity.remove();
 		}
 	}
+
+	@Override
+	public void createFireworksExplosion(Location location, boolean flicker, boolean trail, int type, int[] colors, int[] fadeColors, int flightDuration) {
+		
+	}
 }

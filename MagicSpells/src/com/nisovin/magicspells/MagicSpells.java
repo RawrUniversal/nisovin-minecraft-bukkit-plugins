@@ -51,6 +51,7 @@ import com.nisovin.magicspells.util.Util;
 import com.nisovin.magicspells.util.Metrics.Graph;
 import com.nisovin.magicspells.volatilecode.VolatileCodeDisabled;
 import com.nisovin.magicspells.volatilecode.VolatileCodeEnabled_1_4_5;
+import com.nisovin.magicspells.volatilecode.VolatileCodeEnabled_1_4_6;
 import com.nisovin.magicspells.volatilecode.VolatileCodeHandle;
 import com.nisovin.magicspells.zones.NoMagicZoneManager;
 
@@ -171,6 +172,8 @@ public class MagicSpells extends JavaPlugin {
 			String version = getServer().getVersion();
 			if (version.contains("(MC: 1.4.5)")) {
 				volatileCodeHandle = new VolatileCodeEnabled_1_4_5();
+			} else if (version.contains("(MC: 1.4.6)")) {
+				volatileCodeHandle = new VolatileCodeEnabled_1_4_6();
 			} else {
 				error("Unable to enable volatile code: using safe code instead.");
 				error("Some features have been disabled.");
