@@ -6,12 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -88,18 +92,72 @@ public class Util {
 					item = MagicSpells.getVolatileCodeHandler().addFakeEnchantment(item);
 				}
 			}
+			ItemMeta meta = item.getItemMeta();
 			if (name != null) {
-				item = MagicSpells.getVolatileCodeHandler().setItemName(item, name.replace("__", " "));
+				meta.setDisplayName(name);
 			}
 			if (lore != null) {
-				item = MagicSpells.getVolatileCodeHandler().setItemLore(item, lore);
+				meta.setLore(Arrays.asList(lore));
 			}
-			if (color >= 0 && item.getType().name().startsWith("LEATHER_")) {
-				item = MagicSpells.getVolatileCodeHandler().setArmorColor(item, color);
+			if (color >= 0 && meta instanceof LeatherArmorMeta) {
+				((LeatherArmorMeta)meta).setColor(Color.fromRGB(color));
 			}
 			return item;
 		} catch (Exception e) {
 			return null;
+		}
+	}
+	
+	public static void setLoreData(ItemStack item, String data) {
+		ItemMeta meta = item.getItemMeta();
+		List<String> lore;
+		if (meta.hasLore()) {
+			lore = meta.getLore();
+			if (lore.size() > 0) {
+				String s = ChatColor.stripColor(lore.get(lore.size() - 1));
+				if (s.startsWith("MS$")) {
+					lore.remove(lore.size() - 1);
+				}
+			}
+		} else {
+			lore = new ArrayList<String>();
+		}
+		lore.add(ChatColor.BLACK.toString() + ChatColor.MAGIC.toString() + "MS$:" + data);
+		meta.setLore(lore);
+		item.setItemMeta(meta);
+	}
+	
+	public static String getLoreData(ItemStack item) {
+		ItemMeta meta = item.getItemMeta();
+		if (meta.hasLore()) {
+			List<String> lore = meta.getLore();
+			if (lore.size() > 0) {
+				String s = ChatColor.stripColor(lore.get(lore.size() - 1));
+				if (s.startsWith("MS$")) {
+					return s.substring(4);
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static void removeLoreData(ItemStack item) {
+		ItemMeta meta = item.getItemMeta();
+		List<String> lore;
+		if (meta.hasLore()) {
+			lore = meta.getLore();
+			if (lore.size() > 0) {
+				String s = ChatColor.stripColor(lore.get(lore.size() - 1));
+				if (s.startsWith("MS$")) {
+					lore.remove(lore.size() - 1);
+					if (lore.size() > 0) {
+						meta.setLore(lore);
+					} else {
+						meta.setLore(null);
+					}
+					item.setItemMeta(meta);
+				}
+			}
 		}
 	}
 	

@@ -87,7 +87,7 @@ public class ImbueSpell extends CommandSpell {
 			}
 			
 			// check for already imbued
-			if (MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, key) != null) {
+			if (true) {//MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, key) != null) {
 				// already imbued
 				sendMessage(player, strCantImbueItem);
 				return PostCastAction.ALREADY_HANDLED;
@@ -138,7 +138,7 @@ public class ImbueSpell extends CommandSpell {
 			}
 			
 			// imbue item
-			MagicSpells.getVolatileCodeHandler().setStringOnItemStack(inHand, key, spell.getInternalName() + "," + uses);
+			//MagicSpells.getVolatileCodeHandler().setStringOnItemStack(inHand, key, spell.getInternalName() + "," + uses);
 			player.setItemInHand(inHand);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -153,7 +153,7 @@ public class ImbueSpell extends CommandSpell {
 				)) {
 			ItemStack item = event.getItem();
 			if (allowedItems.contains(item.getTypeId())) {
-				String imbueData = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, key);
+				String imbueData = null;// MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, key);
 				if (imbueData != null && !imbueData.isEmpty()) {
 					String[] data = imbueData.split(",");
 					Spell spell = MagicSpells.getSpellByInternalName(data[0]);
@@ -163,15 +163,15 @@ public class ImbueSpell extends CommandSpell {
 						spell.castSpell(event.getPlayer(), SpellCastState.NORMAL, 1.0F, null);
 						uses--;
 						if (uses <= 0) {
-							MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, key);
+							//MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, key);
 							if (consumeItem) {
 								event.getPlayer().setItemInHand(null);
 							}
 						} else {
-							MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, key, spell.getInternalName() + "," + uses);
+							//MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, key, spell.getInternalName() + "," + uses);
 						}						
 					} else {
-						MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, key);
+						//MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, key);
 					}
 				}
 			}

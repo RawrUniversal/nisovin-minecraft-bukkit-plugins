@@ -1,42 +1,22 @@
-package com.nisovin.magicspells;
+package com.nisovin.magicspells.volatilecode;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Set;
 
-import net.minecraft.server.ChunkCoordIntPair;
-import net.minecraft.server.DataWatcher;
-import net.minecraft.server.EntityCreature;
-import net.minecraft.server.EntityFallingBlock;
-import net.minecraft.server.EntityLiving;
-import net.minecraft.server.EntityOcelot;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.EntitySmallFireball;
-import net.minecraft.server.EntityTNTPrimed;
-import net.minecraft.server.EntityVillager;
-import net.minecraft.server.EntityWitch;
-import net.minecraft.server.MobEffect;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
-import net.minecraft.server.Packet103SetSlot;
-import net.minecraft.server.Packet42RemoveMobEffect;
-import net.minecraft.server.Packet43SetExperience;
-import net.minecraft.server.Packet62NamedSoundEffect;
+import net.minecraft.server.v1_4_5.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.CraftServer;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftCreature;
-import org.bukkit.craftbukkit.entity.CraftFallingSand;
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.craftbukkit.entity.CraftTNTPrimed;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
+import org.bukkit.craftbukkit.v1_4_5.CraftWorld;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftCreature;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftFallingSand;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftTNTPrimed;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
@@ -49,9 +29,54 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.nisovin.magicspells.MagicSpells;
 
-class VolatileCodeEnabled implements VolatileCodeHandle {
 
+public class VolatileCodeEnabled_1_4_5 implements VolatileCodeHandle {
+
+	
+	private static NBTTagCompound getTag(ItemStack item) {
+		if (item instanceof CraftItemStack) {
+			try {
+				Field field = CraftItemStack.class.getDeclaredField("handle");
+				field.setAccessible(true);
+				return ((net.minecraft.server.v1_4_5.ItemStack)field.get(item)).tag;
+			} catch (Exception e) {				
+			}
+		}
+		return null;
+	}
+	
+	private static ItemStack setTag(ItemStack item, NBTTagCompound tag) {
+		CraftItemStack craftItem = null;
+		if (item instanceof CraftItemStack) {
+			craftItem = (CraftItemStack)item;
+		} else {
+			craftItem = CraftItemStack.asCraftCopy(item);
+		}
+		
+		net.minecraft.server.v1_4_5.ItemStack nmsItem = null;
+		try {
+			Field field = CraftItemStack.class.getDeclaredField("handle");
+			field.setAccessible(true);
+			nmsItem = ((net.minecraft.server.v1_4_5.ItemStack)field.get(item));
+		} catch (Exception e) {				
+		}
+		if (nmsItem == null) {
+			nmsItem = CraftItemStack.asNMSCopy(craftItem);
+		}
+		
+		nmsItem.tag = tag;
+		try {
+			Field field = CraftItemStack.class.getDeclaredField("handle");
+			field.setAccessible(true);
+			field.set(craftItem, nmsItem);
+		} catch (Exception e) {
+		}
+		
+		return craftItem;
+	}
+	
 	@Override
 	public void addPotionGraphicalEffect(LivingEntity entity, int color, int duration) {
 		final EntityLiving el = ((CraftLivingEntity)entity).getHandle();
@@ -62,7 +87,7 @@ class VolatileCodeEnabled implements VolatileCodeHandle {
 			public void run() {
 				int c = 0;
 				if (!el.effects.isEmpty()) {
-					c = net.minecraft.server.PotionBrewer.a(el.effects.values());
+					c = net.minecraft.server.v1_4_5.PotionBrewer.a(el.effects.values());
 				}
 				dw.watch(8, Integer.valueOf(c));
 			}
@@ -86,9 +111,9 @@ class VolatileCodeEnabled implements VolatileCodeHandle {
 
 	@Override
 	public void sendFakeSlotUpdate(Player player, int slot, ItemStack item) {
-		net.minecraft.server.ItemStack nmsItem;
+		net.minecraft.server.v1_4_5.ItemStack nmsItem;
 		if (item != null) {
-			nmsItem = CraftItemStack.createNMSItemStack(item);
+			nmsItem = CraftItemStack.asNMSCopy(item);
 		} else {
 			nmsItem = null;
 		}
@@ -97,39 +122,14 @@ class VolatileCodeEnabled implements VolatileCodeHandle {
 	}
 
 	@Override
-	public void stackByData(int itemId, String var) {
-		try {
-			boolean ok = false;
-			try {
-				// attempt to make books with different data values stack separately
-				Method method = net.minecraft.server.Item.class.getDeclaredMethod(var, boolean.class);
-				if (method.getReturnType() == net.minecraft.server.Item.class) {
-					method.setAccessible(true);
-					method.invoke(net.minecraft.server.Item.byId[itemId], true);
-					ok = true;
-				}
-			} catch (Exception e) {
-			}
-			if (!ok) {
-				// otherwise limit stack size to 1
-				Field field = net.minecraft.server.Item.class.getDeclaredField("maxStackSize");
-				field.setAccessible(true);
-				field.setInt(net.minecraft.server.Item.byId[itemId], 1);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
 	public void toggleLeverOrButton(Block block) {
-		net.minecraft.server.Block.byId[block.getType().getId()].interact(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);
+		net.minecraft.server.v1_4_5.Block.byId[block.getType().getId()].interact(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);
 	}
 
 	@Override
 	public void pressPressurePlate(Block block) {
 		block.setData((byte) (block.getData() ^ 0x1));
-		net.minecraft.server.World w = ((CraftWorld)block.getWorld()).getHandle();
+		net.minecraft.server.v1_4_5.World w = ((CraftWorld)block.getWorld()).getHandle();
 		w.applyPhysics(block.getX(), block.getY(), block.getZ(), block.getType().getId());
 		w.applyPhysics(block.getX(), block.getY()-1, block.getZ(), block.getType().getId());
 	}
@@ -173,7 +173,7 @@ class VolatileCodeEnabled implements VolatileCodeHandle {
 
 	@Override
 	public Fireball shootSmallFireball(Player player) {
-		net.minecraft.server.World w = ((CraftWorld)player.getWorld()).getHandle();
+		net.minecraft.server.v1_4_5.World w = ((CraftWorld)player.getWorld()).getHandle();
 		Location playerLoc = player.getLocation();
 		Vector loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(10));
 		
@@ -197,37 +197,6 @@ class VolatileCodeEnabled implements VolatileCodeHandle {
 	}
 
 	@Override
-	public ItemStack setStringOnItemStack(ItemStack item, String key, String value) {
-		if (!(item instanceof CraftItemStack)) item = new CraftItemStack(item);
-		NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
-		if (tag == null) {
-			tag = new NBTTagCompound();
-			((CraftItemStack)item).getHandle().tag = tag;
-		}
-		tag.setString(key, value);
-		return item;
-	}
-
-	@Override
-	public String getStringOnItemStack(ItemStack item, String key) {
-		NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
-		if (tag != null) {
-			if (tag.hasKey(key)) {
-				return tag.getString(key);
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public void removeStringOnItemStack(ItemStack item, String key) {
-		NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
-		if (tag != null) {
-			tag.remove(key);
-		}
-	}
-
-	@Override
 	public void playSound(Location location, String sound, float volume, float pitch) {
 		((CraftWorld)location.getWorld()).getHandle().makeSound(location.getX(), location.getY(), location.getZ(), sound, volume, pitch);
 	}
@@ -240,87 +209,13 @@ class VolatileCodeEnabled implements VolatileCodeHandle {
 	}
 
 	@Override
-	public String getItemName(ItemStack item) {
-		if (item instanceof CraftItemStack) {
-			NBTTagCompound tag = ((CraftItemStack)item).getHandle().tag;
-			if (tag != null) {
-				NBTTagCompound disp = tag.getCompound("display");
-				if (disp != null && disp.hasKey("Name")) {
-					return disp.getString("Name");
-				}
-			}
-		}
-		return "";
-	}
-
-	@Override
-	public ItemStack setItemName(ItemStack item, String name) {
-		CraftItemStack craftItem;
-		net.minecraft.server.ItemStack nmsItem;
-		
-		if (item instanceof CraftItemStack) {
-			craftItem = (CraftItemStack)item;
-			nmsItem = craftItem.getHandle();
-		} else {
-			craftItem = new CraftItemStack(item);
-			nmsItem = craftItem.getHandle();
-		}
-		
-		NBTTagCompound tag = nmsItem.tag;
-		if (tag == null) {
-			tag = new NBTTagCompound();
-			nmsItem.tag = tag;
-		}
-		NBTTagCompound disp = tag.getCompound("display");
-		if (disp == null) {
-			disp = new NBTTagCompound("display");
-		}
-		disp.setString("Name", ChatColor.translateAlternateColorCodes('&', name));
-		tag.setCompound("display", disp);
-		
-		return craftItem;
-	}
-
-	@Override
-	public ItemStack setItemLore(ItemStack item, String... lore) {
-		CraftItemStack craftItem;
-		net.minecraft.server.ItemStack nmsItem;
-		
-		if (item instanceof CraftItemStack) {
-			craftItem = (CraftItemStack)item;
-			nmsItem = craftItem.getHandle();
-		} else {
-			craftItem = new CraftItemStack(item);
-			nmsItem = craftItem.getHandle();
-		}
-		
-		NBTTagCompound tag = nmsItem.tag;
-		if (tag == null) {
-			tag = new NBTTagCompound();
-			nmsItem.tag = tag;
-		}
-		NBTTagCompound disp = tag.getCompound("display");
-		if (disp == null) {
-			disp = new NBTTagCompound("display");
-		}
-		NBTTagList list = new NBTTagList();
-		for (String l : lore) {
-			list.add(new NBTTagString("", ChatColor.translateAlternateColorCodes('&', l)));
-		}
-		disp.set("Lore", list);
-		tag.setCompound("display", disp);
-		
-		return craftItem;
-	}
-
-	@Override
 	public boolean itemStackTagsEqual(ItemStack item1, ItemStack item2) {
 		NBTTagCompound tag1 = null, tag2 = null;
 		if (item1 != null && item1 instanceof CraftItemStack) {
-			tag1 = ((CraftItemStack)item1).getHandle().tag;
+			tag1 = getTag(item1);
 		}
 		if (item2 != null && item2 instanceof CraftItemStack) {
-			tag2 = ((CraftItemStack)item2).getHandle().tag;
+			tag2 = getTag(item2);
 		}
 		if (tag1 == null && tag2 == null) return true;
 		if (tag1 == null || tag2 == null) return false;
@@ -329,55 +224,14 @@ class VolatileCodeEnabled implements VolatileCodeHandle {
 
 	@Override
 	public ItemStack addFakeEnchantment(ItemStack item) {
-		CraftItemStack craftItem;
-		net.minecraft.server.ItemStack nmsItem;
-		
-		if (item instanceof CraftItemStack) {
-			craftItem = (CraftItemStack)item;
-			nmsItem = craftItem.getHandle();
-		} else {
-			craftItem = new CraftItemStack(item);
-			nmsItem = craftItem.getHandle();
-		}
-		
-		NBTTagCompound tag = nmsItem.tag;
+		NBTTagCompound tag = getTag(item);		
 		if (tag == null) {
 			tag = new NBTTagCompound();
-			nmsItem.tag = tag;
 		}
 		if (!tag.hasKey("ench")) {
 			tag.set("ench", new NBTTagList());
-		}
-		
-		return craftItem;
-	}
-
-	@Override
-	public ItemStack setArmorColor(ItemStack item, int color) {
-		CraftItemStack craftItem;
-		net.minecraft.server.ItemStack nmsItem;
-		
-		if (item instanceof CraftItemStack) {
-			craftItem = (CraftItemStack)item;
-			nmsItem = craftItem.getHandle();
-		} else {
-			craftItem = new CraftItemStack(item);
-			nmsItem = craftItem.getHandle();
-		}
-		
-		NBTTagCompound tag = nmsItem.tag;
-		if (tag == null) {
-			tag = new NBTTagCompound();
-			nmsItem.tag = tag;
-		}
-		NBTTagCompound disp = tag.getCompound("display");
-		if (disp == null) {
-			disp = new NBTTagCompound("display");
-		}
-		disp.setInt("color", color);
-		tag.setCompound("display", disp);
-		
-		return craftItem;
+		}		
+		return setTag(item, tag);
 	}
 
 	@Override

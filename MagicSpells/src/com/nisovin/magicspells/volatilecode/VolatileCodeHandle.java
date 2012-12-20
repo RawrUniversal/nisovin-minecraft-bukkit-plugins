@@ -1,4 +1,4 @@
-package com.nisovin.magicspells;
+package com.nisovin.magicspells.volatilecode;
 
 import java.util.Set;
 
@@ -24,8 +24,6 @@ public interface VolatileCodeHandle {
 	
 	public void sendFakeSlotUpdate(Player player, int slot, ItemStack item);
 	
-	public void stackByData(int itemId, String var);
-	
 	public void toggleLeverOrButton(Block block);
 	
 	public void pressPressurePlate(Block block);
@@ -42,27 +40,13 @@ public interface VolatileCodeHandle {
 	
 	public void setTarget(LivingEntity entity, LivingEntity target);
 	
-	public ItemStack setStringOnItemStack(ItemStack item, String key, String value);
-	
-	public String getStringOnItemStack(ItemStack item, String key);
-	
-	public void removeStringOnItemStack(ItemStack item, String key);
-	
 	public void playSound(Location location, String sound, float volume, float pitch);
 	
 	public void playSound(Player player, String sound, float volume, float pitch);
-	
-	public String getItemName(ItemStack item);
-	
-	public ItemStack setItemName(ItemStack item, String name);
-	
-	public ItemStack setItemLore(ItemStack item, String... lore);
-	
+		
 	public boolean itemStackTagsEqual(ItemStack item1, ItemStack item2);
 	
 	public ItemStack addFakeEnchantment(ItemStack item);
-	
-	public ItemStack setArmorColor(ItemStack item, int color);
 	
 	public void setFallingBlockHurtEntities(FallingBlock block, float damage, int max);
 	

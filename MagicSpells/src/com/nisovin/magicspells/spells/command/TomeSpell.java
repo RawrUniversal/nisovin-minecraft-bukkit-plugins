@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
@@ -19,6 +20,7 @@ import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.CommandSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class TomeSpell extends CommandSpell {
 
@@ -84,7 +86,7 @@ public class TomeSpell extends CommandSpell {
 				return PostCastAction.ALREADY_HANDLED;
 			}
 			
-			if (!allowOverwrite && MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpellsTome_" + internalName) != null) {
+			if (!allowOverwrite && getSpellDataFromTome(item) != null) {
 				// fail -- already has a spell
 				sendMessage(player, strAlreadyHasSpell);
 				return PostCastAction.ALREADY_HANDLED;
@@ -93,7 +95,8 @@ public class TomeSpell extends CommandSpell {
 				if (args.length > 1 && args[1].matches("^[0-9]+$")) {
 					uses = Integer.parseInt(args[1]);
 				}
-				createTome(spell, uses, item);
+				item = createTome(spell, uses, item);
+				player.setItemInHand(item);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -107,9 +110,11 @@ public class TomeSpell extends CommandSpell {
 		}
 		if (item == null) {
 			item = new ItemStack(Material.WRITTEN_BOOK, 1);
-			MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "title", getName() + ": " + spell.getName());
+			BookMeta bookMeta = (BookMeta)item.getItemMeta();
+			bookMeta.setTitle(getName() + ": " + spell.getName());
+			item.setItemMeta(bookMeta);
 		}
-		MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpellsTome_" + internalName, spell.getInternalName() + (uses>0?","+uses:""));
+		Util.setLoreData(item, internalName + ":" + spell.getInternalName() + (uses>0?","+uses:""));
 		return item;
 	}
 
@@ -123,59 +128,67 @@ public class TomeSpell extends CommandSpell {
 		return null;
 	}
 	
+	private String getSpellDataFromTome(ItemStack item) {
+		String loreData = Util.getLoreData(item);
+		if (loreData != null && loreData.startsWith(internalName + ":")) {
+			return loreData.replace(internalName + ":", "");
+		}
+		return null;
+	}
+	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		if (!event.hasItem()) return;
 		ItemStack item = event.getItem();
-		if (item.getTypeId() != 386 && item.getTypeId() != 387) return;
+		if (item.getType() != Material.WRITTEN_BOOK) return;
 		
-		String spellData = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(item, "MagicSpellsTome_" + internalName);
-		if (spellData != null && !spellData.equals("")) {
-			String[] data = spellData.split(",");
-			Spell spell = MagicSpells.getSpellByInternalName(data[0]);
-			int uses = -1;
-			if (data.length > 1) {
-				uses = Integer.parseInt(data[1]);
-			}
-			Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
-			if (spell != null && spellbook != null) {
-				if (spellbook.hasSpell(spell)) {
-					// fail -- already known
-					sendMessage(event.getPlayer(), formatMessage(strAlreadyKnown, "%s", spell.getName()));
-				} else if (!spellbook.canLearn(spell)) {
-					// fail -- can't learn
+		String spellData = getSpellDataFromTome(item);
+		if (spellData == null || spellData.isEmpty()) return;
+		
+		String[] data = spellData.split(",");
+		Spell spell = MagicSpells.getSpellByInternalName(data[0]);
+		int uses = -1;
+		if (data.length > 1) {
+			uses = Integer.parseInt(data[1]);
+		}
+		Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
+		if (spell != null && spellbook != null) {
+			if (spellbook.hasSpell(spell)) {
+				// fail -- already known
+				sendMessage(event.getPlayer(), formatMessage(strAlreadyKnown, "%s", spell.getName()));
+			} else if (!spellbook.canLearn(spell)) {
+				// fail -- can't learn
+				sendMessage(event.getPlayer(), formatMessage(strCantLearn, "%s", spell.getName()));
+			} else {
+				// call event
+				SpellLearnEvent learnEvent = new SpellLearnEvent(spell, event.getPlayer(), LearnSource.TOME, event.getPlayer().getItemInHand());
+				Bukkit.getPluginManager().callEvent(learnEvent);
+				if (learnEvent.isCancelled()) {
+					// fail -- plugin cancelled
 					sendMessage(event.getPlayer(), formatMessage(strCantLearn, "%s", spell.getName()));
 				} else {
-					// call event
-					SpellLearnEvent learnEvent = new SpellLearnEvent(spell, event.getPlayer(), LearnSource.TOME, event.getPlayer().getItemInHand());
-					Bukkit.getPluginManager().callEvent(learnEvent);
-					if (learnEvent.isCancelled()) {
-						// fail -- plugin cancelled
-						sendMessage(event.getPlayer(), formatMessage(strCantLearn, "%s", spell.getName()));
-					} else {
-						// give spell
-						spellbook.addSpell(spell);
-						spellbook.save();
-						sendMessage(event.getPlayer(), formatMessage(strLearned, "%s", spell.getName()));
-						if (cancelReadOnLearn) {
-							event.setCancelled(true);
-						}
-						// remove use
-						if (uses > 0) {
-							uses--;
-							if (uses > 0) {
-								MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpellsTome_" + internalName, data[0] + "," + uses);
-							} else {
-								MagicSpells.getVolatileCodeHandler().removeStringOnItemStack(item, "MagicSpellsTome_" + internalName);
-							}							
-						}
-						// consume
-						if (uses <= 0 && consumeBook) {
-							event.getPlayer().setItemInHand(null);
-						}
-						playSpellEffects(EffectPosition.DELAYED, event.getPlayer());
+					// give spell
+					spellbook.addSpell(spell);
+					spellbook.save();
+					sendMessage(event.getPlayer(), formatMessage(strLearned, "%s", spell.getName()));
+					if (cancelReadOnLearn) {
+						event.setCancelled(true);
 					}
+					// remove use
+					if (uses > 0) {
+						uses--;
+						if (uses > 0) {
+							Util.setLoreData(item, internalName + ":" + data[0] + "," + uses);
+						} else {
+							Util.removeLoreData(item);
+						}
+					}
+					// consume
+					if (uses <= 0 && consumeBook) {
+						event.getPlayer().setItemInHand(null);
+					}
+					playSpellEffects(EffectPosition.DELAYED, event.getPlayer());
 				}
 			}
 		}

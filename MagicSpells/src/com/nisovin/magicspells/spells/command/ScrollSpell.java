@@ -1,9 +1,11 @@
 package com.nisovin.magicspells.spells.command;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,8 +15,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import com.nisovin.magicspells.VolatileCodeHandle;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
@@ -171,13 +173,16 @@ public class ScrollSpell extends CommandSpell {
 	public ItemStack createScroll(Spell spell, int uses, ItemStack item) {
 		if (item == null) item = new ItemStack(itemId, 1);
 		item.setDurability((short)0);
-		VolatileCodeHandle handle = MagicSpells.getVolatileCodeHandler();
-		item = handle.setStringOnItemStack(item, "MagicSpellsScroll_" + internalName, spell.getInternalName() + (uses > 0 ? "," + uses : ""));
-		item = handle.setItemName(item, strScrollName.replace("%s", spell.getName()).replace("%u", (uses>=0?uses+"":"many")));
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', strScrollName.replace("%s", spell.getName()).replace("%u", (uses>=0?uses+"":"many"))));
 		if (strScrollSubtext != null && !strScrollSubtext.isEmpty()) {
-			item = handle.setItemLore(item, strScrollSubtext.replace("%s", spell.getName()).replace("%u", (uses>=0?uses+"":"many")));
+			List<String> lore = new ArrayList<String>();
+			lore.add(ChatColor.translateAlternateColorCodes('&', strScrollSubtext.replace("%s", spell.getName()).replace("%u", (uses>=0?uses+"":"many"))));
+			meta.setLore(lore);
 		}
-		handle.addFakeEnchantment(item);
+		item.setItemMeta(meta);
+		Util.setLoreData(item, internalName + ":" + spell.getInternalName() + (uses > 0 ? "," + uses : ""));
+		item = MagicSpells.getVolatileCodeHandler().addFakeEnchantment(item);
 		return item;
 	}
 	
@@ -194,6 +199,14 @@ public class ScrollSpell extends CommandSpell {
 		} else {
 			return null;
 		}
+	}
+	
+	private String getSpellDataFromScroll(ItemStack item) {
+		String loreData = Util.getLoreData(item);
+		if (loreData != null && loreData.startsWith(internalName + ":")) {
+			return loreData.replace(internalName + ":", "");
+		}
+		return null;
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -215,7 +228,7 @@ public class ScrollSpell extends CommandSpell {
 			}
 			
 			// get scroll data (spell and uses)
-			String scrollDataString = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, "MagicSpellsScroll_" + internalName);
+			String scrollDataString = getSpellDataFromScroll(inHand);
 			if (scrollDataString == null || scrollDataString.isEmpty()) return;
 			String[] scrollData = scrollDataString.split(",");
 			Spell spell = MagicSpells.getSpellByInternalName(scrollData[0]);
@@ -294,7 +307,7 @@ public class ScrollSpell extends CommandSpell {
 		// send scroll over message
 		if (!strScrollOver.isEmpty()) {
 			// get scroll data (spell and uses)
-			String scrollDataString = MagicSpells.getVolatileCodeHandler().getStringOnItemStack(inHand, "MagicSpellsScroll_" + internalName);
+			String scrollDataString = getSpellDataFromScroll(inHand);
 			if (scrollDataString == null || scrollDataString.isEmpty()) return;
 			String[] scrollData = scrollDataString.split(",");
 			Spell spell = MagicSpells.getSpellByInternalName(scrollData[0]);

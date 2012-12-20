@@ -68,7 +68,7 @@ public class ArmorSpell extends BuffSpell {
 				ItemStack item = Util.getItemStackFromString(info[0]);
 				item.setAmount(1);
 				if (!permanent) {
-					item = MagicSpells.getVolatileCodeHandler().setStringOnItemStack(item, "MagicSpellsArmor", "yes");
+					Util.setLoreData(item, "MagicSpellsArmor");
 				}
 				
 				// get enchantments
@@ -181,7 +181,8 @@ public class ArmorSpell extends BuffSpell {
 		Iterator<ItemStack> drops = event.getDrops().iterator();
 		while (drops.hasNext()) {
 			ItemStack drop = drops.next();
-			if (MagicSpells.getVolatileCodeHandler().getStringOnItemStack(drop, "MagicSpellsArmor") != null) {
+			String s = Util.getLoreData(drop);
+			if (s != null && s.equals("MagicSpellsArmor")) {
 				drops.remove();
 			}
 		}

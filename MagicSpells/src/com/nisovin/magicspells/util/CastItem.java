@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.nisovin.magicspells.MagicSpells;
 
@@ -42,10 +43,13 @@ public class CastItem {
 			} else {
 				this.data = item.getDurability();
 			}
-			if (!MagicSpells.ignoreCastItemNames()) {
-				this.name = MagicSpells.getVolatileCodeHandler().getItemName(item);
+			if (this.type > 0 && !MagicSpells.ignoreCastItemNames() && item.hasItemMeta()) {
+				ItemMeta meta = item.getItemMeta();
+				if (meta.hasDisplayName()) {
+					this.name = meta.getDisplayName();
+				}
 			}
-			if (!MagicSpells.ignoreCastItemEnchants()) {
+			if (this.type > 0 && !MagicSpells.ignoreCastItemEnchants()) {
 				enchants = getEnchants(item);
 			}
 		}
@@ -96,7 +100,20 @@ public class CastItem {
 	}
 	
 	public boolean equals(ItemStack i) {
-		return i.getTypeId() == type && i.getDurability() == data && (MagicSpells.ignoreCastItemNames() || MagicSpells.getVolatileCodeHandler().getItemName(i).equals(name)) && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, getEnchants(i)));
+		return i.getTypeId() == type && i.getDurability() == data && (MagicSpells.ignoreCastItemNames() || namesEqual(i)) && (MagicSpells.ignoreCastItemEnchants() || compareEnchants(this.enchants, getEnchants(i)));
+	}
+	
+	private boolean namesEqual(ItemStack i) {
+		String n = null;
+		if (i.hasItemMeta()) {
+			ItemMeta meta = i.getItemMeta();
+			if (meta.hasDisplayName()) {
+				n = meta.getDisplayName();
+			}
+		}
+		if (n == null && name == null) return true;
+		if (n == null || name == null) return false;
+		return n.equals(name);
 	}
 	
 	@Override

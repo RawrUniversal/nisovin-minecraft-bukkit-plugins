@@ -49,13 +49,16 @@ import com.nisovin.magicspells.util.MagicItemNameResolver;
 import com.nisovin.magicspells.util.Metrics;
 import com.nisovin.magicspells.util.Util;
 import com.nisovin.magicspells.util.Metrics.Graph;
+import com.nisovin.magicspells.volatilecode.VolatileCodeDisabled;
+import com.nisovin.magicspells.volatilecode.VolatileCodeEnabled_1_4_5;
+import com.nisovin.magicspells.volatilecode.VolatileCodeHandle;
 import com.nisovin.magicspells.zones.NoMagicZoneManager;
 
 public class MagicSpells extends JavaPlugin {
 
 	public static MagicSpells plugin;
 
-	static VolatileCodeHandle craftbukkit;
+	static VolatileCodeHandle volatileCodeHandle;
 	
 	static boolean debug;
 	static int debugLevel;
@@ -165,9 +168,17 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		if (config.getBoolean("general.enable-volatile-features", true)) {
-			craftbukkit = new VolatileCodeEnabled();
+			String version = getServer().getVersion();
+			if (version.contains("(MC: 1.4.5)")) {
+				volatileCodeHandle = new VolatileCodeEnabled_1_4_5();
+			} else {
+				error("Unable to enable volatile code: using safe code instead.");
+				error("Some features have been disabled.");
+				error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
+				volatileCodeHandle = new VolatileCodeDisabled();
+			}
 		} else {
-			craftbukkit = new VolatileCodeDisabled();
+			volatileCodeHandle = new VolatileCodeDisabled();
 		}
 		
 		debug = config.getBoolean("general.debug", false);
@@ -696,7 +707,7 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	public static VolatileCodeHandle getVolatileCodeHandler() {
-		return craftbukkit;
+		return volatileCodeHandle;
 	}
 	
 	public static ExperienceBarManager getExpBarManager() {

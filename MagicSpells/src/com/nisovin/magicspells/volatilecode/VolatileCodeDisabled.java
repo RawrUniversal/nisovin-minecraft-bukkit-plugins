@@ -1,4 +1,4 @@
-package com.nisovin.magicspells;
+package com.nisovin.magicspells.volatilecode;
 
 import java.util.Set;
 
@@ -20,7 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-class VolatileCodeDisabled implements VolatileCodeHandle {
+public class VolatileCodeDisabled implements VolatileCodeHandle {
 
 	@Override
 	public void addPotionGraphicalEffect(LivingEntity entity, int color, int duration) {
@@ -37,11 +37,7 @@ class VolatileCodeDisabled implements VolatileCodeHandle {
 	@Override
 	public void sendFakeSlotUpdate(Player player, int slot, ItemStack item) {
 	}
-
-	@Override
-	public void stackByData(int itemId, String var) {
-	}
-
+	
 	@Override
 	public void toggleLeverOrButton(Block block) {
 		if (block.getType() == Material.STONE_BUTTON) {
@@ -92,40 +88,11 @@ class VolatileCodeDisabled implements VolatileCodeHandle {
 	}
 
 	@Override
-	public ItemStack setStringOnItemStack(ItemStack item, String key, String value) {
-		return item;
-	}
-
-	@Override
-	public String getStringOnItemStack(ItemStack item, String key) {
-		return null;
-	}
-
-	@Override
-	public void removeStringOnItemStack(ItemStack item, String key) {
-	}
-
-	@Override
 	public void playSound(Location location, String sound, float volume, float pitch) {
 	}
 
 	@Override
 	public void playSound(Player player, String sound, float volume, float pitch) {
-	}
-
-	@Override
-	public String getItemName(ItemStack item) {
-		return "";
-	}
-
-	@Override
-	public ItemStack setItemName(ItemStack item, String name) {
-		return item;
-	}
-
-	@Override
-	public ItemStack setItemLore(ItemStack item, String... lore) {
-		return item;
 	}
 
 	@Override
@@ -136,11 +103,6 @@ class VolatileCodeDisabled implements VolatileCodeHandle {
 	@Override
 	public ItemStack addFakeEnchantment(ItemStack item) {
 		item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
-		return item;
-	}
-
-	@Override
-	public ItemStack setArmorColor(ItemStack item, int color) {
 		return item;
 	}
 

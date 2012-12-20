@@ -21,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BlockIterator;
 
 import com.nisovin.magicspells.events.SpellCastEvent;
@@ -140,7 +141,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			if (spellIcon != null) {
 				spellIcon.setAmount(0);
 				if (!icontemp.contains("|")) {
-					spellIcon = MagicSpells.getVolatileCodeHandler().setItemName(spellIcon, "&" + MagicSpells.getTextColor().getChar() + name);
+					ItemMeta iconMeta = spellIcon.getItemMeta();
+					iconMeta.setDisplayName(MagicSpells.getTextColor() + name);
+					spellIcon.setItemMeta(iconMeta);
 				}
 			}
 		}

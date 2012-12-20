@@ -1,13 +1,13 @@
 package com.nisovin.magicspells.util;
 
-import net.minecraft.server.DataWatcher;
-import net.minecraft.server.EntityEnderDragon;
-import net.minecraft.server.Packet24MobSpawn;
-import net.minecraft.server.Packet29DestroyEntity;
-import net.minecraft.server.Packet40EntityMetadata;
+import net.minecraft.server.v1_4_5.DataWatcher;
+import net.minecraft.server.v1_4_5.EntityEnderDragon;
+import net.minecraft.server.v1_4_5.Packet24MobSpawn;
+import net.minecraft.server.v1_4_5.Packet29DestroyEntity;
+import net.minecraft.server.v1_4_5.Packet40EntityMetadata;
 
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_5.CraftWorld;
+import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
