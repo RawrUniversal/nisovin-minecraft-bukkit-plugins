@@ -93,6 +93,9 @@ public class CommandMain implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("+g") || args[0].equalsIgnoreCase("g+")) {
 				// adding a group
 				addGroup(sender, arg);
+			} else if (args[0].equalsIgnoreCase("=g") || args[0].equalsIgnoreCase("g=")) {
+				// setting a group
+				setGroup(sender, arg);
 			} else if (args[0].equalsIgnoreCase("-n") || args[0].equalsIgnoreCase("n-")) {
 				// removing a permission
 				removePermission(sender, arg);
@@ -229,6 +232,28 @@ public class CommandMain implements CommandExecutor {
 			sender.sendMessage(MainPlugin.TEXT_COLOR + "Added group " + MainPlugin.HIGHLIGHT_COLOR + g.getName() + MainPlugin.TEXT_COLOR + " to " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
 		} else {
 			sender.sendMessage(MainPlugin.ERROR_COLOR + "Failed to add group!");
+		}
+	}
+	
+	private void setGroup(CommandSender sender, String group) {
+		PermissionContainer obj = selectedObject.get(sender);
+		if (obj == null) {
+			noObj(sender);
+			return;
+		}		
+		String world = selectedWorld.get(sender);
+		Group g = MainPlugin.getGroup(group);
+		if (g == null) {
+			g = MainPlugin.newGroup(group);
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "New group " + MainPlugin.HIGHLIGHT_COLOR + group + MainPlugin.TEXT_COLOR + " created");
+		}
+		boolean set = obj.setGroup(world, g);
+		
+		if (set) {
+			String type = getType(obj);
+			sender.sendMessage(MainPlugin.TEXT_COLOR + "Set group for " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + " to " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+		} else {
+			sender.sendMessage(MainPlugin.ERROR_COLOR + "Failed to set group!");
 		}
 	}
 	

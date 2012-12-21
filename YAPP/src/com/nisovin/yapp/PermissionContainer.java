@@ -504,6 +504,29 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		return true;
 	}
 	
+	public boolean setGroup(String world, Group group) {
+		// check for infinite group recursion
+		if (this instanceof Group && group.inheritsGroup(world, (Group)this)) {
+			MainPlugin.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + this.getName());
+			return false;
+		}
+		if (world == null || world.isEmpty()) {
+			groups.clear();
+			groups.add(group);
+			dirty = true;
+		} else {
+			List<Group> wgroups = worldGroups.get(world);
+			if (wgroups == null) {
+				wgroups = new ArrayList<Group>();
+				worldGroups.put(world, wgroups);
+			}
+			wgroups.clear();
+			wgroups.add(group);
+			dirty = true;
+		}
+		return true;
+	}
+	
 	public boolean removeGroup(String world, Group group) {
 		if (world == null || world.isEmpty()) {
 			boolean ok = groups.remove(group);
