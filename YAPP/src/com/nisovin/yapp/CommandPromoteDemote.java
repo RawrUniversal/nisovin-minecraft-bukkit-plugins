@@ -60,6 +60,8 @@ public class CommandPromoteDemote implements CommandExecutor {
 			if (player != null && player.isOnline()) {
 				plugin.unloadPlayer(player);
 				plugin.loadPlayerPermissions(player);
+			} else {
+				plugin.unloadPlayer(user.getName());
 			}
 			
 			// send message

@@ -65,6 +65,7 @@ public class MainPlugin extends JavaPlugin {
 		// register vault hook
 		if (getServer().getPluginManager().isPluginEnabled("Vault")) {
 			getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, new VaultService(), this, ServicePriority.Highest);
+			getLogger().info("Vault hooked");
 		}
 	}
 	
@@ -276,7 +277,7 @@ public class MainPlugin extends JavaPlugin {
 		User user = yapp.players.get(playerName.toLowerCase());
 		if (user == null) {
 			user = new User(playerName);
-			yapp.players.put(playerName, user);
+			yapp.players.put(playerName.toLowerCase(), user);
 			user.loadFromFiles();
 			if (yapp.defaultGroup != null && user.getGroups(null).size() == 0) {
 				user.addGroup(null, yapp.defaultGroup);
@@ -482,6 +483,12 @@ public class MainPlugin extends JavaPlugin {
 	
 	public void unloadPlayer(Player player) {
 		String playerName = player.getName().toLowerCase();
+		players.remove(playerName).save();
+		attachments.remove(playerName).remove();
+	}
+	
+	public void unloadPlayer(String playerName) {
+		playerName = playerName.toLowerCase();
 		players.remove(playerName).save();
 		attachments.remove(playerName).remove();
 	}

@@ -153,7 +153,7 @@ public abstract class MenuPrompt extends StringPrompt {
 		List<Group> groups = obj.getActualGroupList(world);
 		
 		Conversable c = context.getForWhom();
-		if (groups == null) {
+		if (groups == null || groups.size() == 0) {
 			c.sendRawMessage(Menu.TEXT_COLOR + "The " + type + " " + Menu.HIGHLIGHT_COLOR + obj.getName() + Menu.TEXT_COLOR + " currently has no groups defined" + (world != null ? " on world " + Menu.HIGHLIGHT_COLOR + world + Menu.TEXT_COLOR : ""));
 		} else {
 			c.sendRawMessage(Menu.TEXT_COLOR + "The " + type + " " + Menu.HIGHLIGHT_COLOR + obj.getName() + Menu.TEXT_COLOR + " currently inherits the following groups" + (world != null ? " on world " + Menu.HIGHLIGHT_COLOR + world + Menu.TEXT_COLOR : "") + ":");
