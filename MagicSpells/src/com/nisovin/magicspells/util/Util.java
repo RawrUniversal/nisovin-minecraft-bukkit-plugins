@@ -85,13 +85,6 @@ public class Util {
 			} else {
 				return null;
 			}
-			if (enchants != null) {
-				if (enchants.size() > 0) {
-					item.addUnsafeEnchantments(enchants);
-				} else {
-					item = MagicSpells.getVolatileCodeHandler().addFakeEnchantment(item);
-				}
-			}
 			ItemMeta meta = item.getItemMeta();
 			if (name != null) {
 				meta.setDisplayName(name);
@@ -103,6 +96,13 @@ public class Util {
 				((LeatherArmorMeta)meta).setColor(Color.fromRGB(color));
 			}
 			item.setItemMeta(meta);
+			if (enchants != null) {
+				if (enchants.size() > 0) {
+					item.addUnsafeEnchantments(enchants);
+				} else {
+					item = MagicSpells.getVolatileCodeHandler().addFakeEnchantment(item);
+				}
+			}
 			return item;
 		} catch (Exception e) {
 			return null;

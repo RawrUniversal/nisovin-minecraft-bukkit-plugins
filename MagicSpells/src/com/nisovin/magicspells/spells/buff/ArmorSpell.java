@@ -47,13 +47,14 @@ public class ArmorSpell extends BuffSpell {
 		
 		permanent = getConfigBoolean("permanent", false);
 		
+		strLoreText = ChatColor.translateAlternateColorCodes('&', getConfigString("str-lore-text", "Conjured"));
+		
 		helmet = getItem(getConfigString("helmet", ""));
 		chestplate = getItem(getConfigString("chestplate", ""));
 		leggings = getItem(getConfigString("leggings", ""));
 		boots = getItem(getConfigString("boots", ""));
 		
 		strHasArmor = getConfigString("str-has-armor", "You cannot cast this spell if you are wearing armor.");
-		strLoreText = ChatColor.translateAlternateColorCodes('&', getConfigString("str-lore-text", "Conjured"));
 		
 		armored = new HashSet<String>();
 	}
