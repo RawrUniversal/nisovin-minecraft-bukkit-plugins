@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,6 +18,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.util.Util;
@@ -52,7 +54,7 @@ class MagicPlayerListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		
 		// first check if player is interacting with a special block
 		boolean noInteract = false;
@@ -101,6 +103,16 @@ class MagicPlayerListener implements Listener {
 					if (MagicSpells.spellIconSlot >= 0) {
 						showIcon(player, MagicSpells.spellIconSlot, spell.getSpellIcon());
 					}
+					// use cool new text thingy
+					final ItemStack fake = inHand.clone();
+					ItemMeta meta = fake.getItemMeta();
+					meta.setDisplayName("Spell: " + spell.getName());
+					fake.setItemMeta(meta);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						public void run() {
+							MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, player.getInventory().getHeldItemSlot(), fake);
+						}
+					});
 				}
 				
 				// check for mana pots
@@ -146,7 +158,7 @@ class MagicPlayerListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onItemHeldChange(PlayerItemHeldEvent event) {
+	public void onItemHeldChange(final PlayerItemHeldEvent event) {
 		if (MagicSpells.spellIconSlot >= 0 && MagicSpells.spellIconSlot <= 8) {
 			Player player = event.getPlayer();
 			if (event.getNewSlot() == MagicSpells.spellIconSlot) {
