@@ -41,7 +41,7 @@ public class VolatileCodeEnabled_1_4_6 implements VolatileCodeHandle {
 				Field field = CraftItemStack.class.getDeclaredField("handle");
 				field.setAccessible(true);
 				return ((net.minecraft.server.v1_4_6.ItemStack)field.get(item)).tag;
-			} catch (Exception e) {				
+			} catch (Exception e) {
 			}
 		}
 		return null;

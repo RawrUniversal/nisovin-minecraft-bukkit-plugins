@@ -104,7 +104,7 @@ public class PassiveSpell extends Spell {
 				String type = trigger;
 				String var = null;
 				if (trigger.contains(" ")) {
-					String[] data = trigger.split(" ", 2);
+					String[] data = Util.splitParams(trigger, 2);
 					type = data[0];
 					var = data[1];
 				}
