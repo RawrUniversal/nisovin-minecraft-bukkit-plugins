@@ -1,10 +1,13 @@
 package com.nisovin.magicspells.spells.buff;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.BuffSpell;
@@ -34,6 +38,7 @@ public class ArmorSpell extends BuffSpell {
 	private ItemStack boots;
 	
 	private String strHasArmor;
+	private String strLoreText;
 	
 	private Set<String> armored;
 	
@@ -48,6 +53,7 @@ public class ArmorSpell extends BuffSpell {
 		boots = getItem(getConfigString("boots", ""));
 		
 		strHasArmor = getConfigString("str-has-armor", "You cannot cast this spell if you are wearing armor.");
+		strLoreText = ChatColor.translateAlternateColorCodes('&', getConfigString("str-lore-text", "Conjured"));
 		
 		armored = new HashSet<String>();
 	}
@@ -68,10 +74,19 @@ public class ArmorSpell extends BuffSpell {
 				ItemStack item = Util.getItemStackFromString(info[0]);
 				item.setAmount(1);
 				if (!permanent) {
-					Util.setLoreData(item, "MagicSpellsArmor");
+					ItemMeta meta = item.getItemMeta();
+					List<String> lore;
+					if (meta.hasLore()) {
+						lore = meta.getLore();
+					} else {
+						lore = new ArrayList<String>();
+					}
+					lore.add(strLoreText);
+					meta.setLore(lore);
+					item.setItemMeta(meta);
 				}
 				
-				// get enchantments
+				// get enchantments (left for backwards compatibility)
 				if (info.length > 1) {
 					for (int i = 1; i < info.length; i++) {
 						String[] enchinfo = info[i].split(":");
@@ -181,8 +196,8 @@ public class ArmorSpell extends BuffSpell {
 		Iterator<ItemStack> drops = event.getDrops().iterator();
 		while (drops.hasNext()) {
 			ItemStack drop = drops.next();
-			String s = Util.getLoreData(drop);
-			if (s != null && s.equals("MagicSpellsArmor")) {
+			List<String> lore = drop.getItemMeta().getLore();
+			if (lore != null && lore.size() > 0 && lore.get(lore.size()-1).equals(strLoreText)) {
 				drops.remove();
 			}
 		}
