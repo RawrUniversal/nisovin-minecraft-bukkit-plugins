@@ -102,6 +102,7 @@ public class Util {
 			if (color >= 0 && meta instanceof LeatherArmorMeta) {
 				((LeatherArmorMeta)meta).setColor(Color.fromRGB(color));
 			}
+			item.setItemMeta(meta);
 			return item;
 		} catch (Exception e) {
 			return null;

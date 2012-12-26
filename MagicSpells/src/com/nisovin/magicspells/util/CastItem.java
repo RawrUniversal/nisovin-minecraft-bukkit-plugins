@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -61,7 +62,7 @@ public class CastItem {
 			String[] temp = s.split("\\|");
 			s = temp[0];
 			if (!MagicSpells.ignoreCastItemNames() && temp.length > 1) {
-				name = temp[1];
+				name = ChatColor.translateAlternateColorCodes('&', temp[1]);
 			}
 		}
 		if (s.contains(";")) {

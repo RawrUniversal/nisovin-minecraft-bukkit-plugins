@@ -216,9 +216,12 @@ public final class TargetedMultiSpell extends TargetedSpell {
 					delayedSpells.remove(this);
 				} else {
 					for (DelayedSpell ds : delayedSpells) {
-						ds.cancel();
+						if (ds != this) {
+							ds.cancel();
+						}
 					}
 					delayedSpells.clear();
+					cancel();
 				}
 			}
 			delayedSpells = null;

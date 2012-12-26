@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -209,6 +210,7 @@ public class PulserSpell extends TargetedLocationSpell {
 			p.stop();
 		}
 		pulsers.clear();
+		ticker.stop();
 	}
 
 	public class Pulser {
@@ -281,11 +283,10 @@ public class PulserSpell extends TargetedLocationSpell {
 		}
 
 		public void run() {
-			Iterator<Pulser> iter = pulsers.values().iterator();
-			while (iter.hasNext()) {
-				boolean remove = iter.next().pulse();
+			for (Map.Entry<Block, Pulser> entry : new HashMap<Block, Pulser>(pulsers).entrySet()) {
+				boolean remove = entry.getValue().pulse();
 				if (remove) {
-					iter.remove();
+					pulsers.remove(entry.getKey());
 				}
 			}
 			if (pulsers.size() == 0) {
