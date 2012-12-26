@@ -40,6 +40,8 @@ public abstract class Condition {
 		conditions.put("lightlevelbelow", LightLevelBelowCondition.class);
 		conditions.put("onblock", OnBlockCondition.class);
 		conditions.put("inblock", InBlockCondition.class);
+		conditions.put("sneaking", SneakingCondition.class);
+		conditions.put("riding", RidingCondition.class);
 		conditions.put("outside", OutsideCondition.class);
 		conditions.put("biome", BiomeCondition.class);
 		conditions.put("wearing", WearingCondition.class);

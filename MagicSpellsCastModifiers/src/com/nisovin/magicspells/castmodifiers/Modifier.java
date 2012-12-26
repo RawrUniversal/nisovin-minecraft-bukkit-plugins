@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.events.ManaChangeEvent;
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.util.Util;
 
 public class Modifier {
 
@@ -15,9 +16,9 @@ public class Modifier {
 	
 	public static Modifier factory(String s) {
 		Modifier m = new Modifier();
-		String[] data = s.split(" ");
+		String[] data = Util.splitParams(s);
 		if (data.length < 2) return null;
-		
+				
 		// get condition
 		m.condition = Condition.getConditionByName(data[0]);
 		if (m.condition == null) return null;
