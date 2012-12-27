@@ -22,104 +22,119 @@ public class CommandMain implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
 		if (args.length == 0 && sender instanceof Conversable) {
 			Menu.openMenu((Conversable)sender);
-		} else if (args.length == 1) {
-			if (args[0].equals("@") || args[0].equalsIgnoreCase("reload")) {
-				// reload data
-				MainPlugin.yapp.reload();
-				sender.sendMessage(MainPlugin.TEXT_COLOR + "YAPP data reloaded");
-			} else if (args[0].equals("?")) {
-				// show status
-				PermissionContainer obj = selectedObject.get(sender);
-				String world = selectedWorld.get(sender);
-				if (obj == null && world == null) {
-					sender.sendMessage(MainPlugin.TEXT_COLOR + "You have nothing selected");
-				} else if (obj == null && world != null) {
-					sender.sendMessage(MainPlugin.TEXT_COLOR + "You have selected the world " + MainPlugin.HIGHLIGHT_COLOR + world);
-				} else {
-					String type = getType(obj);
-					sender.sendMessage(MainPlugin.TEXT_COLOR + "You have selected the " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + 
-							(world != null ? MainPlugin.TEXT_COLOR + " on world " + MainPlugin.HIGHLIGHT_COLOR + world : ""));
-				}
-			} else if (args[0].equalsIgnoreCase("delete")) {
-				// deleting current object (no confirmation yet)
-				delete(sender, false, alias);
-			} else {
-				// selecting something
-				select(sender, args[0]);
+		} else {
+			// gather args
+			StringBuilder sb = new StringBuilder();
+			sb.append(args[0]);
+			for (int i = 1; i < args.length; i++) {
+				sb.append(' ');
+				sb.append(args[i]);
 			}
-		} else if (args.length > 1 && args[0].matches("^[puxogwPUXOGW]:.*")) {
-			// selecting something with multiple words
-			String search = arrayJoin(args, 0);
-			select(sender, search);
-		} else if (args.length >= 2) {
-			// get full arg
-			String arg = arrayJoin(args, 1);
-			
-			// performing an action
-			if (args[0].equals("@")) {
-				// refreshing player permissions
-				refresh(sender, args[1]);
-			} else if (args[0].equals("+")) {
-				if (arg.startsWith("n:") || arg.startsWith("N:")) {
-					// adding a permission
-					addPermission(sender, arg.substring(2));
-				} else if (arg.startsWith("g:") || arg.startsWith("G:")) {
-					// adding a permission
-					addGroup(sender, arg.substring(2));
-				} else if (arg.startsWith("p:") || arg.startsWith("P:")) {
-					// adding a player to a group
-					// TODO
-				} else if (arg.contains(".")) {
-					// adding a permission
-					addPermission(sender, arg);
-				} else {
-					// adding a group
-					addGroup(sender, arg);
+			String[] commands = sb.toString().split("|");
+			for (String c : commands) {
+				c = c.trim();
+				if (c.isEmpty()) continue;
+				args = c.split(" ");
+				if (args.length == 1) {
+					if (args[0].equals("@") || args[0].equalsIgnoreCase("reload")) {
+						// reload data
+						MainPlugin.yapp.reload();
+						sender.sendMessage(MainPlugin.TEXT_COLOR + "YAPP data reloaded");
+					} else if (args[0].equals("?")) {
+						// show status
+						PermissionContainer obj = selectedObject.get(sender);
+						String world = selectedWorld.get(sender);
+						if (obj == null && world == null) {
+							sender.sendMessage(MainPlugin.TEXT_COLOR + "You have nothing selected");
+						} else if (obj == null && world != null) {
+							sender.sendMessage(MainPlugin.TEXT_COLOR + "You have selected the world " + MainPlugin.HIGHLIGHT_COLOR + world);
+						} else {
+							String type = getType(obj);
+							sender.sendMessage(MainPlugin.TEXT_COLOR + "You have selected the " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + 
+									(world != null ? MainPlugin.TEXT_COLOR + " on world " + MainPlugin.HIGHLIGHT_COLOR + world : ""));
+						}
+					} else if (args[0].equalsIgnoreCase("delete")) {
+						// deleting current object (no confirmation yet)
+						delete(sender, false, alias);
+					} else {
+						// selecting something
+						select(sender, args[0]);
+					}
+				} else if (args.length > 1 && args[0].matches("^[puxogwPUXOGW]:.*")) {
+					// selecting something with multiple words
+					String search = arrayJoin(args, 0);
+					select(sender, search);
+				} else if (args.length >= 2) {
+					// get full arg
+					String arg = arrayJoin(args, 1);
+					
+					// performing an action
+					if (args[0].equals("@")) {
+						// refreshing player permissions
+						refresh(sender, args[1]);
+					} else if (args[0].equals("+")) {
+						if (arg.startsWith("n:") || arg.startsWith("N:")) {
+							// adding a permission
+							addPermission(sender, arg.substring(2));
+						} else if (arg.startsWith("g:") || arg.startsWith("G:")) {
+							// adding a permission
+							addGroup(sender, arg.substring(2));
+						} else if (arg.startsWith("p:") || arg.startsWith("P:")) {
+							// adding a player to a group
+							// TODO
+						} else if (arg.contains(".")) {
+							// adding a permission
+							addPermission(sender, arg);
+						} else {
+							// adding a group
+							addGroup(sender, arg);
+						}
+					} else if (args[0].equals("-")) {
+						if (args[1].contains(".")) {
+							// remove a permission
+							removePermission(sender, arg);
+						} else {
+							// remove a group
+							removeGroup(sender, arg);
+						}
+					} else if (args[0].equals("--")) {
+						// negating a permission
+						negatePermission(sender, arg);
+					} else if (args[0].equalsIgnoreCase("+n") || args[0].equalsIgnoreCase("n+")) {
+						// adding a permission
+						addPermission(sender, arg);
+					} else if (args[0].equalsIgnoreCase("+g") || args[0].equalsIgnoreCase("g+")) {
+						// adding a group
+						addGroup(sender, arg);
+					} else if (args[0].equalsIgnoreCase("=g") || args[0].equalsIgnoreCase("g=")) {
+						// setting a group
+						setGroup(sender, arg);
+					} else if (args[0].equalsIgnoreCase("-n") || args[0].equalsIgnoreCase("n-")) {
+						// removing a permission
+						removePermission(sender, arg);
+					} else if (args[0].equalsIgnoreCase("-g") || args[0].equalsIgnoreCase("g-")) {
+						// removing a group
+						removeGroup(sender, arg);
+					} else if (args[0].equalsIgnoreCase("delete") && args[1].equals("CONFIRM")) {
+						// deleting a group or player
+						delete(sender, true, alias);
+					} else if (args[0].equals("?")) {
+						// checking for permission or group
+						if (arg.startsWith("p:") || arg.startsWith("P:") || arg.startsWith("n:") || arg.startsWith("N:")) {
+							checkPerm(sender, arg.substring(2));
+						} else if (arg.startsWith("g:") || arg.startsWith("G:")) {
+							checkGroup(sender, arg.substring(2));
+						} else if (arg.contains(".")) {
+							checkPerm(sender, arg);
+						} else {
+							checkGroup(sender, arg);
+						}
+					} else if (args[0].equals("=")) {
+						set(sender, args[1], arrayJoin(args, 2));
+					} else if (args[1].equals("=")) {
+						set(sender, args[0], arrayJoin(args, 2));
+					}
 				}
-			} else if (args[0].equals("-")) {
-				if (args[1].contains(".")) {
-					// remove a permission
-					removePermission(sender, arg);
-				} else {
-					// remove a group
-					removeGroup(sender, arg);
-				}
-			} else if (args[0].equals("--")) {
-				// negating a permission
-				negatePermission(sender, arg);
-			} else if (args[0].equalsIgnoreCase("+n") || args[0].equalsIgnoreCase("n+")) {
-				// adding a permission
-				addPermission(sender, arg);
-			} else if (args[0].equalsIgnoreCase("+g") || args[0].equalsIgnoreCase("g+")) {
-				// adding a group
-				addGroup(sender, arg);
-			} else if (args[0].equalsIgnoreCase("=g") || args[0].equalsIgnoreCase("g=")) {
-				// setting a group
-				setGroup(sender, arg);
-			} else if (args[0].equalsIgnoreCase("-n") || args[0].equalsIgnoreCase("n-")) {
-				// removing a permission
-				removePermission(sender, arg);
-			} else if (args[0].equalsIgnoreCase("-g") || args[0].equalsIgnoreCase("g-")) {
-				// removing a group
-				removeGroup(sender, arg);
-			} else if (args[0].equalsIgnoreCase("delete") && args[1].equals("CONFIRM")) {
-				// deleting a group or player
-				delete(sender, true, alias);
-			} else if (args[0].equals("?")) {
-				// checking for permission or group
-				if (arg.startsWith("p:") || arg.startsWith("P:") || arg.startsWith("n:") || arg.startsWith("N:")) {
-					checkPerm(sender, arg.substring(2));
-				} else if (arg.startsWith("g:") || arg.startsWith("G:")) {
-					checkGroup(sender, arg.substring(2));
-				} else if (arg.contains(".")) {
-					checkPerm(sender, arg);
-				} else {
-					checkGroup(sender, arg);
-				}
-			} else if (args[0].equals("=")) {
-				set(sender, args[1], arrayJoin(args, 2));
-			} else if (args[1].equals("=")) {
-				set(sender, args[0], arrayJoin(args, 2));
 			}
 		}
 		return true;

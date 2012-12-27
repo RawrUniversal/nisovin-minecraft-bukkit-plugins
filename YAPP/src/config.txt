@@ -7,6 +7,7 @@ use build perm      : true
 modal menu          : true
 
 update player list  : true
+update display name : true
 use chat formatting : true
 
 set group perm      : false
