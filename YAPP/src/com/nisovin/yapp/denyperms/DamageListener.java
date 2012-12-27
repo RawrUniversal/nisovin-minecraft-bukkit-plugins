@@ -1,5 +1,6 @@
 package com.nisovin.yapp.denyperms;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -43,7 +44,7 @@ public class DamageListener implements Listener {
 				}
 				if (player != null) {
 					// player attacking
-					if (!player.isOp() && (player.hasPermission("yapp.deny.attack.*") || player.hasPermission("yapp.deny.attack." + event.getEntity().getType().getTypeId()))) {
+					if (!player.isOp() && (player.hasPermission("yapp.deny.attack.*") || player.hasPermission("yapp.deny.attack." + getEntityTypeId(event.getEntity())))) {
 						event.setCancelled(true);
 						return;
 					}
@@ -51,18 +52,26 @@ public class DamageListener implements Listener {
 			}
 			if (checkDamage && evt.getEntity().getType() == EntityType.PLAYER) {
 				// player receiving entity damage
-				if (!player.isOp() && (player.hasPermission("yapp.deny.damage.*") || player.hasPermission("yapp.deny.damage." + evt.getDamager().getType().getTypeId()))) {
+				if (!player.isOp() && (player.hasPermission("yapp.deny.damage.*") || player.hasPermission("yapp.deny.damage." + getEntityTypeId(evt.getDamager())))) {
 					event.setCancelled(true);
 					return;
 				}
 				if (evt.getDamager() instanceof Projectile) {
 					Projectile proj = (Projectile)evt.getDamager();
-					if (!player.isOp() && player.hasPermission("yapp.deny.damage." + proj.getShooter().getType().getTypeId())) {
+					if (!player.isOp() && player.hasPermission("yapp.deny.damage." + getEntityTypeId(proj.getShooter()))) {
 						event.setCancelled(true);
 						return;
 					}
 				}
 			}
+		}
+	}
+	
+	private int getEntityTypeId(Entity entity) {
+		if (entity.getType() == EntityType.PLAYER) {
+			return 0;
+		} else {
+			return entity.getType().getTypeId();
 		}
 	}
 	
