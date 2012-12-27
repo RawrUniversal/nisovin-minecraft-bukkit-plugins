@@ -164,6 +164,12 @@ public class MainPlugin extends JavaPlugin {
 		if (config.getboolean("deny permissions.useitem") || config.getboolean("deny permissions.useblock")) {
 			pm.registerEvents(new UseListener(config.getboolean("deny permissions.useitem"), config.getboolean("deny permissions.useblock")), this);
 		}
+		if (config.getboolean("deny permissions.interact")) {
+			pm.registerEvents(new InteractListener(), this);
+		}
+		if (config.getboolean("deny permissions.attack") || config.getboolean("deny permissions.damage")) {
+			pm.registerEvents(new DamageListener(config.getboolean("deny permissions.attack"), config.getboolean("deny permissions.damage")), this);
+		}
 		
 		// create converation factory
 		Menu.initializeFactory(this, modalMenu);
