@@ -10,6 +10,7 @@ public class SelectGroup extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
+		showGroupList(context);
 		return Menu.TEXT_COLOR + "Please type the group you would like to modify:";
 	}
 

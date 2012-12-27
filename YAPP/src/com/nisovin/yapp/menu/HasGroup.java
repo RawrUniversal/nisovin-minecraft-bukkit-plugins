@@ -12,6 +12,7 @@ public class HasGroup extends MenuPrompt {
 
 	@Override
 	public String getPromptText(ConversationContext context) {
+		showGroupList(context);
 		return Menu.TEXT_COLOR + "Please type the group you want to check:";
 	}
 

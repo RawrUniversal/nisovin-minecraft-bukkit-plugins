@@ -1,6 +1,7 @@
 package com.nisovin.yapp.menu;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -144,6 +145,21 @@ public abstract class MenuPrompt extends StringPrompt {
 		context.setSessionData("message", message);
 		context.setSessionData("nextprompt", nextPrompt);
 		return Menu.MESSAGE;
+	}
+	
+	protected void showGroupList(ConversationContext context) {
+		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "You have the following groups defined:");
+		Set<String> groups = MainPlugin.getGroupNames();
+		if (groups.size() == 0) {
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "(none)");
+		} else {
+			StringBuilder sb = new StringBuilder();
+			for (String g : groups) {
+				if (sb.length() > 0) sb.append(", ");
+				sb.append(g);
+			}
+			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + sb.toString());
+		}
 	}
 	
 	protected void showCurrentGroupInfo(ConversationContext context) {
