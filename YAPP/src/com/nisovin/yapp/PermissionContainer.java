@@ -124,6 +124,76 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
+	public List<String> getAllPermissionsForDisplay(String world) {
+		if (world == null) world = "";
+		List<PermissionNode> nodes = new ArrayList<PermissionNode>();
+		List<String> strings = new ArrayList<String>();
+	
+		// add world perms
+		if (!world.isEmpty()) {
+			if (worldPermissions.containsKey(world)) {
+				for (PermissionNode node : worldPermissions.get(world)) {
+					if (!nodes.contains(node)) {
+						nodes.add(node);
+						strings.add((node.getValue() ? ChatColor.GREEN + " + " : ChatColor.RED + " - ") + node.getNodeName() + " (self, w:" + world + ")");
+					} else if (nodes.get(nodes.indexOf(node)).getValue() != node.getValue()) {
+						strings.add(ChatColor.DARK_GRAY + " x " + node.getNodeName() + " (overridden, self, w:" + world + ")");
+					} else {
+						strings.add(ChatColor.DARK_GRAY + (node.getValue() ? " + " : " - ") + node.getNodeName() + " (redefined, self, w:" + world + ")");
+					}
+				}
+			}
+		}
+		
+		// add own perms
+		for (PermissionNode node : permissions) {
+			if (!nodes.contains(node)) {
+				nodes.add(node);
+				strings.add((node.getValue() ? ChatColor.GREEN + " + " : ChatColor.RED + " - ") + node.getNodeName() + " (self)");
+			} else if (nodes.get(nodes.indexOf(node)).getValue() != node.getValue()) {
+				strings.add(ChatColor.DARK_GRAY + " x " + node.getNodeName() + " (overridden, self)");
+			} else {
+				strings.add(ChatColor.DARK_GRAY + (node.getValue() ? " + " : " - ") + node.getNodeName() + " (redefined, self)");
+			}
+		}
+		
+		// add world group perms
+		if (!world.isEmpty()) {
+			if (worldGroups.containsKey(world)) {
+				for (Group group : worldGroups.get(world)) {
+					List<PermissionNode> groupNodes = group.getAllPermissions(world);
+					for (PermissionNode node : groupNodes) {
+						if (!nodes.contains(node)) {
+							nodes.add(node);
+							strings.add((node.getValue() ? ChatColor.GREEN + " + " : ChatColor.RED + " - ") + node.getNodeName() + " (g:" + group.getName() + ", w: " + world + ")");
+						} else if (nodes.get(nodes.indexOf(node)).getValue() != node.getValue()) {
+							strings.add(ChatColor.DARK_GRAY + " x " + node.getNodeName() + " (overridden, g:" + group.getName() + ", w: " + world + ")");
+						} else {
+							strings.add(ChatColor.DARK_GRAY + (node.getValue() ? " + " : " - ") + node.getNodeName() + " (redefined, g:" + group.getName() + ", w: " + world + ")");
+						}
+					}
+				}
+			}
+		}
+		
+		// add group perms
+		for (Group group : groups) {
+			List<PermissionNode> groupNodes = group.getAllPermissions(world);
+			for (PermissionNode node : groupNodes) {
+				if (!nodes.contains(node)) {
+					nodes.add(node);
+					strings.add((node.getValue() ? ChatColor.GREEN + " + " : ChatColor.RED + " - ") + node.getNodeName() + " (g:" + group.getName() + ")");
+				} else if (nodes.get(nodes.indexOf(node)).getValue() != node.getValue()) {					
+					strings.add(ChatColor.DARK_GRAY + " x " + node.getNodeName() + " (overridden, g:" + group.getName() + ")");
+				} else {
+					strings.add(ChatColor.DARK_GRAY + (node.getValue() ? " + " : " - ") + node.getNodeName() + " (redefined, g:" + group.getName() + ")");
+				}
+			}
+		}
+		
+		return strings;
+	}
+	
 	public String getName() {
 		return name;
 	}

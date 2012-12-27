@@ -1,5 +1,7 @@
 package com.nisovin.yapp.menu;
 
+import java.util.List;
+
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
@@ -28,7 +30,7 @@ public class ModifyOptionsMore extends MenuPrompt {
 		c.sendRawMessage(Menu.TEXT_COLOR + "  2) Check if it " + Menu.KEYLETTER_COLOR + "i" + Menu.KEYWORD_COLOR + "nherits " + Menu.TEXT_COLOR + "a group");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  3) List all " + Menu.KEYLETTER_COLOR + "p" + Menu.KEYWORD_COLOR + "ermission " + Menu.TEXT_COLOR + "nodes");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  4) List all " + Menu.KEYLETTER_COLOR + "g" + Menu.KEYWORD_COLOR + "roups");
-		c.sendRawMessage(Menu.TEXT_COLOR + "  5) Set a short " + Menu.KEYLETTER_COLOR + "d" + Menu.KEYWORD_COLOR + "escription");
+		//c.sendRawMessage(Menu.TEXT_COLOR + "  5) Set a short " + Menu.KEYLETTER_COLOR + "d" + Menu.KEYWORD_COLOR + "escription");
 		if (obj instanceof Group) {
 			c.sendRawMessage(Menu.TEXT_COLOR + "  6) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "ename" + Menu.TEXT_COLOR + " this group");
 			c.sendRawMessage(Menu.TEXT_COLOR + "  7) " + Menu.KEYWORD_COLOR + "De" + Menu.KEYLETTER_COLOR + "l" + Menu.KEYWORD_COLOR + "ete" + Menu.TEXT_COLOR + " this group");
@@ -48,14 +50,13 @@ public class ModifyOptionsMore extends MenuPrompt {
 		} else if (input.equals("2") || input.startsWith("i")) {
 			return Menu.HAS_GROUP;
 		} else if (input.equals("3") || input.startsWith("p")) {
-			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Not yet implemented.");
-			return END_OF_CONVERSATION;
+			listPermissions(context);
+			return showMessage(context, null, this);
 		} else if (input.equals("4") || input.startsWith("g")) {
-			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Not yet implemented.");
-			return END_OF_CONVERSATION;
+			showCurrentGroupInfo(context);
+			return showMessage(context, null, this);
 		} else if (input.equals("5") || input.startsWith("d")) {
-			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Not yet implemented.");
-			return END_OF_CONVERSATION;
+			return showMessage(context, Menu.ERROR_COLOR + "Not yet implemented.", this);
 		} else if ((input.equals("6") || input.startsWith("r")) && obj instanceof Group) {
 			return Menu.RENAME_GROUP;
 		} else if ((input.equals("7") || input.equals("l") || input.startsWith("del")) && obj instanceof Group) {
@@ -70,13 +71,32 @@ public class ModifyOptionsMore extends MenuPrompt {
 			}
 		} else if (input.equals("0") || input.startsWith("m")) {
 			return Menu.MODIFY_OPTIONS;
+		} else {
+			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "Invalid selection");
+			return this;
 		}
-		return END_OF_CONVERSATION;
 	}
 
 	@Override
 	public Prompt getPreviousPrompt(ConversationContext context) {
 		return Menu.MODIFY_OPTIONS;
+	}
+	
+	private void listPermissions(ConversationContext context) {
+		PermissionContainer obj = getObject(context);
+		String world = getWorld(context);
+		if (world == null || world.isEmpty()) {
+			if (obj instanceof User) {
+				User u = (User)obj;
+				if (u.isOnline()) {
+					world = u.getPlayer().getWorld().getName();
+				}
+			}
+		}
+		List<String> nodes = obj.getAllPermissionsForDisplay(world);
+		for (String node : nodes) {
+			context.getForWhom().sendRawMessage(node);
+		}
 	}
 
 }
