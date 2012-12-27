@@ -9,11 +9,14 @@ public class NameplateListener implements Listener {
 
 	@EventHandler
 	public void onNameplate(PlayerReceiveNameTagEvent event) {
-		User user = MainPlugin.getPlayerUser(event.getNamedPlayer().getName());
-		String world = event.getPlayer().getWorld().getName();
-		ChatColor color = user.getColor(world);
-		if (color != null && color != ChatColor.WHITE) {
-			event.setTag(color + event.getTag());
+		String name = event.getNamedPlayer().getName();
+		if (name.length() <= 14) {
+			User user = MainPlugin.getPlayerUser(name);
+			String world = event.getPlayer().getWorld().getName();
+			ChatColor color = user.getColor(world);
+			if (color != null && color != ChatColor.WHITE) {
+				event.setTag(color + event.getTag());
+			}
 		}
 	}
 	
