@@ -8,11 +8,25 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener implements Listener {
 
+	String chatFormat;
+	
+	public ChatListener(String format) {
+		if (format == null || format.trim().isEmpty()) {
+			this.chatFormat = "%prefix%%color%<%name%> &f%message%";
+		} else {
+			this.chatFormat = format;
+		}		
+	}
+	
 	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		User user = MainPlugin.getPlayerUser(event.getPlayer().getName());
 		String world = event.getPlayer().getWorld().getName();
-		event.setFormat(user.getPrefix(world) + "<" + user.getColor(world) + "%1$s" + ChatColor.WHITE + "> %2$s");
+		String format = chatFormat.replace("%name%", "%1$s").replace("%message%", "%2$s");
+		format = format.replace("%prefix%", user.getPrefix(world));
+		format = format.replace("%color%", user.getColor(world).toString());
+		format = ChatColor.translateAlternateColorCodes('&', format);
+		event.setFormat(format);
 	}
 	
 }

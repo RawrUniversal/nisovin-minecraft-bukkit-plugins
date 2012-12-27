@@ -139,7 +139,7 @@ public class MainPlugin extends JavaPlugin {
 			pm.registerEvents(new BuildListener(), this);
 		}
 		if (config.getboolean("general.use chat formatting")) {
-			pm.registerEvents(new ChatListener(), this);
+			pm.registerEvents(new ChatListener(config.getString("general.chat format")), this);
 		}
 		if (config.getboolean("general.set nameplate color") && getServer().getPluginManager().isPluginEnabled("TagAPI")) {
 			pm.registerEvents(new NameplateListener(), this);

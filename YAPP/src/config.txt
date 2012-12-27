@@ -9,6 +9,7 @@ modal menu          : true
 update player list  : true
 update display name : true
 use chat formatting : true
+chat format         : %prefix%%color%<%name%> &f%message%
 
 set group perm      : false
 set player metadata : false

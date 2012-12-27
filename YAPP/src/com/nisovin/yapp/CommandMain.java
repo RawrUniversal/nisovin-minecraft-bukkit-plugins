@@ -30,7 +30,7 @@ public class CommandMain implements CommandExecutor {
 				sb.append(' ');
 				sb.append(args[i]);
 			}
-			String[] commands = sb.toString().split("|");
+			String[] commands = sb.toString().split("\\|");
 			for (String c : commands) {
 				c = c.trim();
 				if (c.isEmpty()) continue;
