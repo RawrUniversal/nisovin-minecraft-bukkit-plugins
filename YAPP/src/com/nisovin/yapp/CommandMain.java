@@ -106,7 +106,7 @@ public class CommandMain implements CommandExecutor {
 					} else if (args[0].equalsIgnoreCase("+g") || args[0].equalsIgnoreCase("g+")) {
 						// adding a group
 						addGroup(sender, arg);
-					} else if (args[0].equalsIgnoreCase("=g") || args[0].equalsIgnoreCase("g=")) {
+					} else if (args[0].equalsIgnoreCase("=g") || args[0].equalsIgnoreCase("g=") || args[0].equalsIgnoreCase("g")) {
 						// setting a group
 						setGroup(sender, arg);
 					} else if (args[0].equalsIgnoreCase("-n") || args[0].equalsIgnoreCase("n-")) {
