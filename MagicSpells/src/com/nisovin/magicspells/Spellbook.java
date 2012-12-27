@@ -220,13 +220,29 @@ public class Spellbook {
 		}
 	}
 	
-	protected Spell nextSpell(ItemStack item) {
+	protected CastItem getCastItem(ItemStack item) {
 		CastItem castItem;
 		if (item != null) {
 			castItem = new CastItem(item);
 		} else {
 			castItem = new CastItem(0);
 		}
+		if (activeSpells.containsKey(castItem)) {
+			return castItem;
+		} else {
+			return null;
+		}
+	}
+	
+	protected Spell nextSpell(ItemStack item) {
+		CastItem castItem = getCastItem(item);
+		if (castItem != null) {
+			return nextSpell(castItem);
+		}
+		return null;
+	}
+	
+	protected Spell nextSpell(CastItem castItem) {
 		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
@@ -260,12 +276,14 @@ public class Spellbook {
 	}
 	
 	protected Spell prevSpell(ItemStack item) {
-		CastItem castItem;
-		if (item != null) {
-			castItem = new CastItem(item);
-		} else {
-			castItem = new CastItem(0);
+		CastItem castItem = getCastItem(item);
+		if (castItem != null) {
+			return prevSpell(castItem);
 		}
+		return null;
+	}
+	
+	protected Spell prevSpell(CastItem castItem) {
 		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
@@ -300,12 +318,16 @@ public class Spellbook {
 	
 	public Spell getActiveSpell(ItemStack item) {
 		CastItem castItem = new CastItem(item);
+		return getActiveSpell(castItem);
+	}
+	
+	public Spell getActiveSpell(CastItem castItem) {
 		Integer i = activeSpells.get(castItem);
 		if (i != null && i != -1) {
 			return itemSpells.get(castItem).get(i);
 		} else {
 			return null;
-		}		
+		}
 	}
 	
 	public boolean hasSpell(Spell spell) {

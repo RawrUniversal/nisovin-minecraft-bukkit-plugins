@@ -302,4 +302,10 @@ public class VolatileCodeEnabled_1_4_5 implements VolatileCodeHandle {
 		
 	}
 
+	@Override
+	public void setHeldItemSlot(Player player, int slot) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

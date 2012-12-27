@@ -77,6 +77,8 @@ public class MagicSpells extends JavaPlugin {
 	static boolean onlyCycleToCastableSpells;
 	static int spellIconSlot;
 	static boolean allowCastWithFist;
+	static boolean castWithLeftClick;
+	static boolean castWithRightClick;
 	static boolean ignoreDefaultBindings;
 	public static boolean showStrCostOnMissingReagents;
 	static HashSet<Byte> losTransparentBlocks;
@@ -200,6 +202,8 @@ public class MagicSpells extends JavaPlugin {
 		onlyCycleToCastableSpells = config.getBoolean("general.only-cycle-to-castable-spells", true);
 		spellIconSlot = config.getInt("general.spell-icon-slot", -1);
 		allowCastWithFist = config.getBoolean("general.allow-cast-with-fist", false);
+		castWithLeftClick = config.getBoolean("general.cast-with-left-click", true);
+		castWithRightClick = config.getBoolean("general.cast-with-right-click", false);
 		ignoreDefaultBindings = config.getBoolean("general.ignore-default-bindings", false);
 		ignoreCastItemEnchants = config.getBoolean("general.ignore-cast-item-enchants", true);
 		ignoreCastItemNames = config.getBoolean("general.ignore-cast-item-names", false);

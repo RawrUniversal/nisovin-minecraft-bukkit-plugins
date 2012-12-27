@@ -56,4 +56,6 @@ public interface VolatileCodeHandle {
 	
 	public void createFireworksExplosion(Location location, boolean flicker, boolean trail, int type, int[] colors, int[] fadeColors, int flightDuration);
 	
+	public void setHeldItemSlot(Player player, int slot);
+	
 }

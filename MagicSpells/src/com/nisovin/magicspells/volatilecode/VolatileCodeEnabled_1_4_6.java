@@ -229,7 +229,7 @@ public class VolatileCodeEnabled_1_4_6 implements VolatileCodeHandle {
 			tag = new NBTTagCompound();
 		}
 		if (!tag.hasKey("ench")) {
-			tag.set("ench", new NBTTagList());
+			tag.set("ench", new NBTTagList("ench"));
 		}		
 		return setTag(item, tag);
 	}
@@ -336,6 +336,12 @@ public class VolatileCodeEnabled_1_4_6 implements VolatileCodeHandle {
 			((CraftWorld)location.getWorld()).getHandle().broadcastEntityEffect(fireworks, (byte)17);
 			fireworks.die();
 		}
+	}
+
+	@Override
+	public void setHeldItemSlot(Player player, int slot) {
+		((CraftPlayer)player).getHandle().inventory.itemInHandIndex = slot;
+		((CraftPlayer)player).getHandle().playerConnection.sendPacket(new Packet16BlockItemSwitch(slot));
 	}
 
 }

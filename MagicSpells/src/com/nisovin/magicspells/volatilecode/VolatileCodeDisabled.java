@@ -129,4 +129,10 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	public void createFireworksExplosion(Location location, boolean flicker, boolean trail, int type, int[] colors, int[] fadeColors, int flightDuration) {
 		
 	}
+
+	@Override
+	public void setHeldItemSlot(Player player, int slot) {
+		// TODO Auto-generated method stub
+		
+	}
 }

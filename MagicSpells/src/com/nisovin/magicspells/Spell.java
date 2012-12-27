@@ -54,6 +54,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	protected String description;
 	protected CastItem[] castItems;
+	protected boolean castWithLeftClick;
+	protected boolean castWithRightClick;
 	protected boolean requireCastItemOnCommand;
 	protected boolean bindable;
 	protected HashSet<CastItem> bindableItems;
@@ -121,6 +123,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				this.castItems[i] = new CastItem(is);
 			}
 		}
+		this.castWithLeftClick = config.getBoolean(section + "." + spellName + ".cast-with-left-click", MagicSpells.castWithLeftClick);
+		this.castWithRightClick = config.getBoolean(section + "." + spellName + ".cast-with-right-click", MagicSpells.castWithRightClick);
 		this.requireCastItemOnCommand = config.getBoolean(section + "." + spellName + ".require-cast-item-on-command", false);
 		this.bindable = config.getBoolean(section + "." + spellName + ".bindable", true);
 		List<String> bindables = config.getStringList(section + "." + spellName + ".bindable-items", null);
@@ -551,6 +555,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	public abstract boolean canCastWithItem();
 	
 	public abstract boolean canCastByCommand();
+	
+	public boolean canCastWithLeftClick() {
+		return castWithLeftClick;
+	}
+	
+	public boolean canCastWithRightClick() {
+		return castWithRightClick;
+	}
 	
 	public boolean isAlwaysGranted() {
 		return alwaysGranted;
