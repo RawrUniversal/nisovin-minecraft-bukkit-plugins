@@ -167,6 +167,9 @@ public class MainPlugin extends JavaPlugin {
 		if (config.getboolean("deny permissions.interact")) {
 			pm.registerEvents(new InteractListener(), this);
 		}
+		if (config.getboolean("deny permissions.targeted")) {
+			pm.registerEvents(new TargetListener(), this);
+		}
 		if (config.getboolean("deny permissions.attack") || config.getboolean("deny permissions.damage")) {
 			pm.registerEvents(new DamageListener(config.getboolean("deny permissions.attack"), config.getboolean("deny permissions.damage")), this);
 		}

@@ -28,5 +28,6 @@ drop     : false
 useitem  : false
 useblock : false
 interact : false
+targeted : false
 attack   : false
 damage   : false
