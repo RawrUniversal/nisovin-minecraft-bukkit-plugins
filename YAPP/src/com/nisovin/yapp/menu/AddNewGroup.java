@@ -22,19 +22,39 @@ public class AddNewGroup extends MenuPrompt {
 			PermissionContainer obj = getObject(context);
 			String world = getWorld(context);
 			
-			String groupName = (String)context.getSessionData("addnewgroupname");
-			context.setSessionData("addnewgroupname", null);
-			
-			Group group = MainPlugin.newGroup(groupName);
-			obj.addGroup(world, group);
-			String msg = Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
-			if (world != null) {
-				msg += "\n" + Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
+			String groupName = (String)context.getSessionData("setnewgroupname");
+			if (groupName != null) {
+				context.setSessionData("setnewgroupname", null);
+
+				Group group = MainPlugin.newGroup(groupName);
+				obj.setGroup(world, group);
+				String msg = Menu.TEXT_COLOR + "Set group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
+				if (world != null) {
+					msg += "\n" + Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
+				}
+				return showMessage(context, msg, Menu.MODIFY_OPTIONS);
+				
+			} else {
+				groupName = (String)context.getSessionData("addnewgroupname");
+				if (groupName != null) {
+					context.setSessionData("addnewgroupname", null);
+					
+					Group group = MainPlugin.newGroup(groupName);
+					obj.addGroup(world, group);
+					String msg = Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
+					if (world != null) {
+						msg += "\n" + Menu.TEXT_COLOR + "for world " + Menu.HIGHLIGHT_COLOR + world;
+					}
+					return showMessage(context, msg, Menu.MODIFY_OPTIONS);
+					
+				} else {
+					return showMessage(context, Menu.ERROR_COLOR + "Error while creating new group.", Menu.MAIN_MENU);
+				}
 			}
-			return showMessage(context, msg, Menu.MODIFY_OPTIONS);
 		} else if (input.startsWith("n")) {
+			context.setSessionData("setnewgroupname", null);
 			context.setSessionData("addnewgroupname", null);
-			return Menu.SELECT_GROUP;
+			return Menu.MODIFY_OPTIONS;
 		} else {
 			return showMessage(context, Menu.ERROR_COLOR + "That is not a valid option!", this);
 		}

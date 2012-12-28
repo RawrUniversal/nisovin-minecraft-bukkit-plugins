@@ -39,6 +39,7 @@ public class Menu {
 	public static final Prompt ADD_PERMISSION = new AddPermission();
 	public static final Prompt REMOVE_PERMISSION = new RemovePermission();
 	public static final Prompt NEGATE_PERMISSION = new NegatePermission();
+	public static final Prompt SET_GROUP = new SetGroup();
 	public static final Prompt ADD_GROUP = new AddGroup();
 	public static final Prompt ADD_NEW_GROUP = new AddNewGroup();
 	public static final Prompt REMOVE_GROUP = new RemoveGroup();

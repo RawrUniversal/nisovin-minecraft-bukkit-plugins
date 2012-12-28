@@ -1,7 +1,5 @@
 package com.nisovin.yapp.menu;
 
-import java.util.List;
-
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
@@ -9,6 +7,7 @@ import org.bukkit.conversations.Prompt;
 import com.nisovin.yapp.Group;
 import com.nisovin.yapp.MainPlugin;
 import com.nisovin.yapp.PermissionContainer;
+import com.nisovin.yapp.TrackedNodeList;
 import com.nisovin.yapp.User;
 
 public class ModifyOptionsMore extends MenuPrompt {
@@ -93,9 +92,10 @@ public class ModifyOptionsMore extends MenuPrompt {
 				}
 			}
 		}
-		List<String> nodes = obj.getAllPermissionsForDisplay(world);
-		for (String node : nodes) {
-			context.getForWhom().sendRawMessage(node);
+		TrackedNodeList list = new TrackedNodeList(obj);
+		obj.fillTrackedNodeList(list, world);
+		for (TrackedNodeList.TrackedNode node : list.getTrackedNodes()) {
+			context.getForWhom().sendRawMessage(node.toString());
 		}
 	}
 
