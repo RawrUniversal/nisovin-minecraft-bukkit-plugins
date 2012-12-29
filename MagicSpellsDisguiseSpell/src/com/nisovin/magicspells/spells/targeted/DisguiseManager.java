@@ -5,50 +5,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.server.DataWatcher;
-import net.minecraft.server.EntityAgeable;
-import net.minecraft.server.EntityBat;
-import net.minecraft.server.EntityBlaze;
-import net.minecraft.server.EntityCaveSpider;
-import net.minecraft.server.EntityChicken;
-import net.minecraft.server.EntityCow;
-import net.minecraft.server.EntityCreeper;
-import net.minecraft.server.EntityEnderman;
-import net.minecraft.server.EntityGiantZombie;
-import net.minecraft.server.EntityIronGolem;
-import net.minecraft.server.EntityLiving;
-import net.minecraft.server.EntityMagmaCube;
-import net.minecraft.server.EntityMushroomCow;
-import net.minecraft.server.EntityOcelot;
-import net.minecraft.server.EntityPig;
-import net.minecraft.server.EntityPigZombie;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.EntitySheep;
-import net.minecraft.server.EntitySilverfish;
-import net.minecraft.server.EntitySkeleton;
-import net.minecraft.server.EntitySlime;
-import net.minecraft.server.EntitySpider;
-import net.minecraft.server.EntitySquid;
-import net.minecraft.server.EntityTracker;
-import net.minecraft.server.EntityVillager;
-import net.minecraft.server.EntityWitch;
-import net.minecraft.server.EntityWolf;
-import net.minecraft.server.EntityZombie;
-import net.minecraft.server.Packet20NamedEntitySpawn;
-import net.minecraft.server.Packet24MobSpawn;
-import net.minecraft.server.Packet29DestroyEntity;
-import net.minecraft.server.Packet40EntityMetadata;
-import net.minecraft.server.Packet5EntityEquipment;
-import net.minecraft.server.World;
+import net.minecraft.server.v1_4_6.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_6.CraftWorld;
+import org.bukkit.craftbukkit.v1_4_6.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -56,6 +22,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -66,15 +34,22 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class DisguiseManager implements Listener {
 
+	private boolean hideArmor;
+	
 	private Set<DisguiseSpell> disguiseSpells = new HashSet<DisguiseSpell>();
 	private Map<String, Disguise> disguises = new HashMap<String, Disguise>();
+	private Set<Integer> disguisedEntityIds = new HashSet<Integer>();
+	private Set<Integer> dragons = new HashSet<Integer>();
 
 	private PacketListener packetListener = null;
 	
-	public DisguiseManager() {
+	public DisguiseManager(MagicConfig config) {
+		this.hideArmor = config.getBoolean("general.disguise-spell-hide-armor", false);
+		
 		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 		packetListener = new PacketListener();
 		protocolManager.addPacketListener(packetListener);
@@ -99,11 +74,17 @@ public class DisguiseManager implements Listener {
 			removeDisguise(player);
 		}
 		disguises.put(player.getName().toLowerCase(), disguise);
+		disguisedEntityIds.add(player.getEntityId());
+		if (disguise.getEntityType() == EntityType.ENDER_DRAGON) {
+			dragons.add(player.getEntityId());
+		}
 		applyDisguise(player, disguise);
 	}
 	
 	public void removeDisguise(Player player) {
 		Disguise disguise = disguises.remove(player.getName().toLowerCase());
+		disguisedEntityIds.remove(player.getEntityId());
+		dragons.remove(player.getEntityId());
 		if (disguise != null) {
 			clearDisguise(player);
 			disguise.getSpell().undisguise(player);
@@ -124,6 +105,8 @@ public class DisguiseManager implements Listener {
 		protocolManager.removePacketListener(packetListener);
 		
 		disguises.clear();
+		disguisedEntityIds.clear();
+		dragons.clear();
 		disguiseSpells.clear();
 	}
 	
@@ -175,8 +158,14 @@ public class DisguiseManager implements Listener {
 		} else if (entityType == EntityType.IRON_GOLEM) {
 			entity = new EntityIronGolem(world);
 			
+		} else if (entityType == EntityType.SNOWMAN) {
+			entity = new EntitySnowman(world);
+			
 		} else if (entityType == EntityType.CREEPER) {
 			entity = new EntityCreeper(world);
+			if (flag) {
+				((EntityCreeper)entity).setPowered(true);
+			}
 			
 		} else if (entityType == EntityType.SPIDER) {
 			entity = new EntitySpider(world);
@@ -250,6 +239,9 @@ public class DisguiseManager implements Listener {
 		} else if (entityType == EntityType.SQUID) {
 			entity = new EntitySquid(world);
 			
+		} else if (entityType == EntityType.ENDER_DRAGON) {
+			entity = new EntityEnderDragon(world);
+			
 		}
 		
 		if (entity != null) {
@@ -263,6 +255,7 @@ public class DisguiseManager implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onArmSwing(PlayerAnimationEvent event) {
 		final Player p = event.getPlayer();
+		final int entityId = -p.getEntityId();
 		if (isDisguised(p)) {
 			Disguise disguise = getDisguise(p);
 			EntityType entityType = disguise.getEntityType();
@@ -278,24 +271,24 @@ public class DisguiseManager implements Listener {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)1));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(16, Byte.valueOf((byte)0));
-						tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+						tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 					}
 				}, 10);
-			} else if (entityType == EntityType.CREEPER) {
+			} else if (entityType == EntityType.CREEPER && !disguise.getFlag()) {
 				final DataWatcher dw = new DataWatcher();
 				final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(17, Byte.valueOf((byte)1));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(17, Byte.valueOf((byte)0));
-						tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+						tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.WOLF) {
@@ -304,11 +297,11 @@ public class DisguiseManager implements Listener {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)(p.isSneaking() ? 3 : 2)));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(16, Byte.valueOf((byte)(p.isSneaking() ? 1 : 0)));
-						tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+						tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE) {
@@ -317,11 +310,11 @@ public class DisguiseManager implements Listener {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)(p.isSneaking() ? 2 : 3)));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(16, Byte.valueOf((byte)(p.isSneaking() ? 1 : 2)));
-						tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+						tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			}
@@ -333,67 +326,82 @@ public class DisguiseManager implements Listener {
 		Disguise disguise = getDisguise(event.getPlayer());
 		if (disguise == null) return;
 		EntityType entityType = disguise.getEntityType();
+		Player p = event.getPlayer();
+		int entityId = -p.getEntityId();
 		if (entityType == EntityType.WOLF) {
-			Player p = event.getPlayer();
 			if (event.isSneaking()) {
 				final DataWatcher dw = new DataWatcher();
 				final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)1));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 			} else {
 				final DataWatcher dw = new DataWatcher();
 				final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)0));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 			}
 		} else if (entityType == EntityType.ENDERMAN) {
-			Player p = event.getPlayer();
 			if (event.isSneaking()) {
 				final DataWatcher dw = new DataWatcher();
 				final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(18, Byte.valueOf((byte)1));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 			} else {
 				final DataWatcher dw = new DataWatcher();
 				final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(18, Byte.valueOf((byte)0));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 			}
 		} else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE) {
-			Player p = event.getPlayer();
 			if (event.isSneaking()) {
 				final DataWatcher dw = new DataWatcher();
 				final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)1));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 			} else {
 				final DataWatcher dw = new DataWatcher();
 				final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)2));
-				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(p.getEntityId(), dw, true));
+				tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 			}
 		} else if (entityType == EntityType.SHEEP && event.isSneaking()) {
-			Player p = event.getPlayer();
 			p.playEffect(EntityEffect.SHEEP_EAT);
 		}
 	}
 	
+	@EventHandler
+	public void onQuit(PlayerQuitEvent event) {
+		disguisedEntityIds.remove(event.getPlayer().getEntityId());
+		dragons.remove(event.getPlayer().getEntityId());
+	}
+	
+	@EventHandler
+	public void onJoin(PlayerJoinEvent event) {
+		Player p = event.getPlayer();
+		if (isDisguised(p)) {
+			disguisedEntityIds.add(p.getEntityId());
+			if (getDisguise(p).getEntityType() == EntityType.ENDER_DRAGON) {
+				dragons.add(p.getEntityId());
+			}
+		}
+	}
+		
 	class PacketListener extends PacketAdapter {
 		
 		public PacketListener() {
-			super(MagicSpells.plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.NORMAL, 0x14);
+			super(MagicSpells.plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.NORMAL, 0x14, 0x28, 0x5);
 		}
 		
 		@Override
@@ -410,6 +418,46 @@ public class DisguiseManager implements Listener {
 						}
 					}, 0);
 				}
+			} else if (hideArmor && event.getPacketID() == 0x5) {
+				Packet5EntityEquipment packet = (Packet5EntityEquipment)event.getPacket().getHandle();
+				if (packet.b > 0 && disguisedEntityIds.contains(packet.a)) {
+					event.setCancelled(true);
+				}
+			} else if (event.getPacketID() == 0x20) {
+				Packet32EntityLook packet = (Packet32EntityLook)event.getPacket().getHandle();
+				if (dragons.contains(packet.a)) {
+					int dir = packet.e + 128;
+					if (dir > 127) dir -= 256;
+					packet.e = (byte)dir;
+				}
+			} else if (event.getPacketID() == 0x21) {
+				Packet33RelEntityMoveLook packet = (Packet33RelEntityMoveLook)event.getPacket().getHandle();
+				if (dragons.contains(packet.a)) {
+					int dir = packet.e + 128;
+					if (dir > 127) dir -= 256;
+					packet.e = (byte)dir;
+				}
+			} else if (event.getPacketID() == 0x22) {
+				Packet34EntityTeleport packet = (Packet34EntityTeleport)event.getPacket().getHandle();
+				if (dragons.contains(packet.a)) {
+					int dir = packet.e + 128;
+					if (dir > 127) dir -= 256;
+					packet.e = (byte)dir;
+				}
+			} else if (event.getPacketID() == 0x23) {
+				Packet35EntityHeadRotation packet = (Packet35EntityHeadRotation)event.getPacket().getHandle();
+				if (dragons.contains(packet.a)) {
+					int dir = packet.b + 128;
+					if (dir > 127) dir -= 256;
+					packet.b = (byte)dir;
+				}
+			} else if (event.getPacketID() == 0x28) {
+				Packet40EntityMetadata packet = (Packet40EntityMetadata)event.getPacket().getHandle();
+				if (packet.a < 0) {
+					packet.a *= -1;
+				} else if (disguisedEntityIds.contains(packet.a)) {
+					event.setCancelled(true);
+				}
 			}
 		}
 		
@@ -418,7 +466,7 @@ public class DisguiseManager implements Listener {
 	private void sendDestroyEntityPacket(Player viewer, Player disguised) {
 		Packet29DestroyEntity packet29 = new Packet29DestroyEntity(disguised.getEntityId());		
 		EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
-		ep.netServerHandler.sendPacket(packet29);
+		ep.playerConnection.sendPacket(packet29);
 	}
 	
 	private void sendMobSpawnPacket(Player viewer, Player disguised, Disguise disguise) {
@@ -426,14 +474,20 @@ public class DisguiseManager implements Listener {
 		if (entity != null) {
 			Packet24MobSpawn packet24 = new Packet24MobSpawn(entity);
 			packet24.a = disguised.getEntityId();
+			if (dragons.contains(disguised.getEntityId())) {
+				int dir = packet24.i + 128;
+				if (dir > 127) dir -= 256;
+				packet24.i = (byte)dir;
+				packet24.k = (byte)dir;
+			}
 			EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
-			ep.netServerHandler.sendPacket(packet24);
+			ep.playerConnection.sendPacket(packet24);
 			
 			if (disguise.getEntityType() == EntityType.ZOMBIE || disguise.getEntityType() == EntityType.SKELETON) {
 				ItemStack inHand = disguised.getItemInHand();
 				if (inHand != null && inHand.getType() != Material.AIR) {
-					Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 0, ((CraftItemStack)inHand).getHandle());
-					ep.netServerHandler.sendPacket(packet5);
+					Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
+					ep.playerConnection.sendPacket(packet5);
 				}
 			}
 		}
@@ -442,7 +496,7 @@ public class DisguiseManager implements Listener {
 	private void sendPlayerSpawnPacket(Player viewer, Player player) {
 		Packet20NamedEntitySpawn packet20 = new Packet20NamedEntitySpawn(((CraftPlayer)player).getHandle());		
 		EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
-		ep.netServerHandler.sendPacket(packet20);
+		ep.playerConnection.sendPacket(packet20);
 	}
 	
 }

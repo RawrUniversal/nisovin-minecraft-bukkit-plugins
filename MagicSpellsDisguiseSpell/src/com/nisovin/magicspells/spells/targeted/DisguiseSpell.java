@@ -41,7 +41,7 @@ public class DisguiseSpell extends TargetedEntitySpell {
 		super(config, spellName);
 		
 		if (manager == null) {
-			manager = new DisguiseManager();
+			manager = new DisguiseManager(config);
 		}
 		manager.registerSpell(this);
 		
@@ -56,6 +56,9 @@ public class DisguiseSpell extends TargetedEntitySpell {
 		} else if (type.equalsIgnoreCase("zombie villager") || type.equalsIgnoreCase("villager zombie")) {
 			type = "zombie";
 			var = 1;
+		} else if (type.equalsIgnoreCase("powered creeper")) {
+			type = "creeper";
+			flag = true;
 		} else if (type.toLowerCase().startsWith("villager ")) {
 			String prof = type.toLowerCase().replace("villager ", "");
 			if (prof.matches("^[0-5]$")) {
@@ -101,6 +104,8 @@ public class DisguiseSpell extends TargetedEntitySpell {
 			type = "lavaslime";
 		} else if (type.toLowerCase().contains("ocelot")) {
 			type = type.toLowerCase().replace("ocelot", "ozelot");
+		} else if (type.equalsIgnoreCase("snowgolem")) {
+			type = "snowman";
 		}
 		if (type.toLowerCase().matches("ozelot [0-3]")) {
 			var = Integer.parseInt(type.split(" ")[1]);
