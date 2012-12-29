@@ -25,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.nisovin.yapp.denyperms.*;
 import com.nisovin.yapp.menu.Menu;
+import com.nisovin.yapp.storage.*;
 
 public class MainPlugin extends JavaPlugin {
 	
@@ -48,10 +49,13 @@ public class MainPlugin extends JavaPlugin {
 	
 	private Map<String, PermissionAttachment> attachments;
 	
+	private StorageMethod storageMethod;
+	
 	@Override
 	public void onEnable() {
 		yapp = this;
 		mainThreadId = Thread.currentThread().getId();
+		storageMethod = new FileStorage();
 		
 		load();
 		
@@ -234,51 +238,12 @@ public class MainPlugin extends JavaPlugin {
 	
 	public void loadGroups() {
 		debug("Loading groups...");
-		groups = new TreeMap<String, Group>();
-		
-		// get groups from group folder
-		File groupsFolder = new File(getDataFolder(), "groups");
-		if (groupsFolder.exists() && groupsFolder.isDirectory()) {
-			File[] groupFiles = groupsFolder.listFiles();
-			for (File f : groupFiles) {
-				if (f.getName().endsWith(".txt")) {
-					String name = f.getName().replace(".txt", "");
-					if (!groups.containsKey(name.toLowerCase())) {
-						Group group = new Group(name);
-						groups.put(name.toLowerCase(), group);
-						debug("  Found group: " + name);
-					}
-				}
-			}
-		}
-		
-		// get groups from world group folders
-		File worldsFolder = new File(getDataFolder(), "worlds");
-		if (worldsFolder.exists() && worldsFolder.isDirectory()) {
-			File[] worldFolders = worldsFolder.listFiles();
-			for (File wf : worldFolders) {
-				if (wf.isDirectory()) {
-					File worldGroupsFolder = new File(wf, "groups");
-					if (worldGroupsFolder.exists() && worldGroupsFolder.isDirectory()) {
-						File[] groupFiles = worldGroupsFolder.listFiles();
-						for (File f : groupFiles) {
-							if (f.getName().endsWith(".txt")) {
-								String name = f.getName().replace(".txt", "").toLowerCase();
-								if (!groups.containsKey(name.toLowerCase())) {
-									Group group = new Group(name);
-									groups.put(name.toLowerCase(), group);
-									debug("  Found group: " + name);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		groups = new TreeMap<String, Group>();		
+		storageMethod.fillGroupMap(groups);
 		
 		// load group data
 		for (Group group : groups.values()) {
-			group.loadFromFiles();
+			group.load();
 		}
 	}
 	
@@ -287,7 +252,7 @@ public class MainPlugin extends JavaPlugin {
 		if (user == null) {
 			user = new User(playerName);
 			yapp.players.put(playerName.toLowerCase(), user);
-			user.loadFromFiles();
+			user.load();
 			if (yapp.defaultGroup != null && user.getGroups(null).size() == 0) {
 				user.addGroup(null, yapp.defaultGroup);
 				debug("Added default group '" + yapp.defaultGroup.getName() + "' to player '" + playerName + "'");
@@ -295,6 +260,10 @@ public class MainPlugin extends JavaPlugin {
 			}
 		}
 		return user;
+	}
+	
+	public boolean hasLoadedPermissions(Player player) {
+		return attachments.containsKey(player.getName().toLowerCase());
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -527,6 +496,10 @@ public class MainPlugin extends JavaPlugin {
 	
 	public static Set<String> getGroupNames() {
 		return yapp.groups.keySet();
+	}
+	
+	public static StorageMethod getStorage() {
+		return yapp.storageMethod;
 	}
 	
 	public static void log(String message) {

@@ -1,17 +1,11 @@
 package com.nisovin.yapp;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
@@ -158,6 +152,10 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public String getType() {
+		return type;
 	}
 	
 	public String getDescription() {
@@ -339,6 +337,14 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
+	public Map<String, String> getActualInfoMap() {
+		return info;
+	}
+	
+	public Map<String, Map<String, String>> getActualWorldInfoMap() {
+		return worldInfo;
+	}
+	
 	private String colorify(String s) {
 		return s.replaceAll("&([0-9a-fk-or])", "\u00A7$1");
 	}
@@ -347,8 +353,24 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		return permissions;
 	}
 	
+	public List<PermissionNode> getActualPermissionList(String world) {
+		if (world == null || world.isEmpty()) {
+			return permissions;
+		} else {
+			return worldPermissions.get(world);
+		}
+	}
+	
+	public Map<String, List<PermissionNode>> getActualWorldPermissionMap() {
+		return worldPermissions;
+	}
+	
 	public List<Group> getActualGroupList() {
 		return groups;
+	}
+	
+	public Map<String, List<Group>> getActualWorldGroupMap() {
+		return worldGroups;
 	}
 	
 	public List<Group> getActualGroupList(String world) {
@@ -625,6 +647,18 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
+	public boolean isDirty() {
+		return dirty;
+	}
+	
+	public void setDirty() {
+		dirty = true;
+	}
+	
+	public void setNotDirty() {
+		dirty = false;
+	}
+	
 	public void clearCache(boolean onlyIfDirty) {
 		if (!onlyIfDirty || dirty) {
 			cachedPermissions.clear();
@@ -634,147 +668,9 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
-	public void loadFromFiles() {
+	public void load() {
 		MainPlugin.debug("Loading " + type + " '" + name + "'");
-		File dataFolder = MainPlugin.yapp.getDataFolder();
-		
-		// get main file
-		MainPlugin.debug("  Loading base data");
-		File file = new File(dataFolder, type + "s" + File.separator + name + ".txt");
-		if (file.exists()) {
-			loadFromFile(file, groups, permissions, null);
-		}
-		
-		// get world files
-		file = new File(dataFolder, "worlds");
-		if (file.exists()) {
-			File[] files = file.listFiles();
-			// find folders in plugin folder
-			for (File f : files) {
-				if (f.isDirectory()) {
-					String worldName = f.getName();
-					// get folder in world folder
-					File groupsFolder = new File(f, type + "s");
-					if (groupsFolder.exists() && groupsFolder.isDirectory()) {
-						// get all files in folder
-						File[] groupFiles = groupsFolder.listFiles();
-						for (File groupFile : groupFiles) {
-							if (groupFile.getName().equals(name + ".txt")) {
-								// load file
-								MainPlugin.debug("  Loading world data '" + worldName + "'");
-								List<PermissionNode> perms = new ArrayList<PermissionNode>();
-								worldPermissions.put(worldName, perms);
-								List<Group> wgroups = new ArrayList<Group>();
-								worldGroups.put(worldName, wgroups);
-								loadFromFile(groupFile, wgroups, perms, worldName);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		dirty = false;
-	}
-	
-	public void loadFromFile(File file, List<Group> groups, List<PermissionNode> perms, String worldName) {
-		try {
-			String mode = "";
-			Scanner scanner = new Scanner(file);
-			String line;
-			while (scanner.hasNext()) {
-				line = scanner.nextLine().trim();
-				if (line.isEmpty() || line.startsWith("#") || line.startsWith("//")) {
-					// ignore
-				} else if (line.startsWith("=")) {
-					// mode change
-					line = line.replace("=", "").trim().toLowerCase();
-					if (line.startsWith("data") || line.startsWith("info")) {
-						mode = "info";
-						MainPlugin.debug("    Reading info");
-					} else if (line.startsWith("inherit") || line.startsWith("group")) {
-						mode = "groups";
-						MainPlugin.debug("    Reading groups");
-					} else if (line.startsWith("perm")) {
-						mode = "perms";
-						MainPlugin.debug("    Reading perms");
-					}
-				} else if (mode.equals("info")) {
-					String key = null, val = null;
-					if (line.contains("=")) {
-						String[] s = line.split("=", 2);
-						key = s[0].trim();
-						val = s[1].trim();
-					} else if (line.contains(":")) {
-						String[] s = line.split(":", 2);
-						key = s[0].trim();
-						val = s[1].trim();
-					}
-					if (key != null && val != null) {
-						key = key.toLowerCase();
-						if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
-							val = val.substring(1, val.length() - 1);
-						}
-						info.put(key, val);
-						if (key.equals("description")) {
-							description = val;
-						} else if (key.equals("color")) {
-							ChatColor c;
-							if (val.length() == 1) {
-								c = ChatColor.getByChar(val);
-							} else {
-								c = ChatColor.valueOf(val.replace(" ", "_").toUpperCase());
-							}
-							if (c != null) {
-								if (worldName == null) {
-									color = c;
-								} else {
-									worldColors.put(worldName, c);
-								}
-							}
-						} else if (key.equals("prefix")) {
-							if (worldName == null) {
-								prefix = val;
-							} else {
-								worldPrefixes.put(worldName, val);
-							}
-						}
-						MainPlugin.debug("      Added info: " + key + " = " + val);
-					} else {
-						MainPlugin.warning(type + " '" + name + "' has invalid info line: " + line);
-					}
-				} else if (mode.equals("groups")) {
-					// inherited group
-					Group group = MainPlugin.getGroup(line);
-					if (group != null) {
-						boolean ok = true;
-						// check for infinite group recursion
-						if (this instanceof Group) {
-							if (group.inheritsGroup(worldName, (Group)this)) {
-								ok = false;
-								MainPlugin.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + this.getName());
-							}
-						}
-						if (ok) {
-							groups.add(group);
-							MainPlugin.debug("      Added inherited group: " + line);
-						}
-					} else {
-						MainPlugin.warning(type + " '" + name + "' has non-existant inherited group '" + line + "'");
-					}
-				} else if (mode.equals("perms")) {
-					// permission
-					PermissionNode node = new PermissionNode(line);
-					perms.add(node);
-					MainPlugin.debug("      Added permission: " + node);
-				} else {
-					MainPlugin.warning(type + " '" + name + "' has orphan line: " + line);
-				}
-			}
-			scanner.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}		
+		MainPlugin.getStorage().load(this);
 	}
 	
 	public void save() {
@@ -784,107 +680,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	public void save(boolean force) {
 		if (dirty || force) {
 			MainPlugin.debug("Saving " + type + " " + name + " (dirty: " + dirty + ", forced: " + force + ")");
-			dirty = false;
-			
-			BufferedWriter file = null;
-			
-			// save base data
-			try {
-				file = writer(null);
-				// save info
-				if (info.size() > 0) {
-					writeInfo(file, info);
-				}
-				// save groups
-				if (groups.size() > 0) {
-					writeGroups(file, groups);
-				}
-				// save perms
-				writePermissions(file, permissions);
-				file.close();
-			} catch (IOException e) {
-				MainPlugin.error("Failed to write file for " + type + " '" + name + "'!");
-			}
-			
-			// save world data
-			Set<String> worldNames = new HashSet<String>();
-			worldNames.addAll(worldPermissions.keySet());
-			worldNames.addAll(worldGroups.keySet());
-			worldNames.addAll(worldPrefixes.keySet());
-			worldNames.addAll(worldColors.keySet());
-			Map<String, String> winfo = null;
-			List<Group> wgroups = null;
-			List<PermissionNode> wperms = null;
-			for (String worldName : worldNames) {
-				try {
-					file = writer(worldName);
-					winfo = worldInfo.get(worldName);
-					wgroups = worldGroups.get(worldName);
-					wperms = worldPermissions.get(worldName);
-					// save info
-					if (winfo != null && winfo.size() > 0) {
-						writeInfo(file, winfo);
-					}
-					// save groups
-					if (wgroups != null && wgroups.size() > 0) {
-						writeGroups(file, wgroups);
-					}
-					// save perms
-					if (wperms != null) {
-						writePermissions(file, wperms);
-					}
-					file.close();
-				} catch (IOException e) {
-					MainPlugin.error("Failed to write file for " + type + " '" + name + "' for world '" + worldName + "'!");
-				}
-			}
+			MainPlugin.getStorage().save(this);
 		}
-	}
-	
-	private void writeInfo(BufferedWriter file, Map<String, String> info) throws IOException {
-		file.write("== INFORMATION ==");
-		file.newLine();
-		file.newLine();
-		for (String key : info.keySet()) {
-			file.write(key + " : \"" + info.get(key) + "\"");
-			file.newLine();
-		}
-		file.newLine();
-	}
-	
-	private void writeGroups(BufferedWriter file, List<Group> groups) throws IOException {
-		file.write("== GROUPS ==");
-		file.newLine();
-		file.newLine();
-		for (Group g : groups) {
-			file.write(g.getName());
-			file.newLine();
-		}
-		file.newLine();
-	}
-	
-	private void writePermissions(BufferedWriter file, List<PermissionNode> perms) throws IOException {
-		file.write("== PERMISSIONS ==");
-		file.newLine();
-		file.newLine();
-		for (PermissionNode n : perms) {
-			file.write((n.getValue() == true ? " + " : " - ") + n.getNodeName());
-			file.newLine();
-		}
-		file.newLine();
-	}
-	
-	private BufferedWriter writer(String worldName) throws IOException {
-		File file;
-		if (worldName == null) {
-			file = new File(MainPlugin.yapp.getDataFolder(), type + "s" + File.separator + name + ".txt");
-		} else {
-			file = new File(MainPlugin.yapp.getDataFolder(), "worlds" + File.separator + worldName + File.separator + type + "s" + File.separator + name + ".txt");
-		}
-		file.mkdirs();
-		if (file.exists()) file.delete();
-		
-		return new BufferedWriter(new FileWriter(file));
 	}
 	
 	@Override

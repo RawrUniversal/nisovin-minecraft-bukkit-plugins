@@ -1,9 +1,11 @@
 package com.nisovin.yapp;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -17,8 +19,19 @@ public class PermListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		plugin.loadPlayerPermissions(event.getPlayer());
+		Player player = event.getPlayer();
+		if (!plugin.hasLoadedPermissions(player)) {
+			plugin.loadPlayerPermissions(player);
+		}
 	}
+	
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		if (!plugin.hasLoadedPermissions(player)) {
+			plugin.loadPlayerPermissions(player);
+		}
+	}	
 
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
