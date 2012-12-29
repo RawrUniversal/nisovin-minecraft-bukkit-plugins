@@ -81,6 +81,7 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 					return false;
 				}
 				take = event.getDamage();
+				player.setLastDamageCause(event);
 			}
 			if (ignoreArmor) {
 				int health = target.getHealth() - take;

@@ -59,6 +59,7 @@ public class PainSpell extends TargetedEntitySpell {
 				return false;
 			}
 			dam = event.getDamage();
+			target.setLastDamageCause(event);
 		}
 		if (ignoreArmor) {
 			int health = target.getHealth() - dam;
