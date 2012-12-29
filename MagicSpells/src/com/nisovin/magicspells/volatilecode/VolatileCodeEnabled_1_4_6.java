@@ -221,20 +221,6 @@ public class VolatileCodeEnabled_1_4_6 implements VolatileCodeHandle {
 	}
 
 	@Override
-	public boolean itemStackTagsEqual(ItemStack item1, ItemStack item2) {
-		NBTTagCompound tag1 = null, tag2 = null;
-		if (item1 != null && item1 instanceof CraftItemStack) {
-			tag1 = getTag(item1);
-		}
-		if (item2 != null && item2 instanceof CraftItemStack) {
-			tag2 = getTag(item2);
-		}
-		if (tag1 == null && tag2 == null) return true;
-		if (tag1 == null || tag2 == null) return false;
-		return tag1.equals(tag2);
-	}
-
-	@Override
 	public ItemStack addFakeEnchantment(ItemStack item) {
 		if (!(item instanceof CraftItemStack)) {
 			item = CraftItemStack.asCraftCopy(item);

@@ -20,7 +20,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.util.CastItem;
-import com.nisovin.magicspells.util.Util;
 
 public class CastListenerNew implements Listener {
 
@@ -103,7 +102,7 @@ public class CastListenerNew implements Listener {
 					// find mana potion TODO: fix this, it's not good
 					int restoreAmt = 0;
 					for (Map.Entry<ItemStack, Integer> entry : MagicSpells.manaPotions.entrySet()) {
-						if (Util.itemStackTypesEqual(inHand, entry.getKey())) {
+						if (inHand.isSimilar(entry.getKey())) {
 							restoreAmt = entry.getValue();
 							break;
 						}

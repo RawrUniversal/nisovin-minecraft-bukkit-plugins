@@ -45,8 +45,6 @@ public interface VolatileCodeHandle {
 	public void playSound(Location location, String sound, float volume, float pitch);
 	
 	public void playSound(Player player, String sound, float volume, float pitch);
-		
-	public boolean itemStackTagsEqual(ItemStack item1, ItemStack item2);
 	
 	public ItemStack addFakeEnchantment(ItemStack item);
 	

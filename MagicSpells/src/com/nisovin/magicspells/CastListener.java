@@ -18,7 +18,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.nisovin.magicspells.mana.ManaChangeReason;
-import com.nisovin.magicspells.util.Util;
 
 public class CastListener implements Listener {
 
@@ -84,15 +83,18 @@ public class CastListener implements Listener {
 						showIcon(player, MagicSpells.spellIconSlot, spell.getSpellIcon());
 					}
 					// use cool new text thingy
-					final ItemStack fake = inHand.clone();
-					ItemMeta meta = fake.getItemMeta();
-					meta.setDisplayName("Spell: " + spell.getName());
-					fake.setItemMeta(meta);
-					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-						public void run() {
-							MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, player.getInventory().getHeldItemSlot(), fake);
-						}
-					});
+					boolean yay = false;
+					if (yay) {
+						final ItemStack fake = inHand.clone();
+						ItemMeta meta = fake.getItemMeta();
+						meta.setDisplayName("Spell: " + spell.getName());
+						fake.setItemMeta(meta);
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+							public void run() {
+								MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, player.getInventory().getHeldItemSlot(), fake);
+							}
+						});
+					}
 				}
 				
 				// check for mana pots
@@ -100,7 +102,7 @@ public class CastListener implements Listener {
 					// find mana potion TODO: fix this, it's not good
 					int restoreAmt = 0;
 					for (Map.Entry<ItemStack, Integer> entry : MagicSpells.manaPotions.entrySet()) {
-						if (Util.itemStackTypesEqual(inHand, entry.getKey())) {
+						if (inHand.isSimilar(entry.getKey())) {
 							restoreAmt = entry.getValue();
 							break;
 						}

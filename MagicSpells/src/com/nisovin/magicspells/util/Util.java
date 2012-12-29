@@ -162,12 +162,6 @@ public class Util {
 		}
 	}
 	
-	public static boolean itemStackTypesEqual(ItemStack item1, ItemStack item2) {
-		if (item1.getTypeId() != item2.getTypeId()) return false;
-		if (item1.getDurability() != item2.getDurability()) return false;
-		return MagicSpells.getVolatileCodeHandler().itemStackTagsEqual(item1, item2);
-	}
-	
 	public static void setFacing(Player player, Vector vector) {
 		double yaw = Math.toDegrees(Math.atan2(-vector.getX(), vector.getZ()));
 		double pitch = Math.toDegrees(-Math.asin(vector.getY()));
@@ -333,7 +327,7 @@ public class Util {
 		int amt = item.getAmount();
 		ItemStack[] items = inventory.getContents();
 		for (int i = 0; i < items.length; i++) {
-			if (items[i] != null && Util.itemStackTypesEqual(item, items[i])) {
+			if (items[i] != null && item.isSimilar(items[i])) {
 				if (items[i].getAmount() > amt) {
 					items[i].setAmount(items[i].getAmount() - amt);
 					amt = 0;
@@ -360,7 +354,7 @@ public class Util {
 		int amt = item.getAmount();
 		ItemStack[] items = inventory.getContents();
 		for (int i = 0; i < items.length; i++) {
-			if (items[i] != null && Util.itemStackTypesEqual(item, items[i])) {
+			if (items[i] != null && item.isSimilar(items[i])) {
 				if (items[i].getAmount() + amt <= items[i].getMaxStackSize()) {
 					items[i].setAmount(items[i].getAmount() + amt);
 					amt = 0;

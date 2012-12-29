@@ -815,7 +815,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		int count = 0;
 		ItemStack[] items = inventory.getContents();
 		for (int i = 0; i < items.length; i++) {
-			if (items[i] != null && Util.itemStackTypesEqual(item, items[i])) {
+			if (items[i] != null && item.isSimilar(items[i])) {
 				count += items[i].getAmount();
 			}
 			if (count >= item.getAmount()) {
@@ -829,7 +829,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		int amt = item.getAmount();
 		ItemStack[] items = inventory.getContents();
 		for (int i = 0; i < items.length; i++) {
-			if (items[i] != null && Util.itemStackTypesEqual(item, items[i])) {
+			if (items[i] != null && item.isSimilar(items[i])) {
 				if (items[i].getAmount() > amt) {
 					items[i].setAmount(items[i].getAmount() - amt);
 					break;

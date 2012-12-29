@@ -101,11 +101,6 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	}
 
 	@Override
-	public boolean itemStackTagsEqual(ItemStack item1, ItemStack item2) {
-		return true;
-	}
-
-	@Override
 	public ItemStack addFakeEnchantment(ItemStack item) {
 		item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
 		return item;

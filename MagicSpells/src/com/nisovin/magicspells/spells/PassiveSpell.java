@@ -572,7 +572,7 @@ public class PassiveSpell extends Spell {
 				}
 			} else {
 				for (int i = 0; i < items.length; i++) {
-					if (items[i] != null && Util.itemStackTypesEqual(items[i], item)) {
+					if (items[i] != null && item.isSimilar(items[i])) {
 						return true;
 					}
 				}
@@ -864,7 +864,7 @@ public class PassiveSpell extends Spell {
 				}
 			} else {
 				for (int i = 0; i < items.length; i++) {
-					if (items[i] != null && Util.itemStackTypesEqual(items[i], item)) {
+					if (items[i] != null && item.isSimilar(items[i])) {
 						return true;
 					}
 				}
