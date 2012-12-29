@@ -43,11 +43,11 @@ public class Util {
 				if (temp.length == 1) {
 					name = "";
 				} else {
-					name = temp[1].replace("__", " ");
+					name = ChatColor.translateAlternateColorCodes('&', temp[1].replace("__", " "));
 					if (temp.length > 2) {
 						lore = Arrays.copyOfRange(temp, 2, temp.length);
 						for (int i = 0; i < lore.length; i++) {
-							lore[i] = lore[i].replace("__", " ");
+							lore[i] = ChatColor.translateAlternateColorCodes('&', lore[i].replace("__", " "));
 						}
 					}
 				}

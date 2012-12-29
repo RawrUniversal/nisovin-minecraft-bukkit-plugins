@@ -34,6 +34,8 @@ public interface VolatileCodeHandle {
 	
 	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire, boolean breakBlocks);
 	
+	public void playExplosionEffect(Location location, float size);
+	
 	public void setExperienceBar(Player player, int level, float percent);
 	
 	public Fireball shootSmallFireball(Player player);

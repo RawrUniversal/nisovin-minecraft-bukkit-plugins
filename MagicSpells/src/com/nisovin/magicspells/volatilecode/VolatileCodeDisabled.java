@@ -72,6 +72,11 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	}
 
 	@Override
+	public void playExplosionEffect(Location location, float size) {
+		location.getWorld().createExplosion(location, 0F);
+	}
+
+	@Override
 	public void setExperienceBar(Player player, int level, float percent) {
 	}
 

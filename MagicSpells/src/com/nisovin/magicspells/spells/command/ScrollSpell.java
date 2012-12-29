@@ -42,7 +42,6 @@ public class ScrollSpell extends CommandSpell {
 	private boolean textContainsUses;
 	private String strScrollName;
 	private String strScrollSubtext;
-	private String strScrollOver;
 	private String strUsage;
 	private String strNoSpell;
 	private String strCantTeach;
@@ -70,7 +69,6 @@ public class ScrollSpell extends CommandSpell {
 		requireScrollCastPermOnUse = getConfigBoolean("require-scroll-cast-perm-on-use", true);
 		strScrollName = getConfigString("str-scroll-name", "Magic Scroll: %s");
 		strScrollSubtext = getConfigString("str-scroll-subtext", "Uses remaining: %u");
-		strScrollOver = getConfigString("str-scroll-over", "");
 		strUsage = getConfigString("str-usage", "You must hold a single blank paper \nand type /cast scroll <spell> <uses>.");
 		strNoSpell = getConfigString("str-no-spell", "You do not know a spell by that name.");
 		strCantTeach = getConfigString("str-cant-teach", "You cannot create a scroll with that spell.");
@@ -171,7 +169,9 @@ public class ScrollSpell extends CommandSpell {
 	}
 	
 	public ItemStack createScroll(Spell spell, int uses, ItemStack item) {
-		if (item == null) item = new ItemStack(itemId, 1);
+		if (item == null) {
+			item = new ItemStack(itemId, 1);
+		}
 		item.setDurability((short)0);
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', strScrollName.replace("%s", spell.getName()).replace("%u", (uses>=0?uses+"":"many"))));
@@ -302,22 +302,6 @@ public class ScrollSpell extends CommandSpell {
 				inHand = createScroll(spell, uses, inHand);
 				player.getInventory().setItem(event.getNewSlot(), inHand);
 			}
-		}
-		
-		// send scroll over message
-		if (!strScrollOver.isEmpty()) {
-			// get scroll data (spell and uses)
-			String scrollDataString = getSpellDataFromScroll(inHand);
-			if (scrollDataString == null || scrollDataString.isEmpty()) return;
-			String[] scrollData = scrollDataString.split(",");
-			Spell spell = MagicSpells.getSpellByInternalName(scrollData[0]);
-			if (spell == null) return;
-			int uses = 0;
-			if (scrollData.length > 1 && scrollData[1].matches("^[0-9]+$")) {
-				uses = Integer.parseInt(scrollData[1]);
-			}
-			// send message
-			sendMessage(player, strScrollOver, "%s", spell.getName(), "%u", (uses>=0?uses+"":"many"));
 		}
 	}
 

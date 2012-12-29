@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.volatilecode;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Set;
 
 import net.minecraft.server.v1_4_5.*;
@@ -163,6 +164,17 @@ public class VolatileCodeEnabled_1_4_5 implements VolatileCodeHandle {
 	@Override
 	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire, boolean breakBlocks) {
 		return !((CraftWorld)location.getWorld()).getHandle().createExplosion(((CraftPlayer)player).getHandle(), location.getX(), location.getY(), location.getZ(), size, fire, breakBlocks).wasCanceled;
+	}
+
+	@Override
+	public void playExplosionEffect(Location location, float size) {
+		@SuppressWarnings("rawtypes")
+		Packet60Explosion packet = new Packet60Explosion(location.getX(), location.getY(), location.getZ(), size, new ArrayList(), null);
+		for (Player player : location.getWorld().getPlayers()) {
+			if (player.getLocation().distanceSquared(location) < 50 * 50) {
+				((CraftPlayer)player).getHandle().netServerHandler.sendPacket(packet);
+			}
+		}
 	}
 
 	@Override

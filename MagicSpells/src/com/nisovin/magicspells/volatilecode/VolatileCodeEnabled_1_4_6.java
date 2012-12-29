@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.volatilecode;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Set;
 
 import net.minecraft.server.v1_4_6.*;
@@ -166,6 +167,17 @@ public class VolatileCodeEnabled_1_4_6 implements VolatileCodeHandle {
 	}
 
 	@Override
+	public void playExplosionEffect(Location location, float size) {
+		@SuppressWarnings("rawtypes")
+		Packet60Explosion packet = new Packet60Explosion(location.getX(), location.getY(), location.getZ(), size, new ArrayList(), null);
+		for (Player player : location.getWorld().getPlayers()) {
+			if (player.getLocation().distanceSquared(location) < 50 * 50) {
+				((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
+			}
+		}
+	}
+
+	@Override
 	public void setExperienceBar(Player player, int level, float percent) {
 		Packet43SetExperience packet = new Packet43SetExperience(percent, player.getTotalExperience(), level);
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
@@ -224,6 +236,9 @@ public class VolatileCodeEnabled_1_4_6 implements VolatileCodeHandle {
 
 	@Override
 	public ItemStack addFakeEnchantment(ItemStack item) {
+		if (!(item instanceof CraftItemStack)) {
+			item = CraftItemStack.asCraftCopy(item);
+		}
 		NBTTagCompound tag = getTag(item);		
 		if (tag == null) {
 			tag = new NBTTagCompound();
