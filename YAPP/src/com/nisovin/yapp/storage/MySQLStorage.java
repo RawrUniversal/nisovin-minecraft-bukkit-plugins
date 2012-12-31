@@ -38,6 +38,7 @@ public class MySQLStorage implements StorageMethod {
 		}
 
 		try {
+			MainPlugin.debug("Checking database schema");
 			createOrUpdateSchema(conn);
 			conn.close();
 		} catch (SQLException e) {
@@ -389,15 +390,8 @@ public class MySQLStorage implements StorageMethod {
 	}
 	
 	private MySQLConnection connect() {
-		/*try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}*/
 		try {
-			MySQLConnection conn = (MySQLConnection) DriverManager.getConnection("jdbc:mysql://" + host + "/" + db, user, pass);
-			return conn;
+			return (MySQLConnection) DriverManager.getConnection("jdbc:mysql://" + host + "/" + db, user, pass);
 		} catch (SQLException e) {
 			MainPlugin.error("MYSQL: ERROR CONNECTING TO DATABASE");
 			e.printStackTrace();
@@ -406,16 +400,19 @@ public class MySQLStorage implements StorageMethod {
 	}
 	
 	private void createOrUpdateSchema(MySQLConnection conn) throws SQLException {
+		int currentVersion = 1;
 		conn.setAutoCommit(false);
 		try {
 			int version = getSchemaVersion(conn);
+			MainPlugin.debug("  Schema version is " + version);
 			boolean update = false;
 			if (version < 1) {
+				MainPlugin.debug("  Updating schema to version 1");
 				schemaUpdate1(conn);
 				update = true;
 			}
 			if (update) {
-				conn.createStatement().execute("UPDATE `yapp_data` SET `schema_version` = 1");
+				conn.createStatement().execute("UPDATE `yapp_data` SET `schema_version` = " + currentVersion);
 				conn.commit();
 			}
 		} catch (SQLException e) {

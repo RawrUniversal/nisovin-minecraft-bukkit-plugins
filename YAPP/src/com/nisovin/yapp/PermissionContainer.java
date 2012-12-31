@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.permissions.Permission;
 
 public class PermissionContainer implements Comparable<PermissionContainer> {
 
@@ -118,8 +120,16 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
-	public void fillTrackedNodeList(TrackedNodeList list, String world) {
+	public void fillTrackedNodeList(TrackedNodeList list, String world, boolean addDefaultPerms) {
 		if (world == null) world = "";
+		
+		// add default perms
+		if (addDefaultPerms && this instanceof User && ((User)this).isOnline()) {
+			Set<Permission> perms = Bukkit.getPluginManager().getDefaultPermissions(((User)this).getPlayer().isOp());
+			for (Permission perm : perms) {
+				list.add(perm);
+			}
+		}
 		
 		// add world perms
 		if (!world.isEmpty()) {
@@ -139,14 +149,14 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		if (!world.isEmpty()) {
 			if (worldGroups.containsKey(world)) {
 				for (Group group : worldGroups.get(world)) {
-					group.fillTrackedNodeList(list, world);
+					group.fillTrackedNodeList(list, world, false);
 				}
 			}
 		}
 		
 		// add group perms
 		for (Group group : groups) {
-			group.fillTrackedNodeList(list, world);
+			group.fillTrackedNodeList(list, world, false);
 		}
 	}
 	

@@ -102,7 +102,6 @@ public class MainPlugin extends JavaPlugin {
 				error("UNABLE TO ACCESS MYSQL PERMISSION DATABASE. USING FILE SYSTEM INSTEAD.");
 				e.printStackTrace();
 				storageMethod = new FileStorage();
-				return;
 			}
 		} else {
 			storageMethod = new FileStorage();

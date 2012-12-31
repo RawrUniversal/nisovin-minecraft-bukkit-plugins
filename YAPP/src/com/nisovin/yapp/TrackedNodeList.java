@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.permissions.Permission;
 
 public class TrackedNodeList {
 
@@ -34,6 +35,23 @@ public class TrackedNodeList {
 		}
 	}
 	
+	public void add(Permission perm) {
+		TrackedNode existingNode = realNodes.get(perm.getName());
+		NodeState state = NodeState.NORMAL;
+		if (existingNode != null) {
+			if (existingNode.getValue() == true) {
+				state = NodeState.REDEFINED;
+			} else {
+				state = NodeState.OVERRIDDEN;
+			}
+		}
+		TrackedNode newNode = new TrackedNode(perm, null, state);
+		allNodes.add(newNode);
+		if (existingNode == null) {
+			realNodes.put(perm.getName(), newNode);
+		}
+	}
+	
 	public List<TrackedNode> getTrackedNodes() {
 		return allNodes;
 	}
@@ -51,6 +69,14 @@ public class TrackedNodeList {
 			this.value = node.getValue();
 			this.container = container;
 			this.world = world;
+			this.state = state;
+		}
+		
+		public TrackedNode(Permission perm, PermissionContainer container, NodeState state) {
+			this.name = perm.getName();
+			this.value = true;
+			this.container = container;
+			this.world = null;
 			this.state = state;
 		}
 		
@@ -82,7 +108,9 @@ public class TrackedNodeList {
 			} else if (state == NodeState.OVERRIDDEN) {
 				s += "overridden, ";
 			}
-			if (container == source) {
+			if (container == null) {
+				s += "baseline";
+			} else if (container == source) {
 				s += "self";
 			} else if (container instanceof Group) {
 				s += "g:" + container.getName();

@@ -27,13 +27,15 @@ public class ModifyOptionsMore extends MenuPrompt {
 		}
 		c.sendRawMessage(Menu.TEXT_COLOR + "  1) Check if it " + Menu.KEYLETTER_COLOR + "h" + Menu.KEYWORD_COLOR + "as " + Menu.TEXT_COLOR + "a permission");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  2) Check if it " + Menu.KEYLETTER_COLOR + "i" + Menu.KEYWORD_COLOR + "nherits " + Menu.TEXT_COLOR + "a group");
-		c.sendRawMessage(Menu.TEXT_COLOR + "  3) List all " + Menu.KEYLETTER_COLOR + "p" + Menu.KEYWORD_COLOR + "ermission " + Menu.TEXT_COLOR + "nodes");
-		c.sendRawMessage(Menu.TEXT_COLOR + "  4) List all " + Menu.KEYLETTER_COLOR + "g" + Menu.KEYWORD_COLOR + "roups");
-		//c.sendRawMessage(Menu.TEXT_COLOR + "  5) Set a short " + Menu.KEYLETTER_COLOR + "d" + Menu.KEYWORD_COLOR + "escription");
+		c.sendRawMessage(Menu.TEXT_COLOR + "  3) Show " + Menu.KEYLETTER_COLOR + "g" + Menu.KEYWORD_COLOR + "roup " + Menu.TEXT_COLOR + "information");
+		c.sendRawMessage(Menu.TEXT_COLOR + "  4) List managed " + Menu.KEYLETTER_COLOR + "p" + Menu.KEYWORD_COLOR + "ermission " + Menu.TEXT_COLOR + "nodes");
 		if (obj instanceof Group) {
 			c.sendRawMessage(Menu.TEXT_COLOR + "  6) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "ename" + Menu.TEXT_COLOR + " this group");
 			c.sendRawMessage(Menu.TEXT_COLOR + "  7) " + Menu.KEYWORD_COLOR + "De" + Menu.KEYLETTER_COLOR + "l" + Menu.KEYWORD_COLOR + "ete" + Menu.TEXT_COLOR + " this group");
 		} else if (obj instanceof User) {
+			if (((User)obj).isOnline()) {
+				c.sendRawMessage(Menu.TEXT_COLOR + "  5) List " + Menu.KEYLETTER_COLOR + "A" + Menu.KEYWORD_COLOR + "LL " + Menu.TEXT_COLOR + "permission nodes");
+			}
 			c.sendRawMessage(Menu.TEXT_COLOR + "  6) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "efresh" + Menu.TEXT_COLOR + " this player's permissions");
 		}
 		c.sendRawMessage(Menu.TEXT_COLOR + "  0) Show " + Menu.KEYLETTER_COLOR + "m" + Menu.KEYWORD_COLOR + "ore " + Menu.TEXT_COLOR + "options");
@@ -48,14 +50,15 @@ public class ModifyOptionsMore extends MenuPrompt {
 			return Menu.HAS_PERMISSION;
 		} else if (input.equals("2") || input.startsWith("i")) {
 			return Menu.HAS_GROUP;
-		} else if (input.equals("3") || input.startsWith("p")) {
-			listPermissions(context);
-			return showMessage(context, null, this);
-		} else if (input.equals("4") || input.startsWith("g")) {
+		} else if (input.equals("3") || input.startsWith("g")) {
 			showCurrentGroupInfo(context);
 			return showMessage(context, null, this);
-		} else if (input.equals("5") || input.startsWith("d")) {
-			return showMessage(context, Menu.ERROR_COLOR + "Not yet implemented.", this);
+		} else if (input.equals("4") || input.startsWith("p")) {
+			listPermissions(context, false);
+			return showMessage(context, null, this);
+		} else if ((input.equals("5") || input.startsWith("a")) && obj instanceof User) {
+			listPermissions(context, true);
+			return showMessage(context, null, this);
 		} else if ((input.equals("6") || input.startsWith("r")) && obj instanceof Group) {
 			return Menu.RENAME_GROUP;
 		} else if ((input.equals("7") || input.equals("l") || input.startsWith("del")) && obj instanceof Group) {
@@ -81,7 +84,7 @@ public class ModifyOptionsMore extends MenuPrompt {
 		return Menu.MODIFY_OPTIONS;
 	}
 	
-	private void listPermissions(ConversationContext context) {
+	private void listPermissions(ConversationContext context, boolean showDefaultPerms) {
 		PermissionContainer obj = getObject(context);
 		String world = getWorld(context);
 		if (world == null || world.isEmpty()) {
@@ -93,7 +96,7 @@ public class ModifyOptionsMore extends MenuPrompt {
 			}
 		}
 		TrackedNodeList list = new TrackedNodeList(obj);
-		obj.fillTrackedNodeList(list, world);
+		obj.fillTrackedNodeList(list, world, showDefaultPerms);
 		for (TrackedNodeList.TrackedNode node : list.getTrackedNodes()) {
 			context.getForWhom().sendRawMessage(node.toString());
 		}
