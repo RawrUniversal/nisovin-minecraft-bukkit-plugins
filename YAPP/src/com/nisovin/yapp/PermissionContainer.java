@@ -554,16 +554,20 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 			return false;
 		}
 		if (world == null || world.isEmpty()) {
-			groups.add(group);
-			dirty = true;
+			if (!groups.contains(group)) {
+				groups.add(group);
+				dirty = true;
+			}
 		} else {
 			List<Group> wgroups = worldGroups.get(world);
 			if (wgroups == null) {
 				wgroups = new ArrayList<Group>();
 				worldGroups.put(world, wgroups);
 			}
-			wgroups.add(group);
-			dirty = true;
+			if (!wgroups.contains(group)) {
+				wgroups.add(group);
+				dirty = true;
+			}
 		}
 		return true;
 	}
