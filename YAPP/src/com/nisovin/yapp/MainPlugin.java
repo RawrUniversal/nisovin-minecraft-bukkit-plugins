@@ -1,6 +1,7 @@
 package com.nisovin.yapp;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +56,6 @@ public class MainPlugin extends JavaPlugin {
 	public void onEnable() {
 		yapp = this;
 		mainThreadId = Thread.currentThread().getId();
-		storageMethod = new FileStorage();
 		
 		load();
 		
@@ -93,7 +93,21 @@ public class MainPlugin extends JavaPlugin {
 		setPlayerMetadata = config.getboolean("general.set player metadata");
 		boolean modalMenu = config.getboolean("general.modal menu");
 		String defGroupName = config.getString("general.default group");
-				
+		
+		// get storage method
+		if (config.getboolean("mysql.enabled")) {
+			try {
+				storageMethod = new MySQLStorage(config.getString("mysql.host"), config.getString("mysql.user"), config.getString("mysql.pass"), config.getString("mysql.db"));
+			} catch (IOException e) {
+				error("UNABLE TO ACCESS MYSQL PERMISSION DATABASE. USING FILE SYSTEM INSTEAD.");
+				e.printStackTrace();
+				storageMethod = new FileStorage();
+				return;
+			}
+		} else {
+			storageMethod = new FileStorage();
+		}
+		
 		// load all group data
 		loadGroups();
 		
@@ -120,6 +134,7 @@ public class MainPlugin extends JavaPlugin {
 					Group g = getGroup(s);
 					if (g == null) {
 						g = newGroup(s);
+						g.save();
 					}
 					ladderGroups.add(g);
 				}

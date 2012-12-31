@@ -32,3 +32,11 @@ interact : false
 targeted : false
 attack   : false
 damage   : false
+
+== MYSQL ==
+
+enabled: false
+host: localhost
+user: bukkit
+pass: walrus
+db: minecraft
