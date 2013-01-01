@@ -463,6 +463,7 @@ forcebomb:
         - mana 30
     str-cost: 30 mana
     str-cast-self: An explosion of energy pushes your enemies around.
+    str-no-target: No target found.
 forcepush:
     spell-class: ".instant.ForcepushSpell"
     name: forcepush
@@ -744,6 +745,7 @@ levitate:
     str-cost: 30 mana and 2 feathers
     str-cast-self: You are levitating %t!
     str-cast-target: "%a is levitating you!"
+    str-no-target: No target found.
 lifewalk:
     spell-class: ".buff.LifewalkSpell"
     name: lifewalk
@@ -786,7 +788,7 @@ lightning:
     str-cost: 15 mana
     str-cast-self: You call down lightning.
     str-cast-others: "%a calls down lightning."
-    str-no-target: Unable to find target.
+    str-no-target: No target found.
 lightwalk:
     spell-class: ".buff.LightwalkSpell"
     name: lightwalk
@@ -1068,7 +1070,7 @@ shadowstep:
     cost:
         - mana 10
     str-cost: 10 mana
-    str-no-target: No target.
+    str-no-target: No target found.
     str-no-landing-spot: Cannot shadowstep there.
 silence:
     spell-class: ".targeted.SilenceSpell"
@@ -1090,6 +1092,7 @@ silence:
     str-cast-self: You have silenced %t.
     str-cast-target: "%a has silenced you."
     str-silenced: You are silenced.
+    str-no-target: No target found.
 spellhaste:
     spell-class: ".buff.SpellHasteSpell"
     name: spellhaste
@@ -1157,6 +1160,7 @@ storm:
         - mana 35
     str-cost: 35 mana
     str-cast-self: You call down a lightning storm!
+    str-no-target: No target found.
 stormblock:
     spell-class: ".targeted.PulserSpell"
     name: stormblock
@@ -1176,6 +1180,7 @@ stormblock:
     str-cast-self: You have summoned a storm block!
     str-cast-others: "%a has summoned a storm block!"
     str-at-cap: You have too many effects at once.
+    str-no-target: No target found.
 summon_helper:
     spell-class: ".targeted.SummonSpell"
     can-cast-with-item: false
@@ -1246,6 +1251,7 @@ switch:
     str-cost: 10 mana
     str-cast-self: You have switched places with %t.
     str-cast-target: "%a has switched places with you."
+    str-no-target: No target found.
 telekinesis:
     spell-class: ".targeted.TelekinesisSpell"
     name: telekinesis
@@ -1343,7 +1349,7 @@ water:
     cost:
         - mana 10
     str-cost: 10 mana
-    str-no-target: No target.
+    str-no-target: No target found.
     str-failed: ""
 waterwalk:
     spell-class: ".buff.WaterwalkSpell"
@@ -1408,6 +1414,7 @@ zap:
     str-cost: 5 mana
     str-cast-self: You zapped a block.
     str-cant-zap: You can't zap that.
+    str-no-target: No target found.
     
 gianttree:
     spell-class: ".ExternalCommandSpell"

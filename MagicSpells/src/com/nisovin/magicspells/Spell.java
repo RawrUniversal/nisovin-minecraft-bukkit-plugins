@@ -219,15 +219,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
 		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
 		
-		/*if (spellIcon != null) {
-			if (description != null && strCost != null && !description.isEmpty() && !strCost.isEmpty()) {
-				spellIcon = MagicSpells.getVolatileCodeHandler().setItemLore(spellIcon, description, strCost);
-			} else if (description != null && !description.isEmpty()) {
-				spellIcon = MagicSpells.getVolatileCodeHandler().setItemLore(spellIcon, description);
-			} else if (strCost != null && !strCost.isEmpty()) {
-				spellIcon = MagicSpells.getVolatileCodeHandler().setItemLore(spellIcon, strCost);
-			}
-		}*/
 	}
 	
 	protected SpellReagents getConfigReagents(String option) {

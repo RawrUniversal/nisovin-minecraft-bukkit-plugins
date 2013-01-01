@@ -20,7 +20,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.BuffSpell;
-import com.nisovin.magicspells.util.BossHealthBar;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class SeeHealthSpell extends BuffSpell {
@@ -134,9 +133,9 @@ public class SeeHealthSpell extends BuffSpell {
 		MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, slot, item);
 	}
 	
-	private void resetHealthBar(Player player) {
-		resetHealthBar(player, player.getInventory().getHeldItemSlot());
-	}
+	//private void resetHealthBar(Player player) {
+	//	resetHealthBar(player, player.getInventory().getHeldItemSlot());
+	//}
 	
 	private void resetHealthBar(Player player, int slot) {
 		MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, slot, player.getItemInHand());
@@ -194,12 +193,7 @@ public class SeeHealthSpell extends BuffSpell {
 				if (damager instanceof Projectile && ((Projectile)damager).getShooter() != null) {
 					damager = ((Projectile)damager).getShooter();
 				}
-				BossHealthBar bar = null;//bars.get(damager);
-				if (bar != null) {
-					LivingEntity e = (LivingEntity)event.getEntity();
-					bar.update(e.getHealth() - event.getDamage(), e.getMaxHealth());
-					addUseAndChargeCost((Player)damager);
-				}
+				// update bar?
 			}
 		}
 	}

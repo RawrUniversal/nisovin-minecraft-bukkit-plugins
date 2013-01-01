@@ -26,7 +26,7 @@ public abstract class TargetedSpell extends InstantSpell {
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
 		targetSelf = getConfigBoolean("target-self", false);
 		strCastTarget = getConfigString("str-cast-target", "");
-		strNoTarget = getConfigString("str-no-target", "No target found.");
+		strNoTarget = getConfigString("str-no-target", "");
 	}
 
 	protected void sendMessageToTarget(Player caster, Player target) {
