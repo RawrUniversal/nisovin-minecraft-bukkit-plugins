@@ -1,0 +1,773 @@
+package com.nisovin.barnyard;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+public class BarnYardBlitz extends JavaPlugin implements Listener {
+
+	static final int areaSize = 64;
+	static final int areaSizeShift = 6;
+	static final EntityType[] validTeams = new EntityType[] { EntityType.CHICKEN, EntityType.COW, EntityType.OCELOT, EntityType.PIG, EntityType.SHEEP, EntityType.SQUID, EntityType.WOLF };
+	static BlockUpdateQueue blockQueue;
+	
+	int uncapturedType1 = Material.DIRT.getId();
+	byte uncapturedData1 = 0;
+	
+	int chickenType1 = Material.GOLD_BLOCK.getId();
+	byte chickenData1 = 0;
+	int chickenType2 = 0;
+	byte chickenData2 = 0;
+	
+	int cowType1 = Material.STEP.getId();
+	byte cowData1 = 4;
+	int cowType2 = 0;
+	byte cowData2 = 0;
+	
+	int ocelotType1 = Material.GRASS.getId();
+	byte ocelotData1 = 0;
+	int ocelotType2 = Material.LONG_GRASS.getId();
+	byte ocelotData2 = 1;
+	
+	int pigType1 = Material.SOUL_SAND.getId();
+	byte pigData1 = 0;
+	int pigType2 = 0;
+	byte pigData2 = 0;
+	
+	int sheepType1 = Material.WOOL.getId();
+	byte sheepData1 = 6;
+	int sheepType2 = 0;
+	byte sheepData2 = 0;
+	
+	int squidType1 = Material.STATIONARY_WATER.getId();
+	byte squidData1 = 0;
+	int squidType2 = 0;
+	byte squidData2 = 0;
+	
+	int wolfType1 = Material.ICE.getId();
+	byte wolfData1 = 0;
+	int wolfType2 = 0;
+	byte wolfData2 = 0;
+	
+	Random random = new Random();	
+	
+	int fieldY = 3;
+	int captureInterval = 200;
+	float captureRatio = 0.9F;
+	int blockUpdatesPerTick = 150;
+	static int[] ignoreBlocks = { 4, 5, 17, 18, 20, 24, 45, 53, 67, 85, 107, 139 };
+	CapturedArea barnArea;
+	float pointsPerKill = 0.25F;
+	
+	boolean gameStarted = false;
+	World world;
+	String pigCaptain = null;
+	
+	Map<CapturedArea, String> capturedAreaNames;
+	Map<CapturedArea, Integer> capturedAreaValues;
+
+	Map<EntityType, Location> teamDefaultSpawns;
+	Map<EntityType, String[]> initCommands;
+	Map<EntityType, String[]> spawnCommands;
+	String[] pigCaptainCommands = new String[] {};
+	
+	Map<String, EntityType> playersToTeams;
+	Map<EntityType, Set<String>> teamsToPlayers;
+	Map<CapturedArea, EntityType> capturedAreasToTeams;
+	Map<EntityType, Set<CapturedArea>> teamsToCapturedAreas;
+	Map<EntityType, Integer> teamKills;
+	
+	@Override
+	public void onEnable() {
+		getServer().getPluginManager().registerEvents(this, this);		
+		world = getServer().getWorlds().get(0);
+		blockQueue = new BlockUpdateQueue(this);
+
+		// initialize containers
+		capturedAreaNames = new HashMap<CapturedArea, String>();
+		capturedAreaValues = new HashMap<CapturedArea, Integer>();
+		
+		teamDefaultSpawns = new HashMap<EntityType, Location>();
+		initCommands = new HashMap<EntityType, String[]>();
+		spawnCommands = new HashMap<EntityType, String[]>();
+		
+		playersToTeams = new HashMap<String, EntityType>();
+		teamsToPlayers = new HashMap<EntityType, Set<String>>();
+		capturedAreasToTeams = new HashMap<CapturedArea, EntityType>();
+		teamsToCapturedAreas = new HashMap<EntityType, Set<CapturedArea>>();
+		teamKills = new HashMap<EntityType, Integer>();
+		
+		for (EntityType team : validTeams) {
+			teamsToPlayers.put(team, new HashSet<String>());
+			teamsToCapturedAreas.put(team, new HashSet<CapturedArea>());
+		}
+		
+		// get config file
+		File configFile = new File(getDataFolder(), "config.yml");
+		if (!configFile.exists()) {
+			saveDefaultConfig();
+		}
+		YamlConfiguration config = new YamlConfiguration();
+		try {
+			config.load(configFile);
+		} catch (Exception e) {
+			getLogger().severe("ERROR LOADING CONFIG FILE");
+			e.printStackTrace();
+			this.setEnabled(false);
+			return;
+		}
+		
+		// get basic options
+		fieldY = config.getInt("field-y", fieldY);
+		captureInterval = config.getInt("capture-interval", captureInterval);
+		captureRatio = (float)config.getDouble("capture-ratio", captureRatio);
+		blockUpdatesPerTick = config.getInt("block-updates-per-tick", blockUpdatesPerTick);
+		List<Integer> list = config.getIntegerList("ignore-blocks");
+		if (list != null) {
+			ignoreBlocks = new int[list.size()];
+			for (int i = 0; i < list.size(); i++) {
+				ignoreBlocks[i] = list.get(i);
+			}
+		}
+		Arrays.sort(ignoreBlocks);
+		uncapturedType1 = config.getInt("uncaptured-type", uncapturedType1);
+		uncapturedData1 = (byte)config.getInt("uncaptured-data", uncapturedData1);
+		
+		// get capture areas
+		List<String> capturable = config.getStringList("capturable");
+		if (capturable != null) {
+			for (String s : capturable) {
+				String[] data = s.split(" ", 3);
+				CapturedArea area = new CapturedArea(data[0]);
+				capturedAreaNames.put(area, data[2]);
+				capturedAreaValues.put(area, Integer.parseInt(data[1]));
+			}
+		}
+		barnArea = new CapturedArea(config.getString("barn", "0,0"));
+		
+		// get animal team spawns and commands
+		for (EntityType team : validTeams) {
+			int x = config.getInt(team.name().toLowerCase() + ".spawn-x", 0);
+			int z = config.getInt(team.name().toLowerCase() + ".spawn-z", 0);
+			teamDefaultSpawns.put(team, new Location(world, x, fieldY, z));
+			List<String> temp = config.getStringList(team.name().toLowerCase() + ".init-commands");
+			if (temp != null && temp.size() > 0) {
+				initCommands.put(team, temp.toArray(new String[temp.size()]));
+			}
+			temp = config.getStringList(team.name().toLowerCase() + ".spawn-commands");
+			if (temp != null && temp.size() > 0) {
+				spawnCommands.put(team, temp.toArray(new String[temp.size()]));
+			}
+		}
+		List<String> temp = config.getStringList("pig.captain-commands");
+		if (temp != null && temp.size() > 0) {
+			pigCaptainCommands = temp.toArray(new String[temp.size()]);			
+		}
+		
+		// TODO get other animal team data
+		
+		
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+		String commandName = command.getName().toLowerCase();
+		if (commandName.equals("score")) {
+			if (gameStarted) {
+				TreeSet<TeamScore> scores = getScores();
+				for (TeamScore score : scores.descendingSet()) {
+					sender.sendMessage(ChatColor.GOLD + "Team " + score.getTeam().name().toLowerCase() + ": " + score.getScore());
+				}
+				if (teamsToCapturedAreas.containsKey(EntityType.OCELOT) && teamsToCapturedAreas.get(EntityType.OCELOT).contains(barnArea)) {
+					sender.sendMessage(ChatColor.GOLD + "The cats have the barn!");
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED + "The game hasn't started yet.");
+			}
+		} else if (commandName.equals("startgame")) {
+			if (gameStarted) {
+				sender.sendMessage(ChatColor.RED + "The game has already started.");
+			} else {
+				startGame();
+			}
+		} else if (commandName.equals("setteam")) {
+			if (args.length != 2) {
+				sender.sendMessage(ChatColor.RED + "You must specify a player and team.");
+				sender.sendMessage(ChatColor.RED + "Usage: /setteam <player> <team>");
+			} else {
+				Player player = Bukkit.getPlayer(args[0]);
+				if (player == null) {
+					sender.sendMessage(ChatColor.RED + "Player not found.");
+				} else {
+					EntityType team = getTeamByName(args[1]);
+					if (team == null || !teamsToPlayers.containsKey(team)) {
+						sender.sendMessage(ChatColor.RED + "Invalid team or team already eliminated.");
+					} else {
+						putPlayerInTeam(player, team);
+						sender.sendMessage(ChatColor.GOLD + "Player " + player.getName() + " put in team " + team.name().toLowerCase());
+					}
+				}
+			}
+		} else if (commandName.equals("capture")) {
+			if (args.length == 2) {
+				if (!args[0].matches("-?[0-9]+,-?[0-9]+")) {
+					sender.sendMessage(ChatColor.RED + "Invalid capture id.");
+				} else {
+					String[] coords = args[0].split(",");
+					CapturedArea area = new CapturedArea(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]));
+					if (args[1].equalsIgnoreCase("nobody")) {
+						captureArea(area, null);
+						sender.sendMessage(ChatColor.GOLD + "Capture area " + area.getId() + " is now owned by nobody");
+					} else {
+						EntityType team = getTeamByName(args[1]);
+						if (team == null || !teamsToPlayers.containsKey(team)) {
+							sender.sendMessage(ChatColor.RED + "Invalid team or team already eliminated.");
+						} else {
+							captureArea(area, team);
+							sender.sendMessage(ChatColor.GOLD + "Capture area " + area.getId() + " is now owned by team " + team.name().toLowerCase());
+						}
+					}
+				}
+			} else if (args.length == 1) {
+				if (sender instanceof Player) {
+					if (args[0].equalsIgnoreCase("nobody")) {
+						CapturedArea area = new CapturedArea(((Player)sender).getLocation());
+						captureArea(area, null);
+						sender.sendMessage(ChatColor.GOLD + "Capture area " + area.getId() + " is now owned by nobody");
+					} else {
+						EntityType team = getTeamByName(args[0]);
+						if (team == null || !teamsToPlayers.containsKey(team)) {
+							sender.sendMessage(ChatColor.RED + "Invalid team or team already eliminated.");
+						} else {
+							CapturedArea area = new CapturedArea(((Player)sender).getLocation());
+							captureArea(area, team);
+							sender.sendMessage(ChatColor.GOLD + "Capture area " + area.getId() + " is now owned by team " + team.name().toLowerCase());
+						}
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "You must do this as a player, or specify the capture id.");
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED + "Usage: /capture [id] <team>");
+			}
+		} else if (commandName.equals("captureid")) {
+			if (sender instanceof Player) {
+				CapturedArea area = new CapturedArea(((Player)sender).getLocation());
+				sender.sendMessage(ChatColor.GOLD + "Capture id: " + area.getId());
+			} else {
+				sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
+			}
+		} else if (commandName.equals("eliminate")) {
+			if (args.length == 1) {
+				EntityType team = getTeamByName(args[0]);
+				if (team == null || !teamsToPlayers.containsKey(team)) {
+					sender.sendMessage(ChatColor.RED + "Invalid team or team already eliminated.");
+				} else {
+					eliminateTeam(team);
+					sender.sendMessage(ChatColor.GOLD + "Team " + team.name().toLowerCase() + " has been eliminated.");
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED + "Usage: /eliminate <team>");
+			}
+		} else {
+			sender.sendMessage("HUH?");
+		}
+		return true;
+	}
+	
+	private EntityType getTeamByName(String name) {
+		return name.equalsIgnoreCase("cat") ? EntityType.OCELOT : EntityType.fromName(name);
+	}
+	
+	public void startGame() {
+		// initial captures
+		for (EntityType team : teamDefaultSpawns.keySet()) {
+			CapturedArea area = new CapturedArea(teamDefaultSpawns.get(team));
+			captureArea(area, team);
+		}
+		
+		// get players
+		Player[] players = getServer().getOnlinePlayers();
+		float playersPerTeam = players.length / 8F;
+		
+		// split players
+		int i = 0;
+		for (; i < playersPerTeam * 2; i++) {
+			putPlayerInTeam(players[i], EntityType.CHICKEN);
+		}
+		for (; i < playersPerTeam * 3; i++) {
+			putPlayerInTeam(players[i], EntityType.COW);
+		}
+		for (; i < playersPerTeam * 4; i++) {
+			putPlayerInTeam(players[i], EntityType.OCELOT);
+		}
+		for (; i < playersPerTeam * 5; i++) {
+			putPlayerInTeam(players[i], EntityType.PIG);
+		}
+		for (; i < playersPerTeam * 6; i++) {
+			putPlayerInTeam(players[i], EntityType.SHEEP);
+		}
+		for (; i < playersPerTeam * 7; i++) {
+			putPlayerInTeam(players[i], EntityType.SQUID);
+		}
+		for (; i < players.length; i++) {
+			putPlayerInTeam(players[i], EntityType.WOLF);
+		}
+		
+		// choose pig captain
+		choosePigCaptain();
+		
+		// start buff applicator
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			public void run() {
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					EntityType team = playersToTeams.get(player.getName().toLowerCase());
+					if (team != null) {
+						if (team == EntityType.COW) {
+							player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, captureInterval + 10, -10), true);
+						} if (team == EntityType.WOLF) {
+							long time = player.getWorld().getTime();
+							if (time > 13000) {
+								player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, captureInterval + 10, 0), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, captureInterval + 10, 1), true);
+							}
+						}
+						EntityType areaTeam = capturedAreasToTeams.get(new CapturedArea(player.getLocation()));
+						if (areaTeam != null) {
+							if (team == areaTeam) {
+								player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, captureInterval + 10, 0), true);
+								if (team == EntityType.PIG) {
+									player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, captureInterval + 10, 1), true);
+								} else if (team == EntityType.SQUID) {
+									player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, captureInterval + 10, 3), true);
+								}
+							} else {
+								if (team == EntityType.SQUID) {
+									player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, captureInterval + 10, 1), true);
+								}
+							}
+							if (areaTeam == EntityType.COW) {
+								player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, captureInterval + 10, -10), true);
+							}
+						}
+					}
+				}
+			}
+		}, captureInterval / 2, captureInterval);
+		
+		// start capture monitor
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			public void run() {
+				calculateCaptures();
+			}
+		}, captureInterval, captureInterval);
+		
+		// TODO start elimination timer
+		//new Eliminator();
+
+		gameStarted = true;
+	}
+	
+	public void putPlayerInTeam(Player player, EntityType team) {
+		// remove old team
+		EntityType oldTeam = playersToTeams.remove(player.getName().toLowerCase());
+		if (oldTeam != null) {
+			teamsToPlayers.get(oldTeam).remove(player.getName().toLowerCase());
+		}
+		
+		// add to collections
+		teamsToPlayers.get(team).add(player.getName().toLowerCase());
+		playersToTeams.put(player.getName().toLowerCase(), team);
+		
+		// teleport player
+		Location loc = getSpawnLocation(team);
+		player.teleport(loc);
+		
+		// run commands
+		runInitCommands(player, team);
+		runSpawnCommands(player, team);
+		
+		player.sendMessage(ChatColor.GOLD + "You are on team " + team.name().toLowerCase());
+	}
+	
+	public void putPlayerInRandomTeam(Player player) {
+		EntityType[] teams = teamsToPlayers.keySet().toArray(new EntityType[]{});
+		int r = random.nextInt(teams.length);
+		putPlayerInTeam(player, teams[r]);
+	}
+	
+	public void choosePigCaptain() {
+		Set<String> pigs = teamsToPlayers.get(EntityType.PIG);
+		if (pigs != null && pigs.size() > 0) {
+			String oldPigCaptain = pigCaptain != null ? pigCaptain : "";
+			pigCaptain = null;
+			int attempts = 0;
+			while (pigCaptain == null && attempts < 10) {
+				pigCaptain = pigs.toArray(new String[pigs.size()])[random.nextInt(pigs.size())];
+				Player player = Bukkit.getPlayerExact(pigCaptain);
+				if (player != null && player.isOnline() && !player.isDead() && !player.getName().equalsIgnoreCase(oldPigCaptain)) {
+					for (String comm : pigCaptainCommands) {
+						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm.replace("%p", pigCaptain));
+					}
+					player.sendMessage(ChatColor.GOLD + "You are the pig captain!");
+				} else {
+					pigCaptain = null;
+					attempts++;
+				}
+			}
+			if (!oldPigCaptain.isEmpty()) {
+				Player player = Bukkit.getPlayerExact(oldPigCaptain);
+				if (player != null && player.isOnline() && !player.isDead()) {
+					putPlayerInTeam(player, EntityType.PIG);
+				}
+			}
+		}
+	}
+	
+	public void runInitCommands(Player player, EntityType team) {
+		String[] commands = initCommands.get(team);
+		if (commands != null) {
+			for (String command : commands) {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%p", player.getName()));
+			}
+		}
+	}
+	
+	public void runSpawnCommands(Player player, EntityType team) {
+		String[] commands = spawnCommands.get(team);
+		if (commands != null) {
+			for (String command : commands) {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("%p", player.getName()));
+			}
+		}
+	}
+	
+	public Location getSpawnLocation(EntityType team) {
+		if (team == EntityType.WOLF) {
+			Location loc = teamDefaultSpawns.get(EntityType.WOLF);
+			int x = loc.getBlockX() + random.nextInt(6) - 3;
+			int z = loc.getBlockZ() + random.nextInt(6) - 3;
+			int y = loc.getWorld().getHighestBlockYAt(x, z);
+			return new Location(loc.getWorld(), x, y+1, z);
+		}
+		if (team == EntityType.PIG && pigCaptain != null) {
+			Player captain = Bukkit.getPlayerExact(pigCaptain);
+			if (captain != null) {
+				int x = captain.getLocation().getBlockX() + random.nextInt(6) - 3;
+				int z = captain.getLocation().getBlockZ() + random.nextInt(6) - 3;
+				int y = captain.getWorld().getHighestBlockYAt(x, z);
+				return new Location(captain.getWorld(), x, y+1, z);
+			}
+		}
+		if (team != null) {
+			Set<CapturedArea> areas = teamsToCapturedAreas.get(team);
+			if (areas != null && areas.size() > 0) {
+				CapturedArea area = areas.toArray(new CapturedArea[areas.size()])[random.nextInt(areas.size())];
+				return area.getRandomLocationInArea(world);
+			} else {
+				Location loc = teamDefaultSpawns.get(team);
+				int x = loc.getBlockX() + random.nextInt(20) - 10;
+				int z = loc.getBlockZ() + random.nextInt(20) - 10;
+				int y = loc.getWorld().getHighestBlockYAt(x, z);
+				return new Location(loc.getWorld(), x, y+1, z);
+			}
+		}
+		return world.getSpawnLocation();
+	}
+	
+	public void calculateCaptures() {
+		Map<CapturedArea, Map<EntityType, Integer>> counts = new HashMap<CapturedArea, Map<EntityType,Integer>>();
+		
+		// count em up
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			EntityType team = playersToTeams.get(player.getName().toLowerCase());
+			if (team == null) continue;
+			CapturedArea area = new CapturedArea(player.getLocation());
+			if (!capturedAreaNames.containsKey(area)) continue;
+			Map<EntityType, Integer> areaCounts = counts.get(area);
+			if (areaCounts == null) {
+				areaCounts = new HashMap<EntityType, Integer>();
+				areaCounts.put(team, 1);
+				counts.put(area, areaCounts);
+			} else if (areaCounts.containsKey(team)) {
+				int count = areaCounts.get(team);
+				areaCounts.put(team, count + 1);
+			} else {
+				areaCounts.put(team, 1);
+			}
+		}
+		
+		// check for captures
+		Iterator<Map.Entry<CapturedArea, Map<EntityType, Integer>>> iter = counts.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<CapturedArea, Map<EntityType, Integer>> entry = iter.next();
+			Map<EntityType, Integer> areaCounts = entry.getValue();
+			EntityType highestTeam = null;
+			int highestCount = 0;
+			int total = 0;
+			for (EntityType team : areaCounts.keySet()) {
+				int c = areaCounts.get(team);
+				total += c;
+				if (c > highestCount) {
+					highestTeam = team;
+					highestCount = c;
+				}
+			}
+			if ((float)highestCount / (float)total > captureRatio) {
+				captureArea(entry.getKey(), highestTeam);
+			} else {
+				captureArea(entry.getKey(), null);
+			}
+		}
+	}
+	
+	public void captureArea(CapturedArea area, EntityType team) {
+		String areaName = capturedAreaNames.get(area);
+		if (areaName == null) areaName = "a zone";
+		EntityType previousTeam = capturedAreasToTeams.get(area);
+		if (previousTeam != null) {
+			if (previousTeam == team) return;
+			teamsToCapturedAreas.get(previousTeam).remove(area);
+			sendMessageToTeam(previousTeam, ChatColor.GOLD + "Your team has LOST " + areaName + "!");
+		} else if (team == null) return;
+		if (team != null) {
+			teamsToCapturedAreas.get(team).add(area);
+			capturedAreasToTeams.put(area, team);
+			sendMessageToTeam(team, ChatColor.GOLD + "Your team has CAPTURED " + areaName + "!");
+		} else {
+			capturedAreasToTeams.remove(area);
+		}
+		if (team == null) {
+			area.setAreaType(world, uncapturedType1, uncapturedData1, fieldY);
+		} else if (team == EntityType.CHICKEN) {
+			area.setAreaType(world, chickenType1, chickenData1, chickenType2, chickenData2, fieldY);
+		} else if (team == EntityType.COW) {
+			area.setAreaType(world, cowType1, cowData1, cowType2, cowData2, fieldY);
+		} else if (team == EntityType.OCELOT) {
+			area.setAreaType(world, ocelotType1, ocelotData1, ocelotType2, ocelotData2, fieldY);
+		} else if (team == EntityType.PIG) {
+			area.setAreaType(world, pigType1, pigData1, pigType2, pigData2, fieldY);
+		} else if (team == EntityType.SHEEP) {
+			area.setAreaType(world, sheepType1, sheepData1, sheepType2, sheepData2, fieldY);
+		} else if (team == EntityType.SQUID) {
+			area.setAreaType(world, squidType1, squidData1, squidType2, squidData2, fieldY);
+		} else if (team == EntityType.WOLF) {
+			area.setAreaType(world, wolfType1, wolfData1, wolfType2, wolfData2, fieldY);
+		}
+	}
+	
+	public void calculateScoresAndDoElimination() {
+		TreeSet<TeamScore> scores = getScores();
+		for (TeamScore score : scores) {
+			EntityType team = score.getTeam();
+			if (team == EntityType.OCELOT && barnArea != null && teamsToCapturedAreas.get(team).contains(barnArea)) {
+				continue;
+			} else {
+				eliminateTeam(team);
+				Bukkit.broadcastMessage(ChatColor.GOLD + "TEAM " + team.name().toUpperCase() + " HAS BEEN ELIMINATED!");
+				break;
+			}
+		}
+	}
+	
+	public TreeSet<TeamScore> getScores() {
+		TreeSet<TeamScore> scores = new TreeSet<TeamScore>();
+		
+		for (EntityType team : teamsToCapturedAreas.keySet()) {
+			int score = 0;
+			Set<CapturedArea> areas = teamsToCapturedAreas.get(team);
+			for (CapturedArea area : areas) {
+				if (capturedAreaValues.containsKey(area)) {
+					score += capturedAreaValues.get(area);
+				}
+			}
+			if (teamKills.containsKey(team)) {
+				score += Math.round(teamKills.get(team).floatValue() * pointsPerKill);
+			}
+			scores.add(new TeamScore(team, score));
+		}
+		
+		return scores;
+	}
+	
+	public void eliminateTeam(EntityType team) {
+		// remove captured areas
+		Set<CapturedArea> areas = teamsToCapturedAreas.remove(team);
+		for (CapturedArea area : areas) {
+			area.setAreaType(world, uncapturedType1, uncapturedData1, fieldY);
+			capturedAreasToTeams.remove(area);
+		}
+		
+		// move players to other teams
+		Set<String> playersInTeam = teamsToPlayers.remove(team);
+		EntityType[] teams = teamsToPlayers.keySet().toArray(new EntityType[] {});
+		boolean chickensInGame = teamsToPlayers.containsKey(EntityType.CHICKEN);
+		for (String playerName : playersInTeam) {
+			Player player = Bukkit.getPlayerExact(playerName);
+			if (player == null) {
+				playersToTeams.remove(playerName);
+			} else {
+				int i = random.nextInt(teams.length + (chickensInGame ? 1 : 0));
+				if (i > teams.length && chickensInGame) {
+					putPlayerInTeam(player, EntityType.CHICKEN);
+				} else {
+					putPlayerInTeam(player, teams[i]);
+				}
+			}
+		}
+	}
+	
+	public void sendMessageToTeam(EntityType team, String message) {
+		Set<String> names = teamsToPlayers.get(team);
+		if (names != null) {
+			for (String name : names) {
+				Player player = Bukkit.getPlayerExact(name);
+				if (player != null && player.isOnline()) {
+					player.sendMessage(message);
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (gameStarted) {
+			Player player = event.getPlayer();
+			EntityType team = playersToTeams.get(player.getName().toLowerCase());
+			if (team == null || !teamsToPlayers.containsKey(team)) {
+				putPlayerInRandomTeam(player);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		if (gameStarted) {
+			final Player player = event.getPlayer();
+			final EntityType team = playersToTeams.get(player.getName().toLowerCase());
+			
+			// set spawn location
+			event.setRespawnLocation(getSpawnLocation(team));
+						
+			// run commands (and get new team if necessary)
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+				public void run() {
+					if (team == null || !teamsToPlayers.containsKey(team)) {
+						putPlayerInRandomTeam(player);
+					} else {
+						runSpawnCommands(player, team);
+					}
+				}
+			});
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent event) {
+		event.getDrops().clear();
+		event.setDroppedExp(0);
+		
+		// add kill
+		Player killer = event.getEntity().getKiller();
+		if (killer != null) {
+			EntityType team = playersToTeams.get(killer.getName().toLowerCase());
+			if (team != null) {
+				int kills = 1;
+				if (teamKills.containsKey(team)) {
+					kills = teamKills.get(team) + 1;
+				}
+				teamKills.put(team, kills);
+			}
+		}
+		
+		// choose new pig captain
+		if (event.getEntity().getName().equalsIgnoreCase(pigCaptain)) {
+			choosePigCaptain();
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		if (event.getPlayer().getName().equalsIgnoreCase(pigCaptain)) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+				public void run() {
+					choosePigCaptain();
+				}
+			});
+		}
+	}
+	
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event) {
+		if (event.getPlayer().isOp()) return;
+		Block b = event.getBlock();
+		if (b.getY() <= fieldY || b.getType() == Material.LONG_GRASS) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler(ignoreCancelled=true)
+	public void onExplode(EntityExplodeEvent event) {
+		Iterator<Block> iter = event.blockList().iterator();
+		while (iter.hasNext()) {
+			if (iter.next().getY() <= fieldY) {
+				iter.remove();
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onBlockFade(BlockFadeEvent event) {
+		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onBlockSpread(BlockSpreadEvent event) {
+		event.setCancelled(true);
+	}
+	
+	public void stopGame() {
+		if (gameStarted) {
+			
+		}
+		Bukkit.getScheduler().cancelTasks(this);
+	}
+	
+	@Override
+	public void onDisable() {
+		stopGame();
+	}
+	
+}

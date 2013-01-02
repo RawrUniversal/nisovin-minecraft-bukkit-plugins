@@ -1,0 +1,61 @@
+name: BarnYardBlitz
+version: 1.0
+main: com.nisovin.barnyard.BarnYardBlitz
+
+commands:
+    score:
+        description: Check the score
+        usage: /<command>
+        permission: barnyard.score
+    startgame:
+        description: Starts the game
+        usage: /<command>
+        permission: barnyard.startgame
+    setteam:
+        description: Set a player's team
+        usage: /<command> <player> <team>
+        permission: barnyard.setteam
+    capture:
+        description: Capture the area you are standing in for the specified team
+        usage: /<command> [id] <team>
+        permission: barnyard.capture
+    captureid:
+        description: Checks what this area's id is.
+        usage: /<command>
+        permission: barnyard.captureid
+        aliases: [areaid, zoneid, pointid]
+    eliminate:
+        description: Eliminates a team.
+        usage: /<command> <team>
+        permission: barnyard.eliminate
+    
+permissions:
+    barnyard.score:
+        description: Allows usage of the score command
+        default: op
+    barnyard.startgame:
+        description: Allows usage of the startgame command
+        default: op
+    barnyard.setteam:
+        description: Allows usage of the setteam command
+        default: op
+    barnyard.capture:
+        description: Allows usage of the capture command
+        default: op
+    barnyard.captureid:
+        description: Allows usage of the captureid command
+        default: op
+    barnyard.eliminate:
+        description: Allows usage of the eliminate command
+        default: op
+    barnyard.*:
+        description: Allows access to all barnyard commands
+        default: op
+        children:
+            barnyard.score: true
+            barnyard.startgame: true
+            barnyard.setteam: true
+            barnyard.capture: true
+            barnyard.captureid: true
+            barnyard.eliminate: true
+            
