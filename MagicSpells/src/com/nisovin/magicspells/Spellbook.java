@@ -220,14 +220,15 @@ public class Spellbook {
 		}
 	}
 	
-	protected CastItem getCastItem(ItemStack item) {
+	protected CastItem getCastItemForCycling(ItemStack item) {
 		CastItem castItem;
 		if (item != null) {
 			castItem = new CastItem(item);
 		} else {
 			castItem = new CastItem(0);
 		}
-		if (activeSpells.containsKey(castItem)) {
+		ArrayList<Spell> spells = itemSpells.get(castItem);
+		if (spells != null && (spells.size() > 1 || (spells.size() == 1 && MagicSpells.allowCycleToNoSpell))) {
 			return castItem;
 		} else {
 			return null;
@@ -235,7 +236,7 @@ public class Spellbook {
 	}
 	
 	protected Spell nextSpell(ItemStack item) {
-		CastItem castItem = getCastItem(item);
+		CastItem castItem = getCastItemForCycling(item);
 		if (castItem != null) {
 			return nextSpell(castItem);
 		}
@@ -276,7 +277,7 @@ public class Spellbook {
 	}
 	
 	protected Spell prevSpell(ItemStack item) {
-		CastItem castItem = getCastItem(item);
+		CastItem castItem = getCastItemForCycling(item);
 		if (castItem != null) {
 			return prevSpell(castItem);
 		}
