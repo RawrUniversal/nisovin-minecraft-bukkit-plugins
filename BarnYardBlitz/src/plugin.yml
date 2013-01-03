@@ -7,6 +7,10 @@ commands:
         description: Check the score
         usage: /<command>
         permission: barnyard.score
+    setteamspawn:
+        description: Sets the team's default spawn location
+        usage: /<command> <team> [area name]
+        permission: barnyard.setteamspawn
     startgame:
         description: Starts the game
         usage: /<command>
@@ -33,6 +37,9 @@ permissions:
     barnyard.score:
         description: Allows usage of the score command
         default: op
+    barnyard.setteamspawn:
+        description: Allows usage of the setteamspawn command
+        default: op
     barnyard.startgame:
         description: Allows usage of the startgame command
         default: op
@@ -53,6 +60,7 @@ permissions:
         default: op
         children:
             barnyard.score: true
+            barnyard.setteamspawn: true
             barnyard.startgame: true
             barnyard.setteam: true
             barnyard.capture: true

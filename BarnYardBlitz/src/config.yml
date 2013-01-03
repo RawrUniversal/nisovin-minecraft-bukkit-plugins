@@ -1,16 +1,19 @@
+area-size: 64
+no-capture-border: 16
 field-y: 3
 capture-interval: 200
 capture-ratio: .9
 block-updates-per-tick: 150
 points-per-kill: .25
 ignore-blocks: [ 4, 5, 17, 18, 20, 24, 45, 53, 67, 85, 107, 139 ]
+elimination-intervals: [ 600, 240, 240, 240, 240, 240 ]
 
 capturable:
   - 0,0 3 The Barn
   - 1,1 1 The Pig Sty
   - 0,1 1 Helms Sheep
   - 1,0 1 The Wolf Den
-  - -1,0 1 The Coop 
+  - -1,0 1 The Coop
   - -1,-1 1 The Dairy
   - 0,-1 1 The Jungle
   - 1,-1 1 The Ocean
@@ -28,7 +31,7 @@ chicken:
   type1: 41
   data1: 0
   type2: 0
-  data2: 0  
+  data2: 0
 
 cow:
   spawn-x: -32

@@ -20,19 +20,29 @@ public class CapturedArea {
 	}
 	
 	public CapturedArea(int x, int y, int z) {
-		this.areaX = x >> BarnYardBlitz.areaSizeShift;
-		this.areaZ = z >> BarnYardBlitz.areaSizeShift;
+		this.areaX = (int)Math.floor((float)x / BarnYardBlitz.areaSize);
+		this.areaZ = (int)Math.floor((float)z / BarnYardBlitz.areaSize);
 	}
 	
 	public CapturedArea(Location location) {
-		this.areaX = location.getBlockX() >> BarnYardBlitz.areaSizeShift;
-		this.areaZ = location.getBlockZ() >> BarnYardBlitz.areaSizeShift;
+		this.areaX = (int)Math.floor(location.getX() / BarnYardBlitz.areaSize);
+		this.areaZ = (int)Math.floor(location.getZ() / BarnYardBlitz.areaSize);
 	}
 	
 	public CapturedArea(String string) {
 		String[] data = string.split(",");
 		this.areaX = Integer.parseInt(data[0]);
 		this.areaZ = Integer.parseInt(data[1]);
+	}
+	
+	public boolean inCaptureArea(Location location) {
+		int minX = areaX * BarnYardBlitz.areaSize + BarnYardBlitz.noCaptureBorder;
+		int maxX = areaX * BarnYardBlitz.areaSize + BarnYardBlitz.areaSize - BarnYardBlitz.noCaptureBorder;
+		int minZ = areaZ * BarnYardBlitz.areaSize + BarnYardBlitz.noCaptureBorder;
+		int maxZ = areaZ * BarnYardBlitz.areaSize + BarnYardBlitz.areaSize - BarnYardBlitz.noCaptureBorder;
+		int x = location.getBlockX();
+		int z = location.getBlockZ();
+		return minX <= x && x <= maxX && minZ <= z && z <= maxZ;
 	}
 
 	public void setAreaType(World world, int type1, byte data1, int y) {
@@ -93,6 +103,13 @@ public class CapturedArea {
 		return new Location(world, x, y, z);
 	}
 	
+	public Location getCenter(World world) {
+		int x = areaX * BarnYardBlitz.areaSize + (BarnYardBlitz.areaSize / 2);
+		int z = areaZ * BarnYardBlitz.areaSize + (BarnYardBlitz.areaSize / 2);
+		int y = world.getHighestBlockYAt(x, z) + 1;
+		return new Location(world, x, y, z);
+	}
+	
 	private boolean ignoreBlock(int typeId) {
 		return Arrays.binarySearch(BarnYardBlitz.ignoreBlocks, typeId) >= 0;
 	}
@@ -114,6 +131,13 @@ public class CapturedArea {
 			CapturedArea a = (CapturedArea)o;
 			return a.areaX == this.areaX && a.areaZ == this.areaZ;
 		}
+	}
+	
+	public static void main(String[] args) {
+		System.out.println((int)Math.floor(-32F / 64));
+		System.out.println((int)Math.floor(32F / 64));
+		System.out.println((int)Math.floor(-32F / 64));
+		System.out.println((int)Math.floor(32F / 64));
 	}
 	
 }
