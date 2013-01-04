@@ -13,6 +13,9 @@ import java.util.TreeSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,6 +24,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -33,6 +37,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -87,6 +92,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 
 	static int areaSize = 64;
 	int fieldY = 3;
+	int buffInterval = 50;
 	int captureInterval = 200;
 	float captureRatio = 0.9F;
 	static int noCaptureBorder = 16;
@@ -106,6 +112,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	Map<CapturedArea, Integer> capturedAreaValues;
 
 	Map<EntityType, Location> teamDefaultSpawns;
+	Map<EntityType, Integer> teamColors;
 	Map<EntityType, String[]> initCommands;
 	Map<EntityType, String[]> spawnCommands;
 	String[] pigCaptainCommands = new String[] {};
@@ -115,6 +122,12 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	Map<CapturedArea, EntityType> capturedAreasToTeams;
 	Map<EntityType, Set<CapturedArea>> teamsToCapturedAreas;
 	Map<EntityType, Integer> teamKills;
+	
+	long buffTime = 0;
+	int buffIterations = 0;
+	long captureTime1 = 0;
+	long captureTime2 = 0;
+	int captureIterations = 0;
 	
 	@Override
 	public void onEnable() {
@@ -127,6 +140,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		capturedAreaValues = new HashMap<CapturedArea, Integer>();
 		
 		teamDefaultSpawns = new HashMap<EntityType, Location>();
+		teamColors = new HashMap<EntityType, Integer>();
 		initCommands = new HashMap<EntityType, String[]>();
 		spawnCommands = new HashMap<EntityType, String[]>();
 		
@@ -159,6 +173,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		// get basic options
 		areaSize = config.getInt("area-size", areaSize);
 		fieldY = config.getInt("field-y", fieldY);
+		buffInterval = config.getInt("buff-interval", buffInterval);
 		captureInterval = config.getInt("capture-interval", captureInterval);
 		captureRatio = (float)config.getDouble("capture-ratio", captureRatio);
 		noCaptureBorder = config.getInt("no-capture-border", noCaptureBorder);
@@ -203,7 +218,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		}
 		barnArea = new CapturedArea(config.getString("barn", "0,0"));
 		
-		// get animal team spawns and commands
+		// get animal team spawns and commands and colors
 		for (EntityType team : validTeams) {
 			int x = config.getInt(team.name().toLowerCase() + ".spawn-x", 0);
 			int z = config.getInt(team.name().toLowerCase() + ".spawn-z", 0);
@@ -216,6 +231,8 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			if (temp != null && temp.size() > 0) {
 				spawnCommands.put(team, temp.toArray(new String[temp.size()]));
 			}
+			String color = config.getString(team.name().toLowerCase() + ".color", "9900FF");
+			teamColors.put(team, Integer.parseInt(color, 16));
 		}
 		List<String> temp = config.getStringList("pig.captain-commands");
 		if (temp != null && temp.size() > 0) {
@@ -415,6 +432,15 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			onDisable();
 			onEnable();
 			sender.sendMessage(ChatColor.GOLD + "The game and config have been reloaded.");
+		} else if (commandName.equals("gametimings")) {
+			sender.sendMessage(ChatColor.GOLD + "TIMINGS:");
+			if (captureIterations > 0) {
+				sender.sendMessage(ChatColor.GOLD + "  Capture phase 1: " + (captureTime1/captureIterations) + " (" + captureIterations + " times)");
+				sender.sendMessage(ChatColor.GOLD + "  Capture phase 2: " + (captureTime2/captureIterations) + " (" + captureIterations + " times)");
+			}
+			if (buffIterations > 0) {
+				sender.sendMessage(ChatColor.GOLD + "  Buff processing: " + (buffTime/buffIterations) + " (" + buffIterations + " times)");
+			}
 		} else {
 			sender.sendMessage("HUH?");
 		}
@@ -466,40 +492,43 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		// start buff applicator
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
+				long start = System.currentTimeMillis();
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					EntityType team = playersToTeams.get(player.getName().toLowerCase());
 					if (team != null) {
 						if (team == EntityType.COW) {
-							player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, captureInterval + 10, -10), true);
+							player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
 						} if (team == EntityType.WOLF) {
 							long time = player.getWorld().getTime();
 							if (time > 13000 && time < 23000) {
-								player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, captureInterval + 10, 0), true);
-								player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, captureInterval + 10, 1), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, buffInterval + 10, 0), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 1), true);
 							}
 						}
 						EntityType areaTeam = capturedAreasToTeams.get(new CapturedArea(player.getLocation()));
 						if (areaTeam != null) {
 							if (team == areaTeam) {
-								player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, captureInterval + 10, 0), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, buffInterval + 10, 0), true);
 								if (team == EntityType.PIG) {
-									player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, captureInterval + 10, 1), true);
+									player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 1), true);
 								} else if (team == EntityType.SQUID) {
-									player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, captureInterval + 10, 3), true);
+									player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 3), true);
 								}
 							} else {
 								if (team == EntityType.SQUID) {
-									player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, captureInterval + 10, 1), true);
+									player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, buffInterval + 10, 1), true);
 								}
 							}
 							if (areaTeam == EntityType.COW) {
-								player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, captureInterval + 10, -10), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
 							}
 						}
 					}
 				}
+				buffTime += (System.currentTimeMillis() - start);
+				buffIterations++;
 			}
-		}, 15, captureInterval);
+		}, 10, buffInterval);
 		
 		// start capture monitor
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -625,6 +654,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		final Map<CapturedArea, Map<EntityType, Integer>> counts = new HashMap<CapturedArea, Map<EntityType,Integer>>();
 		
 		// count em up
+		long start = System.currentTimeMillis();
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			EntityType team = playersToTeams.get(player.getName().toLowerCase());
 			if (team == null) continue;
@@ -643,10 +673,13 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 				areaCounts.put(team, 1);
 			}
 		}
+		captureTime1 += (System.currentTimeMillis() - start);
+		captureIterations++;
 		
 		// check for captures
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
+				long start = System.currentTimeMillis();
 				Iterator<Map.Entry<CapturedArea, Map<EntityType, Integer>>> iter = counts.entrySet().iterator();
 				while (iter.hasNext()) {
 					Map.Entry<CapturedArea, Map<EntityType, Integer>> entry = iter.next();
@@ -668,20 +701,24 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 						captureArea(entry.getKey(), null);
 					}
 				}
+				captureTime2 += (System.currentTimeMillis() - start);
 			}
 		}, 7);
 	}
 	
 	public void captureArea(CapturedArea area, EntityType team) {
 		if (team != null && !teamsToCapturedAreas.containsKey(team)) return;
+		// get area name
 		String areaName = capturedAreaNames.get(area);
 		if (areaName == null) areaName = "a zone";
+		// remove previous team owner
 		EntityType previousTeam = capturedAreasToTeams.get(area);
 		if (previousTeam != null) {
 			if (previousTeam == team) return;
 			teamsToCapturedAreas.get(previousTeam).remove(area);
 			sendMessageToTeam(previousTeam, ChatColor.GOLD + "Your team has LOST " + areaName + "!");
 		} else if (team == null) return;
+		// set captured
 		if (team != null) {
 			teamsToCapturedAreas.get(team).add(area);
 			capturedAreasToTeams.put(area, team);
@@ -689,6 +726,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		} else {
 			capturedAreasToTeams.remove(area);
 		}
+		// change ground
 		if (team == null) {
 			area.setAreaType(world, uncapturedType1, uncapturedData1, fieldY);
 		} else if (team == EntityType.CHICKEN) {
@@ -706,6 +744,15 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		} else if (team == EntityType.WOLF) {
 			area.setAreaType(world, wolfType1, wolfData1, wolfType2, wolfData2, fieldY);
 		}
+		// launch firework
+		int color = 0x9900FF;
+		if (teamColors.containsKey(team)) color = teamColors.get(team);
+		Firework firework = world.spawn(area.getCenter(world), Firework.class);
+		FireworkMeta meta = firework.getFireworkMeta();
+		meta.setPower(2);
+		meta.addEffect(FireworkEffect.builder().with(Type.BALL_LARGE).withColor(Color.fromRGB(color)).build());
+		meta.addEffect(FireworkEffect.builder().with(Type.BURST).withColor(Color.fromRGB(color)).withFlicker().build());
+		firework.setFireworkMeta(meta);
 	}
 	
 	public void setAreaUncapturable(CapturedArea area) {

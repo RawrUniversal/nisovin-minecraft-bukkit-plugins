@@ -40,6 +40,10 @@ commands:
         description: Reloads the game settings and reinitializes the game.
         usage: /<command>
         permission: barnyard.reloadgame
+    gametimings:
+        description: See game timings.
+        usage: /<command>
+        permission: barnyard.timings
     
 permissions:
     barnyard.score:
@@ -68,7 +72,9 @@ permissions:
         default: op
     barnyard.reloadgame:
         description: Allows usage of the reloadgame command
-        default: op        
+        default: op
+    barnyard.timings:
+        default: op
     barnyard.*:
         description: Allows access to all barnyard commands
         default: op
