@@ -32,6 +32,14 @@ commands:
         description: Eliminates a team.
         usage: /<command> <team>
         permission: barnyard.eliminate
+    stopgame:
+        description: Stops the current game.
+        usage: /<command>
+        permission: barnyard.stopgame
+    reloadgame:
+        description: Reloads the game settings and reinitializes the game.
+        usage: /<command>
+        permission: barnyard.reloadgame
     
 permissions:
     barnyard.score:
@@ -55,6 +63,12 @@ permissions:
     barnyard.eliminate:
         description: Allows usage of the eliminate command
         default: op
+    barnyard.stopgame:
+        description: Allows usage of the stopgame command
+        default: op
+    barnyard.reloadgame:
+        description: Allows usage of the reloadgame command
+        default: op        
     barnyard.*:
         description: Allows access to all barnyard commands
         default: op
@@ -66,4 +80,6 @@ permissions:
             barnyard.capture: true
             barnyard.captureid: true
             barnyard.eliminate: true
+            barnyard.stopgame: true
+            barnyard.reloadgame: true
             

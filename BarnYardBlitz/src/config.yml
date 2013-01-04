@@ -5,7 +5,8 @@ capture-interval: 200
 capture-ratio: .9
 block-updates-per-tick: 150
 points-per-kill: .25
-ignore-blocks: [ 4, 5, 17, 18, 20, 24, 45, 53, 67, 85, 107, 139 ]
+replaceable-layer1: [ 2, 3, 8, 9, 35, 41, 43, 44, 88, 79 ]
+replaceable-layer2: [ 0, 31 ]
 elimination-intervals: [ 600, 240, 240, 240, 240, 240 ]
 
 capturable:
@@ -22,6 +23,8 @@ barn: 0,0
 
 uncaptured-type: 3
 uncaptured-data: 0
+dead-type: 7
+dead-data: 0
 
 chicken:
   spawn-x: -32

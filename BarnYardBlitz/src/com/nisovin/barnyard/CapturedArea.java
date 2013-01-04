@@ -71,17 +71,17 @@ public class CapturedArea {
 						b2 = world.getBlockAt(x + xOffset, y + 1, z + zOffset);
 						if (b2.getTypeId() != 0 && type2 == 0) {
 							// do top first
-							if (!ignoreBlock(b1.getTypeId())) {
-								if ((b2.getTypeId() != type2 || b2.getData() != data2) && !ignoreBlock(b2.getTypeId())) {
+							if (canReplaceBlock(b1.getTypeId(), 1)) {
+								if ((b2.getTypeId() != type2 || b2.getData() != data2) && canReplaceBlock(b2.getTypeId(), 2)) {
 									BarnYardBlitz.blockQueue.add(b2, type2, data2);
 								}
 								BarnYardBlitz.blockQueue.add(b1, type1 != 44 ? type1 : random.nextInt(2) == 0 ? 43 : 44, data1);
 							}
 						} else {
 							// do bottom first
-							if (!ignoreBlock(b1.getTypeId())) {
+							if (canReplaceBlock(b1.getTypeId(), 1)) {
 								BarnYardBlitz.blockQueue.add(b1, type1 != 44 ? type1 : random.nextInt(2) == 0 ? 43 : 44, data1);
-								if ((b2.getTypeId() != type2 || b2.getData() != data2) && !ignoreBlock(b2.getTypeId())) {
+								if ((b2.getTypeId() != type2 || b2.getData() != data2) && canReplaceBlock(b2.getTypeId(), 2)) {
 									BarnYardBlitz.blockQueue.add(b2, type2, data2);
 								}
 							}
@@ -110,8 +110,12 @@ public class CapturedArea {
 		return new Location(world, x, y, z);
 	}
 	
-	private boolean ignoreBlock(int typeId) {
-		return Arrays.binarySearch(BarnYardBlitz.ignoreBlocks, typeId) >= 0;
+	private boolean canReplaceBlock(int typeId, int layer) {
+		if (layer == 1) {
+			return Arrays.binarySearch(BarnYardBlitz.replaceableLayer1, typeId) >= 0;
+		} else {
+			return Arrays.binarySearch(BarnYardBlitz.replaceableLayer2, typeId) >= 0;
+		}
 	}
 	
 	@Override
