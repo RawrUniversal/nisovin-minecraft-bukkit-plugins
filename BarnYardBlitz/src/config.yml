@@ -1,7 +1,7 @@
 area-size: 64
 no-capture-border: 16
 field-y: 3
-buff-interval: 50
+buff-interval: 100
 capture-interval: 200
 capture-ratio: .9
 block-updates-per-tick: 150

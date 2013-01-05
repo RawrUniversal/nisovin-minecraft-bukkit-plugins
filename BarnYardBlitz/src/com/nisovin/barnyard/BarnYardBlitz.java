@@ -92,7 +92,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 
 	static int areaSize = 64;
 	int fieldY = 3;
-	int buffInterval = 50;
+	int buffInterval = 100;
 	int captureInterval = 200;
 	float captureRatio = 0.9F;
 	static int noCaptureBorder = 16;
@@ -435,12 +435,13 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		} else if (commandName.equals("gametimings")) {
 			sender.sendMessage(ChatColor.GOLD + "TIMINGS:");
 			if (captureIterations > 0) {
-				sender.sendMessage(ChatColor.GOLD + "  Capture phase 1: " + (captureTime1/captureIterations) + " (" + captureIterations + " times)");
-				sender.sendMessage(ChatColor.GOLD + "  Capture phase 2: " + (captureTime2/captureIterations) + " (" + captureIterations + " times)");
+				sender.sendMessage(ChatColor.GOLD + "  Capture phase 1: " + (captureTime1/captureIterations) + " (" + captureTime1 + "/" + captureIterations + ")");
+				sender.sendMessage(ChatColor.GOLD + "  Capture phase 2: " + (captureTime2/captureIterations) + " (" + captureTime2 + "/" + captureIterations + ")");
 			}
 			if (buffIterations > 0) {
-				sender.sendMessage(ChatColor.GOLD + "  Buff processing: " + (buffTime/buffIterations) + " (" + buffIterations + " times)");
+				sender.sendMessage(ChatColor.GOLD + "  Buff processing: " + (buffTime/buffIterations) + " (" + buffTime + "/" + buffIterations + ")");
 			}
+			sender.sendMessage(ChatColor.GOLD + "Current block update queue: " + blockQueue.size());
 		} else {
 			sender.sendMessage("HUH?");
 		}
