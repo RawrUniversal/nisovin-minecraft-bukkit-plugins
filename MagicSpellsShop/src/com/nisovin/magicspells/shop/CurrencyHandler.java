@@ -41,7 +41,7 @@ public class CurrencyHandler {
 		}
 
 		// set up vault hook
-		if (currencies.containsValue("vault")) {
+		if (currencies.containsValue("vault") && Bukkit.getPluginManager().isPluginEnabled("Vault")) {
 			RegisteredServiceProvider<Economy> provider = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
 			if (provider != null) {
 				economy = provider.getProvider();
