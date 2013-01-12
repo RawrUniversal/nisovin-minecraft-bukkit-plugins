@@ -8,6 +8,7 @@ modal menu          : true
 
 update player list  : true
 update display name : true
+display name format : %color%%name%
 use chat formatting : true
 chat format         : %prefix%%color%<%name%> &f%message%
 

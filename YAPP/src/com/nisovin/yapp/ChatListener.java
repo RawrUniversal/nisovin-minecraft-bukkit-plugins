@@ -22,9 +22,12 @@ public class ChatListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		User user = MainPlugin.getPlayerUser(event.getPlayer().getName());
 		String world = event.getPlayer().getWorld().getName();
-		String format = chatFormat.replace("%name%", "%1$s").replace("%message%", "%2$s");
-		format = format.replace("%prefix%", user.getPrefix(world));
-		format = format.replace("%color%", user.getColor(world).toString());
+		String format = chatFormat
+				.replace("%name%", "%1$s")
+				.replace("%message%", "%2$s")
+				.replace("%prefix%", user.getPrefix(world))
+				.replace("%color%", user.getColor(world).toString())
+				.replace("%rawname%", user.getName());
 		format = ChatColor.translateAlternateColorCodes('&', format);
 		event.setFormat(format);
 	}

@@ -1,8 +1,11 @@
-package com.nisovin.yapp;
+package com.nisovin.yapp.vault;
 
 import java.util.Set;
 
-public class VaultService extends net.milkbowl.vault.permission.Permission {
+import com.nisovin.yapp.Group;
+import com.nisovin.yapp.MainPlugin;
+
+public class VaultPermissionService extends net.milkbowl.vault.permission.Permission {
 	
 	@Override
 	public String getName() {
@@ -11,7 +14,7 @@ public class VaultService extends net.milkbowl.vault.permission.Permission {
 
 	@Override
 	public boolean isEnabled() {
-		return plugin.isEnabled() && MainPlugin.yapp != null;
+		return MainPlugin.yapp != null && MainPlugin.yapp.isEnabled();
 	}
 
 	@Override

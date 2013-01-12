@@ -21,12 +21,12 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.nisovin.yapp.denyperms.*;
 import com.nisovin.yapp.menu.Menu;
 import com.nisovin.yapp.storage.*;
+import com.nisovin.yapp.vault.VaultHandler;
 
 public class MainPlugin extends JavaPlugin {
 	
@@ -39,6 +39,7 @@ public class MainPlugin extends JavaPlugin {
 	
 	private static boolean debug = true;
 	private boolean updateDisplayName = true;
+	private String displayNameFormat = null;
 	private boolean updatePlayerList = true;
 	private boolean setPlayerGroupPerm = false;
 	private boolean setPlayerMetadata = false;
@@ -68,7 +69,7 @@ public class MainPlugin extends JavaPlugin {
 		
 		// register vault hook
 		if (getServer().getPluginManager().isPluginEnabled("Vault")) {
-			getServer().getServicesManager().register(net.milkbowl.vault.permission.Permission.class, new VaultService(), this, ServicePriority.Highest);
+			VaultHandler.registerHooks(this);
 			getLogger().info("Vault hooked");
 		}
 	}
@@ -88,6 +89,7 @@ public class MainPlugin extends JavaPlugin {
 		SimpleConfig config = new SimpleConfig(configFile);
 		debug = config.getboolean("general.debug");
 		updateDisplayName = config.getboolean("general.update display name");
+		displayNameFormat = config.getString("general.display name format");
 		updatePlayerList = config.getboolean("general.update player list");
 		setPlayerGroupPerm = config.getboolean("general.set group perm");
 		setPlayerMetadata = config.getboolean("general.set player metadata");
@@ -327,7 +329,14 @@ public class MainPlugin extends JavaPlugin {
 		
 		// set display name
 		if (updateDisplayName) {
-			player.setDisplayName(user.getColor(worldName) + player.getName());
+			if (displayNameFormat == null || displayNameFormat.isEmpty()) {
+				player.setDisplayName(user.getColor(worldName) + player.getName());
+			} else {
+				player.setDisplayName(displayNameFormat
+						.replace("%name%", player.getName())
+						.replace("%color%", user.getColor(worldName).toString())
+						.replace("%prefix%", user.getPrefix(worldName)));
+			}
 		}
 		
 		// set player list color
