@@ -3,7 +3,7 @@ package com.nisovin.yapp.menu;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.User;
 
 public class SelectOfflinePlayer extends MenuPrompt {
@@ -15,7 +15,7 @@ public class SelectOfflinePlayer extends MenuPrompt {
 	
 	@Override
 	public Prompt accept(ConversationContext context, String input) {
-		User user = MainPlugin.getPlayerUser(input.trim());
+		User user = YAPP.getPlayerUser(input.trim());
 		setObject(context, user);
 		return Menu.MODIFY_OPTIONS;
 	}

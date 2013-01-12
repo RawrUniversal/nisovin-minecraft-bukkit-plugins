@@ -4,7 +4,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 
 public class RenameGroup extends MenuPrompt {
@@ -17,13 +17,13 @@ public class RenameGroup extends MenuPrompt {
 
 	@Override
 	public Prompt accept(ConversationContext context, String input) {
-		if (MainPlugin.getGroup(input) != null) {
+		if (YAPP.getGroup(input) != null) {
 			return showMessage(context, Menu.ERROR_COLOR + "That group already exists", this);
 		} else {
 			Group group = (Group)getObject(context);
 			String oldName = group.getName();
-			MainPlugin.yapp.renameOrDeleteGroup(group, input);
-			setObject(context, MainPlugin.getGroup(input));
+			YAPP.plugin.renameOrDeleteGroup(group, input);
+			setObject(context, YAPP.getGroup(input));
 			return showMessage(context, Menu.TEXT_COLOR + "The group " + Menu.HIGHLIGHT_COLOR + oldName + Menu.TEXT_COLOR + " has been renamed to " + Menu.HIGHLIGHT_COLOR + input, Menu.MODIFY_OPTIONS_MORE);
 		}
 	}

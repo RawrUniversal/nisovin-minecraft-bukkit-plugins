@@ -4,7 +4,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 
 public class NewGroup extends MenuPrompt {
 
@@ -20,7 +20,7 @@ public class NewGroup extends MenuPrompt {
 		if (input.startsWith("y")) {
 			String groupName = (String)context.getSessionData("newgroupname");
 			context.setSessionData("newgroupname", null);
-			Group group = MainPlugin.newGroup(groupName);
+			Group group = YAPP.newGroup(groupName);
 			setObject(context, group);
 			return Menu.MODIFY_OPTIONS;
 		} else if (input.startsWith("n")) {

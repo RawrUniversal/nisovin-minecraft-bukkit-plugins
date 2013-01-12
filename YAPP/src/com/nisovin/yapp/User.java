@@ -42,7 +42,7 @@ public class User extends PermissionContainer {
 		super.setColor(world, color);
 		Player p = getPlayer();
 		if (p != null) {
-			MainPlugin.yapp.setPlayerListName(p, this);
+			YAPP.plugin.setPlayerListName(p, this);
 		}
 	}
 	

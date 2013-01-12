@@ -28,13 +28,13 @@ import com.nisovin.yapp.menu.Menu;
 import com.nisovin.yapp.storage.*;
 import com.nisovin.yapp.vault.VaultHandler;
 
-public class MainPlugin extends JavaPlugin {
+public class YAPP extends JavaPlugin {
 	
 	public static ChatColor TEXT_COLOR = ChatColor.GOLD;
 	public static ChatColor HIGHLIGHT_COLOR = ChatColor.YELLOW;
 	public static ChatColor ERROR_COLOR = ChatColor.DARK_RED;
 	
-	public static MainPlugin yapp;
+	public static YAPP plugin;
 	public static long mainThreadId;
 	
 	private static boolean debug = true;
@@ -55,7 +55,7 @@ public class MainPlugin extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		yapp = this;
+		plugin = this;
 		mainThreadId = Thread.currentThread().getId();
 		
 		load();
@@ -222,7 +222,7 @@ public class MainPlugin extends JavaPlugin {
 		getServer().getServicesManager().unregisterAll(this);
 		Menu.closeAllMenus();
 		
-		yapp = null;
+		plugin = null;
 	}
 	
 	public void reload() {
@@ -230,7 +230,7 @@ public class MainPlugin extends JavaPlugin {
 		load();
 	}
 	
-	public void cleanup() {
+	private void cleanup() {
 		Iterator<Map.Entry<String,User>> iter = players.entrySet().iterator();
 		Map.Entry<String,User> entry;
 		while (iter.hasNext()) {
@@ -252,7 +252,7 @@ public class MainPlugin extends JavaPlugin {
 		}
 	}
 	
-	public void loadGroups() {
+	private void loadGroups() {
 		debug("Loading groups...");
 		groups = new TreeMap<String, Group>();		
 		storageMethod.fillGroupMap(groups);
@@ -263,25 +263,37 @@ public class MainPlugin extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Gets the User object for a specific player. This should never return null.
+	 * @param playerName The name of the player.
+	 * @return A User object for the player.
+	 */
 	public static User getPlayerUser(String playerName) {
-		User user = yapp.players.get(playerName.toLowerCase());
+		User user = plugin.players.get(playerName.toLowerCase());
 		if (user == null) {
 			user = new User(playerName);
-			yapp.players.put(playerName.toLowerCase(), user);
+			plugin.players.put(playerName.toLowerCase(), user);
 			user.load();
-			if (yapp.defaultGroup != null && user.getGroups(null).size() == 0) {
-				user.addGroup(null, yapp.defaultGroup);
-				debug("Added default group '" + yapp.defaultGroup.getName() + "' to player '" + playerName + "'");
+			if (plugin.defaultGroup != null && user.getGroups(null).size() == 0) {
+				user.addGroup(null, plugin.defaultGroup);
+				debug("Added default group '" + plugin.defaultGroup.getName() + "' to player '" + playerName + "'");
 				user.save();
 			}
 		}
 		return user;
 	}
 	
-	public boolean hasLoadedPermissions(Player player) {
+	protected boolean hasLoadedPermissions(Player player) {
 		return attachments.containsKey(player.getName().toLowerCase());
 	}
 	
+	/**
+	 * Loads the specified player's permissions into the Player object, so that it can be checked
+	 * via Player.hasPermission(String). This is called when the player joins the game and when
+	 * the player changes worlds.
+	 * @param player The player to load permissions for.
+	 * @return The User object for the player.
+	 */
 	@SuppressWarnings("unchecked")
 	public User loadPlayerPermissions(Player player) {
 		long start = System.nanoTime();
@@ -371,6 +383,12 @@ public class MainPlugin extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Renames or deletes a group. If the newName is null, it will delete the group,
+	 * otherwise it will rename it.
+	 * @param group The group to rename or delete.
+	 * @param newName The new name, or null to delete.
+	 */
 	public void renameOrDeleteGroup(Group group, String newName) {
 		// create new group as copy of old
 		Group newGroup = null;
@@ -421,6 +439,13 @@ public class MainPlugin extends JavaPlugin {
 		reload();
 	}
 	
+	/**
+	 * Promotes a User along a promotion ladder, based on their primary group.
+	 * @param user The User to promote.
+	 * @param world The world name to promote in. Leave null to promote on the server level.
+	 * @param sender The command sender that is issuing the promotion (used for checking promote permissions).
+	 * @return Whether the promotion was successful.
+	 */
 	public boolean promote(User user, String world, CommandSender sender) {
 		List<Group> groups;
 		if (world == null) {
@@ -445,7 +470,14 @@ public class MainPlugin extends JavaPlugin {
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Demotes a User along a promotion ladder, based on their primary group.
+	 * @param user The User to demote.
+	 * @param world The world name to demote in. Leave null to demote on the server level.
+	 * @param sender The command sender that is issuing the demotion (used for checking demote permissions).
+	 * @return Whether the demotion was successful.
+	 */
 	public boolean demote(User user, String world, CommandSender sender) {
 		List<Group> groups;
 		if (world == null) {
@@ -471,7 +503,7 @@ public class MainPlugin extends JavaPlugin {
 		}
 	}
 		
-	public void setPlayerListName(Player player, User user) {
+	protected void setPlayerListName(Player player, User user) {
 		if (updatePlayerList) {
 			String world = player.getWorld().getName();
 			String name = user.getColor(world) + player.getName();
@@ -482,18 +514,29 @@ public class MainPlugin extends JavaPlugin {
 		}		
 	}
 	
+	/**
+	 * Removes and saves the player's User object, and removes their permission attachment.
+	 * @param player The player to unload.
+	 */
 	public void unloadPlayer(Player player) {
 		String playerName = player.getName().toLowerCase();
 		players.remove(playerName).save();
 		attachments.remove(playerName).remove();
 	}
 	
+	/**
+	 * Removes and saves the player's User object, and removes their permission attachment.
+	 * @param The player name to unload.
+	 */
 	public void unloadPlayer(String playerName) {
 		playerName = playerName.toLowerCase();
 		players.remove(playerName).save();
 		attachments.remove(playerName).remove();
 	}
 	
+	/**
+	 * Saves all user and group data.
+	 */
 	public void saveAll() {
 		for (User user : players.values()) {
 			user.save();
@@ -503,43 +546,70 @@ public class MainPlugin extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Creates a new group with the specified name. This does NOT check if the group already exists,
+	 * the getGroup() method should be used first to check for existance.
+	 * @param name The name for the new group.
+	 * @return The new group.
+	 */
 	public static Group newGroup(String name) {
 		Group group = new Group(name);
-		yapp.groups.put(name.toLowerCase(), group);
+		plugin.groups.put(name.toLowerCase(), group);
 		return group;
 	}
 	
+	/**
+	 * Gets a group by the specified name, if one exists.
+	 * @param name The group's name.
+	 * @return The group, or null if no group with that name exists.
+	 */
 	public static Group getGroup(String name) {
-		return yapp.groups.get(name.toLowerCase());
+		return plugin.groups.get(name.toLowerCase());
 	}
 	
+	/**
+	 * Gets the default group that players join if they have no group.
+	 * @return The default group.
+	 */
 	public static Group getDefaultGroup() {
-		return yapp.defaultGroup;
+		return plugin.defaultGroup;
 	}
 	
+	/**
+	 * Gets all valid group names.
+	 * @return All group names.
+	 */
 	public static Set<String> getGroupNames() {
-		return yapp.groups.keySet();
+		return plugin.groups.keySet();
 	}
 	
-	public static StorageMethod getStorage() {
-		return yapp.storageMethod;
+	/**
+	 * Gets the YAPP plugin object.
+	 * @return The plugin object.
+	 */
+	public static YAPP getPlugin() {
+		return plugin;
+	}
+	
+	protected static StorageMethod getStorage() {
+		return plugin.storageMethod;
 	}
 	
 	public static void log(String message) {
-		yapp.getLogger().info(message);
+		plugin.getLogger().info(message);
 	}
 	
 	public static void warning(String message) {
-		yapp.getLogger().warning(message);
+		plugin.getLogger().warning(message);
 	}
 	
 	public static void error(String message) {
-		yapp.getLogger().severe(message);
+		plugin.getLogger().severe(message);
 	}
 	
 	public static void debug(String message) {
 		if (debug) {
-			yapp.getLogger().info(message);
+			plugin.getLogger().info(message);
 		}
 	}
 	

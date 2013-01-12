@@ -1,7 +1,7 @@
 package com.nisovin.yapp.vault;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.User;
 
 import net.milkbowl.vault.permission.Permission;
@@ -14,7 +14,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public boolean getGroupInfoBoolean(String world, String group, String node, boolean defaultValue) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			String data = g.getInfo(world, node);
 			if (data != null) {
@@ -30,7 +30,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public double getGroupInfoDouble(String world, String group, String node, double defaultValue) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			String data = g.getInfo(world, node);
 			if (data != null) {
@@ -46,7 +46,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public int getGroupInfoInteger(String world, String group, String node, int defaultValue) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			String data = g.getInfo(world, node);
 			if (data != null) {
@@ -62,7 +62,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public String getGroupInfoString(String world, String group, String node, String defaultValue) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			String data = g.getInfo(world, node);
 			if (data != null) {
@@ -74,7 +74,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public String getGroupPrefix(String world, String group) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			return g.getPrefix(world);
 		}
@@ -83,7 +83,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public String getGroupSuffix(String world, String group) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			return g.getInfo(world, "suffix");
 		}
@@ -97,7 +97,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public boolean getPlayerInfoBoolean(String world, String player, String node, boolean defaultValue) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			String data = u.getInfo(world, node);
 			if (data != null) {
@@ -113,7 +113,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public double getPlayerInfoDouble(String world, String player, String node, double defaultValue) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			String data = u.getInfo(world, node);
 			if (data != null) {
@@ -129,7 +129,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public int getPlayerInfoInteger(String world, String player, String node, int defaultValue) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			String data = u.getInfo(world, node);
 			if (data != null) {
@@ -145,7 +145,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public String getPlayerInfoString(String world, String player, String node, String defaultValue) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			return u.getInfo(world, node);
 		}
@@ -154,7 +154,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public String getPlayerPrefix(String world, String player) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			return u.getPrefix(world);
 		}
@@ -163,7 +163,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public String getPlayerSuffix(String world, String player) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			return u.getInfo(world, "suffix");
 		}
@@ -172,12 +172,12 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public boolean isEnabled() {
-		return MainPlugin.yapp != null && MainPlugin.yapp.isEnabled();
+		return YAPP.plugin != null && YAPP.plugin.isEnabled();
 	}
 
 	@Override
 	public void setGroupInfoBoolean(String world, String group, String node, boolean value) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			g.setInfo(world, node, value ? "true" : "false");
 		}
@@ -185,7 +185,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setGroupInfoDouble(String world, String group, String node, double value) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			g.setInfo(world, node, Double.toString(value));
 		}
@@ -193,7 +193,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setGroupInfoInteger(String world, String group, String node, int value) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			g.setInfo(world, node, Integer.toString(value));
 		}
@@ -201,7 +201,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setGroupInfoString(String world, String group, String node, String value) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			g.setInfo(world, node, value);
 		}
@@ -209,7 +209,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setGroupPrefix(String world, String group, String prefix) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			g.setPrefix(world, prefix);
 		}
@@ -217,7 +217,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setGroupSuffix(String world, String group, String suffix) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			g.setInfo(world, "suffix", suffix);
 		}
@@ -225,7 +225,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setPlayerInfoBoolean(String world, String player, String node, boolean value) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			u.setInfo(world, node, value ? "true" : "false");
 		}
@@ -233,7 +233,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setPlayerInfoDouble(String world, String player, String node, double value) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			u.setInfo(world, node, Double.toString(value));
 		}
@@ -241,7 +241,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setPlayerInfoInteger(String world, String player, String node, int value) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			u.setInfo(world, node, Integer.toString(value));
 		}
@@ -249,7 +249,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setPlayerInfoString(String world, String player, String node, String value) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			u.setInfo(world, node, value);
 		}
@@ -257,7 +257,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setPlayerPrefix(String world, String player, String prefix) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			u.setPrefix(world, prefix);
 		}
@@ -265,7 +265,7 @@ public class VaultChatService extends net.milkbowl.vault.chat.Chat {
 
 	@Override
 	public void setPlayerSuffix(String world, String player, String suffix) {
-		User u = MainPlugin.getPlayerUser(player);
+		User u = YAPP.getPlayerUser(player);
 		if (u != null) {
 			u.setInfo(world, "suffix", suffix);
 		}

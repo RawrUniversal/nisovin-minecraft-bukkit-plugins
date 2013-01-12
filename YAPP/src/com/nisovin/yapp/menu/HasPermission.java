@@ -5,7 +5,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 import com.nisovin.yapp.User;
 
@@ -36,9 +36,9 @@ public class HasPermission extends MenuPrompt {
 			has = obj.has(world, input);
 		}
 		if (has) {
-			return showMessage(context, MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " does have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + input, Menu.MODIFY_OPTIONS_MORE);
+			return showMessage(context, YAPP.TEXT_COLOR + "The " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " does have " + YAPP.TEXT_COLOR + "the permission " + YAPP.HIGHLIGHT_COLOR + input, Menu.MODIFY_OPTIONS_MORE);
 		} else {
-			return showMessage(context, MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + input, Menu.MODIFY_OPTIONS_MORE);			
+			return showMessage(context, YAPP.TEXT_COLOR + "The " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not have " + YAPP.TEXT_COLOR + "the permission " + YAPP.HIGHLIGHT_COLOR + input, Menu.MODIFY_OPTIONS_MORE);			
 		}
 	}
 

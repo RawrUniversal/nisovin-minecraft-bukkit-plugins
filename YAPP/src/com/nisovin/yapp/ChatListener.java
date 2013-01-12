@@ -20,7 +20,7 @@ public class ChatListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		User user = MainPlugin.getPlayerUser(event.getPlayer().getName());
+		User user = YAPP.getPlayerUser(event.getPlayer().getName());
 		String world = event.getPlayer().getWorld().getName();
 		String format = chatFormat
 				.replace("%name%", "%1$s")

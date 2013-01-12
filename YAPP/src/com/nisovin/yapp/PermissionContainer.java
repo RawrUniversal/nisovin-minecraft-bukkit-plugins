@@ -550,7 +550,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	public boolean addGroup(String world, Group group) {
 		// check for infinite group recursion
 		if (this instanceof Group && group.inheritsGroup(world, (Group)this)) {
-			MainPlugin.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + this.getName());
+			YAPP.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + this.getName());
 			return false;
 		}
 		if (world == null || world.isEmpty()) {
@@ -575,7 +575,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	public boolean setGroup(String world, Group group) {
 		// check for infinite group recursion
 		if (this instanceof Group && group.inheritsGroup(world, (Group)this)) {
-			MainPlugin.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + this.getName());
+			YAPP.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + this.getName());
 			return false;
 		}
 		if (world == null || world.isEmpty()) {
@@ -683,8 +683,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public void load() {
-		MainPlugin.debug("Loading " + type + " '" + name + "'");
-		MainPlugin.getStorage().load(this);
+		YAPP.debug("Loading " + type + " '" + name + "'");
+		YAPP.getStorage().load(this);
 	}
 	
 	public void save() {
@@ -693,8 +693,8 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	public void save(boolean force) {
 		if (dirty || force) {
-			MainPlugin.debug("Saving " + type + " " + name + " (dirty: " + dirty + ", forced: " + force + ")");
-			MainPlugin.getStorage().save(this);
+			YAPP.debug("Saving " + type + " " + name + " (dirty: " + dirty + ", forced: " + force + ")");
+			YAPP.getStorage().save(this);
 		}
 	}
 	

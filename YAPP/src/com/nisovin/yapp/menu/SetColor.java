@@ -5,7 +5,7 @@ import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 
 public class SetColor extends MenuPrompt {
@@ -74,7 +74,7 @@ public class SetColor extends MenuPrompt {
 		} else {
 			val = "(empty/inherited)";
 		}
-		return showMessage(context, MainPlugin.TEXT_COLOR + "The " + getType(context) + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + "'s color has been set to: " + val, Menu.MODIFY_OPTIONS);
+		return showMessage(context, YAPP.TEXT_COLOR + "The " + getType(context) + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + YAPP.TEXT_COLOR + "'s color has been set to: " + val, Menu.MODIFY_OPTIONS);
 	}
 
 	@Override

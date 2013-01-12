@@ -5,7 +5,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 import com.nisovin.yapp.TrackedNodeList;
 import com.nisovin.yapp.User;
@@ -39,7 +39,7 @@ public class ModifyOptionsMore extends MenuPrompt {
 			c.sendRawMessage(Menu.TEXT_COLOR + "  6) " + Menu.KEYLETTER_COLOR + "R" + Menu.KEYWORD_COLOR + "efresh" + Menu.TEXT_COLOR + " this player's permissions");
 		}
 		c.sendRawMessage(Menu.TEXT_COLOR + "  0) Show " + Menu.KEYLETTER_COLOR + "m" + Menu.KEYWORD_COLOR + "ore " + Menu.TEXT_COLOR + "options");
-		return MainPlugin.TEXT_COLOR + "Please type your selection:";
+		return YAPP.TEXT_COLOR + "Please type your selection:";
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class ModifyOptionsMore extends MenuPrompt {
 		} else if ((input.equals("6") || input.startsWith("r")) && obj instanceof User) {
 			User user = (User)obj;
 			if (user.isOnline()) {
-				MainPlugin.yapp.loadPlayerPermissions(user.getPlayer());
+				YAPP.plugin.loadPlayerPermissions(user.getPlayer());
 				return showMessage(context, Menu.TEXT_COLOR + "Refreshed permissions for player " + Menu.HIGHLIGHT_COLOR + user.getName(), this);
 			} else {
 				return showMessage(context, Menu.ERROR_COLOR + "That player is not online", this);

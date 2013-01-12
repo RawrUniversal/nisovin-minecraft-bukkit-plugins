@@ -11,7 +11,7 @@ public class NameplateListener implements Listener {
 	public void onNameplate(PlayerReceiveNameTagEvent event) {
 		String name = event.getNamedPlayer().getName();
 		if (name.length() <= 14) {
-			User user = MainPlugin.getPlayerUser(name);
+			User user = YAPP.getPlayerUser(name);
 			String world = event.getPlayer().getWorld().getName();
 			ChatColor color = user.getColor(world);
 			if (color != null && color != ChatColor.WHITE) {

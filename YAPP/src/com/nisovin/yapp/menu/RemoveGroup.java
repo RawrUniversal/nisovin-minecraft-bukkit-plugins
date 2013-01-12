@@ -4,7 +4,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 
 public class RemoveGroup extends MenuPrompt {
@@ -17,7 +17,7 @@ public class RemoveGroup extends MenuPrompt {
 
 	@Override
 	public Prompt accept(ConversationContext context, String input) {
-		Group group = MainPlugin.getGroup(input.trim());
+		Group group = YAPP.getGroup(input.trim());
 		if (group == null) {
 			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "That group does not exist");
 			return this;

@@ -4,7 +4,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 
 public class DeleteGroup extends MenuPrompt {
@@ -21,7 +21,7 @@ public class DeleteGroup extends MenuPrompt {
 		if (input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")) {
 			Group group = (Group)getObject(context);
 			String name = group.getName();
-			MainPlugin.yapp.renameOrDeleteGroup(group, null);
+			YAPP.plugin.renameOrDeleteGroup(group, null);
 			setObject(context, null);
 			return showMessage(context, Menu.TEXT_COLOR + "The group " + Menu.HIGHLIGHT_COLOR + name + Menu.TEXT_COLOR + " has been deleted", Menu.MAIN_MENU);
 		} else {

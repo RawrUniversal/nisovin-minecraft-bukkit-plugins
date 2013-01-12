@@ -13,7 +13,7 @@ import java.util.Map;
 
 import com.mysql.jdbc.MySQLConnection;
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 import com.nisovin.yapp.PermissionNode;
 
@@ -38,7 +38,7 @@ public class MySQLStorage implements StorageMethod {
 		}
 
 		try {
-			MainPlugin.debug("Checking database schema");
+			YAPP.debug("Checking database schema");
 			createOrUpdateSchema(conn);
 			conn.close();
 		} catch (SQLException e) {
@@ -67,18 +67,18 @@ public class MySQLStorage implements StorageMethod {
 				if (!groups.containsKey(name.toLowerCase())) {
 					Group group = new Group(name);
 					groups.put(name.toLowerCase(), group);
-					MainPlugin.debug("  Found group: " + name);
+					YAPP.debug("  Found group: " + name);
 				}
 			}
 			results.close();
 		} catch (SQLException e) {
-			MainPlugin.error("MYSQL: ERROR GETTING GROUP LIST");
+			YAPP.error("MYSQL: ERROR GETTING GROUP LIST");
 			e.printStackTrace();
 		} finally {
 			try {
 				conn.close();
 			} catch (SQLException e) {
-				MainPlugin.error("MYSQL: ERROR GETTING GROUP LIST");
+				YAPP.error("MYSQL: ERROR GETTING GROUP LIST");
 				e.printStackTrace();
 			}
 		}
@@ -94,7 +94,7 @@ public class MySQLStorage implements StorageMethod {
 		
 		try {
 			// get info
-			MainPlugin.debug("  Loading info");
+			YAPP.debug("  Loading info");
 			PreparedStatement stmt = conn.prepareStatement("SELECT `key`, `value` FROM `yapp_info` WHERE `name` = ? AND `type` = ? AND `world` = '' ORDER BY `order");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
@@ -103,14 +103,14 @@ public class MySQLStorage implements StorageMethod {
 				ResultSet results = stmt.getResultSet();
 				while (results.next()) {
 					info.put(results.getString("key"), results.getString("value"));
-					MainPlugin.debug("    Added info: " + results.getString("key") + " = " + results.getString("value"));
+					YAPP.debug("    Added info: " + results.getString("key") + " = " + results.getString("value"));
 				}
 				results.close();
 			}
 			stmt.close();
 			
 			// get permissions
-			MainPlugin.debug("  Loading permissions");
+			YAPP.debug("  Loading permissions");
 			stmt = conn.prepareStatement("SELECT `node`, `value` FROM `yapp_permissions` WHERE `name` = ? AND `type` = ? AND `world` = '' ORDER BY `order");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
@@ -120,14 +120,14 @@ public class MySQLStorage implements StorageMethod {
 				while (results.next()) {
 					PermissionNode node = new PermissionNode(results.getString("node"), results.getInt("value") == 1 ? true : false);
 					perms.add(node);
-					MainPlugin.debug("    Added permission: " + node);
+					YAPP.debug("    Added permission: " + node);
 				}
 				results.close();
 			}
 			stmt.close();
 			
 			// get groups
-			MainPlugin.debug("  Loading groups");
+			YAPP.debug("  Loading groups");
 			stmt = conn.prepareStatement("SELECT `group_name` FROM `yapp_inherited_groups` WHERE `name` = ? AND `type` = ? AND `world` = '' ORDER BY `order`");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
@@ -136,22 +136,22 @@ public class MySQLStorage implements StorageMethod {
 				ResultSet results = stmt.getResultSet();
 				while (results.next()) {
 					String groupName = results.getString("group_name");
-					Group group = MainPlugin.getGroup(groupName);
+					Group group = YAPP.getGroup(groupName);
 					if (group != null) {
 						boolean ok = true;
 						// check for infinite group recursion
 						if (container instanceof Group) {
 							if (group.inheritsGroup(null, (Group)container)) {
 								ok = false;
-								MainPlugin.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + name);
+								YAPP.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + name);
 							}
 						}
 						if (ok) {
 							groups.add(group);
-							MainPlugin.debug("    Added inherited group: " + group.getName());
+							YAPP.debug("    Added inherited group: " + group.getName());
 						}
 					} else {
-						MainPlugin.warning(container.getType() + " '" + name + "' has non-existant inherited group '" + groupName + "'");
+						YAPP.warning(container.getType() + " '" + name + "' has non-existant inherited group '" + groupName + "'");
 					}
 				}
 				results.close();
@@ -163,7 +163,7 @@ public class MySQLStorage implements StorageMethod {
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			if (stmt.execute()) {
-				MainPlugin.debug("  Loading world info");
+				YAPP.debug("  Loading world info");
 				Map<String, Map<String, String>> worldInfo = container.getActualWorldInfoMap();
 				ResultSet results = stmt.getResultSet();
 				while (results.next()) {
@@ -174,7 +174,7 @@ public class MySQLStorage implements StorageMethod {
 						worldInfo.put(world, info);
 					}
 					info.put(results.getString("key"), results.getString("value"));
-					MainPlugin.debug("    Added info for world " + world + ": " + results.getString("key") + " = " + results.getString("value"));
+					YAPP.debug("    Added info for world " + world + ": " + results.getString("key") + " = " + results.getString("value"));
 				}
 				results.close();
 			}
@@ -185,7 +185,7 @@ public class MySQLStorage implements StorageMethod {
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			if (stmt.execute()) {
-				MainPlugin.debug("  Loading world permissions");
+				YAPP.debug("  Loading world permissions");
 				Map<String, List<PermissionNode>> worldPerms = container.getActualWorldPermissionMap();
 				ResultSet results = stmt.getResultSet();
 				while (results.next()) {
@@ -197,7 +197,7 @@ public class MySQLStorage implements StorageMethod {
 					}
 					PermissionNode node = new PermissionNode(results.getString("node"), results.getInt("value") == 1 ? true : false);
 					perms.add(node);
-					MainPlugin.debug("    Added permission for world " + world + ": " + node);
+					YAPP.debug("    Added permission for world " + world + ": " + node);
 				}
 				results.close();
 			}
@@ -208,7 +208,7 @@ public class MySQLStorage implements StorageMethod {
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			if (stmt.execute()) {
-				MainPlugin.debug("  Loading world groups");
+				YAPP.debug("  Loading world groups");
 				Map<String, List<Group>> worldGroups = container.getActualWorldGroupMap();
 				ResultSet results = stmt.getResultSet();
 				while (results.next()) {
@@ -219,22 +219,22 @@ public class MySQLStorage implements StorageMethod {
 						worldGroups.put(world, groups);
 					}
 					String groupName = results.getString("group_name");
-					Group group = MainPlugin.getGroup(groupName);
+					Group group = YAPP.getGroup(groupName);
 					if (group != null) {
 						boolean ok = true;
 						// check for infinite group recursion
 						if (container instanceof Group) {
 							if (group.inheritsGroup(world, (Group)container)) {
 								ok = false;
-								MainPlugin.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + name + " for world " + world);
+								YAPP.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + name + " for world " + world);
 							}
 						}
 						if (ok) {
 							groups.add(group);
-							MainPlugin.debug("    Added inherited group for world " + world + ": " + group.getName());
+							YAPP.debug("    Added inherited group for world " + world + ": " + group.getName());
 						}
 					} else {
-						MainPlugin.warning(container.getType() + " '" + name + "' has non-existant inherited group '" + groupName + "'");
+						YAPP.warning(container.getType() + " '" + name + "' has non-existant inherited group '" + groupName + "'");
 					}
 				}
 				results.close();
@@ -244,7 +244,7 @@ public class MySQLStorage implements StorageMethod {
 			container.setNotDirty();
 			
 		} catch (SQLException e) {
-			MainPlugin.error("MYSQL: ERROR LOADING OBJECT: " + container.getType() + " " + name);
+			YAPP.error("MYSQL: ERROR LOADING OBJECT: " + container.getType() + " " + name);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -344,12 +344,12 @@ public class MySQLStorage implements StorageMethod {
 			
 			conn.commit();
 		} catch (SQLException e) {
-			MainPlugin.error("MYSQL: ERROR SAVING OBJECT: " + container.getType() + " " + name);
+			YAPP.error("MYSQL: ERROR SAVING OBJECT: " + container.getType() + " " + name);
 			e.printStackTrace();
 			try {
 				conn.rollback();
 			} catch (SQLException e1) {
-				MainPlugin.error("MYSQL: ERROR ON ROLLBACK AFTER FAILED SAVE");
+				YAPP.error("MYSQL: ERROR ON ROLLBACK AFTER FAILED SAVE");
 				e1.printStackTrace();
 			}
 		} finally {
@@ -410,7 +410,7 @@ public class MySQLStorage implements StorageMethod {
 		try {
 			return (MySQLConnection) DriverManager.getConnection("jdbc:mysql://" + host + "/" + db, user, pass);
 		} catch (SQLException e) {
-			MainPlugin.error("MYSQL: ERROR CONNECTING TO DATABASE");
+			YAPP.error("MYSQL: ERROR CONNECTING TO DATABASE");
 			e.printStackTrace();
 			return null;
 		}
@@ -421,10 +421,10 @@ public class MySQLStorage implements StorageMethod {
 		conn.setAutoCommit(false);
 		try {
 			int version = getSchemaVersion(conn);
-			MainPlugin.debug("  Schema version is " + version);
+			YAPP.debug("  Schema version is " + version);
 			boolean update = false;
 			if (version < 1) {
-				MainPlugin.debug("  Updating schema to version 1");
+				YAPP.debug("  Updating schema to version 1");
 				schemaUpdate1(conn);
 				update = true;
 			}

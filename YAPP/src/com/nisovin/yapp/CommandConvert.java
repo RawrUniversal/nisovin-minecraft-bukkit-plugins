@@ -51,8 +51,8 @@ public class CommandConvert implements CommandExecutor {
 			for (String groupName : groupKeys) {
 				// get group
 				ConfigurationSection groupSection = groupsSection.getConfigurationSection(groupName);
-				Group group = MainPlugin.getGroup(groupName);
-				if (group == null) group = MainPlugin.newGroup(groupName);
+				Group group = YAPP.getGroup(groupName);
+				if (group == null) group = YAPP.newGroup(groupName);
 				
 				// prepare inherited group storage
 				HashMap<String, List<String>> inheritedGroups = new HashMap<String, List<String>>();
@@ -113,7 +113,7 @@ public class CommandConvert implements CommandExecutor {
 			for (String world : inheritedGroupsByWorld.keySet()) {
 				List<String> inheritedGroups = inheritedGroupsByWorld.get(world);
 				for (String groupName : inheritedGroups) {
-					Group g = MainPlugin.getGroup(groupName);
+					Group g = YAPP.getGroup(groupName);
 					if (g != null) {
 						group.addGroup(world, g);
 					}
@@ -128,16 +128,16 @@ public class CommandConvert implements CommandExecutor {
 			for (String userName : userKeys) {
 				// get user
 				ConfigurationSection userSection = usersSection.getConfigurationSection(userName);
-				User user = MainPlugin.getPlayerUser(userName);
-				if (MainPlugin.getDefaultGroup() != null && user.getGroups(null).size() == 1 && user.getGroups(null).contains(MainPlugin.getDefaultGroup())) {
-					user.removeGroup(null, MainPlugin.getDefaultGroup());
+				User user = YAPP.getPlayerUser(userName);
+				if (YAPP.getDefaultGroup() != null && user.getGroups(null).size() == 1 && user.getGroups(null).contains(YAPP.getDefaultGroup())) {
+					user.removeGroup(null, YAPP.getDefaultGroup());
 				}
 				
 				// get group's inherited groups				
 				List<String> inheritedGroupNames = userSection.getStringList("group");
 				if (inheritedGroupNames != null && inheritedGroupNames.size() > 0) {
 					for (String groupName : inheritedGroupNames) {
-						Group group = MainPlugin.getGroup(groupName);
+						Group group = YAPP.getGroup(groupName);
 						if (group != null) {
 							user.addGroup(group);
 						}
@@ -163,7 +163,7 @@ public class CommandConvert implements CommandExecutor {
 						List<String> worldInheritedGroupNames = worldSection.getStringList("group");
 						if (worldInheritedGroupNames != null && worldInheritedGroupNames.size() > 0) {
 							for (String groupName : worldInheritedGroupNames) {
-								Group group = MainPlugin.getGroup(groupName);
+								Group group = YAPP.getGroup(groupName);
 								if (group != null) {
 									user.addGroup(worldName, group);
 								}
@@ -187,7 +187,7 @@ public class CommandConvert implements CommandExecutor {
 			}
 		}
 		
-		MainPlugin.yapp.saveAll();
+		YAPP.plugin.saveAll();
 	}
 
 	private void convertFromPermissionsBukkit() {
@@ -210,8 +210,8 @@ public class CommandConvert implements CommandExecutor {
 			for (String groupName : groupKeys) {
 				// get group
 				ConfigurationSection groupSection = groupsSection.getConfigurationSection(groupName);
-				Group group = MainPlugin.getGroup(groupName);
-				if (group == null) group = MainPlugin.newGroup(groupName);
+				Group group = YAPP.getGroup(groupName);
+				if (group == null) group = YAPP.newGroup(groupName);
 				
 				// prepare inherited group storage
 				HashMap<String, List<String>> inheritedGroups = new HashMap<String, List<String>>();
@@ -263,7 +263,7 @@ public class CommandConvert implements CommandExecutor {
 			for (String world : inheritedGroupsByWorld.keySet()) {
 				List<String> inheritedGroups = inheritedGroupsByWorld.get(world);
 				for (String groupName : inheritedGroups) {
-					Group g = MainPlugin.getGroup(groupName);
+					Group g = YAPP.getGroup(groupName);
 					if (g != null) {
 						group.addGroup(world, g);
 					}
@@ -278,16 +278,16 @@ public class CommandConvert implements CommandExecutor {
 			for (String userName : userKeys) {
 				// get user
 				ConfigurationSection userSection = usersSection.getConfigurationSection(userName);
-				User user = MainPlugin.getPlayerUser(userName);
-				if (MainPlugin.getDefaultGroup() != null && user.getGroups(null).size() == 1 && user.getGroups(null).contains(MainPlugin.getDefaultGroup())) {
-					user.removeGroup(null, MainPlugin.getDefaultGroup());
+				User user = YAPP.getPlayerUser(userName);
+				if (YAPP.getDefaultGroup() != null && user.getGroups(null).size() == 1 && user.getGroups(null).contains(YAPP.getDefaultGroup())) {
+					user.removeGroup(null, YAPP.getDefaultGroup());
 				}
 				
 				// get group's inherited groups				
 				List<String> inheritedGroupNames = userSection.getStringList("groups");
 				if (inheritedGroupNames != null && inheritedGroupNames.size() > 0) {
 					for (String groupName : inheritedGroupNames) {
-						Group group = MainPlugin.getGroup(groupName);
+						Group group = YAPP.getGroup(groupName);
 						if (group != null) {
 							user.addGroup(group);
 						}
@@ -328,7 +328,7 @@ public class CommandConvert implements CommandExecutor {
 			}
 		}
 		
-		MainPlugin.yapp.saveAll();
+		YAPP.plugin.saveAll();
 	}
 
 	private void convertFromGroupManager() {
@@ -353,8 +353,8 @@ public class CommandConvert implements CommandExecutor {
 				for (String groupName : groupKeys) {
 					// get group
 					ConfigurationSection groupSection = groupsSection.getConfigurationSection(groupName);
-					Group group = MainPlugin.getGroup("global_" + groupName);
-					if (group == null) group = MainPlugin.newGroup("global_" + groupName);
+					Group group = YAPP.getGroup("global_" + groupName);
+					if (group == null) group = YAPP.newGroup("global_" + groupName);
 					
 					// get permissions
 					List<String> permissions = groupSection.getStringList("permissions");
@@ -393,8 +393,8 @@ public class CommandConvert implements CommandExecutor {
 					for (String groupName : groupKeys) {
 						// get group
 						ConfigurationSection groupSection = groupsSection.getConfigurationSection(groupName);
-						Group group = MainPlugin.getGroup(groupName);
-						if (group == null) group = MainPlugin.newGroup(groupName);
+						Group group = YAPP.getGroup(groupName);
+						if (group == null) group = YAPP.newGroup(groupName);
 						
 						// prepare inherited group storage
 						HashMap<String, List<String>> inheritedGroups = new HashMap<String, List<String>>();
@@ -430,7 +430,7 @@ public class CommandConvert implements CommandExecutor {
 			for (String world : inheritedGroupsByWorld.keySet()) {
 				List<String> inheritedGroups = inheritedGroupsByWorld.get(world);
 				for (String groupName : inheritedGroups) {
-					Group g = MainPlugin.getGroup(groupName.startsWith("g:") ? groupName.replace("g:", "global_") : groupName);
+					Group g = YAPP.getGroup(groupName.startsWith("g:") ? groupName.replace("g:", "global_") : groupName);
 					if (g != null) {
 						group.addGroup(world, g);
 					}
@@ -462,15 +462,15 @@ public class CommandConvert implements CommandExecutor {
 					for (String userName : userKeys) {
 						// get user
 						ConfigurationSection userSection = usersSection.getConfigurationSection(userName);
-						User user = MainPlugin.getPlayerUser(userName);
-						if (MainPlugin.getDefaultGroup() != null && user.getGroups(null).size() == 1 && user.getGroups(null).contains(MainPlugin.getDefaultGroup())) {
-							user.removeGroup(null, MainPlugin.getDefaultGroup());
+						User user = YAPP.getPlayerUser(userName);
+						if (YAPP.getDefaultGroup() != null && user.getGroups(null).size() == 1 && user.getGroups(null).contains(YAPP.getDefaultGroup())) {
+							user.removeGroup(null, YAPP.getDefaultGroup());
 						}
 						
 						// get user's inherited groups
 						if (userSection.contains("group")) {
 							String groupName = userSection.getString("group");
-							Group group = MainPlugin.getGroup(groupName.startsWith("g:") ? groupName.replace("g:", "global_") : groupName);
+							Group group = YAPP.getGroup(groupName.startsWith("g:") ? groupName.replace("g:", "global_") : groupName);
 							if (group != null) {
 								user.addGroup(worldName, group);
 							}
@@ -478,7 +478,7 @@ public class CommandConvert implements CommandExecutor {
 						List<String> inheritedGroupNames = userSection.getStringList("subgroups");
 						if (inheritedGroupNames != null && inheritedGroupNames.size() > 0) {
 							for (String groupName : inheritedGroupNames) {
-								Group group = MainPlugin.getGroup(groupName.startsWith("g:") ? groupName.replace("g:", "global_") : groupName);
+								Group group = YAPP.getGroup(groupName.startsWith("g:") ? groupName.replace("g:", "global_") : groupName);
 								if (group != null) {
 									user.addGroup(worldName, group);
 								}
@@ -502,7 +502,7 @@ public class CommandConvert implements CommandExecutor {
 			}
 		}
 		
-		MainPlugin.yapp.saveAll();
+		YAPP.plugin.saveAll();
 	}
 
 }

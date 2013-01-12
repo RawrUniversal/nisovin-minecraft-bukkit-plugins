@@ -5,7 +5,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 import com.nisovin.yapp.User;
 
@@ -34,7 +34,7 @@ public class ModifyOptions extends MenuPrompt {
 		c.sendRawMessage(Menu.TEXT_COLOR + "  8) Set the " + Menu.KEYWORD_COLOR + "chat prefi" + Menu.KEYLETTER_COLOR + "x");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  9) Set the name " + Menu.KEYLETTER_COLOR + "c" + Menu.KEYWORD_COLOR + "olor");
 		c.sendRawMessage(Menu.TEXT_COLOR + "  0) Show " + Menu.KEYLETTER_COLOR + "m" + Menu.KEYWORD_COLOR + "ore " + Menu.TEXT_COLOR + "options");
-		return MainPlugin.TEXT_COLOR + "Please type your selection:";
+		return YAPP.TEXT_COLOR + "Please type your selection:";
 	}
 
 	@Override

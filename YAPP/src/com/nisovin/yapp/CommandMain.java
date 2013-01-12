@@ -38,20 +38,20 @@ public class CommandMain implements CommandExecutor {
 				if (args.length == 1) {
 					if (args[0].equals("@") || args[0].equalsIgnoreCase("reload")) {
 						// reload data
-						MainPlugin.yapp.reload();
-						sender.sendMessage(MainPlugin.TEXT_COLOR + "YAPP data reloaded");
+						YAPP.plugin.reload();
+						sender.sendMessage(YAPP.TEXT_COLOR + "YAPP data reloaded");
 					} else if (args[0].equals("?")) {
 						// show status
 						PermissionContainer obj = selectedObject.get(sender);
 						String world = selectedWorld.get(sender);
 						if (obj == null && world == null) {
-							sender.sendMessage(MainPlugin.TEXT_COLOR + "You have nothing selected");
+							sender.sendMessage(YAPP.TEXT_COLOR + "You have nothing selected");
 						} else if (obj == null && world != null) {
-							sender.sendMessage(MainPlugin.TEXT_COLOR + "You have selected the world " + MainPlugin.HIGHLIGHT_COLOR + world);
+							sender.sendMessage(YAPP.TEXT_COLOR + "You have selected the world " + YAPP.HIGHLIGHT_COLOR + world);
 						} else {
 							String type = getType(obj);
-							sender.sendMessage(MainPlugin.TEXT_COLOR + "You have selected the " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + 
-									(world != null ? MainPlugin.TEXT_COLOR + " on world " + MainPlugin.HIGHLIGHT_COLOR + world : ""));
+							sender.sendMessage(YAPP.TEXT_COLOR + "You have selected the " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + 
+									(world != null ? YAPP.TEXT_COLOR + " on world " + YAPP.HIGHLIGHT_COLOR + world : ""));
 						}
 					} else if (args[0].equalsIgnoreCase("delete")) {
 						// deleting current object (no confirmation yet)
@@ -152,8 +152,8 @@ public class CommandMain implements CommandExecutor {
 	private void refresh(CommandSender sender, String name) {
 		Player player = Bukkit.getPlayer(name);
 		if (player != null) {
-			MainPlugin.yapp.loadPlayerPermissions(player);
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Refreshed permissions for player " + MainPlugin.HIGHLIGHT_COLOR + player.getName());
+			YAPP.plugin.loadPlayerPermissions(player);
+			sender.sendMessage(YAPP.TEXT_COLOR + "Refreshed permissions for player " + YAPP.HIGHLIGHT_COLOR + player.getName());
 		} else {
 			sender.sendMessage("No player found.");
 		}
@@ -182,34 +182,34 @@ public class CommandMain implements CommandExecutor {
 			// select the player
 			Player player = Bukkit.getServer().getPlayer(search);
 			if (player != null) {
-				User user = MainPlugin.getPlayerUser(player.getName());
+				User user = YAPP.getPlayerUser(player.getName());
 				selectedObject.put(sender, user);
-				sender.sendMessage(MainPlugin.TEXT_COLOR + "Selected player " + MainPlugin.HIGHLIGHT_COLOR + player.getName());
+				sender.sendMessage(YAPP.TEXT_COLOR + "Selected player " + YAPP.HIGHLIGHT_COLOR + player.getName());
 			} else {
 				sender.sendMessage("No player found.");
 			}
 		} else if (mode == 'x') {
 			// select the exact player or offline player
-			User user = MainPlugin.getPlayerUser(search);
+			User user = YAPP.getPlayerUser(search);
 			selectedObject.put(sender, user);
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Selected player " + MainPlugin.HIGHLIGHT_COLOR + search);
+			sender.sendMessage(YAPP.TEXT_COLOR + "Selected player " + YAPP.HIGHLIGHT_COLOR + search);
 		} else if (mode == 'g') {
-			Group group = MainPlugin.getGroup(search);
+			Group group = YAPP.getGroup(search);
 			if (group == null) {
-				group = MainPlugin.newGroup(search);
-				sender.sendMessage(MainPlugin.TEXT_COLOR + "New group " + MainPlugin.HIGHLIGHT_COLOR + search + MainPlugin.TEXT_COLOR + " created");
+				group = YAPP.newGroup(search);
+				sender.sendMessage(YAPP.TEXT_COLOR + "New group " + YAPP.HIGHLIGHT_COLOR + search + YAPP.TEXT_COLOR + " created");
 			}
 			selectedObject.put(sender, group);
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Selected group " + MainPlugin.HIGHLIGHT_COLOR + group.getName());
+			sender.sendMessage(YAPP.TEXT_COLOR + "Selected group " + YAPP.HIGHLIGHT_COLOR + group.getName());
 		} else if (mode == 'w') {
 			if (search.isEmpty() || search.equals("-")) {
 				selectedWorld.remove(sender);
-				sender.sendMessage(MainPlugin.TEXT_COLOR + "Cleared world selection");
+				sender.sendMessage(YAPP.TEXT_COLOR + "Cleared world selection");
 			} else {
 				selectedWorld.put(sender, search);
-				sender.sendMessage(MainPlugin.TEXT_COLOR + "Selected world " + MainPlugin.HIGHLIGHT_COLOR + search);
+				sender.sendMessage(YAPP.TEXT_COLOR + "Selected world " + YAPP.HIGHLIGHT_COLOR + search);
 				if (Bukkit.getWorld(search) == null) {
-					sender.sendMessage(MainPlugin.TEXT_COLOR + "   Warning: world " + MainPlugin.HIGHLIGHT_COLOR + search + MainPlugin.TEXT_COLOR + " is not loaded!");
+					sender.sendMessage(YAPP.TEXT_COLOR + "   Warning: world " + YAPP.HIGHLIGHT_COLOR + search + YAPP.TEXT_COLOR + " is not loaded!");
 				}
 			}
 		}
@@ -225,7 +225,7 @@ public class CommandMain implements CommandExecutor {
 		obj.addPermission(world, perm);
 
 		String type = getType(obj);
-		sender.sendMessage(MainPlugin.TEXT_COLOR + "Added permission " + MainPlugin.HIGHLIGHT_COLOR + perm + MainPlugin.TEXT_COLOR + " to " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
+		sender.sendMessage(YAPP.TEXT_COLOR + "Added permission " + YAPP.HIGHLIGHT_COLOR + perm + YAPP.TEXT_COLOR + " to " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName());
 	}
 	
 	private void addGroup(CommandSender sender, String group) {
@@ -235,18 +235,18 @@ public class CommandMain implements CommandExecutor {
 			return;
 		}		
 		String world = selectedWorld.get(sender);
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g == null) {
-			g = MainPlugin.newGroup(group);
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "New group " + MainPlugin.HIGHLIGHT_COLOR + group + MainPlugin.TEXT_COLOR + " created");
+			g = YAPP.newGroup(group);
+			sender.sendMessage(YAPP.TEXT_COLOR + "New group " + YAPP.HIGHLIGHT_COLOR + group + YAPP.TEXT_COLOR + " created");
 		}
 		boolean added = obj.addGroup(world, g);
 
 		if (added) {
 			String type = getType(obj);
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Added group " + MainPlugin.HIGHLIGHT_COLOR + g.getName() + MainPlugin.TEXT_COLOR + " to " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
+			sender.sendMessage(YAPP.TEXT_COLOR + "Added group " + YAPP.HIGHLIGHT_COLOR + g.getName() + YAPP.TEXT_COLOR + " to " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName());
 		} else {
-			sender.sendMessage(MainPlugin.ERROR_COLOR + "Failed to add group!");
+			sender.sendMessage(YAPP.ERROR_COLOR + "Failed to add group!");
 		}
 	}
 	
@@ -257,18 +257,18 @@ public class CommandMain implements CommandExecutor {
 			return;
 		}		
 		String world = selectedWorld.get(sender);
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g == null) {
-			g = MainPlugin.newGroup(group);
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "New group " + MainPlugin.HIGHLIGHT_COLOR + group + MainPlugin.TEXT_COLOR + " created");
+			g = YAPP.newGroup(group);
+			sender.sendMessage(YAPP.TEXT_COLOR + "New group " + YAPP.HIGHLIGHT_COLOR + group + YAPP.TEXT_COLOR + " created");
 		}
 		boolean set = obj.setGroup(world, g);
 		
 		if (set) {
 			String type = getType(obj);
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Set group for " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + " to " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+			sender.sendMessage(YAPP.TEXT_COLOR + "Set group for " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + YAPP.TEXT_COLOR + " to " + YAPP.HIGHLIGHT_COLOR + g.getName());
 		} else {
-			sender.sendMessage(MainPlugin.ERROR_COLOR + "Failed to set group!");
+			sender.sendMessage(YAPP.ERROR_COLOR + "Failed to set group!");
 		}
 	}
 	
@@ -283,9 +283,9 @@ public class CommandMain implements CommandExecutor {
 
 		String type = getType(obj);
 		if (ok) {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Removed permission " + MainPlugin.HIGHLIGHT_COLOR + perm + MainPlugin.TEXT_COLOR + " from " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
+			sender.sendMessage(YAPP.TEXT_COLOR + "Removed permission " + YAPP.HIGHLIGHT_COLOR + perm + YAPP.TEXT_COLOR + " from " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName());
 		} else {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Unable to remove permission");
+			sender.sendMessage(YAPP.TEXT_COLOR + "Unable to remove permission");
 		}
 	}
 	
@@ -297,18 +297,18 @@ public class CommandMain implements CommandExecutor {
 		}
 		String world = selectedWorld.get(sender);
 
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g == null) {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "The group " + MainPlugin.HIGHLIGHT_COLOR + group + MainPlugin.TEXT_COLOR + " does not exist");
+			sender.sendMessage(YAPP.TEXT_COLOR + "The group " + YAPP.HIGHLIGHT_COLOR + group + YAPP.TEXT_COLOR + " does not exist");
 			return;
 		}
 		boolean ok = obj.removeGroup(world, g);
 
 		String type = getType(obj);
 		if (ok) {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Removed group " + MainPlugin.HIGHLIGHT_COLOR + g.getName() + MainPlugin.TEXT_COLOR + " from " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
+			sender.sendMessage(YAPP.TEXT_COLOR + "Removed group " + YAPP.HIGHLIGHT_COLOR + g.getName() + YAPP.TEXT_COLOR + " from " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName());
 		} else {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Unable to remove group");
+			sender.sendMessage(YAPP.TEXT_COLOR + "Unable to remove group");
 		}
 	}
 	
@@ -322,7 +322,7 @@ public class CommandMain implements CommandExecutor {
 		obj.addPermission(world, "-" + perm);
 
 		String type = getType(obj);		
-		sender.sendMessage(MainPlugin.TEXT_COLOR + "Negated permission " + MainPlugin.HIGHLIGHT_COLOR + perm + MainPlugin.TEXT_COLOR + " for " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName());
+		sender.sendMessage(YAPP.TEXT_COLOR + "Negated permission " + YAPP.HIGHLIGHT_COLOR + perm + YAPP.TEXT_COLOR + " for " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName());
 	}
 	
 	private void checkPerm(CommandSender sender, String perm) {
@@ -352,9 +352,9 @@ public class CommandMain implements CommandExecutor {
 			has = obj.has(world, perm);
 		}
 		if (has) {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " does have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + perm);
+			sender.sendMessage(YAPP.TEXT_COLOR + "The " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " does have " + YAPP.TEXT_COLOR + "the permission " + YAPP.HIGHLIGHT_COLOR + perm);
 		} else {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not have " + MainPlugin.TEXT_COLOR + "the permission " + MainPlugin.HIGHLIGHT_COLOR + perm);			
+			sender.sendMessage(YAPP.TEXT_COLOR + "The " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not have " + YAPP.TEXT_COLOR + "the permission " + YAPP.HIGHLIGHT_COLOR + perm);			
 		}
 	}
 	
@@ -370,9 +370,9 @@ public class CommandMain implements CommandExecutor {
 		String world = selectedWorld.get(sender);
 		
 		// get group
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g == null) {
-			sender.sendMessage(MainPlugin.ERROR_COLOR + "That group does not exist");
+			sender.sendMessage(YAPP.ERROR_COLOR + "That group does not exist");
 			return;
 		}
 
@@ -380,11 +380,11 @@ public class CommandMain implements CommandExecutor {
 		String type = getType(obj);
 		
 		if (obj.inGroup(world, g, false)) {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " directly inherits " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+			sender.sendMessage(YAPP.TEXT_COLOR + "The " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " directly inherits " + YAPP.TEXT_COLOR + "the group " + YAPP.HIGHLIGHT_COLOR + g.getName());
 		} else if (obj.inGroup(world, g, true)) {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " indirectly inherits " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+			sender.sendMessage(YAPP.TEXT_COLOR + "The " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + ChatColor.GREEN + " indirectly inherits " + YAPP.TEXT_COLOR + "the group " + YAPP.HIGHLIGHT_COLOR + g.getName());
 		} else {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not inherit " + MainPlugin.TEXT_COLOR + "the group " + MainPlugin.HIGHLIGHT_COLOR + g.getName());
+			sender.sendMessage(YAPP.TEXT_COLOR + "The " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + ChatColor.RED + " does not inherit " + YAPP.TEXT_COLOR + "the group " + YAPP.HIGHLIGHT_COLOR + g.getName());
 		}
 	}
 	
@@ -407,11 +407,11 @@ public class CommandMain implements CommandExecutor {
 		// TODO: value = obj.getInfo(world, key);
 		
 		if (value != null) {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + "'s " + 
-					MainPlugin.HIGHLIGHT_COLOR + key + MainPlugin.TEXT_COLOR + " has been set to: " + ChatColor.WHITE + value);
+			sender.sendMessage(YAPP.TEXT_COLOR + "The " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + YAPP.TEXT_COLOR + "'s " + 
+					YAPP.HIGHLIGHT_COLOR + key + YAPP.TEXT_COLOR + " has been set to: " + ChatColor.WHITE + value);
 		} else {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "The " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + "'s " + 
-				MainPlugin.HIGHLIGHT_COLOR + key + MainPlugin.TEXT_COLOR + " is empty");
+			sender.sendMessage(YAPP.TEXT_COLOR + "The " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + YAPP.TEXT_COLOR + "'s " + 
+				YAPP.HIGHLIGHT_COLOR + key + YAPP.TEXT_COLOR + " is empty");
 		}
 	}
 	
@@ -428,8 +428,8 @@ public class CommandMain implements CommandExecutor {
 		
 		// send confirmation message
 		if (!confirmed) {
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Are you sure you want to delete the " + type + " " + MainPlugin.HIGHLIGHT_COLOR + obj.getName() + MainPlugin.TEXT_COLOR + "?");
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "To confirm type: " + MainPlugin.HIGHLIGHT_COLOR + "/" + alias + " delete CONFIRM");
+			sender.sendMessage(YAPP.TEXT_COLOR + "Are you sure you want to delete the " + type + " " + YAPP.HIGHLIGHT_COLOR + obj.getName() + YAPP.TEXT_COLOR + "?");
+			sender.sendMessage(YAPP.TEXT_COLOR + "To confirm type: " + YAPP.HIGHLIGHT_COLOR + "/" + alias + " delete CONFIRM");
 			return;
 		}
 		
@@ -441,7 +441,7 @@ public class CommandMain implements CommandExecutor {
 	}
 	
 	private void noObj(CommandSender sender) {
-		sender.sendMessage(MainPlugin.TEXT_COLOR + "You have nothing selected!");
+		sender.sendMessage(YAPP.TEXT_COLOR + "You have nothing selected!");
 	}
 	
 	private String getType(PermissionContainer obj) {

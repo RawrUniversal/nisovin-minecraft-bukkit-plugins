@@ -12,16 +12,16 @@ import org.bukkit.conversations.ConversationAbandonedListener;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.Prompt;
 
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 
 public class Menu {
 
 	// colors
-	public static final ChatColor TEXT_COLOR = MainPlugin.TEXT_COLOR;
-	public static final ChatColor HIGHLIGHT_COLOR = MainPlugin.HIGHLIGHT_COLOR;
+	public static final ChatColor TEXT_COLOR = YAPP.TEXT_COLOR;
+	public static final ChatColor HIGHLIGHT_COLOR = YAPP.HIGHLIGHT_COLOR;
 	public static final ChatColor KEYWORD_COLOR = ChatColor.DARK_AQUA;
 	public static final ChatColor KEYLETTER_COLOR = ChatColor.AQUA;
-	public static final ChatColor ERROR_COLOR = MainPlugin.ERROR_COLOR;
+	public static final ChatColor ERROR_COLOR = YAPP.ERROR_COLOR;
 	
 	// prompts
 	public static final Prompt MESSAGE = new MessagePrompt();
@@ -56,7 +56,7 @@ public class Menu {
 	private static Map<Conversable,Conversation> conversations = new HashMap<Conversable, Conversation>();
 	private static ConversationFactory menuFactory;
 	
-	public static void initializeFactory(MainPlugin plugin, boolean modal) {
+	public static void initializeFactory(YAPP plugin, boolean modal) {
 		menuFactory = new ConversationFactory(plugin)
 			.withFirstPrompt(Menu.MAIN_MENU)
 			.withModality(modal)
@@ -92,9 +92,9 @@ public class Menu {
 			c.sendRawMessage(Menu.TEXT_COLOR + "Exiting YAPP menu");
 			sendLine(c);
 			conversations.remove(c);
-			Bukkit.getScheduler().scheduleSyncDelayedTask(MainPlugin.yapp, new Runnable() {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(YAPP.plugin, new Runnable() {
 				public void run() {
-					MainPlugin.yapp.reload();
+					YAPP.plugin.reload();
 				}
 			});
 		}

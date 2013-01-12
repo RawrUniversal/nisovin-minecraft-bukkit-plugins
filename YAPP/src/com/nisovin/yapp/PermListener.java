@@ -11,9 +11,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PermListener implements Listener {
 
-	private MainPlugin plugin;
+	private YAPP plugin;
 	
-	public PermListener(MainPlugin plugin) {
+	public PermListener(YAPP plugin) {
 		this.plugin = plugin;
 	}
 	

@@ -17,7 +17,7 @@ public class Group extends PermissionContainer {
 	}
 	
 	public void addPlayer(String player) {
-		User user = MainPlugin.getPlayerUser(player);
+		User user = YAPP.getPlayerUser(player);
 		user.addGroup(this);
 	}
 	

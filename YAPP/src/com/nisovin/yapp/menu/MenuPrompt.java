@@ -13,7 +13,7 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 import com.nisovin.yapp.User;
 
@@ -35,12 +35,12 @@ public abstract class MenuPrompt extends StringPrompt {
 		} else if (input.toLowerCase().equals("quit")) {
 			return END_OF_CONVERSATION;
 		} else {
-			if (Thread.currentThread().getId() == MainPlugin.mainThreadId) {
+			if (Thread.currentThread().getId() == YAPP.mainThreadId) {
 				// we're on main thread, just handle normally
 				return accept(context, input);
 			} else {
 				// not on main thread, so pass to main thread and wait for response
-				Future<Prompt> future = Bukkit.getScheduler().callSyncMethod(MainPlugin.yapp, new Callable<Prompt> () {
+				Future<Prompt> future = Bukkit.getScheduler().callSyncMethod(YAPP.plugin, new Callable<Prompt> () {
 					@Override
 					public Prompt call() throws Exception {
 						return accept(context, input);
@@ -149,7 +149,7 @@ public abstract class MenuPrompt extends StringPrompt {
 	
 	protected void showGroupList(ConversationContext context) {
 		context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "You have the following groups defined:");
-		Set<String> groups = MainPlugin.getGroupNames();
+		Set<String> groups = YAPP.getGroupNames();
 		if (groups.size() == 0) {
 			context.getForWhom().sendRawMessage(Menu.TEXT_COLOR + "(none)");
 		} else {

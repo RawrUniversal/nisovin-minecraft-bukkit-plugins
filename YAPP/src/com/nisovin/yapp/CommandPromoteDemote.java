@@ -8,9 +8,9 @@ import org.bukkit.entity.Player;
 
 public class CommandPromoteDemote implements CommandExecutor {
 
-	private MainPlugin plugin;
+	private YAPP plugin;
 	
-	public CommandPromoteDemote(MainPlugin plugin) {
+	public CommandPromoteDemote(YAPP plugin) {
 		this.plugin = plugin;
 	}
 	
@@ -23,15 +23,15 @@ public class CommandPromoteDemote implements CommandExecutor {
 		// get user
 		User user = null;
 		if (args[0].startsWith("o:")) {
-			user = MainPlugin.getPlayerUser(args[0].substring(2));
+			user = YAPP.getPlayerUser(args[0].substring(2));
 		} else {
 			Player player = Bukkit.getPlayer(args[0]);
 			if (player != null) {
-				user = MainPlugin.getPlayerUser(player.getName());
+				user = YAPP.getPlayerUser(player.getName());
 			}
 		}
 		if (user == null) {
-			sender.sendMessage(MainPlugin.ERROR_COLOR + "That player could not be found");
+			sender.sendMessage(YAPP.ERROR_COLOR + "That player could not be found");
 			return true;
 		}
 		
@@ -66,9 +66,9 @@ public class CommandPromoteDemote implements CommandExecutor {
 			
 			// send message
 			Group group = user.getPrimaryGroup(world);
-			sender.sendMessage(MainPlugin.TEXT_COLOR + "Player " + MainPlugin.HIGHLIGHT_COLOR + user.getName() + MainPlugin.TEXT_COLOR + " has been " + var + "d to group " + MainPlugin.HIGHLIGHT_COLOR + group.getName());
+			sender.sendMessage(YAPP.TEXT_COLOR + "Player " + YAPP.HIGHLIGHT_COLOR + user.getName() + YAPP.TEXT_COLOR + " has been " + var + "d to group " + YAPP.HIGHLIGHT_COLOR + group.getName());
 		} else {
-			sender.sendMessage(MainPlugin.ERROR_COLOR + "Unable to " + var + " player " + MainPlugin.HIGHLIGHT_COLOR + user.getName());
+			sender.sendMessage(YAPP.ERROR_COLOR + "Unable to " + var + " player " + YAPP.HIGHLIGHT_COLOR + user.getName());
 		}
 		
 		return true;

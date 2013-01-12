@@ -13,7 +13,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 import com.nisovin.yapp.PermissionNode;
 
@@ -23,7 +23,7 @@ public class FileStorage implements StorageMethod {
 	@Override
 	public void fillGroupMap(Map<String, Group> groups) {
 		// get groups from group folder
-		File groupsFolder = new File(MainPlugin.yapp.getDataFolder(), "groups");
+		File groupsFolder = new File(YAPP.plugin.getDataFolder(), "groups");
 		if (groupsFolder.exists() && groupsFolder.isDirectory()) {
 			File[] groupFiles = groupsFolder.listFiles();
 			for (File f : groupFiles) {
@@ -32,14 +32,14 @@ public class FileStorage implements StorageMethod {
 					if (!groups.containsKey(name.toLowerCase())) {
 						Group group = new Group(name);
 						groups.put(name.toLowerCase(), group);
-						MainPlugin.debug("  Found group: " + name);
+						YAPP.debug("  Found group: " + name);
 					}
 				}
 			}
 		}
 		
 		// get groups from world group folders
-		File worldsFolder = new File(MainPlugin.yapp.getDataFolder(), "worlds");
+		File worldsFolder = new File(YAPP.plugin.getDataFolder(), "worlds");
 		if (worldsFolder.exists() && worldsFolder.isDirectory()) {
 			File[] worldFolders = worldsFolder.listFiles();
 			for (File wf : worldFolders) {
@@ -53,7 +53,7 @@ public class FileStorage implements StorageMethod {
 								if (!groups.containsKey(name.toLowerCase())) {
 									Group group = new Group(name);
 									groups.put(name.toLowerCase(), group);
-									MainPlugin.debug("  Found group: " + name);
+									YAPP.debug("  Found group: " + name);
 								}
 							}
 						}
@@ -67,10 +67,10 @@ public class FileStorage implements StorageMethod {
 	public void load(PermissionContainer container) {
 		String type = container.getType();
 		String name = container.getName();
-		File dataFolder = MainPlugin.yapp.getDataFolder();
+		File dataFolder = YAPP.plugin.getDataFolder();
 		
 		// get main file
-		MainPlugin.debug("  Loading base data");
+		YAPP.debug("  Loading base data");
 		File file = new File(dataFolder, type + "s" + File.separator + name + ".txt");
 		if (file.exists()) {
 			loadFromFile(container, file, container.getActualGroupList(), container.getActualPermissionList(), null);
@@ -92,7 +92,7 @@ public class FileStorage implements StorageMethod {
 						for (File groupFile : groupFiles) {
 							if (groupFile.getName().equals(name + ".txt")) {
 								// load file
-								MainPlugin.debug("  Loading world data '" + worldName + "'");
+								YAPP.debug("  Loading world data '" + worldName + "'");
 								List<PermissionNode> perms = new ArrayList<PermissionNode>();
 								container.getActualWorldPermissionMap().put(worldName, perms);
 								List<Group> wgroups = new ArrayList<Group>();
@@ -124,13 +124,13 @@ public class FileStorage implements StorageMethod {
 					line = line.replace("=", "").trim().toLowerCase();
 					if (line.startsWith("data") || line.startsWith("info")) {
 						mode = "info";
-						MainPlugin.debug("    Reading info");
+						YAPP.debug("    Reading info");
 					} else if (line.startsWith("inherit") || line.startsWith("group")) {
 						mode = "groups";
-						MainPlugin.debug("    Reading groups");
+						YAPP.debug("    Reading groups");
 					} else if (line.startsWith("perm")) {
 						mode = "perms";
-						MainPlugin.debug("    Reading perms");
+						YAPP.debug("    Reading perms");
 					}
 				} else if (mode.equals("info")) {
 					String key = null, val = null;
@@ -150,36 +150,36 @@ public class FileStorage implements StorageMethod {
 						}
 						container.setInfo(worldName, key, val);
 						container.setNotDirty();
-						MainPlugin.debug("      Added info: " + key + " = " + val);
+						YAPP.debug("      Added info: " + key + " = " + val);
 					} else {
-						MainPlugin.warning(type + " '" + name + "' has invalid info line: " + line);
+						YAPP.warning(type + " '" + name + "' has invalid info line: " + line);
 					}
 				} else if (mode.equals("groups")) {
 					// inherited group
-					Group group = MainPlugin.getGroup(line);
+					Group group = YAPP.getGroup(line);
 					if (group != null) {
 						boolean ok = true;
 						// check for infinite group recursion
 						if (container instanceof Group) {
 							if (group.inheritsGroup(worldName, (Group)container)) {
 								ok = false;
-								MainPlugin.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + name);
+								YAPP.error("CIRCULAR GROUP REFERENCE DETECTED: while adding " + group.getName() + " to " + name);
 							}
 						}
 						if (ok) {
 							groups.add(group);
-							MainPlugin.debug("      Added inherited group: " + line);
+							YAPP.debug("      Added inherited group: " + line);
 						}
 					} else {
-						MainPlugin.warning(type + " '" + name + "' has non-existant inherited group '" + line + "'");
+						YAPP.warning(type + " '" + name + "' has non-existant inherited group '" + line + "'");
 					}
 				} else if (mode.equals("perms")) {
 					// permission
 					PermissionNode node = new PermissionNode(line);
 					perms.add(node);
-					MainPlugin.debug("      Added permission: " + node);
+					YAPP.debug("      Added permission: " + node);
 				} else {
-					MainPlugin.warning(type + " '" + name + "' has orphan line: " + line);
+					YAPP.warning(type + " '" + name + "' has orphan line: " + line);
 				}
 			}
 			scanner.close();
@@ -214,7 +214,7 @@ public class FileStorage implements StorageMethod {
 			writePermissions(file, permissions);
 			file.close();
 		} catch (IOException e) {
-			MainPlugin.error("Failed to write file for " + type + " '" + name + "'!");
+			YAPP.error("Failed to write file for " + type + " '" + name + "'!");
 		}
 		
 		// save world data
@@ -248,7 +248,7 @@ public class FileStorage implements StorageMethod {
 				}
 				file.close();
 			} catch (IOException e) {
-				MainPlugin.error("Failed to write file for " + type + " '" + name + "' for world '" + worldName + "'!");
+				YAPP.error("Failed to write file for " + type + " '" + name + "' for world '" + worldName + "'!");
 			}
 		}
 	}
@@ -289,9 +289,9 @@ public class FileStorage implements StorageMethod {
 	private BufferedWriter writer(PermissionContainer container, String worldName) throws IOException {
 		File file;
 		if (worldName == null) {
-			file = new File(MainPlugin.yapp.getDataFolder(), container.getType() + "s" + File.separator + container.getName() + ".txt");
+			file = new File(YAPP.plugin.getDataFolder(), container.getType() + "s" + File.separator + container.getName() + ".txt");
 		} else {
-			file = new File(MainPlugin.yapp.getDataFolder(), "worlds" + File.separator + worldName + File.separator + container.getType() + "s" + File.separator + container.getName() + ".txt");
+			file = new File(YAPP.plugin.getDataFolder(), "worlds" + File.separator + worldName + File.separator + container.getType() + "s" + File.separator + container.getName() + ".txt");
 		}
 		file.mkdirs();
 		if (file.exists()) file.delete();

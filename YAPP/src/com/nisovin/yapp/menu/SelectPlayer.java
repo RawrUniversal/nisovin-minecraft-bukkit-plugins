@@ -5,7 +5,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.User;
 
 public class SelectPlayer extends MenuPrompt {
@@ -22,7 +22,7 @@ public class SelectPlayer extends MenuPrompt {
 			context.getForWhom().sendRawMessage(Menu.ERROR_COLOR + "That player could not be found");
 			return this;
 		} else {
-			User user = MainPlugin.getPlayerUser(player.getName());
+			User user = YAPP.getPlayerUser(player.getName());
 			setObject(context, user);
 			return Menu.MODIFY_OPTIONS;
 		}

@@ -4,7 +4,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 
 public class SetPrimaryGroup extends MenuPrompt {
@@ -17,7 +17,7 @@ public class SetPrimaryGroup extends MenuPrompt {
 
 	@Override
 	public Prompt accept(ConversationContext context, String input) {
-		Group group = MainPlugin.getGroup(input);
+		Group group = YAPP.getGroup(input);
 		if (group == null) {
 			return showMessage(context, Menu.ERROR_COLOR + "That group does not exist", this);
 		} else {

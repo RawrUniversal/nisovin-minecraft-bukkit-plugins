@@ -4,7 +4,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 import com.nisovin.yapp.PermissionContainer;
 
 public class AddNewGroup extends MenuPrompt {
@@ -26,7 +26,7 @@ public class AddNewGroup extends MenuPrompt {
 			if (groupName != null) {
 				context.setSessionData("setnewgroupname", null);
 
-				Group group = MainPlugin.newGroup(groupName);
+				Group group = YAPP.newGroup(groupName);
 				obj.setGroup(world, group);
 				String msg = Menu.TEXT_COLOR + "Set group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
 				if (world != null) {
@@ -39,7 +39,7 @@ public class AddNewGroup extends MenuPrompt {
 				if (groupName != null) {
 					context.setSessionData("addnewgroupname", null);
 					
-					Group group = MainPlugin.newGroup(groupName);
+					Group group = YAPP.newGroup(groupName);
 					obj.addGroup(world, group);
 					String msg = Menu.TEXT_COLOR + "Added group " + Menu.HIGHLIGHT_COLOR + group.getName() + Menu.TEXT_COLOR + " for " + getType(context) + Menu.HIGHLIGHT_COLOR + " " + obj.getName();
 					if (world != null) {

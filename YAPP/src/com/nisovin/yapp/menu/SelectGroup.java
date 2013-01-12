@@ -4,7 +4,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 
 public class SelectGroup extends MenuPrompt {
 
@@ -16,7 +16,7 @@ public class SelectGroup extends MenuPrompt {
 
 	@Override
 	public Prompt accept(ConversationContext context, String input) {
-		Group group = MainPlugin.getGroup(input.trim());
+		Group group = YAPP.getGroup(input.trim());
 		if (group != null) {
 			setObject(context, group);
 			return Menu.MODIFY_OPTIONS;

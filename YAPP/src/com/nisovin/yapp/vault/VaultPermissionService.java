@@ -3,7 +3,7 @@ package com.nisovin.yapp.vault;
 import java.util.Set;
 
 import com.nisovin.yapp.Group;
-import com.nisovin.yapp.MainPlugin;
+import com.nisovin.yapp.YAPP;
 
 public class VaultPermissionService extends net.milkbowl.vault.permission.Permission {
 	
@@ -14,7 +14,7 @@ public class VaultPermissionService extends net.milkbowl.vault.permission.Permis
 
 	@Override
 	public boolean isEnabled() {
-		return MainPlugin.yapp != null && MainPlugin.yapp.isEnabled();
+		return YAPP.plugin != null && YAPP.plugin.isEnabled();
 	}
 
 	@Override
@@ -24,22 +24,22 @@ public class VaultPermissionService extends net.milkbowl.vault.permission.Permis
 
 	@Override
 	public boolean playerHas(String world, String player, String permission) {
-		return MainPlugin.getPlayerUser(player).has(world, permission);
+		return YAPP.getPlayerUser(player).has(world, permission);
 	}
 
 	@Override
 	public boolean playerAdd(String world, String player, String permission) {
-		return MainPlugin.getPlayerUser(player).addPermission(world, permission);
+		return YAPP.getPlayerUser(player).addPermission(world, permission);
 	}
 
 	@Override
 	public boolean playerRemove(String world, String player, String permission) {
-		return MainPlugin.getPlayerUser(player).removePermission(world, permission);
+		return YAPP.getPlayerUser(player).removePermission(world, permission);
 	}
 
 	@Override
 	public boolean groupHas(String world, String group, String permission) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			return g.has(world, permission);
 		} else {
@@ -49,7 +49,7 @@ public class VaultPermissionService extends net.milkbowl.vault.permission.Permis
 
 	@Override
 	public boolean groupAdd(String world, String group, String permission) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			return g.addPermission(world, permission);
 		} else {
@@ -59,7 +59,7 @@ public class VaultPermissionService extends net.milkbowl.vault.permission.Permis
 
 	@Override
 	public boolean groupRemove(String world, String group, String permission) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g != null) {
 			return g.removePermission(world, permission);
 		} else {
@@ -69,36 +69,36 @@ public class VaultPermissionService extends net.milkbowl.vault.permission.Permis
 
 	@Override
 	public boolean playerInGroup(String world, String player, String group) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g == null) {
 			return false;
 		} else {
-			return MainPlugin.getPlayerUser(player).inGroup(world, g, true);
+			return YAPP.getPlayerUser(player).inGroup(world, g, true);
 		}
 	}
 
 	@Override
 	public boolean playerAddGroup(String world, String player, String group) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g == null) {
-			g = MainPlugin.newGroup(group);
+			g = YAPP.newGroup(group);
 		}
-		return MainPlugin.getPlayerUser(player).addGroup(world, g);
+		return YAPP.getPlayerUser(player).addGroup(world, g);
 	}
 
 	@Override
 	public boolean playerRemoveGroup(String world, String player, String group) {
-		Group g = MainPlugin.getGroup(group);
+		Group g = YAPP.getGroup(group);
 		if (g == null) {
 			return false;
 		} else {
-			return MainPlugin.getPlayerUser(player).removeGroup(world, g);
+			return YAPP.getPlayerUser(player).removeGroup(world, g);
 		}
 	}
 
 	@Override
 	public String[] getPlayerGroups(String world, String player) {
-		Set<Group> groups = MainPlugin.getPlayerUser(player).getGroups(world);
+		Set<Group> groups = YAPP.getPlayerUser(player).getGroups(world);
 		Group[] groupsArray = groups.toArray(new Group[groups.size()]);
 		String[] groupNames = new String[groups.size()];
 		for (int i = 0; i < groupsArray.length; i++) {
@@ -109,7 +109,7 @@ public class VaultPermissionService extends net.milkbowl.vault.permission.Permis
 
 	@Override
 	public String getPrimaryGroup(String world, String player) {
-		Group group = MainPlugin.getPlayerUser(player).getPrimaryGroup(world);
+		Group group = YAPP.getPlayerUser(player).getPrimaryGroup(world);
 		if (group == null) {
 			return null;
 		} else {
@@ -119,7 +119,7 @@ public class VaultPermissionService extends net.milkbowl.vault.permission.Permis
 	
 	@Override
 	public String[] getGroups() {
-		return MainPlugin.getGroupNames().toArray(new String[]{});
+		return YAPP.getGroupNames().toArray(new String[]{});
 	}
 
 }
