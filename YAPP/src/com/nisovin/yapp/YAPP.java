@@ -49,6 +49,7 @@ public class YAPP extends JavaPlugin {
 	private Group defaultGroup;
 	private Map<String, List<Group>> ladders;
 	
+	private Field permissionMapField;
 	private Map<String, PermissionAttachment> attachments;
 	
 	private StorageMethod storageMethod;
@@ -57,7 +58,18 @@ public class YAPP extends JavaPlugin {
 	public void onEnable() {
 		plugin = this;
 		mainThreadId = Thread.currentThread().getId();
+
+		// access permission map field, for quick permission modification
+		try {
+			permissionMapField = PermissionAttachment.class.getDeclaredField("permissions");
+			permissionMapField.setAccessible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.setEnabled(false);
+			return;
+		}
 		
+		// load plugin
 		load();
 		
 		// register commands
@@ -318,9 +330,7 @@ public class YAPP extends JavaPlugin {
 		}
 		Map<String, Boolean> permissions;
 		try {
-			Field mapField = PermissionAttachment.class.getDeclaredField("permissions");
-			mapField.setAccessible(true);
-			permissions = (Map<String, Boolean>)mapField.get(attachment);
+			permissions = (Map<String, Boolean>)permissionMapField.get(attachment);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 public class PermissionContainer implements Comparable<PermissionContainer> {
 
@@ -125,9 +124,9 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		
 		// add default perms
 		if (addDefaultPerms && this instanceof User && ((User)this).isOnline()) {
-			Set<Permission> perms = Bukkit.getPluginManager().getDefaultPermissions(((User)this).getPlayer().isOp());
-			for (Permission perm : perms) {
-				list.add(perm);
+			Set<PermissionAttachmentInfo> permInfo = ((User)this).getPlayer().getEffectivePermissions();
+			for (PermissionAttachmentInfo info : permInfo) {
+				list.add(info);
 			}
 		}
 		

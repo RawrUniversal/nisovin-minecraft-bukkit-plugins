@@ -2,7 +2,7 @@
 
 debug               : false
 
-default group       : default
+default group       : members
 use build perm      : true
 modal menu          : true
 
@@ -18,7 +18,7 @@ set nameplate color : false
 
 == LADDERS ==
 
-main : default, vips, mods, admins
+main : members, vips, mods, admins
 
 == DENY PERMISSIONS ==
 

@@ -4,7 +4,7 @@ description: Yet Another Permissions Plugin
 author: nisovin
 website: http://nisovin.com/yapp
 
-main: com.nisovin.yapp.MainPlugin
+main: com.nisovin.yapp.YAPP
 softdepend: [Vault, TagAPI]
 
 commands:

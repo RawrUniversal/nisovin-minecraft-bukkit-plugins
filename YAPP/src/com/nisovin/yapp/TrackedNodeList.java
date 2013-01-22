@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 public class TrackedNodeList {
 
@@ -52,6 +53,23 @@ public class TrackedNodeList {
 		}
 	}
 	
+	public void add(PermissionAttachmentInfo perm) {
+		TrackedNode existingNode = realNodes.get(perm.getPermission());
+		NodeState state = NodeState.NORMAL;
+		if (existingNode != null) {
+			if (existingNode.getValue() == true) {
+				state = NodeState.REDEFINED;
+			} else {
+				state = NodeState.OVERRIDDEN;
+			}
+		}
+		TrackedNode newNode = new TrackedNode(perm, null, state);
+		allNodes.add(newNode);
+		if (existingNode == null) {
+			realNodes.put(perm.getPermission(), newNode);
+		}
+	}
+	
 	public List<TrackedNode> getTrackedNodes() {
 		return allNodes;
 	}
@@ -75,6 +93,14 @@ public class TrackedNodeList {
 		public TrackedNode(Permission perm, PermissionContainer container, NodeState state) {
 			this.name = perm.getName();
 			this.value = true;
+			this.container = container;
+			this.world = null;
+			this.state = state;
+		}
+		
+		public TrackedNode(PermissionAttachmentInfo perm, PermissionContainer container, NodeState state) {
+			this.name = perm.getPermission();
+			this.value = perm.getValue();
 			this.container = container;
 			this.world = null;
 			this.state = state;
