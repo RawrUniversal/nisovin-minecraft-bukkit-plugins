@@ -94,7 +94,7 @@ public class MagicConfig {
 						mainConfig.set("spells." + key, spellConfig.get(key));
 					}
 				} catch (Exception e) {
-					MagicSpells.error("Error loading config file " + spellConfigFile.getName() + ".yml");
+					MagicSpells.error("Error loading config file " + spellConfigFile.getName());
 					MagicSpells.handleException(e);
 				}
 			}

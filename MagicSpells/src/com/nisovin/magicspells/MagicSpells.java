@@ -49,10 +49,7 @@ import com.nisovin.magicspells.util.MagicItemNameResolver;
 import com.nisovin.magicspells.util.Metrics;
 import com.nisovin.magicspells.util.Util;
 import com.nisovin.magicspells.util.Metrics.Graph;
-import com.nisovin.magicspells.volatilecode.VolatileCodeDisabled;
-import com.nisovin.magicspells.volatilecode.VolatileCodeEnabled_1_4_5;
-import com.nisovin.magicspells.volatilecode.VolatileCodeEnabled_1_4_6;
-import com.nisovin.magicspells.volatilecode.VolatileCodeHandle;
+import com.nisovin.magicspells.volatilecode.*;
 import com.nisovin.magicspells.zones.NoMagicZoneManager;
 
 public class MagicSpells extends JavaPlugin {
@@ -171,16 +168,24 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		if (config.getBoolean("general.enable-volatile-features", true)) {
-			String version = getServer().getVersion();
-			if (version.contains("(MC: 1.4.5)")) {
-				volatileCodeHandle = new VolatileCodeEnabled_1_4_5();
-			} else if (version.contains("(MC: 1.4.6)")) {
-				volatileCodeHandle = new VolatileCodeEnabled_1_4_6();
-			} else {
-				error("Unable to enable volatile code: using safe code instead.");
-				error("Some features have been disabled.");
-				error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
-				volatileCodeHandle = new VolatileCodeDisabled();
+			try {
+				Class.forName("net.minecraft.server.v1_4_R1.MinecraftServer");
+				volatileCodeHandle = new VolatileCodeEnabled_1_4_R1();
+			} catch (ClassNotFoundException e_1_4_r1) {
+				try {
+					Class.forName("net.minecraft.server.v1_4_6.MinecraftServer");
+					volatileCodeHandle = new VolatileCodeEnabled_1_4_6();
+				} catch (ClassNotFoundException e_1_4_6) {
+					try {
+						Class.forName("net.minecraft.server.v1_4_5.MinecraftServer");
+						volatileCodeHandle = new VolatileCodeEnabled_1_4_5();
+					} catch (ClassNotFoundException e_1_4_5) {
+						error("Unable to enable volatile code: using safe code instead.");
+						error("Some features have been disabled.");
+						error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
+						volatileCodeHandle = new VolatileCodeDisabled();
+					}
+				}
 			}
 		} else {
 			volatileCodeHandle = new VolatileCodeDisabled();
@@ -432,7 +437,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// setup metrics
-		metricsEnabled = config.getBoolean("general.enable-stat-collection", true);
+		metricsEnabled = false;//config.getBoolean("general.enable-stat-collection", true);
 		if (metricsEnabled) {
 			setupMetrics();
 		}
@@ -822,6 +827,34 @@ public class MagicSpells extends JavaPlugin {
         }
 	}
 	
+	public static int scheduleDelayedTask(final Runnable task, int delay) {
+		return Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, !enableErrorLogging ? task : new Runnable() {
+			public void run() {
+				try {
+					task.run();
+				} catch (Exception e) {
+					handleException(e);
+				}
+			}
+		}, delay);
+	}
+	
+	public static int scheduleRepeatingTask(final Runnable task, int delay, int interval) {
+		return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, !enableErrorLogging ? task : new Runnable() {
+			public void run() {
+				try {
+					task.run();
+				} catch (Exception e) {
+					handleException(e);
+				}
+			}
+		}, delay, interval);
+	}
+	
+	public static void cancelTask(int taskId) {
+		Bukkit.getScheduler().cancelTask(taskId);
+	}
+	
 	public static void handleException(Exception ex) {
 		if (enableErrorLogging) {
 			plugin.getLogger().severe("AN EXCEPTION HAS OCCURED:");
@@ -1037,8 +1070,6 @@ public class MagicSpells extends JavaPlugin {
  *   - Handle toggling
  *   - Start spell duration
  * - Move NoMagicZoneWorldGuard and NoMagicZoneResidence outside of the core plugin
- * - Remove alt-config and explode config options
- * - Pull spell and no-magic-zone config values from any yml files in the MagicSpells folder
  * - Remove default strings from all string configs (default should be empty)
  * 
  */

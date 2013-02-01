@@ -1,8 +1,9 @@
 package com.nisovin.magicspells.spells.command;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
@@ -35,7 +37,10 @@ public class ImbueSpell extends CommandSpell {
 	private boolean rightClickCast;
 	private boolean leftClickCast;
 	private Set<Integer> allowedItems;
+	private boolean nameAndLoreHasUses;
 	
+	private String strItemName;
+	private String strItemLore;
 	private String strUsage;
 	private String strCantImbueItem;
 	private String strCantImbueSpell;
@@ -53,7 +58,7 @@ public class ImbueSpell extends CommandSpell {
 		rightClickCast = getConfigBoolean("right-click-cast", false);
 		leftClickCast = getConfigBoolean("left-click-cast", true);
 
-		allowedItems = new HashSet<Integer>();
+		allowedItems = new TreeSet<Integer>();
 		List<String> allowed = getConfigStringList("allowed-items", null);
 		if (allowed != null) {
 			ItemNameResolver resolver = MagicSpells.getItemNameResolver();
@@ -65,9 +70,13 @@ public class ImbueSpell extends CommandSpell {
 			}
 		}
 		
+		strItemName = getConfigString("str-item-name", "");
+		strItemLore = getConfigString("str-item-lore", "Imbued: %s");
 		strUsage = getConfigString("str-usage", "Usage: /cast imbue <spell> [uses]");
 		strCantImbueItem = getConfigString("str-cant-imbue-item", "You can't imbue that item.");
 		strCantImbueSpell = getConfigString("str-cant-imbue-spell", "You can't imbue that spell.");
+		
+		nameAndLoreHasUses = (strItemName.contains("%u") || strItemLore.contains("%u"));
 	}
 
 	@Override
@@ -139,6 +148,7 @@ public class ImbueSpell extends CommandSpell {
 			}
 			
 			// imbue item
+			setItemNameAndLore(inHand, spell, uses);
 			setImbueData(inHand, spell.getInternalName() + "," + uses);
 			player.setItemInHand(inHand);
 		}
@@ -168,8 +178,14 @@ public class ImbueSpell extends CommandSpell {
 								event.getPlayer().setItemInHand(null);
 							} else {
 								Util.removeLoreData(item);
+								if (nameAndLoreHasUses) {
+									setItemNameAndLore(item, spell, 0);
+								}
 							}
 						} else {
+							if (nameAndLoreHasUses) {
+								setItemNameAndLore(item, spell, uses);
+							}
 							setImbueData(item, spell.getInternalName() + "," + uses);
 						}						
 					} else {
@@ -178,6 +194,17 @@ public class ImbueSpell extends CommandSpell {
 				}
 			}
 		}
+	}
+	
+	private void setItemNameAndLore(ItemStack item, Spell spell, int uses) {
+		ItemMeta meta = item.getItemMeta();
+		if (!strItemName.isEmpty()) {
+			meta.setDisplayName(strItemName.replace("%s", spell.getName()).replace("%u", uses+""));
+		}
+		if (!strItemLore.isEmpty()) {
+			meta.setLore(Arrays.asList(strItemLore.replace("%s", spell.getName()).replace("%u", uses+"")));
+		}
+		item.setItemMeta(meta);
 	}
 	
 	private void setImbueData(ItemStack item, String data) {

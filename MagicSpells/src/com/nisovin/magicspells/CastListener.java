@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +20,7 @@ import com.nisovin.magicspells.mana.ManaChangeReason;
 
 public class CastListener implements Listener {
 
-	private MagicSpells plugin;
+	MagicSpells plugin;
 	
 	private HashSet<Player> noCast = new HashSet<Player>();
 	private HashMap<Player,Long> lastCast = new HashMap<Player, Long>();
@@ -89,11 +88,11 @@ public class CastListener implements Listener {
 						ItemMeta meta = fake.getItemMeta();
 						meta.setDisplayName("Spell: " + spell.getName());
 						fake.setItemMeta(meta);
-						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						MagicSpells.scheduleDelayedTask(new Runnable() {
 							public void run() {
 								MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, player.getInventory().getHeldItemSlot(), fake);
 							}
-						});
+						}, 0);
 					}
 				}
 				

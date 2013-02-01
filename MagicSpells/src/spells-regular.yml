@@ -447,7 +447,7 @@ food:
     str-cast-self: You feel less hungry.
 forcebomb:
     spell-class: ".targeted.ForcebombSpell"
-    name: forcepush
+    name: forcebomb
     spell-icon: record_4
     description: Push back your enemies.
     cast-item: blaze_rod

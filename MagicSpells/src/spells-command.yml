@@ -112,7 +112,6 @@ tome:
     spell-class: ".command.TomeSpell"
     name: tome
     spell-icon: book
-    enabled: false
     description: Create a tome that teaches a spell.
     cancel-read-on-learn: true
     consume-book: true

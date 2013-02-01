@@ -2,7 +2,6 @@ package com.nisovin.magicspells.spelleffects;
 
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -67,7 +66,7 @@ class ItemSprayEffect extends SpellEffect {
 		}
 		
 		// schedule item deletion
-		Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+		MagicSpells.scheduleDelayedTask(new Runnable() {
 			public void run() {
 				for (int i = 0; i < items.length; i++) {
 					items[i].remove();

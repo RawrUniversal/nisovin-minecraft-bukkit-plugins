@@ -84,7 +84,7 @@ public class VolatileCodeEnabled_1_4_6 implements VolatileCodeHandle {
 		final DataWatcher dw = el.getDataWatcher();
 		dw.watch(8, Integer.valueOf(color));
 		
-		Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+		MagicSpells.scheduleDelayedTask(new Runnable() {
 			public void run() {
 				int c = 0;
 				if (!el.effects.isEmpty()) {
@@ -289,7 +289,7 @@ public class VolatileCodeEnabled_1_4_6 implements VolatileCodeHandle {
 			entity.getBukkitEntity().remove();
 		} else {
 			entity.setPosition(location.getX(), location.getY(), location.getZ());
-			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+			MagicSpells.scheduleDelayedTask(new Runnable() {
 				public void run() {
 					((CraftWorld)location.getWorld()).getHandle().broadcastEntityEffect(entity, (byte)animationId);
 					entity.getBukkitEntity().remove();

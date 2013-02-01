@@ -70,7 +70,7 @@ public class ManaSystem extends ManaHandler {
 		}
 		
 		manaBars = new HashMap<String, ManaBar>();
-		taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, new Regenerator(), regenInterval, regenInterval);
+		taskId = MagicSpells.scheduleRepeatingTask(new Regenerator(), regenInterval, regenInterval);
 	}
 	
 	private ManaBar getManaBar(Player player) {

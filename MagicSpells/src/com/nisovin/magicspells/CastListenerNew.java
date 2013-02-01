@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +22,7 @@ import com.nisovin.magicspells.util.CastItem;
 
 public class CastListenerNew implements Listener {
 
-	private MagicSpells plugin;
+	MagicSpells plugin;
 	
 	private HashSet<Player> noCast = new HashSet<Player>();
 	private HashMap<Player,Long> lastCast = new HashMap<Player, Long>();
@@ -216,7 +215,7 @@ public class CastListenerNew implements Listener {
 				}
 			}
 			// cast spell -- delay by 1 tick to escape the event
-			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			MagicSpells.scheduleDelayedTask(new Runnable() {
 				public void run() {
 					spell.cast(player);
 				}

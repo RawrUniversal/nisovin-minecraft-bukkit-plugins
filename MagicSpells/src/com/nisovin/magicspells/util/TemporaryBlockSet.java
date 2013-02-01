@@ -41,7 +41,7 @@ public class TemporaryBlockSet implements Runnable {
 	public void removeAfter(int seconds, BlockSetRemovalCallback callback) {
 		if (blocks.size() > 0) {
 			this.callback = callback;
-			MagicSpells.plugin.getServer().getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, this, seconds*20);
+			MagicSpells.scheduleDelayedTask(this, seconds*20);
 		}
 	}
 	

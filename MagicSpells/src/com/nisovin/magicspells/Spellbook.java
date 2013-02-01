@@ -562,6 +562,7 @@ public class Spellbook {
 			MagicSpells.debug(2, "Saved spellbook file: " + playerName.toLowerCase());
 		} catch (Exception e) {
 			plugin.getServer().getLogger().severe("Error saving player spellbook: " + playerName);
+			e.printStackTrace();
 		}		
 	}
 	

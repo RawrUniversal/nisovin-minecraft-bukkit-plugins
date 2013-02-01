@@ -142,7 +142,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			spellIcon = null;
 		} else {
 			spellIcon = Util.getItemStackFromString(icontemp);
-			if (spellIcon != null) {
+			if (spellIcon != null && spellIcon.getTypeId() != 0) {
 				spellIcon.setAmount(0);
 				if (!icontemp.contains("|")) {
 					ItemMeta iconMeta = spellIcon.getItemMeta();
@@ -1052,6 +1052,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		HandlerList.unregisterAll(listener);
 	}
 	
+	protected int scheduleDelayedTask(Runnable task, int delay) {
+		return MagicSpells.scheduleDelayedTask(task, delay);
+	}
+	
+	protected int scheduleRepeatingTask(Runnable task, int delay, int interval) {
+		return MagicSpells.scheduleRepeatingTask(task, delay, interval);
+	}
+	
 	/**
 	 * Formats a string by performing the specified replacements.
 	 * @param message the string to format
@@ -1274,7 +1282,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			this.reagents = reagents;
 			this.args = args;
 			
-			taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, this, castTime);
+			taskId = scheduleDelayedTask(this, castTime);
 			registerEvents(this);
 		}
 		
@@ -1351,7 +1359,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			
 			MagicSpells.getExpBarManager().lock(player, this);
 			
-			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, interval, interval);
+			taskId = scheduleRepeatingTask(this, interval, interval);
 			registerEvents(this);
 		}
 		

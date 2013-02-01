@@ -8,7 +8,6 @@ import com.nisovin.magicspells.events.ManaChangeEvent;
 
 public class ManaBar {
 
-	private Player player;
 	private String playerName;
 	private int maxMana;
 	private int regenAmount;
@@ -19,7 +18,6 @@ public class ManaBar {
 	private int mana;
 	
 	public ManaBar(Player player, int maxMana, int regenAmount) {
-		this.player = player;
 		this.playerName = player.getName().toLowerCase();
 		this.maxMana = maxMana;
 		this.regenAmount = regenAmount;
@@ -28,9 +26,6 @@ public class ManaBar {
 	}
 	
 	public Player getPlayer() {
-		if (player != null && player.isOnline()) {
-			return player;
-		}
 		return Bukkit.getPlayerExact(playerName);
 	}
 	
