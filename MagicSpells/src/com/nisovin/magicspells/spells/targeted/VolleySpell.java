@@ -2,7 +2,6 @@ package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,20 +18,18 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class VolleySpell extends TargetedLocationSpell {
 
 	private int arrows;
-	private float speed;
-	private float spread;
+	private int speed;
+	private int spread;
 	private int shootInterval;
 	private int removeDelay;
 	private boolean noTarget;
-	
-	private Random random = new Random();
 	
 	public VolleySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		arrows = getConfigInt("arrows", 10);
-		speed = getConfigInt("speed", 20) / 10F;
-		spread = getConfigInt("spread", 150) / 10F;
+		speed = getConfigInt("speed", 20);
+		spread = getConfigInt("spread", 150);
 		shootInterval = getConfigInt("shoot-interval", 0);
 		removeDelay = getConfigInt("remove-delay", 0);
 		noTarget = getConfigBoolean("no-target", false);
@@ -41,6 +38,7 @@ public class VolleySpell extends TargetedLocationSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
+			
 			Block target;
 			try {
 				target = player.getTargetBlock(null, range>0?range:100);
@@ -61,9 +59,9 @@ public class VolleySpell extends TargetedLocationSpell {
 		spawn.setY(spawn.getY()+3);
 		Vector v;
 		if (noTarget) {
-			v = player.getLocation().getDirection().multiply(speed);
+			v = player.getLocation().getDirection();
 		} else {
-			v = target.toVector().subtract(spawn.toVector()).normalize().multiply(speed);
+			v = target.toVector().subtract(spawn.toVector()).normalize();
 		}
 		
 		if (shootInterval <= 0) {
@@ -71,9 +69,9 @@ public class VolleySpell extends TargetedLocationSpell {
 			
 			int arrows = Math.round(this.arrows*power);
 			for (int i = 0; i < arrows; i++) {
-				Arrow a = player.launchProjectile(Arrow.class);
-				a.teleport(spawn);
-				a.setVelocity(v.clone().add(new Vector((random.nextDouble()-.5) * spread, (random.nextDouble()-.5) * spread, (random.nextDouble()-.5) * spread)));
+				Arrow a = player.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
+				a.setVelocity(a.getVelocity());
+				a.setShooter(player);
 				if (removeDelay > 0) arrowList.add(a);
 			}
 			
@@ -127,12 +125,12 @@ public class VolleySpell extends TargetedLocationSpell {
 		}
 		
 		@Override
-		public void run() {
+		public void run() {			
 			// fire an arrow
 			if (count < arrows) {
-				Arrow a = player.launchProjectile(Arrow.class);
-				a.teleport(spawn);
-				a.setVelocity(dir.clone().add(new Vector((random.nextDouble()-.5) * spread, (random.nextDouble()-.5) * spread, (random.nextDouble()-.5) * spread)));
+				Arrow a = player.getWorld().spawnArrow(spawn, dir, (speed/10.0F), (spread/10.0F));
+				a.setVelocity(a.getVelocity());
+				a.setShooter(player);
 				if (removeDelay > 0) {
 					arrowMap.put(count, a);
 				}

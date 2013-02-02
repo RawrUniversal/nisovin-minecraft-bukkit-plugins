@@ -4,7 +4,7 @@ enable-error-logging: true
 enable-stat-collection: true
 enable-volatile-features: true
 enable-tab-completion: true
-enable-new-spell-handling: true
+enable-new-spell-handling: false
 str-cast-usage: |
     Usage: /cast <spell>. 
     Use /cast list to see a list of spells.
