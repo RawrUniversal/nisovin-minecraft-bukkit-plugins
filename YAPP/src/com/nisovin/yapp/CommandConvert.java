@@ -12,7 +12,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class CommandConvert implements CommandExecutor {
+class CommandConvert implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {

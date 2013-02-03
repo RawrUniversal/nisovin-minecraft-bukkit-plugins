@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandPromoteDemote implements CommandExecutor {
+class CommandPromoteDemote implements CommandExecutor {
 
 	private YAPP plugin;
 	

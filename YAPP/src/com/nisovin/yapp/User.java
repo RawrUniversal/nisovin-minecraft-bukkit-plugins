@@ -24,14 +24,27 @@ public class User extends PermissionContainer {
 		return realName;
 	}
 	
+	/**
+	 * Gets the Player object for this User. If the player is offline, this will
+	 * return null instead.
+	 * @return The Player object, or null if offline.
+	 */
 	public Player getPlayer() {
 		return Bukkit.getPlayerExact(realName);
 	}
 	
+	/**
+	 * Gets the OfflinePlayer object for this User.
+	 * @return The OfflinePlayer object.
+	 */
 	public OfflinePlayer getOfflinePlayer() {
 		return Bukkit.getOfflinePlayer(realName);
 	}
 	
+	/**
+	 * Checks whether this player is online.
+	 * @return True if online.
+	 */
 	public boolean isOnline() {
 		Player p = getPlayer();
 		return p != null && p.isOnline();
@@ -43,6 +56,16 @@ public class User extends PermissionContainer {
 		Player p = getPlayer();
 		if (p != null) {
 			YAPP.plugin.setPlayerListName(p, this);
+		}
+	}
+	
+	@Override
+	public String getPrefix() {
+		Player p = getPlayer();
+		if (p != null && p.isOnline()) {
+			return getPrefix(p.getWorld().getName());
+		} else {
+			return getPrefix(null);
 		}
 	}
 	

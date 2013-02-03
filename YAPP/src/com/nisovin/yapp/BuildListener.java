@@ -7,7 +7,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class BuildListener implements Listener {
+class BuildListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
 	public void onBlockPlace(BlockPlaceEvent event) {

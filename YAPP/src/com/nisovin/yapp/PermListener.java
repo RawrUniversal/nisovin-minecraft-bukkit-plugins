@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class PermListener implements Listener {
+class PermListener implements Listener {
 
 	private YAPP plugin;
 	

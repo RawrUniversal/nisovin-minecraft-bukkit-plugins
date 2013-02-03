@@ -11,6 +11,13 @@ import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
+/**
+ * A PermissionContainer is an object that contains permission information. It is either
+ * a player or a group. Each permission container keeps track of permission nodes (both
+ * server-level and per-world), inherited groups (both server-level and per-world),
+ * and other information, such as prefix, color, and description.
+ * 
+ */
 public class PermissionContainer implements Comparable<PermissionContainer> {
 
 	private String name;
@@ -36,12 +43,22 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	
 	private boolean dirty = false;
 	
+	/**
+	 * Creates a new permission container.
+	 * @param name The name, either the player name or group name.
+	 * @param type The type of container, should be either "player" or "group".
+	 */
 	public PermissionContainer(String name, String type) {
 		this.name = name;
 		this.type = type;
 		this.dirty = true;
 	}
 	
+	/**
+	 * Creates a copy of another permission container.
+	 * @param other The container to copy.
+	 * @param name The name for the new container (player name or group name).
+	 */
 	public PermissionContainer(PermissionContainer other, String name) {
 		this.name = name;
 		this.type = other.type;
@@ -65,6 +82,14 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		this.dirty = true;
 	}
 	
+	/**
+	 * Gets a list of all permission nodes this container has for the specified world.
+	 * If the world is null or empty, it will get the server-level permission nodes.
+	 * This will gather and calculate all permission nodes, both from inherited groups, 
+	 * and the nodes from this object itself.
+	 * @param world The world name, or null for server-level.
+	 * @return A list of permission nodes this object has.
+	 */
 	public List<PermissionNode> getAllPermissions(String world) {
 		if (world == null) world = "";
 		if (cachedPermissions.containsKey(world)) {
@@ -159,20 +184,36 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
+	/**
+	 * Gets the name of this container, either the player name or group name.
+	 * @return The name.
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * Gets the type of this container, either "player" or "group".
+	 * @return The container type.
+	 */
 	public String getType() {
 		return type;
 	}
 	
+	/**
+	 * Gets the description for this container.
+	 * @return The description.
+	 */
 	public String getDescription() {
 		synchronized (info) {
 			return description;
 		}
 	}
 	
+	/**
+	 * Sets the description for this container.
+	 * @param desc The new description;
+	 */
 	public void setDescription(String desc) {
 		synchronized (info) {
 			this.description = desc;
@@ -181,6 +222,13 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		}
 	}
 	
+	/**
+	 * Gets the color for this container, for the specified world. If the world is null,
+	 * it will get the color at the server-level. If a color is not specified for this
+	 * object, it will be inherited from the primary group.
+	 * @param world The world name, or null for server-level.
+	 * @return The color for this container.
+	 */
 	public ChatColor getColor(String world) {
 		synchronized (info) {
 			if (cachedColor.containsKey(world)) {
@@ -261,7 +309,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 		synchronized (info) {
 			if (cachedPrefix.containsKey(world)) {
 				return cachedPrefix.get(world);
-			} else if (worldPrefixes.containsKey(world)) {
+			} else if (world != null && worldPrefixes.containsKey(world)) {
 				String p = colorify(worldPrefixes.get(world));
 				cachedPrefix.put(world, p);
 				return p;

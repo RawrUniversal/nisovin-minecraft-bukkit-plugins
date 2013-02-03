@@ -6,7 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class ChatListener implements Listener {
+class ChatListener implements Listener {
 
 	String chatFormat;
 	

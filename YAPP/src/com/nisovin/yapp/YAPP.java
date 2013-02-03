@@ -277,6 +277,15 @@ public class YAPP extends JavaPlugin {
 	
 	/**
 	 * Gets the User object for a specific player. This should never return null.
+	 * @param player The player object.
+	 * @return A User object for the player.
+	 */
+	public static User getPlayerUser(Player player) {
+		return getPlayerUser(player.getName());
+	}
+	
+	/**
+	 * Gets the User object for a specific player. This should never return null.
 	 * @param playerName The name of the player.
 	 * @return A User object for the player.
 	 */
