@@ -1,10 +1,14 @@
 package com.nisovin.codelock;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.material.Attachable;
 import org.bukkit.material.TrapDoor;
 
 public class Utilities {
@@ -68,6 +72,20 @@ public class Utilities {
 				block.setData(data, true);
 				block.getWorld().playEffect(block.getLocation(), Effect.DOOR_TOGGLE, 0);
 			}
+		}
+	}
+	
+	static void redstoneUpdate(Block block) {
+		try {
+			Block b = block.getRelative(((Attachable)block.getState().getData()).getAttachedFace());
+			Field worldField = b.getWorld().getClass().getDeclaredField("world");
+			worldField.setAccessible(true);
+			Object world = worldField.get(b.getWorld());
+			Method applyPhysicsMethod = world.getClass().getSuperclass().getDeclaredMethod("applyPhysics", int.class, int.class, int.class, int.class);
+			applyPhysicsMethod.setAccessible(true);
+			applyPhysicsMethod.invoke(world, b.getX(), b.getY(), b.getZ(), b.getTypeId());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

@@ -3,11 +3,11 @@ package com.nisovin.codelock;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class LockListener implements Listener {
 	
@@ -42,7 +43,7 @@ public class LockListener implements Listener {
 			if (plugin.isLocked(block) && (!(mat == Material.TRAP_DOOR || mat == Material.WOODEN_DOOR || mat == Material.IRON_DOOR_BLOCK) || Utilities.isDoorClosed(block) )) {
 				// it's locked
 				boolean bypass = player.hasPermission("codelock.bypass");
-				if (player.isSneaking() && player.hasPermission("codelock.lock")) {
+				if (player.isSneaking() && player.hasPermission("codelock.lock") && player.getItemInHand().getType() == Material.AIR) {
 					action = PlayerAction.REMOVING;
 				} else if (!bypass) {
 					action = PlayerAction.UNLOCKING;
@@ -51,7 +52,7 @@ public class LockListener implements Listener {
 					String code = plugin.getCode(block);
 					player.sendMessage(Settings.strLocked + code);
 				}
-			} else if (player.isSneaking() && player.hasPermission("codelock.lock")) {
+			} else if (player.isSneaking() && player.hasPermission("codelock.lock") && player.getItemInHand().getType() == Material.AIR) {
 				// trying to lock
 				if (Settings.checkBuildPerms) {
 					BlockPlaceEvent evt = new BlockPlaceEvent(block, block.getState(), block.getRelative(BlockFace.DOWN), player.getItemInHand(), player, true);
@@ -68,7 +69,11 @@ public class LockListener implements Listener {
 				Inventory inv = Bukkit.createInventory(player, Settings.lockInventorySize, Settings.lockTitle);
 				ItemStack[] contents = new ItemStack[Settings.lockInventorySize];
 				for (int i = 0; i < Settings.buttons.length; i++) {
-					contents[Settings.buttonPositions[i]] = new ItemStack(Settings.buttons[i]);
+					ItemStack item = new ItemStack(Settings.buttons[i]);
+					ItemMeta meta = item.getItemMeta();
+					meta.setDisplayName(ChatColor.RESET.toString() + Settings.letterCodes[i]);
+					item.setItemMeta(meta);
+					contents[Settings.buttonPositions[i]] = item;
 				}
 				inv.setContents(contents);
 				PlayerStatus status = new PlayerStatus(player, action, inv, block, plugin.getCode(block));
@@ -117,8 +122,21 @@ public class LockListener implements Listener {
 								}
 							}, Settings.autoDoorClose);
 						}
-					} else if (block.getType() == Material.LEVER || block.getType() == Material.STONE_BUTTON) {
-						net.minecraft.server.Block.byId[block.getType().getId()].interact(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null);
+					} else if (block.getType() == Material.LEVER) {
+						byte data = block.getData();
+						byte var1 = (byte) (data & 7);
+						byte var2 = (byte) (8 - (data & 8));
+						block.setData((byte) (var1 + var2));
+						Utilities.redstoneUpdate(block);
+					} else if (block.getType() == Material.STONE_BUTTON || block.getType() == Material.WOOD_BUTTON) {
+						block.setData((byte) (block.getData() | 0x8));
+						Utilities.redstoneUpdate(block);
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+							public void run() {
+								block.setData((byte) (block.getData() & 0x7));
+								Utilities.redstoneUpdate(block);
+							}
+						}, 20);
 					}
 				} else if (status.getAction() == PlayerAction.REMOVING) {
 					plugin.removeLock(status.getBlock());
