@@ -53,10 +53,12 @@ public class MineCal extends JavaPlugin implements Listener {
 	private int dayOfMonth;
 	private String month;
 	
+	// TODO: save signs by chunk rather than location
 	public Hashtable<Location,String[]> signs = new Hashtable<Location,String[]>();
 
 	@Override
 	public void onEnable() {
+		// TODO: create yaml config file
 		loadConfig();
 		loadDay();
 		loadSigns();
@@ -71,6 +73,8 @@ public class MineCal extends JavaPlugin implements Listener {
 		
 		getServer().getLogger().info("MineCal v" + this.getDescription().getVersion() + " loaded!");
 	}
+	
+	// TODO: move listeners to new SignListener class
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onChunkLoad(final ChunkLoadEvent event) {
@@ -141,6 +145,7 @@ public class MineCal extends JavaPlugin implements Listener {
 		
 		for (Location loc : signs.keySet()) {
 			if (loc.getWorld().isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4)) {
+				// TODO: check if block is sign, remove from list if it's not
 				updateSign(loc);
 			}
 		}
