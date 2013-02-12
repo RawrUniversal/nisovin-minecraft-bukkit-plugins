@@ -19,6 +19,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,6 +39,7 @@ public class YAPP extends JavaPlugin {
 	public static long mainThreadId;
 	
 	private static boolean debug = true;
+	private boolean enableStarNode = false;
 	private boolean updateDisplayName = true;
 	private String displayNameFormat = null;
 	private boolean updatePlayerList = true;
@@ -100,6 +102,7 @@ public class YAPP extends JavaPlugin {
 		}
 		SimpleConfig config = new SimpleConfig(configFile);
 		debug = config.getboolean("general.debug");
+		enableStarNode = config.getboolean("general.enable star node");
 		updateDisplayName = config.getboolean("general.update display name");
 		displayNameFormat = config.getString("general.display name format");
 		updatePlayerList = config.getboolean("general.update player list");
@@ -111,7 +114,13 @@ public class YAPP extends JavaPlugin {
 		// get storage method
 		if (config.getboolean("mysql.enabled")) {
 			try {
-				storageMethod = new MySQLStorage(config.getString("mysql.host"), config.getString("mysql.user"), config.getString("mysql.pass"), config.getString("mysql.db"));
+				storageMethod = new MySQLStorage(
+						config.getString("mysql.host"), 
+						config.getString("mysql.user"), 
+						config.getString("mysql.pass"), 
+						config.getString("mysql.db"), 
+						config.getString("mysql.prefix")
+						);
 			} catch (IOException e) {
 				error("UNABLE TO ACCESS MYSQL PERMISSION DATABASE. USING FILE SYSTEM INSTEAD.");
 				e.printStackTrace();
@@ -355,6 +364,29 @@ public class YAPP extends JavaPlugin {
 		for (PermissionNode node : nodes) {
 			permissions.put(node.getNodeName(), node.getValue());
 			debug("    Added: " + node);
+			if (enableStarNode) {
+				// process star nodes
+				if (node.getNodeName().equals("*")) {
+					// special star node (give all op perms)
+					debug("      Processing star node:");
+					Set<Permission> opPerms = Bukkit.getPluginManager().getDefaultPermissions(true);
+					for (Permission perm : opPerms) {
+						permissions.put(perm.getName(), node.getValue());
+						debug("        Set: " + perm.getName());
+					}
+				} else if (node.getNodeName().endsWith(".***")) {
+					// special multi-match node
+					debug("      Processing star node:");
+					String partialPerm = node.getNodeName().substring(0, node.getNodeName().length() - 4);
+					Set<Permission> allPerms = Bukkit.getPluginManager().getPermissions();
+					for (Permission perm : allPerms) {
+						if (perm.getName().startsWith(partialPerm)) {
+							permissions.put(perm.getName(), node.getValue());
+							debug("        Set: " + perm.getName());
+						}
+					}
+				}
+			}
 		}
 		player.recalculatePermissions();
 		

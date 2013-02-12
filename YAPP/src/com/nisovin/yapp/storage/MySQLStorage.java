@@ -23,14 +23,19 @@ public class MySQLStorage implements StorageMethod {
 	String user;
 	String pass;
 	String db;
+	String prefix;
 	
 	MySQLConnection conn;	
 	
-	public MySQLStorage(String host, String user, String pass, String db) throws IOException {
+	public MySQLStorage(String host, String user, String pass, String db, String prefix) throws IOException {
 		this.host = host;
 		this.user = user;
 		this.pass = pass;
 		this.db = db;
+		this.prefix = prefix;
+		if (this.prefix == null || this.prefix.isEmpty()) {
+			this.prefix = "yapp_";
+		}
 		
 		MySQLConnection conn = connect();
 		if (conn == null) {
@@ -55,10 +60,10 @@ public class MySQLStorage implements StorageMethod {
 		try {
 			Statement stmt = conn.createStatement();
 			boolean hasResults = stmt.execute("SELECT DISTINCT n.`name` FROM " +
-					"(SELECT `name` FROM `yapp_info` WHERE `type` = 2 UNION " +
-					"SELECT `name` FROM `yapp_permissions` WHERE `type` = 2 UNION " +
-					"SELECT `name` FROM `yapp_inherited_groups` WHERE `type` = 2 UNION " +
-					"SELECT `group_name` FROM `yapp_inherited_groups`) n"
+					"(SELECT `name` FROM `"+prefix+"info` WHERE `type` = 2 UNION " +
+					"SELECT `name` FROM `"+prefix+"permissions` WHERE `type` = 2 UNION " +
+					"SELECT `name` FROM `"+prefix+"inherited_groups` WHERE `type` = 2 UNION " +
+					"SELECT `group_name` FROM `"+prefix+"inherited_groups`) n"
 					);
 			if (!hasResults) return;
 			ResultSet results = stmt.getResultSet();
@@ -95,7 +100,7 @@ public class MySQLStorage implements StorageMethod {
 		try {
 			// get info
 			YAPP.debug("  Loading info");
-			PreparedStatement stmt = conn.prepareStatement("SELECT `key`, `value` FROM `yapp_info` WHERE `name` = ? AND `type` = ? AND `world` = '' ORDER BY `order");
+			PreparedStatement stmt = conn.prepareStatement("SELECT `key`, `value` FROM `"+prefix+"info` WHERE `name` = ? AND `type` = ? AND `world` = '' ORDER BY `order");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			if (stmt.execute()) {
@@ -111,7 +116,7 @@ public class MySQLStorage implements StorageMethod {
 			
 			// get permissions
 			YAPP.debug("  Loading permissions");
-			stmt = conn.prepareStatement("SELECT `node`, `value` FROM `yapp_permissions` WHERE `name` = ? AND `type` = ? AND `world` = '' ORDER BY `order");
+			stmt = conn.prepareStatement("SELECT `node`, `value` FROM `"+prefix+"permissions` WHERE `name` = ? AND `type` = ? AND `world` = '' ORDER BY `order");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			if (stmt.execute()) {
@@ -128,7 +133,7 @@ public class MySQLStorage implements StorageMethod {
 			
 			// get groups
 			YAPP.debug("  Loading groups");
-			stmt = conn.prepareStatement("SELECT `group_name` FROM `yapp_inherited_groups` WHERE `name` = ? AND `type` = ? AND `world` = '' ORDER BY `order`");
+			stmt = conn.prepareStatement("SELECT `group_name` FROM `"+prefix+"inherited_groups` WHERE `name` = ? AND `type` = ? AND `world` = '' ORDER BY `order`");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			if (stmt.execute()) {
@@ -159,7 +164,7 @@ public class MySQLStorage implements StorageMethod {
 			stmt.close();
 			
 			// get world info
-			stmt = conn.prepareStatement("SELECT `key`, `value` FROM `yapp_info` WHERE `name` = ? AND `type` = ? AND `world` != '' ORDER BY `world`, `order`");
+			stmt = conn.prepareStatement("SELECT `key`, `value` FROM `"+prefix+"info` WHERE `name` = ? AND `type` = ? AND `world` != '' ORDER BY `world`, `order`");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			if (stmt.execute()) {
@@ -181,7 +186,7 @@ public class MySQLStorage implements StorageMethod {
 			stmt.close();
 			
 			// get world permissions
-			stmt = conn.prepareStatement("SELECT `node`, `value` FROM `yapp_permissions` WHERE `name` = ? AND `type` = ? AND `world` != '' ORDER BY `world`, `order`");
+			stmt = conn.prepareStatement("SELECT `node`, `value` FROM `"+prefix+"permissions` WHERE `name` = ? AND `type` = ? AND `world` != '' ORDER BY `world`, `order`");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			if (stmt.execute()) {
@@ -204,7 +209,7 @@ public class MySQLStorage implements StorageMethod {
 			stmt.close();
 			
 			// get world groups
-			stmt = conn.prepareStatement("SELECT `group_name` FROM `yapp_inherited_groups` WHERE `name` = ? AND `type` = ? AND `world` != '' ORDER BY `world`, `order`");
+			stmt = conn.prepareStatement("SELECT `group_name` FROM `"+prefix+"inherited_groups` WHERE `name` = ? AND `type` = ? AND `world` != '' ORDER BY `world`, `order`");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			if (stmt.execute()) {
@@ -267,17 +272,17 @@ public class MySQLStorage implements StorageMethod {
 			conn.setAutoCommit(false);
 			
 			// first delete existing data
-			PreparedStatement stmt = conn.prepareStatement("DELETE FROM `yapp_info` WHERE `name` = ? AND `type` = ?");
+			PreparedStatement stmt = conn.prepareStatement("DELETE FROM `"+prefix+"info` WHERE `name` = ? AND `type` = ?");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			stmt.execute();
 			stmt.close();
-			stmt = conn.prepareStatement("DELETE FROM `yapp_permissions` WHERE `name` = ? AND `type` = ?");
+			stmt = conn.prepareStatement("DELETE FROM `"+prefix+"permissions` WHERE `name` = ? AND `type` = ?");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			stmt.execute();
 			stmt.close();
-			stmt = conn.prepareStatement("DELETE FROM `yapp_inherited_groups` WHERE `name` = ? AND `type` = ?");
+			stmt = conn.prepareStatement("DELETE FROM `"+prefix+"inherited_groups` WHERE `name` = ? AND `type` = ?");
 			stmt.setString(1, name);
 			stmt.setInt(2, type);
 			stmt.execute();
@@ -372,7 +377,7 @@ public class MySQLStorage implements StorageMethod {
 	}
 	
 	private void saveInfo(MySQLConnection conn, String name, int type, String world, String key, String value, int order) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO `yapp_info` (`name`, `type`, `world`, `key`, `value`, `order`) VALUES (?, ?, ?, ?, ?, ?)");
+		PreparedStatement stmt = conn.prepareStatement("INSERT INTO `"+prefix+"info` (`name`, `type`, `world`, `key`, `value`, `order`) VALUES (?, ?, ?, ?, ?, ?)");
 		stmt.setString(1, name);
 		stmt.setInt(2, type);
 		stmt.setString(3, world);
@@ -384,7 +389,7 @@ public class MySQLStorage implements StorageMethod {
 	}
 	
 	private void savePermission(MySQLConnection conn, String name, int type, String world, String node, boolean value, int order) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO `yapp_permissions` (`name`, `type`, `world`, `node`, `value`, `order`) VALUES (?, ?, ?, ?, ?, ?)");
+		PreparedStatement stmt = conn.prepareStatement("INSERT INTO `"+prefix+"permissions` (`name`, `type`, `world`, `node`, `value`, `order`) VALUES (?, ?, ?, ?, ?, ?)");
 		stmt.setString(1, name);
 		stmt.setInt(2, type);
 		stmt.setString(3, world);
@@ -396,7 +401,7 @@ public class MySQLStorage implements StorageMethod {
 	}
 	
 	private void saveGroup(MySQLConnection conn, String name, int type, String world, String group, int order) throws SQLException {
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO `yapp_inherited_groups` (`name`, `type`, `world`, `group_name`, `order`) VALUES (?, ?, ?, ?, ?)");
+		PreparedStatement stmt = conn.prepareStatement("INSERT INTO `"+prefix+"inherited_groups` (`name`, `type`, `world`, `group_name`, `order`) VALUES (?, ?, ?, ?, ?)");
 		stmt.setString(1, name);
 		stmt.setInt(2, type);
 		stmt.setString(3, world);
@@ -429,7 +434,7 @@ public class MySQLStorage implements StorageMethod {
 				update = true;
 			}
 			if (update) {
-				conn.createStatement().execute("UPDATE `yapp_data` SET `schema_version` = " + currentVersion);
+				conn.createStatement().execute("UPDATE `"+prefix+"data` SET `schema_version` = " + currentVersion);
 				conn.commit();
 			}
 		} catch (SQLException e) {
@@ -440,7 +445,7 @@ public class MySQLStorage implements StorageMethod {
 	
 	private int getSchemaVersion(MySQLConnection conn) throws SQLException {
 		Statement stmt = conn.createStatement();
-		stmt.execute("SHOW TABLES LIKE 'yapp_data'");
+		stmt.execute("SHOW TABLES LIKE '"+prefix+"data'");
 		ResultSet results = stmt.getResultSet();
 		if (!results.first()) {
 			results.close();
@@ -451,7 +456,7 @@ public class MySQLStorage implements StorageMethod {
 			stmt.close();
 		}
 		stmt = conn.createStatement();
-		boolean hasResults = stmt.execute("SELECT `schema_version` FROM `yapp_data`");
+		boolean hasResults = stmt.execute("SELECT `schema_version` FROM `"+prefix+"data`");
 		if (!hasResults) {
 			stmt.close();
 			return 0;
@@ -473,11 +478,11 @@ public class MySQLStorage implements StorageMethod {
 		Statement stmt = conn.createStatement();
 		
 		// create yapp_data table
-		stmt.execute("CREATE TABLE `yapp_data` (`schema_version` int(11) NOT NULL)");
-		stmt.execute("INSERT INTO `yapp_data` (`schema_version`) VALUES (0)");
+		stmt.execute("CREATE TABLE `"+prefix+"data` (`schema_version` int(11) NOT NULL)");
+		stmt.execute("INSERT INTO `"+prefix+"data` (`schema_version`) VALUES (0)");
 		
 		// create yapp_info table
-		stmt.execute("CREATE TABLE `yapp_info` (" +
+		stmt.execute("CREATE TABLE `"+prefix+"info` (" +
 						"`name` VARCHAR(50) NOT NULL ," +
 						"`type` TINYINT(1) NOT NULL ," +
 						"`world` VARCHAR(50) NOT NULL ," +
@@ -487,7 +492,7 @@ public class MySQLStorage implements StorageMethod {
 						"PRIMARY KEY (`name`, `type`, `world`, `key`) )");
 		
 		// create permissions table
-		stmt.execute("CREATE TABLE `yapp_permissions` (" +
+		stmt.execute("CREATE TABLE `"+prefix+"permissions` (" +
 						"`name` VARCHAR(50) NOT NULL ," +
 						"`type` TINYINT(1) NOT NULL ," +
 						"`world` VARCHAR(50) NOT NULL ," +
@@ -497,7 +502,7 @@ public class MySQLStorage implements StorageMethod {
 						"PRIMARY KEY (`name`, `type`, `world`, `node`) )");
 		
 		// create inherited groups table
-		stmt.execute("CREATE TABLE `yapp_inherited_groups` (" +
+		stmt.execute("CREATE TABLE `"+prefix+"inherited_groups` (" +
 						"`name` VARCHAR(50) NOT NULL ," +
 						"`type` TINYINT(1) NOT NULL ," +
 						"`world` VARCHAR(50) NOT NULL ," +

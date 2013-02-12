@@ -5,6 +5,7 @@ debug               : false
 default group       : members
 use build perm      : true
 modal menu          : true
+enable star node    : true
 
 update player list  : true
 update display name : true
@@ -36,8 +37,9 @@ damage   : false
 
 == MYSQL ==
 
-enabled: false
-host: localhost
-user: bukkit
-pass: walrus
-db: minecraft
+enabled : false
+host    : localhost
+user    : bukkit
+pass    : walrus
+db      : minecraft
+prefix  : yapp_
