@@ -39,7 +39,7 @@ public class YAPP extends JavaPlugin {
 	public static long mainThreadId;
 	
 	private static boolean debug = true;
-	private boolean enableStarNode = false;
+	private boolean enableWildcard = false;
 	private boolean updateDisplayName = true;
 	private String displayNameFormat = null;
 	private boolean updatePlayerList = true;
@@ -102,7 +102,7 @@ public class YAPP extends JavaPlugin {
 		}
 		SimpleConfig config = new SimpleConfig(configFile);
 		debug = config.getboolean("general.debug");
-		enableStarNode = config.getboolean("general.enable star node");
+		enableWildcard = config.getboolean("general.enable wildcard");
 		updateDisplayName = config.getboolean("general.update display name");
 		displayNameFormat = config.getString("general.display name format");
 		updatePlayerList = config.getboolean("general.update player list");
@@ -364,9 +364,10 @@ public class YAPP extends JavaPlugin {
 		for (PermissionNode node : nodes) {
 			permissions.put(node.getNodeName(), node.getValue());
 			debug("    Added: " + node);
-			if (enableStarNode) {
-				// process star nodes
-				if (node.getNodeName().equals("*")) {
+			if (enableWildcard) {
+				// process wildcards
+				String nodeName = node.getNodeName();
+				if (nodeName.equals("***")) {
 					// special star node (give all op perms)
 					debug("      Processing star node:");
 					Set<Permission> opPerms = Bukkit.getPluginManager().getDefaultPermissions(true);
@@ -374,10 +375,10 @@ public class YAPP extends JavaPlugin {
 						permissions.put(perm.getName(), node.getValue());
 						debug("        Set: " + perm.getName());
 					}
-				} else if (node.getNodeName().endsWith(".***")) {
+				} else if (nodeName.endsWith(".***")) {
 					// special multi-match node
 					debug("      Processing star node:");
-					String partialPerm = node.getNodeName().substring(0, node.getNodeName().length() - 4);
+					String partialPerm = nodeName.substring(0, nodeName.length() - 4);
 					Set<Permission> allPerms = Bukkit.getPluginManager().getPermissions();
 					for (Permission perm : allPerms) {
 						if (perm.getName().startsWith(partialPerm)) {

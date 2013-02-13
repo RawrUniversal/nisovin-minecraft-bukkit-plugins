@@ -5,7 +5,7 @@ debug               : false
 default group       : members
 use build perm      : true
 modal menu          : true
-enable star node    : true
+enable wildcard     : true
 
 update player list  : true
 update display name : true
