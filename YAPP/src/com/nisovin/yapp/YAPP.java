@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -362,11 +363,11 @@ public class YAPP extends JavaPlugin {
 		}
 		List<PermissionNode> nodes = user.getAllPermissions(worldName);
 		for (PermissionNode node : nodes) {
-			permissions.put(node.getNodeName(), node.getValue());
+			String nodeName = node.getNodeName();
+			permissions.put(nodeName, node.getValue());
 			debug("    Added: " + node);
 			if (enableWildcard) {
 				// process wildcards
-				String nodeName = node.getNodeName();
 				if (nodeName.equals("***")) {
 					// special star node (give all op perms)
 					debug("      Processing star node:");
@@ -382,6 +383,16 @@ public class YAPP extends JavaPlugin {
 					Set<Permission> allPerms = Bukkit.getPluginManager().getPermissions();
 					for (Permission perm : allPerms) {
 						if (perm.getName().startsWith(partialPerm)) {
+							permissions.put(perm.getName(), node.getValue());
+							debug("        Set: " + perm.getName());
+						}
+					}
+				} else if (nodeName.startsWith("regex:")) {
+					debug("      Processing regex:");
+					Pattern pattern = Pattern.compile(nodeName.substring(6).trim());
+					Set<Permission> allPerms = Bukkit.getPluginManager().getPermissions();
+					for (Permission perm : allPerms) {
+						if (pattern.matcher(perm.getName()).matches()) {
 							permissions.put(perm.getName(), node.getValue());
 							debug("        Set: " + perm.getName());
 						}
