@@ -664,6 +664,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	}
 	
 	public boolean inheritsGroup(String world, Group group) {
+		if (this instanceof Group && group.equals(this)) return true;
 		List<Group> groups = this.groups;
 		if (world != null && !world.isEmpty()) {
 			groups = worldGroups.get(world);
