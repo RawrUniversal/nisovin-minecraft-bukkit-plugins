@@ -87,7 +87,7 @@ public class WindwalkSpell extends BuffSpell {
 					public void run() {
 						addUseAndChargeCost(player);
 					}
-				}, useCostInterval*20, useCostInterval*20);
+				}, useCostInterval, useCostInterval);
 				tasks.put(player, taskId);
 			}
 			// start height monitor
