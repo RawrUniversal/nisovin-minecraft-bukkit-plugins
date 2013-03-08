@@ -750,7 +750,13 @@ public class MagicSpells extends JavaPlugin {
 		
 		String msg = message;
 		for (int i = 0; i < replacements.length; i+=2) {
-			msg = msg.replace(replacements[i], replacements[i+1]);
+			if (replacements[i] != null) {
+				if (replacements[i+1] != null) {
+					msg = msg.replace(replacements[i], replacements[i+1]);
+				} else {
+					msg = msg.replace(replacements[i], "");
+				}
+			}
 		}
 		return msg;
 	}

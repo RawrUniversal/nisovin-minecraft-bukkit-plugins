@@ -55,7 +55,7 @@ public class ReachSpell extends BuffSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	@EventHandler(priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (reaching.contains(event.getPlayer())) {
 			Player player = event.getPlayer();
@@ -130,6 +130,7 @@ public class ReachSpell extends BuffSpell {
 								}
 							}
 							addUseAndChargeCost(player);
+							event.setCancelled(true);
 						}
 					}
 				}

@@ -46,6 +46,9 @@ public abstract class TargetedSpell extends InstantSpell {
 				entityName = entityType.getName();
 			}
 		}
+		if (entityName == null) {
+			entityName = "unknown";
+		}
 		sendMessage(caster, strCastSelf, "%a", caster.getDisplayName(), "%t", entityName);
 		if (playerTarget != null) {
 			sendMessage(playerTarget, strCastTarget, "%a", caster.getDisplayName(), "%t", entityName);
