@@ -60,7 +60,7 @@ public class HealSpell extends TargetedEntitySpell {
 			amt = evt.getAmount();
 		}
 		health += amt;
-		if (health > 20) health = 20;
+		if (health > target.getMaxHealth()) health = target.getMaxHealth();
 		target.setHealth(health);
 		
 		playSpellEffects(EffectPosition.CASTER, player);

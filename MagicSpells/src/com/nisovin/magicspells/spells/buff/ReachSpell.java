@@ -121,7 +121,7 @@ public class ReachSpell extends BuffSpell {
 							prevState.update(true);
 						} else {
 							// remove item from hand
-							if (consumeBlocks && player.getGameMode() == GameMode.SURVIVAL) {
+							if (consumeBlocks && player.getGameMode() != GameMode.CREATIVE) {
 								if (inHand.getAmount() > 1) {
 									inHand.setAmount(inHand.getAmount() - 1);
 									player.setItemInHand(inHand);

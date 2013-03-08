@@ -42,8 +42,8 @@ public class PrayerSpell extends InstantSpell {
 						amt = evt.getAmount();
 					}
 					health += amt;
-					if (health > 20) {
-						health = 20;
+					if (health > player.getMaxHealth()) {
+						health = player.getMaxHealth();
 					} else if (health < 0) {
 						health = 0;
 					}

@@ -211,11 +211,6 @@ public class StonevisionSpell extends BuffSpell {
 				player.sendBlockChange(b.getLocation(), b.getType(), b.getData());
 			}
 			blocks = null;
-			
-			// queue up chunks for resending
-			if (unobfuscate) {
-				MagicSpells.getVolatileCodeHandler().queueChunksForUpdate(player, chunks);
-			}
 		}
 	}
 
