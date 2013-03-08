@@ -11,14 +11,20 @@ import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Zombie;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.BlockUtils;
+import com.nisovin.magicspells.util.Util;
+import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class SpawnMonsterSpell extends TargetedLocationSpell {
@@ -27,7 +33,8 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 	private EntityType entityType;
 	private boolean baby;
 	private boolean tamed;
-	private int holding;
+	private ItemStack holding;
+	private int duration;
 	
 	private Random random = new Random();
 	
@@ -38,7 +45,11 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 		entityType = EntityType.fromName(getConfigString("entity-type", "wolf"));
 		baby = getConfigBoolean("baby", false);
 		tamed = getConfigBoolean("tamed", false);
-		holding = getConfigInt("holding", 0);
+		holding = Util.getItemStackFromString(getConfigString("holding", "0"));
+		if (holding != null && holding.getTypeId() > 0) {
+			holding.setAmount(1);
+		}
+		duration = getConfigInt("duration", 0);
 		
 		if (entityType == null) {
 			MagicSpells.error("SpawnMonster spell '" + spellName + "' has an invalid entity-type!");
@@ -110,7 +121,8 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 
 	private void spawnMob(Player player, Location loc) {
 		if (entityType != null) {
-			Entity entity = loc.getWorld().spawnEntity(loc.add(.5, .1, .5), entityType);
+			// spawn it
+			final Entity entity = loc.getWorld().spawnEntity(loc.add(.5, .1, .5), entityType);
 			if (baby) {
 				if (entity instanceof Ageable) {
 					((Ageable)entity).setBaby();
@@ -122,10 +134,24 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 				((Tameable)entity).setTamed(true);
 				((Tameable)entity).setOwner(player);
 			}
-			if (holding > 0 && entity instanceof Enderman) {
-				((Enderman)entity).setCarriedMaterial(new MaterialData(holding));
+			if (holding != null && holding.getTypeId() > 0) {
+				if (entity instanceof Enderman) {
+					((Enderman)entity).setCarriedMaterial(new MaterialData(holding.getTypeId(), (byte)holding.getDurability()));
+				} else if (entity instanceof Skeleton || entity instanceof Zombie) {
+					EntityEquipment equip = ((LivingEntity)entity).getEquipment();
+					equip.setItemInHand(holding.clone());
+				}
 			}
+			// play effects
 			playSpellEffects(player, entity);
+			// schedule removal
+			if (duration > 0) {
+				MagicSpells.scheduleDelayedTask(new Runnable() {
+					public void run() {
+						entity.remove();
+					}
+				}, duration);
+			}
 		}
 	}
 	
