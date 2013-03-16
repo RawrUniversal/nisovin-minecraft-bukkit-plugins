@@ -2,16 +2,14 @@ package com.nisovin.muddersmilk;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Cow;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -22,8 +20,6 @@ public class MilkPlayerListener implements Listener {
 	private MuddersMilk plugin;
 	private Random random;
 	
-	private String justMilked = "";
-	
 	public MilkPlayerListener(MuddersMilk plugin) {
 		this.plugin = plugin;
 		this.random = new Random();
@@ -31,42 +27,56 @@ public class MilkPlayerListener implements Listener {
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 	
-	@EventHandler(priority=EventPriority.HIGH)
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && event.getPlayer().getItemInHand().getType() == Material.MILK_BUCKET) {
-			// don't drink if we just milked a cow
-			if (event.getPlayer().getName().equals(justMilked)) {
-				justMilked = "";
-				return;
-			}
+	@SuppressWarnings("deprecation")
+	public void onItemConsume(PlayerItemConsumeEvent event) {
+		final ItemStack item = event.getItem().clone();
+		if (item.getTypeId() == plugin.itemId && item.getDurability() == plugin.itemData) {
+			final Player player = event.getPlayer();
 			
-			// destroy bucket if necessary
-			if (plugin.destroyBucketOnUse) {
-				event.getPlayer().setItemInHand(null);
-			} else {
-				event.getPlayer().setItemInHand(new ItemStack(Material.BUCKET, 1));				
-			}
+			// cancel event
+			event.setCancelled(true);
+			
+			// handle consumed item
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				public void run() {
+					// remove item
+					boolean emptyHand;
+					if (item.getAmount() > 1) {
+						item.setAmount(item.getAmount() - 1);
+						player.setItemInHand(item);
+						emptyHand = false;
+					} else {
+						player.setItemInHand(null);
+						emptyHand = true;
+					}			
+					// add empty item
+					if (plugin.itemEmptyId > 0 && !plugin.destroyBucketOnUse) {
+						if (emptyHand) {
+							player.setItemInHand(new ItemStack(plugin.itemEmptyId, 1, (short)plugin.itemEmptyData));
+						} else {
+							player.getInventory().addItem(new ItemStack(plugin.itemEmptyId, 1, (short)plugin.itemEmptyData));
+						}
+					}			
+					// update inventory
+					player.updateInventory();
+				}
+			});
 			
 			// increase drunk level
 			int drunkLevel = plugin.moreDrunk(event.getPlayer());
 			if (drunkLevel == plugin.tipsyLevel) {
-				event.getPlayer().sendMessage(ChatColor.YELLOW + plugin.tipsyStr);
+				player.sendMessage(ChatColor.YELLOW + plugin.tipsyStr);
 			} else if (drunkLevel == plugin.smashedLevel) {
-				event.getPlayer().sendMessage(ChatColor.YELLOW + plugin.smashedStr);
+				player.sendMessage(ChatColor.YELLOW + plugin.smashedStr);
 			} else if (drunkLevel >= plugin.poisoningLevel) {
-				event.getPlayer().damage(drunkLevel-(plugin.poisoningLevel-1));
-				event.getPlayer().sendMessage(ChatColor.YELLOW + plugin.poisoningStr);
+				player.damage(drunkLevel-(plugin.poisoningLevel-1));
+				player.sendMessage(ChatColor.YELLOW + plugin.poisoningStr);
 			}
 			
 			// vision blur
-			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, drunkLevel * plugin.visionBlurDurationPerLevel, 0), true);
-		}
-	}
-	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-		if (event.getRightClicked() instanceof Cow && event.getPlayer().getItemInHand().getType() == Material.BUCKET) {
-			justMilked = event.getPlayer().getName();
+			if (plugin.visionBlurDurationPerLevel > 0) {
+				player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, drunkLevel * plugin.visionBlurDurationPerLevel, 0), true);
+			}
 		}
 	}
 	

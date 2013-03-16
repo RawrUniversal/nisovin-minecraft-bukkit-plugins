@@ -1,3 +1,7 @@
+item-id: 335
+item-data: 0
+empty-item-id: 325
+empty-item-data: 0
 tipsy-level: 1
 smashed-level: 5
 poisoning-level: 10

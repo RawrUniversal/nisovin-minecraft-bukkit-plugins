@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.Configuration;
@@ -15,6 +16,10 @@ public class MuddersMilk extends JavaPlugin {
 	private DrunkEffects effects;
 	private int taskId;
 	
+	public int itemId;
+	public int itemData;
+	public int itemEmptyId;
+	public int itemEmptyData;
 	public int tipsyLevel;
 	public int smashedLevel;
 	public int poisoningLevel;
@@ -44,6 +49,10 @@ public class MuddersMilk extends JavaPlugin {
 		
 		loadConfigFromJar();
 		Configuration config = getConfig();
+		itemId = config.getInt("item-id", Material.MILK_BUCKET.getId());
+		itemData = config.getInt("item-data", 0);
+		itemEmptyId = config.getInt("empty-item-id", Material.BUCKET.getId());
+		itemEmptyData = config.getInt("empty-item-data", 0);
 		tipsyLevel = config.getInt("tipsy-level", 1);
 		smashedLevel = config.getInt("smashed-level", 5);
 		poisoningLevel = config.getInt("poisoning-level", 10);
