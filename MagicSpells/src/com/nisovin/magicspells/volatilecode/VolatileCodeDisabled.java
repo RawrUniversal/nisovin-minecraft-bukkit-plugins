@@ -62,7 +62,7 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	}
 
 	@Override
-	public boolean simulateTnt(Location target, float explosionSize, boolean fire) {
+	public boolean simulateTnt(Location target, LivingEntity source, float explosionSize, boolean fire) {
 		return false;
 	}
 

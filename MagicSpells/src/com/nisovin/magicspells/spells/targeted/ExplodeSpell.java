@@ -69,7 +69,7 @@ public class ExplodeSpell extends TargetedLocationSpell {
 	private boolean explode(Player player, Location target, float power) {
 		// check plugins
 		if (simulateTnt) {
-			boolean cancelled = MagicSpells.getVolatileCodeHandler().simulateTnt(target, explosionSize * power, addFire);
+			boolean cancelled = MagicSpells.getVolatileCodeHandler().simulateTnt(target, player, explosionSize * power, addFire);
 			if (cancelled) {
 				return false;
 			}

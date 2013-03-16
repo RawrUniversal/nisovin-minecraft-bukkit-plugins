@@ -30,7 +30,7 @@ public interface VolatileCodeHandle {
 	
 	public void removeMobEffect(LivingEntity entity, PotionEffectType type);
 	
-	public boolean simulateTnt(Location target, float explosionSize, boolean fire);
+	public boolean simulateTnt(Location target, LivingEntity source, float explosionSize, boolean fire);
 	
 	public boolean createExplosionByPlayer(Player player, Location location, float size, boolean fire, boolean breakBlocks);
 	

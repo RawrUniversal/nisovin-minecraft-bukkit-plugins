@@ -153,7 +153,7 @@ public class VolatileCodeEnabled_1_4_R1 implements VolatileCodeHandle {
 	}
 
 	@Override
-	public boolean simulateTnt(Location target, float explosionSize, boolean fire) {
+	public boolean simulateTnt(Location target, LivingEntity source, float explosionSize, boolean fire) {
         EntityTNTPrimed e = new EntityTNTPrimed(((CraftWorld)target.getWorld()).getHandle(), target.getX(), target.getY(), target.getZ());
         CraftTNTPrimed c = new CraftTNTPrimed((CraftServer)Bukkit.getServer(), e);
         ExplosionPrimeEvent event = new ExplosionPrimeEvent(c, explosionSize, fire);
