@@ -11,12 +11,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.vehicle.VehicleCreateEvent;
 
 public class ProtectListener implements Listener {
 	
 	CodeLock plugin;
 	
-	BlockFace[] directions = { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
+	BlockFace[] chestCheckDirs = { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
+	BlockFace[] hopperCheckDirs = { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN };
 	
 	public ProtectListener(CodeLock plugin) {
 		this.plugin = plugin;
@@ -32,14 +34,35 @@ public class ProtectListener implements Listener {
 	@EventHandler(ignoreCancelled=true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Block block = event.getBlock();
-		if (block.getType() != Material.CHEST) return;
-		
-		for (BlockFace face : directions) {
-			Block b = block.getRelative(face);
-			if (b.getType() == Material.CHEST && plugin.isLocked(b)) {
-				event.setCancelled(true);
-				return;
+		Material type = block.getType();
+		int id = block.getTypeId();
+		if (type == Material.CHEST) {
+			for (BlockFace face : chestCheckDirs) {
+				Block b = block.getRelative(face);
+				if (b.getType() == Material.CHEST && plugin.isLocked(b)) {
+					event.setCancelled(true);
+					return;
+				}
 			}
+		} else if (id == 154 /* HOPPER */) {
+			for (BlockFace face : hopperCheckDirs) {
+				Block b = block.getRelative(face);
+				if (b.getType() == Material.CHEST && plugin.isLocked(b)) {
+					event.setCancelled(true);
+					return;
+				}
+			}
+		} else if (type == Material.RAILS || type == Material.POWERED_RAIL || type == Material.DETECTOR_RAIL || id == 157 /*ACTIVATOR_RAIL*/) {
+			if (plugin.isLocked(block.getRelative(BlockFace.UP))) {
+				event.setCancelled(true);
+			}
+		}
+	}
+	
+	@EventHandler(ignoreCancelled=true)
+	public void onMinecartPlace(VehicleCreateEvent event) {
+		if (plugin.isLocked(event.getVehicle().getLocation().getBlock().getRelative(BlockFace.UP))) {
+			event.getVehicle().remove();
 		}
 	}
 	
