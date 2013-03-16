@@ -1,7 +1,25 @@
-name: MineCal
+name: RolePlayCalendar
 main: com.nisovin.MineCal.MineCal
-version: 0.4.1
+version: 1.0
+
 commands:
     today:
         description: Show today's date
         usage: /<command>
+        permission: rpcal.today
+    roleplaycalendar:
+        description: RP Cal admin functions
+        usage: /<command> <reload|advance>
+        permission: rpcal.admin
+        aliases: [ rpcal, calendar ]
+        
+permissions:
+    rpcal.today:
+        description: Allows usage of the today command.
+        default: true
+    rpcal.createsign:
+        description: Allows the player to create a [cal] sign.
+        default: op
+    rpcal.admin:
+        description: Allows usage of the rpcal command.
+        default: op
