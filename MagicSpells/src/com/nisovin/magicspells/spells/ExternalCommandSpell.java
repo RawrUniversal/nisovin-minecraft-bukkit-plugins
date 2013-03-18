@@ -72,7 +72,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 					return Prompt.END_OF_CONVERSATION;
 				}
 			};
-			convoFac = new ConversationFactory(MagicSpells.plugin).withModality(true).withTimeout(1);
+			convoFac = new ConversationFactory(MagicSpells.plugin).withModality(true).withFirstPrompt(convoPrompt).withTimeout(1);
 		}
 	}
 
