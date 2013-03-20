@@ -41,6 +41,7 @@ public abstract class Condition {
 		conditions.put("onblock", OnBlockCondition.class);
 		conditions.put("inblock", InBlockCondition.class);
 		conditions.put("sneaking", SneakingCondition.class);
+		conditions.put("blocking", BlockingCondition.class);
 		conditions.put("riding", RidingCondition.class);
 		conditions.put("outside", OutsideCondition.class);
 		conditions.put("biome", BiomeCondition.class);
