@@ -58,4 +58,6 @@ public interface VolatileCodeHandle {
 	
 	public void setHeldItemSlot(Player player, int slot);
 	
+	public void playParticleEffect(Location location, String name, float spreadHoriz, float spreadVert, float speed, int count, int radius, float yOffset);
+	
 }

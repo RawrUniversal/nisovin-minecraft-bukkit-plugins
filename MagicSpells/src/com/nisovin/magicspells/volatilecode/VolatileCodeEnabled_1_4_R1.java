@@ -344,5 +344,10 @@ public class VolatileCodeEnabled_1_4_R1 implements VolatileCodeHandle {
 		((CraftPlayer)player).getHandle().inventory.itemInHandIndex = slot;
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(new Packet16BlockItemSwitch(slot));
 	}
+	
+	@Override
+	public void playParticleEffect(Location location, String name, float spreadHoriz, float spreadVert, float speed, int count, int radius, float yOffset) {
+		
+	}
 
 }

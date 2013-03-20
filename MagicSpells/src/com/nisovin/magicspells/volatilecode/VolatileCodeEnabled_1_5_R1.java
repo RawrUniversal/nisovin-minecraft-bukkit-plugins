@@ -78,6 +78,25 @@ public class VolatileCodeEnabled_1_5_R1 implements VolatileCodeHandle {
 		return craftItem;
 	}
 	
+	public VolatileCodeEnabled_1_5_R1() {
+		try {
+			packet63Fields[0] = Packet63WorldParticles.class.getDeclaredField("a");
+			packet63Fields[1] = Packet63WorldParticles.class.getDeclaredField("b");
+			packet63Fields[2] = Packet63WorldParticles.class.getDeclaredField("c");
+			packet63Fields[3] = Packet63WorldParticles.class.getDeclaredField("d");
+			packet63Fields[4] = Packet63WorldParticles.class.getDeclaredField("e");
+			packet63Fields[5] = Packet63WorldParticles.class.getDeclaredField("f");
+			packet63Fields[6] = Packet63WorldParticles.class.getDeclaredField("g");
+			packet63Fields[7] = Packet63WorldParticles.class.getDeclaredField("h");
+			packet63Fields[8] = Packet63WorldParticles.class.getDeclaredField("i");
+			for (int i = 0; i <= 8; i++) {
+				packet63Fields[i].setAccessible(true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void addPotionGraphicalEffect(LivingEntity entity, int color, int duration) {
 		final EntityLiving el = ((CraftLivingEntity)entity).getHandle();
@@ -343,6 +362,33 @@ public class VolatileCodeEnabled_1_5_R1 implements VolatileCodeHandle {
 	public void setHeldItemSlot(Player player, int slot) {
 		((CraftPlayer)player).getHandle().inventory.itemInHandIndex = slot;
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(new Packet16BlockItemSwitch(slot));
+	}
+	
+	Field[] packet63Fields = new Field[9];
+	@Override
+	public void playParticleEffect(Location location, String name, float spreadHoriz, float spreadVert, float speed, int count, int radius, float yOffset) {
+		Packet63WorldParticles packet = new Packet63WorldParticles();
+		try {
+			packet63Fields[0].set(packet, name);
+			packet63Fields[1].setFloat(packet, (float)location.getX());
+			packet63Fields[2].setFloat(packet, (float)location.getY() + yOffset);
+			packet63Fields[3].setFloat(packet, (float)location.getZ());
+			packet63Fields[4].setFloat(packet, spreadHoriz);
+			packet63Fields[5].setFloat(packet, spreadVert);
+			packet63Fields[6].setFloat(packet, spreadHoriz);
+			packet63Fields[7].setFloat(packet, speed);
+			packet63Fields[8].setInt(packet, count);
+			
+			int rSq = radius * radius;
+			
+			for (Player player : location.getWorld().getPlayers()) {
+				if (player.getLocation().distanceSquared(location) <= rSq) {
+					((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

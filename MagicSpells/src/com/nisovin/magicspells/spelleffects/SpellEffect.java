@@ -75,6 +75,7 @@ public abstract class SpellEffect {
 		effects.put("itemspray", new ItemSprayEffect());
 		effects.put("lightning", new LightningEffect());
 		effects.put("nova", new NovaEffect());
+		effects.put("particles", new ParticlesEffect());
 		effects.put("potion", new PotionEffect());
 		effects.put("smoke", new SmokeEffect());
 		effects.put("smokeswirl", new SmokeSwirlEffect());
