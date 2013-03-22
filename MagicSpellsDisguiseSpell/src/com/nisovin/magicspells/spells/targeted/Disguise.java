@@ -10,15 +10,17 @@ public class Disguise {
 
 	private Player player;
 	private EntityType entityType;
+	private String nameplateText;
 	private boolean flag;
 	private int var;
 	private DisguiseSpell spell;
 	
 	private int taskId;
 	
-	public Disguise(Player player, EntityType entityType, boolean flag, int var, int duration, DisguiseSpell spell) {
+	public Disguise(Player player, EntityType entityType, String nameplateText, boolean flag, int var, int duration, DisguiseSpell spell) {
 		this.player = player;
 		this.entityType = entityType;
+		this.nameplateText = nameplateText;
 		this.flag = flag;
 		this.var = var;
 		if (duration > 0) {
@@ -33,6 +35,10 @@ public class Disguise {
 	
 	public EntityType getEntityType() {
 		return entityType;
+	}
+	
+	public String getNameplateText() {
+		return nameplateText;
 	}
 	
 	public boolean getFlag() {

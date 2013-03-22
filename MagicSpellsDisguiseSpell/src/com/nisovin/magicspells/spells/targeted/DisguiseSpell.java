@@ -27,6 +27,8 @@ public class DisguiseSpell extends TargetedEntitySpell {
 	private EntityType entityType;
 	private boolean flag = false;
 	private int var = 0;
+	private boolean showPlayerName = false;
+	private String nameplateText = "";
 	private boolean preventPickups = false;
 	private boolean friendlyMobs = true;
 	private boolean undisguiseOnDeath = true;
@@ -90,7 +92,7 @@ public class DisguiseSpell extends TargetedEntitySpell {
 			try {
 				DyeColor dyeColor = DyeColor.valueOf(color.toUpperCase().replace(" ", "_"));
 				if (dyeColor != null) {
-					var = dyeColor.getData();
+					var = dyeColor.getWoolData();
 				}
 			} catch (IllegalArgumentException e) {
 				MagicSpells.error("Invalid sheep color on disguise spell '" + spellName + "'");
@@ -112,6 +114,8 @@ public class DisguiseSpell extends TargetedEntitySpell {
 			type = "ozelot";
 		}
 		entityType = EntityType.fromName(type);
+		showPlayerName = getConfigBoolean("show-player-name", false);
+		nameplateText = getConfigString("nameplate-text", "");
 		preventPickups = getConfigBoolean("prevent-pickups", true);
 		friendlyMobs = getConfigBoolean("friendly-mobs", true);
 		undisguiseOnDeath = getConfigBoolean("undisguise-on-death", true);
@@ -152,7 +156,9 @@ public class DisguiseSpell extends TargetedEntitySpell {
 	}
 
 	private void disguise(Player player) {
-		Disguise disguise = new Disguise(player, entityType, flag, var, duration, this);
+		String nameplate = nameplateText;
+		if (showPlayerName) nameplate = player.getName();
+		Disguise disguise = new Disguise(player, entityType, nameplate, flag, var, duration, this);
 		manager.addDisguise(player, disguise);
 		disguised.put(player.getName().toLowerCase(), disguise);
 	}

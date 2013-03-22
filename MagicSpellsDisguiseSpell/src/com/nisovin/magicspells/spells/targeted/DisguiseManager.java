@@ -5,16 +5,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.server.v1_4_6.*;
+import net.minecraft.server.v1_5_R2.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_4_6.CraftWorld;
-import org.bukkit.craftbukkit.v1_4_6.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -242,11 +242,20 @@ public class DisguiseManager implements Listener {
 		} else if (entityType == EntityType.ENDER_DRAGON) {
 			entity = new EntityEnderDragon(world);
 			
-		}
+		}		
 		
 		if (entity != null) {
+			
+			String nameplateText = disguise.getNameplateText();
+			if (nameplateText != null && !nameplateText.isEmpty()) {
+				entity.setCustomName(nameplateText);
+				entity.setCustomNameVisible(true);
+			}
+			
 			entity.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+			
 			return entity;
+			
 		} else {
 			return null;
 		}
