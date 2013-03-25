@@ -169,17 +169,22 @@ public class MagicSpells extends JavaPlugin {
 		
 		if (config.getBoolean("general.enable-volatile-features", true)) {
 			try {
-				Class.forName("net.minecraft.server.v1_5_R1.MinecraftServer");
-				volatileCodeHandle = new VolatileCodeEnabled_1_5_R1();
-			} catch (ClassNotFoundException e_1_5_r1) {
+				Class.forName("net.minecraft.server.v1_5_R2.MinecraftServer");
+				volatileCodeHandle = new VolatileCodeEnabled_1_5_R2();
+			} catch (ClassNotFoundException e_1_5_r2) {
 				try {
-					Class.forName("net.minecraft.server.v1_4_R1.MinecraftServer");
-					volatileCodeHandle = new VolatileCodeEnabled_1_4_R1();
-				} catch (ClassNotFoundException e_1_4_r1) {
-					error("Unable to enable volatile code: using safe code instead.");
-					error("Some features have been disabled.");
-					error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
-					volatileCodeHandle = new VolatileCodeDisabled();
+					Class.forName("net.minecraft.server.v1_5_R1.MinecraftServer");
+					volatileCodeHandle = new VolatileCodeEnabled_1_5_R1();
+				} catch (ClassNotFoundException e_1_5_r1) {
+					try {
+						Class.forName("net.minecraft.server.v1_4_R1.MinecraftServer");
+						volatileCodeHandle = new VolatileCodeEnabled_1_4_R1();
+					} catch (ClassNotFoundException e_1_4_r1) {
+						error("Unable to enable volatile code: using safe code instead.");
+						error("Some features have been disabled.");
+						error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
+						volatileCodeHandle = new VolatileCodeDisabled();
+					}
 				}
 			}
 		} else {

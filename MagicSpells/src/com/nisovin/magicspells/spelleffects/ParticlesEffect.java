@@ -38,8 +38,6 @@ class ParticlesEffect extends SpellEffect {
 			}
 		}
 		
-		System.out.println("horiz " + horizSpread + " vert " + vertSpread);
-		
 		MagicSpells.getVolatileCodeHandler().playParticleEffect(location, name, horizSpread, vertSpread, speed, count, 32, yOffset);
 	}
 	
