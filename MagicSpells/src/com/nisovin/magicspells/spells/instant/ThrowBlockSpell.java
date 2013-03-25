@@ -11,14 +11,17 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
@@ -34,8 +37,10 @@ public class ThrowBlockSpell extends InstantSpell {
 	int fallDamageMax;
 	boolean dropItem;
 	boolean removeBlocks;
+	boolean preventBlocks;
 	boolean callTargetEvent;
 	boolean checkPlugins;
+	TargetedLocationSpell spell;
 	
 	Map<FallingBlock, FallingBlockInfo> fallingBlocks;
 	int cleanTask = -1;
@@ -54,17 +59,25 @@ public class ThrowBlockSpell extends InstantSpell {
 		fallDamageMax = getConfigInt("fall-damage-max", 20);
 		dropItem = getConfigBoolean("drop-item", false);
 		removeBlocks = getConfigBoolean("remove-blocks", false);
+		preventBlocks = getConfigBoolean("prevent-blocks", false);
 		callTargetEvent = getConfigBoolean("call-target-event", true);
 		checkPlugins = getConfigBoolean("check-plugins", false);
+		String spellOnLand = getConfigString("spell-on-land", null);
+		if (spellOnLand != null && !spellOnLand.isEmpty()) {
+			Spell s = MagicSpells.getSpellByInternalName(spellOnLand);
+			if (s != null && s instanceof TargetedLocationSpell) {
+				spell = (TargetedLocationSpell)s;
+			} else {
+				MagicSpells.error("Invalid spell-on-land for " + spellName + " spell");
+			}
+		}
 	}	
 	
 	@Override
 	public void initialize() {
-		if (fallDamage > 0 || removeBlocks) {
+		if (fallDamage > 0 || removeBlocks || preventBlocks || spell != null) {
 			fallingBlocks = new HashMap<FallingBlock, ThrowBlockSpell.FallingBlockInfo>();
-			if (fallDamage > 0) {
-				registerEvents(this);
-			}
+			registerEvents(this);
 		}
 	}
 
@@ -124,7 +137,7 @@ public class ThrowBlockSpell extends InstantSpell {
 	@EventHandler(ignoreCancelled=true)
 	public void onDamage(EntityDamageByEntityEvent event) {
 		FallingBlockInfo info = null;
-		if (removeBlocks) {
+		if (removeBlocks || preventBlocks) {
 			info = fallingBlocks.get(event.getDamager());
 		} else {
 			info = fallingBlocks.remove(event.getDamager());
@@ -148,6 +161,26 @@ public class ThrowBlockSpell extends InstantSpell {
 				}
 			}
 			event.setDamage(damage);
+			if (spell != null && !info.spellActivated) {
+				spell.castAtLocation(info.player, event.getEntity().getLocation(), info.power);
+				info.spellActivated = true;
+			}
+		}
+	}
+	
+	@EventHandler(ignoreCancelled=true)
+	public void onBlockLand(EntityChangeBlockEvent event) {
+		if (!preventBlocks && spell == null) return;
+		FallingBlockInfo info = fallingBlocks.remove(event.getEntity());
+		if (info != null) {
+			if (preventBlocks) {
+				event.getEntity().remove();
+				event.setCancelled(true);
+			}
+			if (spell != null && !info.spellActivated) {
+				spell.castAtLocation(info.player, event.getBlock().getLocation().add(.5, .5, .5), info.power);
+				info.spellActivated = true;
+			}
 		}
 	}
 		
@@ -161,9 +194,11 @@ public class ThrowBlockSpell extends InstantSpell {
 	class FallingBlockInfo {
 		Player player;
 		float power;
+		boolean spellActivated;
 		public FallingBlockInfo(Player player, float power) {
 			this.player = player;
 			this.power = power;
+			this.spellActivated = false;
 		}
 	}
 
