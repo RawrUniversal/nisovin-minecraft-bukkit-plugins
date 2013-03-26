@@ -111,7 +111,7 @@ public class DisguiseManager implements Listener {
 	}
 	
 	private void applyDisguise(Player player, Disguise disguise) {
-		for (Player p : player.getWorld().getPlayers()) {
+		/*for (Player p : player.getWorld().getPlayers()) {
 			if (!p.equals(player)) {
 				EntityLiving entity = getEntity(player, disguise);
 				if (entity != null) {
@@ -119,17 +119,23 @@ public class DisguiseManager implements Listener {
 					sendMobSpawnPacket(p, player, disguise);
 				}
 			}
-		}
+		}*/
+		sendDestroyEntityPackets(player);
+		sendMobSpawnPackets(player, disguise);
 	}
 	
 	private void clearDisguise(Player player) {
-		for (Player p : player.getWorld().getPlayers()) {
+		/*for (Player p : player.getWorld().getPlayers()) {
 			if (!p.equals(player)) {
 				sendDestroyEntityPacket(p, player);
-				if (!player.isDead()) {
+				if (player.isValid()) {
 					sendPlayerSpawnPacket(p, player);
 				}
 			}
+		}*/
+		sendDestroyEntityPackets(player);
+		if (player.isValid()) {
+			sendPlayerSpawnPackets(player);
 		}
 	}
 
@@ -472,10 +478,16 @@ public class DisguiseManager implements Listener {
 		
 	}
 	
-	private void sendDestroyEntityPacket(Player viewer, Player disguised) {
+	/*private void sendDestroyEntityPacket(Player viewer, Player disguised) {
 		Packet29DestroyEntity packet29 = new Packet29DestroyEntity(disguised.getEntityId());		
 		EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
 		ep.playerConnection.sendPacket(packet29);
+	}*/
+	
+	private void sendDestroyEntityPackets(Player disguised) {
+		Packet29DestroyEntity packet29 = new Packet29DestroyEntity(disguised.getEntityId());
+		final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
+		tracker.a(((CraftPlayer)disguised).getHandle(), packet29);
 	}
 	
 	private void sendMobSpawnPacket(Player viewer, Player disguised, Disguise disguise) {
@@ -502,10 +514,40 @@ public class DisguiseManager implements Listener {
 		}
 	}
 	
-	private void sendPlayerSpawnPacket(Player viewer, Player player) {
-		Packet20NamedEntitySpawn packet20 = new Packet20NamedEntitySpawn(((CraftPlayer)player).getHandle());		
+	private void sendMobSpawnPackets(Player disguised, Disguise disguise) {
+		EntityLiving entity = getEntity(disguised, disguise);
+		if (entity != null) {
+			Packet24MobSpawn packet24 = new Packet24MobSpawn(entity);
+			packet24.a = disguised.getEntityId();
+			if (dragons.contains(disguised.getEntityId())) {
+				int dir = packet24.i + 128;
+				if (dir > 127) dir -= 256;
+				packet24.i = (byte)dir;
+				packet24.k = (byte)dir;
+			}
+			final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
+			tracker.a(((CraftPlayer)disguised).getHandle(), packet24);
+			
+			if (disguise.getEntityType() == EntityType.ZOMBIE || disguise.getEntityType() == EntityType.SKELETON) {
+				ItemStack inHand = disguised.getItemInHand();
+				if (inHand != null && inHand.getType() != Material.AIR) {
+					Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
+					tracker.a(((CraftPlayer)disguised).getHandle(), packet5);
+				}
+			}
+		}
+	}
+	
+	/*private void sendPlayerSpawnPacket(Player viewer, Player player) {
+		Packet20NamedEntitySpawn packet20 = new Packet20NamedEntitySpawn(((CraftPlayer)player).getHandle());
 		EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
 		ep.playerConnection.sendPacket(packet20);
+	}*/
+	
+	private void sendPlayerSpawnPackets(Player player) {
+		Packet20NamedEntitySpawn packet20 = new Packet20NamedEntitySpawn(((CraftPlayer)player).getHandle());
+		final EntityTracker tracker = ((CraftWorld)player.getWorld()).getHandle().tracker;
+		tracker.a(((CraftPlayer)player).getHandle(), packet20);
 	}
 	
 }
