@@ -8,6 +8,7 @@ class BookUnloader implements Runnable {
 
 	private BookWorm plugin;
 	
+	@SuppressWarnings("deprecation")
 	public BookUnloader(BookWorm plugin) {
 		this.plugin = plugin;
 		

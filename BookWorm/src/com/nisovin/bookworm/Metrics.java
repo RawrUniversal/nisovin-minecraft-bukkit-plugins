@@ -173,7 +173,8 @@ class Metrics {
      *
      * @param plugin
      */
-    public void beginMeasuringPlugin(final Plugin plugin) {
+    @SuppressWarnings("deprecation")
+	public void beginMeasuringPlugin(final Plugin plugin) {
         // Did we opt out?
         if (configuration.getBoolean("opt-out", false)) {
             return;

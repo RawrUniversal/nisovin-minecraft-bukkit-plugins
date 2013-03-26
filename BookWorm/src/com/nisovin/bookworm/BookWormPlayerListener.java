@@ -10,8 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -32,23 +31,27 @@ class BookWormPlayerListener implements Listener {
 		this.plugin = plugin;
 	}
 	
-	@EventHandler(priority=EventPriority.LOW)
-	public void onPlayerChat(PlayerChatEvent event) {
-		if (event.isCancelled()) return;
-		Player player = event.getPlayer();
+	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
+		final Player player = event.getPlayer();
 		if (plugin.chatModed.contains(player.getName()) && player.getItemInHand().getType() == Material.BOOK) {
-			Book book = BookWorm.getBook(player);
-			if (book != null && plugin.perms.canModifyBook(player, book)) {
-				BookModifyEvent evt = new BookModifyEvent(player, book, ModifyType.NEW_TEXT_WRITTEN, event.getMessage());
-				Bukkit.getPluginManager().callEvent(evt);
-				if (evt.isCancelled()) {
-					return;
-				} else {
-					String line = book.write(evt.getContent());
-					player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_WRITE_DONE.replace("%t", BookWorm.TEXT_COLOR_2 + line));
-					event.setCancelled(true);
+			event.setCancelled(true);
+			final String message = event.getMessage();
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				public void run() {
+					Book book = BookWorm.getBook(player);
+					if (book != null && plugin.perms.canModifyBook(player, book)) {
+						BookModifyEvent evt = new BookModifyEvent(player, book, ModifyType.NEW_TEXT_WRITTEN, message);
+						Bukkit.getPluginManager().callEvent(evt);
+						if (evt.isCancelled()) {
+							return;
+						} else {
+							String line = book.write(evt.getContent());
+							player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_WRITE_DONE.replace("%t", BookWorm.TEXT_COLOR_2 + line));
+						}
+					}
 				}
-			}
+			});
 		}
 	}
 	
@@ -166,7 +169,7 @@ class BookWormPlayerListener implements Listener {
 				// put book into bookshelf
 				if (!book.isSaved()) book.save();
 				plugin.bookshelves.put(locStr, bookId);
-				plugin.saveBookshelves(); // TODO: append instead of save all
+				plugin.saveBookshelves();
 				player.sendMessage(BookWorm.TEXT_COLOR + BookWorm.S_PLACED_BOOK + " " + BookWorm.TEXT_COLOR_2 + book.getTitle());
 
 				// remove book in hand
@@ -197,6 +200,9 @@ class BookWormPlayerListener implements Listener {
 			return;
 		}
 		
+		// set book title
+		book.setBookMeta(inHand);
+		
 		// get player bookmark
 		Bookmark bookmark = plugin.bookmarks.get(player.getName());
 		if (bookmark == null) {
@@ -207,7 +213,7 @@ class BookWormPlayerListener implements Listener {
 		// check listeners
 		BookReadEvent evt = new BookReadEvent(book, player, bookmark.page);
 		plugin.callEvent(evt);
-		if (!evt.isCancelled()) {			
+		if (!evt.isCancelled()) {
 			// set bookmark and read
 			bookmark.readBook(player, book);				
 		}		
@@ -236,32 +242,11 @@ class BookWormPlayerListener implements Listener {
 		
 		if (clicked != null && clicked.getType() == Material.BOOK && clicked.getDurability() != 0) {
 			if (cursor != null && cursor.getType() == Material.BOOK && clicked.getDurability() != cursor.getDurability()) {
-				// trying to stack different scrolls - prevent it
+				// trying to stack different books - prevent it
 				event.setCancelled(true);
-				event.setCursor(clicked.clone());
-				event.setCurrentItem(cursor.clone());
 			} else if (event.isShiftClick()) {
 				// trying to shift move
 				event.setCancelled(true);
-				Inventory main = event.getView().getBottomInventory();
-				Inventory top = event.getView().getTopInventory();
-				if (top.getType() == InventoryType.CHEST) {
-					if (event.getRawSlot() < top.getSize()) {
-						// moving from chest to inventory
-						int slot = main.firstEmpty();
-						if (slot >= 0) {
-							main.setItem(slot, event.getCurrentItem().clone());
-							top.setItem(event.getSlot(), null);
-						}
-					} else {
-						// moving from inventory to chest
-						int slot = top.firstEmpty();
-						if (slot >= 0) {
-							top.setItem(slot, event.getCurrentItem().clone());
-							main.setItem(event.getSlot(), null);
-						}
-					}
-				}
 			}
 		}
 	}

@@ -8,12 +8,12 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -129,7 +129,7 @@ public class BookWorm extends JavaPlugin {
 	protected HashMap<Short,Book> books;
 	protected HashMap<String,Short> bookshelves;
 	protected HashMap<String,Bookmark> bookmarks;
-	protected HashSet<String> chatModed;
+	protected Set<String> chatModed;
 	protected BookUnloader unloader;
 	protected WorldGuardPlugin worldGuard;
 	protected ArrayList<Short> extraBookIds;
@@ -152,7 +152,7 @@ public class BookWorm extends JavaPlugin {
 		books = new HashMap<Short,Book>();
 		bookshelves = new HashMap<String,Short>();
 		bookmarks = new HashMap<String,Bookmark>();
-		chatModed = new HashSet<String>();
+		chatModed = Collections.synchronizedSet(new HashSet<String>());
 		
 		// load up stuff
 		loadConfig();
@@ -206,29 +206,6 @@ public class BookWorm extends JavaPlugin {
 		// setup metrics
 		if (ENABLE_STAT_COLLECTION) {
 			setupMetrics();
-		}
-		
-		// prevent book stacking
-		try {
-			boolean ok = false;
-			try {
-				// attempt to make books with different data values stack separately
-				Method method = net.minecraft.server.Item.class.getDeclaredMethod(STACK_BY_DATA_FN, boolean.class);
-				if (method.getReturnType() == net.minecraft.server.Item.class) {
-					method.setAccessible(true);
-					method.invoke(net.minecraft.server.Item.BOOK, true);
-					ok = true;
-				}
-			} catch (Exception e) {
-			}
-			if (!ok) {
-				// otherwise limit stack size to 1
-				Field field = net.minecraft.server.Item.class.getDeclaredField("maxStackSize");
-				field.setAccessible(true);
-				field.setInt(net.minecraft.server.Item.BOOK, 1);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		
 		getServer().getLogger().info("BookWorm v" + this.getDescription().getVersion() + " loaded!");

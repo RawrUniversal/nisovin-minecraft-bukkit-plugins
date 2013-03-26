@@ -11,9 +11,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class Book {
 	
@@ -148,10 +152,21 @@ public class Book {
 		setItemName();
 	}
 	
-	private void setItemName() {
-		if (BookWorm.SPOUT_ENABLED) {
-			SpoutHandle.setBookName(id, title);
+	public void setBookMeta(ItemStack item) {
+		ItemMeta meta = item.getItemMeta();
+		if (!meta.hasDisplayName()) {
+			meta.setDisplayName(ChatColor.RESET.toString() + BookWorm.TEXT_COLOR + getTitle());
+			if (!meta.hasLore()) {
+				List<String> lore = new ArrayList<String>();
+				lore.add(ChatColor.RESET + "    " + BookWorm.TEXT_COLOR_2 + BookWorm.S_READ_BY + ": " + getAuthor());
+				meta.setLore(lore);
+			}
+			item.setItemMeta(meta);
 		}
+	}
+	
+	private void setItemName() {
+		// TODO
 	}
 	
 	/**

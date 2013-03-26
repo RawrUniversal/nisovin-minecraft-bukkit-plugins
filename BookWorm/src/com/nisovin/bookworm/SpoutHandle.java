@@ -13,9 +13,6 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 import org.getspout.spoutapi.player.SpoutPlayer;
 
 class SpoutHandle {	
-	public static void setBookName(short id, String title) {
-		new SpoutBookItem(id).setName(BookWorm.S_READ_BOOK + ": " + title);
-	}
 	
 	public static boolean hasSpoutCraft(Player player) {
 		return ((SpoutPlayer)player).isSpoutCraftEnabled();

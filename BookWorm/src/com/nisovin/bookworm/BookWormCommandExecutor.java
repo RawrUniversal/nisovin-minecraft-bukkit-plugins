@@ -301,6 +301,7 @@ class BookWormCommandExecutor implements CommandExecutor {
 			Book book = new Book(bookId, title.trim(), player.getName());
 			plugin.books.put(bookId, book);
 			inHand.setDurability(bookId);
+			book.setBookMeta(inHand);
 			player.setItemInHand(inHand);
 			BookWorm.metricBookCount++;
 			
