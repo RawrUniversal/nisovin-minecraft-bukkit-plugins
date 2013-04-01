@@ -12,6 +12,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public abstract class TargetedSpell extends InstantSpell {
 
 	protected int range;
+	protected int minRange;
 	protected boolean alwaysActivate;
 	protected boolean playFizzleSound;
 	protected boolean targetSelf;
@@ -22,6 +23,7 @@ public abstract class TargetedSpell extends InstantSpell {
 		super(config, spellName);
 		
 		range = getConfigInt("range", 20);
+		minRange = getConfigInt("min-range", 0);
 		alwaysActivate = getConfigBoolean("always-activate", false);
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
 		targetSelf = getConfigBoolean("target-self", false);
@@ -77,11 +79,11 @@ public abstract class TargetedSpell extends InstantSpell {
 	}
 	
 	@Override
-	protected LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
+	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
 		if (targetSelf) {
 			return player;
 		} else {
-			return super.getTargetedEntity(player, range, targetPlayers, targetNonPlayers, checkLos, callSpellTargetEvent);
+			return super.getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, checkLos, callSpellTargetEvent);
 		}
 	}
 	

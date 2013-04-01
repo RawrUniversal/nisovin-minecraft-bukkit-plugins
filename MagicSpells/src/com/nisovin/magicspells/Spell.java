@@ -844,8 +844,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param checkLos whether to obey line-of-sight restrictions
 	 * @return the targeted LivingEntity, or null if none was found
 	 */
-	protected LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean checkLos) {
-		return getTargetedEntity(player, range, targetPlayers, true, checkLos, true);
+	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean checkLos) {
+		return getTargetedEntity(player, minRange, range, targetPlayers, true, checkLos, true);
 	}
 	
 	/**
@@ -855,8 +855,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param checkLos whether to obey line-of-sight restrictions
 	 * @return the targeted Player, or null if none was found
 	 */
-	protected Player getTargetedPlayer(Player player, int range, boolean checkLos) {
-		LivingEntity entity = getTargetedEntity(player, range, true, false, checkLos, true);
+	protected Player getTargetedPlayer(Player player, int minRange, int range, boolean checkLos) {
+		LivingEntity entity = getTargetedEntity(player, minRange, range, true, false, checkLos, true);
 		if (entity instanceof Player) {
 			return (Player)entity;
 		} else {
@@ -864,7 +864,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
+	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
 		// get nearby living entities, filtered by player targeting options
 		List<Entity> ne = player.getNearbyEntities(range, range, range);
 		ArrayList<LivingEntity> entities = new ArrayList<LivingEntity>(); 
@@ -888,6 +888,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		Location l;
 		int bx, by, bz;
 		double ex, ey, ez;
+		// do min range
+		for (int i = 0; i < minRange && bi.hasNext(); i++) {
+			bi.next();
+		}
 		// loop through player's line of sight
 		while (bi.hasNext()) {
 			b = bi.next();

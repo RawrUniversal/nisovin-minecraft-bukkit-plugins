@@ -82,7 +82,7 @@ public class ExternalCommandSpell extends TargetedEntitySpell {
 			// get target if necessary
 			Player target = null;
 			if (requirePlayerTarget) {
-				target = getTargetedPlayer(player, range, obeyLos);
+				target = getTargetedPlayer(player, minRange, range, obeyLos);
 				if (target == null) {
 					sendMessage(player, strNoTarget);
 					return PostCastAction.ALREADY_HANDLED;

@@ -20,15 +20,15 @@ public abstract class TargetedEntitySpell extends TargetedSpell {
 	public abstract boolean castAtEntity(Player caster, LivingEntity target, float power);
 
 	protected LivingEntity getTarget(Player player) {
-		return getTargetedEntity(player, range, targetPlayers, true, obeyLos, true);
+		return getTargetedEntity(player, minRange, range, targetPlayers, true, obeyLos, true);
 	}
 	
 	protected LivingEntity getTarget(Player player, boolean targetNonPlayers) {
-		return getTargetedEntity(player, range, targetPlayers, targetNonPlayers, obeyLos, true);
+		return getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, obeyLos, true);
 	}
 	
 	protected Player getTargetPlayer(Player player) {
-		return getTargetedPlayer(player, range, obeyLos);
+		return getTargetedPlayer(player, minRange, range, obeyLos);
 	}
 	
 }

@@ -209,7 +209,7 @@ public class SeeHealthSpell extends BuffSpell {
 		@Override
 		public void run() {
 			for (Player player : bars.keySet()) {
-				LivingEntity target = getTargetedEntity(player, range, targetPlayers, targetNonPlayers, obeyLos, false);
+				LivingEntity target = getTargetedEntity(player, 2, range, targetPlayers, targetNonPlayers, obeyLos, false);
 				if (target != null) {
 					showHealthBar(player, target);
 				} else {
