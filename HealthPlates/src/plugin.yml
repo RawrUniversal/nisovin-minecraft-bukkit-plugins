@@ -1,8 +1,7 @@
 name: HealthPlates
-version: 1.0
+version: 2.0
 main: com.nisovin.healthplates.HealthPlatesPlugin
 author: nisovin
-depend: [ProtocolLib]
 commands:
     healthplates:
         description: Enable or disable healthplates functionality
