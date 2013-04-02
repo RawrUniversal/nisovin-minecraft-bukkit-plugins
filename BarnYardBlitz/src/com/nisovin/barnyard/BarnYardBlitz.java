@@ -1141,13 +1141,19 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (gameStarted) {
-			Player player = event.getPlayer();
+			final Player player = event.getPlayer();
 			EntityType team = playersToTeams.get(player.getName().toLowerCase());
 			if (team == null || !teamsToPlayers.containsKey(team)) {
 				putPlayerInRandomTeam(player);
-			}
-			if (volatileCode != null) {
-				volatileCode.sendEnderDragonToPlayer(player);
+				if (volatileCode != null) {
+					volatileCode.sendEnderDragonToPlayer(player);
+				}
+			} else {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+					public void run() {
+						player.setHealth(0);
+					}
+				});
 			}
 		}
 	}
@@ -1171,9 +1177,9 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 					} else {
 						runSpawnCommands(player, team);
 						player.sendMessage(ChatColor.GOLD + "You are on team " + team.name().toLowerCase());
-						if (volatileCode != null) {
-							volatileCode.sendEnderDragonToPlayer(player);
-						}
+					}
+					if (volatileCode != null) {
+						volatileCode.sendEnderDragonToPlayer(player);
 					}
 				}
 			});
