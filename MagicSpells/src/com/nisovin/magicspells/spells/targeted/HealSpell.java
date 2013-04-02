@@ -31,7 +31,7 @@ public class HealSpell extends TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Player target = getTargetedPlayer(player, range, obeyLos);
+			Player target = getTargetedPlayer(player, minRange, range, obeyLos);
 			if (target == null) {
 				return noTarget(player);
 			} else if (cancelIfFull && target.getHealth() == 20) {

@@ -44,7 +44,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target;
 			if (targeted) {
-				target = getTargetedEntity(player, range, targetPlayers, targetNonPlayers, obeyLos, true);
+				target = getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, obeyLos, true);
 			} else {
 				target = player;
 			}
