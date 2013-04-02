@@ -5,15 +5,17 @@ import org.bukkit.entity.EntityType;
 public class TeamScore implements Comparable<TeamScore> {
 
 	EntityType team;
-	int score;
+	int areaScore;
+	int killScore;
 	
 	public TeamScore(EntityType team) {
 		this.team = team;
 	}
 	
-	public TeamScore(EntityType team, int score) {
+	public TeamScore(EntityType team, int areaScore, int killScore) {
 		this.team = team;
-		this.score = score;
+		this.areaScore = areaScore;
+		this.killScore = killScore;
 	}
 	
 	public EntityType getTeam() {
@@ -21,22 +23,22 @@ public class TeamScore implements Comparable<TeamScore> {
 	}
 	
 	public int getScore() {
-		return score;
+		return areaScore + killScore;
 	}
 	
-	public void add(int amt) {
-		score += amt;
+	public int getAreaScore() {
+		return areaScore;
 	}
 	
-	public void set(int amt) {
-		score = amt;
+	public int getKillScore() {
+		return killScore;
 	}
 
 	@Override
 	public int compareTo(TeamScore obj) {
-		if (this.score > obj.score) {
+		if (this.getScore() > obj.getScore()) {
 			return 1;
-		} else if (this.score < obj.score) { 
+		} else if (this.getScore() < obj.getScore()) {
 			return -1;
 		} else {
 			return this.team.name().compareTo(obj.team.name());

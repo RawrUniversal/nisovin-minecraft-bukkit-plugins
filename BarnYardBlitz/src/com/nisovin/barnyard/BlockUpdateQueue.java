@@ -9,20 +9,26 @@ import org.bukkit.block.Block;
 public class BlockUpdateQueue {
 
 	BarnYardBlitz plugin;
-	Queue<BlockUpdate> queue = new LinkedList<BlockUpdate>();
+	Queue<BlockUpdate> queueHigh = new LinkedList<BlockUpdate>();
+	Queue<BlockUpdate> queueLow = new LinkedList<BlockUpdate>();
 	int taskId = -1;
 	
 	public BlockUpdateQueue(BarnYardBlitz plugin) {
 		this.plugin = plugin;
 	}
 	
-	public void add(Block block, int id, byte data) {
-		queue.add(new BlockUpdate(block, id, data));
+	public void addHigh(Block block, int id, byte data) {
+		queueHigh.add(new BlockUpdate(block, id, data));
+		startTask();
+	}
+	
+	public void addLow(Block block, int id, byte data) {
+		queueLow.add(new BlockUpdate(block, id, data));
 		startTask();
 	}
 	
 	public int size() {
-		return queue.size();
+		return queueHigh.size() + queueLow.size();
 	}
 	
 	void startTask() {
@@ -54,17 +60,24 @@ public class BlockUpdateQueue {
 		public void run() {
 			int count = 0;
 			int stop = plugin.blockUpdatesPerTick;
-			if (queue.size() > plugin.blockUpdatesPerTick * plugin.captureInterval) {
+			if (size() > plugin.blockUpdatesPerTick * plugin.captureInterval) {
 				stop *= 5;
 			}
-			while (count < stop && queue.size() > 0) {
-				BlockUpdate update = queue.poll();
+			while (count < stop && queueHigh.size() > 0) {
+				BlockUpdate update = queueHigh.poll();
 				if (update != null) {
 					update.block.setTypeIdAndData(update.type, update.data, false);
 				}
 				count++;
 			}
-			if (queue.size() == 0) {
+			while (count < stop && queueLow.size() > 0) {
+				BlockUpdate update = queueLow.poll();
+				if (update != null) {
+					update.block.setTypeIdAndData(update.type, update.data, false);
+				}
+				count++;
+			}
+			if (size() == 0) {
 				stopTask();
 			}
 		}

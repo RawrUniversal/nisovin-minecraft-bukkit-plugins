@@ -11,6 +11,18 @@ commands:
         description: Sets the team's default spawn location
         usage: /<command> <team> [area name]
         permission: barnyard.setteamspawn
+    addspawnpoint:
+        description: Adds a spawn point
+        usage: /<command>
+        permission: barnyard.addspawnpoint
+    removespawnpoints:
+        description: Removes all spawn points in the area you are in
+        usage: /<command>
+        permission: barnyard.removespawnpoints
+    viewspawnpoints:
+        description: Views spawn points in the area you are in
+        usage: /<command>
+        permission: barnyard.viewspawnpoints
     startgame:
         description: Starts the game
         usage: /<command>
@@ -19,6 +31,10 @@ commands:
         description: Set a player's team
         usage: /<command> <player> <team>
         permission: barnyard.setteam
+    pigcaptain:
+        description: Chooses a pig captain
+        usage: /<command>
+        permission: barnyard.pigcaptain
     capture:
         description: Capture the area you are standing in for the specified team
         usage: /<command> [id] <team>
@@ -43,7 +59,7 @@ commands:
     gametimings:
         description: See game timings.
         usage: /<command>
-        permission: barnyard.timings
+        permission: barnyard.gametimings
     
 permissions:
     barnyard.score:
@@ -52,11 +68,23 @@ permissions:
     barnyard.setteamspawn:
         description: Allows usage of the setteamspawn command
         default: op
+    barnyard.addspawnpoint:
+        description: Allows usage of the addspawnpoint command
+        default: op
+    barnyard.removespawnpoints:
+        description: Allows usage of the removespawnpoints command
+        default: op
+    barnyard.viewspawnpoints:
+        description: Allows usage of the viewspawnpoints command
+        default: op
     barnyard.startgame:
         description: Allows usage of the startgame command
         default: op
     barnyard.setteam:
         description: Allows usage of the setteam command
+        default: op
+    barnyard.pigcaptain:
+        description: Allows usage of pigcaptain command
         default: op
     barnyard.capture:
         description: Allows usage of the capture command
@@ -73,7 +101,7 @@ permissions:
     barnyard.reloadgame:
         description: Allows usage of the reloadgame command
         default: op
-    barnyard.timings:
+    barnyard.gametimings:
         default: op
     barnyard.*:
         description: Allows access to all barnyard commands
@@ -81,8 +109,12 @@ permissions:
         children:
             barnyard.score: true
             barnyard.setteamspawn: true
+            barnyard.addspawnpoint: true
+            barnyard.removespawnpoints: true
+            barnyard.viewspawnpoints: true
             barnyard.startgame: true
             barnyard.setteam: true
+            barnyard.pigcaptain: true
             barnyard.capture: true
             barnyard.captureid: true
             barnyard.eliminate: true

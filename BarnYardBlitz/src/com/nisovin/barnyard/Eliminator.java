@@ -6,6 +6,7 @@ public class Eliminator implements Runnable {
 
 	boolean stopped = false;
 	BarnYardBlitz plugin;
+	long roundStart = 0;
 	long nextElimination = 0;
 	
 	public Eliminator(BarnYardBlitz plugin) {
@@ -18,15 +19,18 @@ public class Eliminator implements Runnable {
 	public void run() {
 		try {
 			for (int i = 0; i < plugin.eliminationIntervals.length; i++) {
+				roundStart = System.currentTimeMillis();
 				nextElimination = System.currentTimeMillis() + plugin.eliminationIntervals[i] * 1000;
 				Thread.sleep(plugin.eliminationIntervals[i] * 1000);
 				if (stopped) return;
 				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					public void run() {
 						plugin.calculateScoresAndDoElimination();
+						//plugin.chooseRandomHotZone();
 					}
 				}, 1);
 			}
+			//plugin.setHotZone(null);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -38,6 +42,10 @@ public class Eliminator implements Runnable {
 		} else {
 			return (nextElimination - System.currentTimeMillis()) / 1000;
 		}
+	}
+	
+	public double getPercentElapsedTime() {
+		return ((double)System.currentTimeMillis() - roundStart) / (double)(nextElimination - roundStart);
 	}
 	
 	public void stop() {

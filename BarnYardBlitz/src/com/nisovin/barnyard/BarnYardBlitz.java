@@ -1,15 +1,22 @@
 package com.nisovin.barnyard;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+
+import net.minecraft.server.v1_5_R2.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,15 +25,19 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -34,7 +45,9 @@ import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -44,7 +57,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class BarnYardBlitz extends JavaPlugin implements Listener {
-
+	
 	static final EntityType[] validTeams = new EntityType[] { EntityType.CHICKEN, EntityType.COW, EntityType.OCELOT, EntityType.PIG, EntityType.SHEEP, EntityType.SQUID, EntityType.WOLF };
 	static BlockUpdateQueue blockQueue;
 	
@@ -93,6 +106,8 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	static int areaSize = 64;
 	int fieldY = 3;
 	int buffInterval = 100;
+	int foodInterval = 200;
+	int foodIntervalBasedOnBuffInterval = 2;
 	int captureInterval = 200;
 	float captureRatio = 0.9F;
 	static int noCaptureBorder = 16;
@@ -107,11 +122,13 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	World world;
 	String pigCaptain = null;
 	Eliminator eliminator = null;
+	int foodIntervalCounter = 0;
 	
 	Map<CapturedArea, String> capturedAreaNames;
 	Map<CapturedArea, Integer> capturedAreaValues;
+	Map<CapturedArea, List<Location>> capturedAreaSpawns;
 
-	Map<EntityType, Location> teamDefaultSpawns;
+	Map<EntityType, CapturedArea> teamDefaultSpawns;
 	Map<EntityType, Integer> teamColors;
 	Map<EntityType, String[]> initCommands;
 	Map<EntityType, String[]> spawnCommands;
@@ -128,6 +145,13 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	long captureTime1 = 0;
 	long captureTime2 = 0;
 	int captureIterations = 0;
+	long spawnTime = 0;
+	long spawnIterations = 0;
+	
+	Scoreboard scoreboard;
+	ScoreboardObjective objective;
+	Map<EntityType, ScoreboardScore> scoreboardScores;
+	EntityEnderDragon enderDragon;
 	
 	@Override
 	public void onEnable() {
@@ -138,8 +162,9 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		// initialize containers
 		capturedAreaNames = new HashMap<CapturedArea, String>();
 		capturedAreaValues = new HashMap<CapturedArea, Integer>();
+		capturedAreaSpawns = new HashMap<CapturedArea, List<Location>>();
 		
-		teamDefaultSpawns = new HashMap<EntityType, Location>();
+		teamDefaultSpawns = new HashMap<EntityType, CapturedArea>();
 		teamColors = new HashMap<EntityType, Integer>();
 		initCommands = new HashMap<EntityType, String[]>();
 		spawnCommands = new HashMap<EntityType, String[]>();
@@ -174,6 +199,8 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		areaSize = config.getInt("area-size", areaSize);
 		fieldY = config.getInt("field-y", fieldY);
 		buffInterval = config.getInt("buff-interval", buffInterval);
+		foodInterval = config.getInt("food-interval", foodInterval);
+		foodIntervalBasedOnBuffInterval = foodInterval / buffInterval;
 		captureInterval = config.getInt("capture-interval", captureInterval);
 		captureRatio = (float)config.getDouble("capture-ratio", captureRatio);
 		noCaptureBorder = config.getInt("no-capture-border", noCaptureBorder);
@@ -220,9 +247,6 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		
 		// get animal team spawns and commands and colors
 		for (EntityType team : validTeams) {
-			int x = config.getInt(team.name().toLowerCase() + ".spawn-x", 0);
-			int z = config.getInt(team.name().toLowerCase() + ".spawn-z", 0);
-			teamDefaultSpawns.put(team, new Location(world, x, fieldY, z));
 			List<String> temp = config.getStringList(team.name().toLowerCase() + ".init-commands");
 			if (temp != null && temp.size() > 0) {
 				initCommands.put(team, temp.toArray(new String[temp.size()]));
@@ -236,7 +260,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		}
 		List<String> temp = config.getStringList("pig.captain-commands");
 		if (temp != null && temp.size() > 0) {
-			pigCaptainCommands = temp.toArray(new String[temp.size()]);			
+			pigCaptainCommands = temp.toArray(new String[temp.size()]);
 		}
 		
 		// get other animal team data
@@ -269,6 +293,65 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		wolfType2 = config.getInt("wolf.type2", wolfType2);
 		wolfData2 = (byte)config.getInt("wolf.data2", wolfData2);
 		
+		// reset playing field
+		for (CapturedArea area : capturedAreaNames.keySet()) {
+			area.setAreaTypeNoQueue(world, uncapturedType1, uncapturedData1, 0, (byte)0, fieldY);
+		}
+		
+		// generate random spawn areas
+		List<CapturedArea> areas = new ArrayList<CapturedArea>(capturedAreaNames.keySet());
+		for (EntityType team : teamsToPlayers.keySet()) {
+			CapturedArea area = areas.remove(random.nextInt(areas.size()));
+			teamDefaultSpawns.put(team, area);
+			captureArea(area, team);
+			getLogger().info("Starting area for " + team.name().toLowerCase() + " is " + capturedAreaNames.get(area));
+		}
+		
+		// load spawn points
+		try {
+			File spawnFile = new File(getDataFolder(), "spawnpoints.txt");
+			if (spawnFile.exists()) {
+				Scanner scanner = new Scanner(spawnFile);
+				while (scanner.hasNext()) {
+					String line = scanner.nextLine().trim();
+					if (!line.isEmpty() && !line.startsWith("#")) {
+						String[] data = line.split(",");
+						Location location = new Location(world, Double.parseDouble(data[0]), Double.parseDouble(data[1]), Double.parseDouble(data[2]), Float.parseFloat(data[3]), 0F);
+						CapturedArea area = new CapturedArea(location);
+						if (capturedAreaNames.containsKey(area)) {
+							List<Location> locs = capturedAreaSpawns.get(area);
+							if (locs == null) {
+								locs = new ArrayList<Location>();
+								capturedAreaSpawns.put(area, locs);
+							}
+							locs.add(location);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			getLogger().severe("ERROR READING SPAWN POINTS FILE");
+			e.printStackTrace();
+		}
+		
+		// initialize scoreboard
+		scoreboard = ((CraftWorld)Bukkit.getWorlds().get(0)).getHandle().getScoreboard();
+		objective = scoreboard.getObjective("Score");
+		if (objective == null) {
+			objective = scoreboard.registerObjective("Score", IScoreboardCriteria.b);
+			objective.setDisplayName("Score");
+			scoreboard.setDisplaySlot(1, objective);
+		}
+		
+		// initialize timer bar
+		enderDragon = new EntityEnderDragon(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle());
+		enderDragon.setPositionRotation(-130, 26, 1064, 115, 0);
+		enderDragon.setCustomName("Time Remaining Until Elimination");
+		
+		//for (EntityType team : validTeams) {
+		//	scoreboardScores
+		//}
+		
 	}
 	
 	@Override
@@ -279,10 +362,10 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 				sender.sendMessage(ChatColor.GOLD + "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
 				TreeSet<TeamScore> scores = getScores();
 				for (TeamScore score : scores.descendingSet()) {
-					sender.sendMessage(ChatColor.GOLD + "  Team " + score.getTeam().name().toLowerCase() + ": " + score.getScore());
+					sender.sendMessage(ChatColor.GOLD + "  Team " + score.getTeam().name().toLowerCase() + ": " + score.getScore() + " (captures: " + score.getAreaScore() + ", kills: " + score.getKillScore() + ")");
 				}
 				if (teamsToCapturedAreas.containsKey(EntityType.OCELOT) && teamsToCapturedAreas.get(EntityType.OCELOT).contains(barnArea)) {
-					sender.sendMessage(ChatColor.GOLD + "  The cats have the barn!");
+					sender.sendMessage(ChatColor.GOLD + "  The cats have " + capturedAreaNames.get(barnArea) + ", and can't be eliminated!");
 				}
 				if (eliminator != null) {
 					long seconds = eliminator.timeToNextElimination();
@@ -305,7 +388,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 					if (team == null || !teamsToPlayers.containsKey(team)) {
 						sender.sendMessage(ChatColor.RED + "Invalid team or team already eliminated.");
 					} else {
-						teamDefaultSpawns.put(team, ((Player)sender).getLocation());
+						teamDefaultSpawns.put(team, new CapturedArea(((Player)sender).getLocation()));
 						sender.sendMessage(ChatColor.GOLD + "Default spawn for team " + team.name().toLowerCase() + " set to your location.");
 					}
 				} else {
@@ -322,7 +405,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 					}
 					for (CapturedArea area : capturedAreaNames.keySet()) {
 						if (capturedAreaNames.get(area).equalsIgnoreCase(name)) {
-							teamDefaultSpawns.put(team, area.getCenter(world));
+							teamDefaultSpawns.put(team, area);
 							sender.sendMessage(ChatColor.GOLD + "Default spawn for team " + team.name().toLowerCase() + " set to area " + name);
 							return true;
 						}
@@ -332,6 +415,65 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			} else {
 				sender.sendMessage(ChatColor.RED + "Usage: /setteamspawn <team> [area name]");
 			}
+		} else if (commandName.equals("randomteamspawns")) {
+			List<CapturedArea> areas = new ArrayList<CapturedArea>(capturedAreaNames.keySet());
+			for (EntityType team : teamsToPlayers.keySet()) {
+				CapturedArea area = areas.remove(random.nextInt(areas.size()));
+				teamDefaultSpawns.put(team, area);
+				sender.sendMessage(ChatColor.GOLD + "Default spawn for team " + team.name().toLowerCase() + " set to area " + capturedAreaNames.get(area));
+			}
+		} else if (commandName.equals("addspawnpoint")) {
+			if (sender instanceof Player) {
+				Player player = (Player)sender;
+				CapturedArea area = new CapturedArea(player.getLocation());
+				if (capturedAreaNames.containsKey(area)) {
+					List<Location> locs = capturedAreaSpawns.get(area);
+					if (locs == null) {
+						locs = new ArrayList<Location>();
+						capturedAreaSpawns.put(area, locs);
+					}
+					locs.add(player.getLocation().add(0, 1, 0));
+					sender.sendMessage(ChatColor.GOLD + "This location has been added as a spawn point.");
+					saveSpawnPoints(sender);
+				} else {
+					sender.sendMessage(ChatColor.RED + "This is not a valid capture area.");
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED + "You must do this as a player.");
+			}
+		} else if (commandName.equals("removespawnpoints")) {
+			if (sender instanceof Player) {
+				Player player = (Player)sender;
+				CapturedArea area = new CapturedArea(player.getLocation());
+				List<Location> locs = capturedAreaSpawns.remove(area);
+				if (locs != null) {
+					sender.sendMessage(ChatColor.GOLD + "Removed " + locs.size() + " spawn points in this area.");
+					saveSpawnPoints(sender);
+					for (Location loc : locs) {
+						Block b = loc.clone().subtract(0, 1, 0).getBlock();
+						player.sendBlockChange(b.getLocation(), b.getType(), b.getData());
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "There are no spawn points in this area.");
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED + "You must do this as a player.");
+			}
+		} else if (commandName.equals("viewspawnpoints")) {
+			if (sender instanceof Player) {
+				Player player = (Player)sender;
+				CapturedArea area = new CapturedArea(player.getLocation());
+				if (capturedAreaSpawns.containsKey(area)) {
+					List<Location> locs = capturedAreaSpawns.get(area);
+					for (Location loc : locs) {
+						player.sendBlockChange(loc.clone().subtract(0, 1, 0), Material.GLOWSTONE, (byte)0);
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "There are no spawn points in this area.");
+				}
+			} else {
+				sender.sendMessage(ChatColor.RED + "You must do this as a player.");
+			}			
 		} else if (commandName.equals("startgame")) {
 			if (gameStarted) {
 				sender.sendMessage(ChatColor.RED + "The game has already started.");
@@ -357,6 +499,9 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 					}
 				}
 			}
+		} else if (commandName.equals("pigcaptain")) {
+			choosePigCaptain();
+			sender.sendMessage(ChatColor.GOLD + "A new pig captain has been chosen: " + pigCaptain);
 		} else if (commandName.equals("capture")) {
 			if (args.length == 2) {
 				if (!args[0].matches("-?[0-9]+,-?[0-9]+")) {
@@ -386,6 +531,10 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 						CapturedArea area = new CapturedArea(((Player)sender).getLocation());
 						captureArea(area, null);
 						sender.sendMessage(ChatColor.GOLD + "Capture area " + area.getId() + " is now owned by nobody");
+					} else if (args[0].equalsIgnoreCase("dead")) {
+						CapturedArea area = new CapturedArea(((Player)sender).getLocation());
+						setAreaUncapturable(area);
+						sender.sendMessage(ChatColor.GOLD + "Capture area " + area.getId() + " is now uncaptureable");
 					} else {
 						EntityType team = getTeamByName(args[0]);
 						if (team == null || !teamsToPlayers.containsKey(team)) {
@@ -415,7 +564,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 				if (team == null || !teamsToPlayers.containsKey(team)) {
 					sender.sendMessage(ChatColor.RED + "Invalid team or team already eliminated.");
 				} else {
-					eliminateTeam(team);
+					eliminateTeam(team, null);
 					sender.sendMessage(ChatColor.GOLD + "Team " + team.name().toLowerCase() + " has been eliminated.");
 				}
 			} else {
@@ -441,11 +590,32 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			if (buffIterations > 0) {
 				sender.sendMessage(ChatColor.GOLD + "  Buff processing: " + (buffTime/buffIterations) + " (" + buffTime + "/" + buffIterations + ")");
 			}
+			if (spawnIterations > 0) {
+				sender.sendMessage(ChatColor.GOLD + "  Spawn calculation: " + (spawnTime/spawnIterations) + " (" + spawnTime + "/" + spawnIterations + ")");
+			}
 			sender.sendMessage(ChatColor.GOLD + "Current block update queue: " + blockQueue.size());
 		} else {
 			sender.sendMessage("HUH?");
 		}
 		return true;
+	}
+	
+	private void saveSpawnPoints(CommandSender sender) {
+		try {
+			File file = new File(getDataFolder(), "spawnpoints.txt");
+			if (file.exists()) file.delete();
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			for (List<Location> locactions : capturedAreaSpawns.values()) {
+				for (Location loc : locactions) {
+					writer.write(loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw());
+					writer.newLine();
+				}
+			}
+			writer.close();
+		} catch (Exception e) {
+			sender.sendMessage(ChatColor.RED + "ERROR SAVING SPAWN POINTS FILE");
+			e.printStackTrace();
+		}
 	}
 	
 	private EntityType getTeamByName(String name) {
@@ -455,36 +625,40 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	public void startGame() {
 		// initial captures
 		for (EntityType team : teamDefaultSpawns.keySet()) {
-			CapturedArea area = new CapturedArea(teamDefaultSpawns.get(team));
+			CapturedArea area = teamDefaultSpawns.get(team);
 			captureArea(area, team);
 		}
 		
+		// choose barn
+		//chooseRandomHotZone();
+		
 		// get players
-		Player[] players = getServer().getOnlinePlayers();
-		float playersPerTeam = players.length / 8F;
+		List<Player> players = Arrays.asList(getServer().getOnlinePlayers());
+		Collections.shuffle(players);
+		float playersPerTeam = players.size() / 8F;
 		
 		// split players
 		int i = 0;
 		for (; i < playersPerTeam * 2; i++) {
-			putPlayerInTeam(players[i], EntityType.CHICKEN);
+			putPlayerInTeam(players.get(i), EntityType.CHICKEN);
 		}
 		for (; i < playersPerTeam * 3; i++) {
-			putPlayerInTeam(players[i], EntityType.COW);
+			putPlayerInTeam(players.get(i), EntityType.COW);
 		}
 		for (; i < playersPerTeam * 4; i++) {
-			putPlayerInTeam(players[i], EntityType.OCELOT);
+			putPlayerInTeam(players.get(i), EntityType.OCELOT);
 		}
 		for (; i < playersPerTeam * 5; i++) {
-			putPlayerInTeam(players[i], EntityType.PIG);
+			putPlayerInTeam(players.get(i), EntityType.PIG);
 		}
 		for (; i < playersPerTeam * 6; i++) {
-			putPlayerInTeam(players[i], EntityType.SHEEP);
+			putPlayerInTeam(players.get(i), EntityType.SHEEP);
 		}
 		for (; i < playersPerTeam * 7; i++) {
-			putPlayerInTeam(players[i], EntityType.SQUID);
+			putPlayerInTeam(players.get(i), EntityType.SQUID);
 		}
-		for (; i < players.length; i++) {
-			putPlayerInTeam(players[i], EntityType.WOLF);
+		for (; i < players.size(); i++) {
+			putPlayerInTeam(players.get(i), EntityType.WOLF);
 		}
 		
 		// choose pig captain
@@ -499,29 +673,34 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 					if (team != null) {
 						if (team == EntityType.COW) {
 							player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
-						} if (team == EntityType.WOLF) {
+						} else if (team == EntityType.WOLF) {
 							long time = player.getWorld().getTime();
 							if (time > 13000 && time < 23000) {
 								player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, buffInterval + 10, 0), true);
 								player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 1), true);
 							}
+						} else if (team == EntityType.SQUID) {
+							Material type = player.getLocation().getBlock().getType();
+							if (type == Material.WATER || type == Material.STATIONARY_WATER) {
+								player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 2), true);
+							} else {
+								player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, buffInterval + 10, 1), true);
+							}
+						} else if (team == EntityType.PIG) {
+							if (player.getLocation().getBlock().getType() == Material.SOUL_SAND) {
+								player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 2), true);
+							}
 						}
 						EntityType areaTeam = capturedAreasToTeams.get(new CapturedArea(player.getLocation()));
 						if (areaTeam != null) {
-							if (team == areaTeam) {
+							if (areaTeam == team) {
 								player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, buffInterval + 10, 0), true);
-								if (team == EntityType.PIG) {
-									player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 1), true);
-								} else if (team == EntityType.SQUID) {
-									player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 3), true);
-								}
-							} else {
-								if (team == EntityType.SQUID) {
-									player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, buffInterval + 10, 1), true);
-								}
 							}
 							if (areaTeam == EntityType.COW) {
 								player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
+							}
+							if (foodIntervalCounter++ % foodIntervalBasedOnBuffInterval == 0 && areaTeam == team && player.getFoodLevel() < 20) {
+								player.setFoodLevel(player.getFoodLevel() + (team == EntityType.COW ? 10 : 6));
 							}
 						}
 					}
@@ -541,10 +720,58 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		// elimination timer
 		eliminator = new Eliminator(this);
 
+		// send enderdragon
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			((CraftPlayer)p).getHandle().playerConnection.sendPacket(new Packet24MobSpawn(enderDragon));
+		}
+		
 		gameStarted = true;
 	}
 	
+	/*public void chooseRandomHotZone() {
+		List<CapturedArea> areas = new ArrayList<CapturedArea>(capturedAreaValues.keySet());
+		if (barnArea != null) areas.remove(barnArea);
+		if (areas.size() > 0) {
+			CapturedArea area = areas.get(random.nextInt(areas.size()));
+			setHotZone(area);
+			getServer().broadcastMessage(ChatColor.GOLD + capturedAreaNames.get(area) + " is the new hot zone!");
+		} else {
+			setHotZone(null);
+		}
+	}
+	
+	private BlockFace[] faces = new BlockFace[] { BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST };
+	public void setHotZone(CapturedArea area) {
+		if (barnArea != null) {
+			Location loc = barnArea.getHighCenter(world);
+			if (loc.getBlockY() < fieldY + 20) {
+				loc.setY(loc.getY() + 10);
+			}
+			Block b = loc.getBlock();
+			for (BlockFace face : faces) {
+				b.getRelative(face).setType(Material.AIR);
+			}
+			b.getRelative(BlockFace.UP).setType(Material.AIR);
+		}
+		if (area != null) {
+			Location loc = area.getHighCenter(world);
+			if (loc.getBlockY() < fieldY + 20) {
+				loc.setY(loc.getY() + 10);
+			}
+			Block b = loc.getBlock();
+			for (BlockFace face : faces) {
+				b.getRelative(face).setType(Material.DIAMOND_BLOCK);
+			}
+			b.getRelative(BlockFace.UP).setType(Material.BEACON);
+		}
+		barnArea = area;
+	}*/
+	
 	public void putPlayerInTeam(Player player, EntityType team) {
+		putPlayerInTeam(player, team, true);
+	}
+	
+	public void putPlayerInTeam(Player player, EntityType team, boolean teleportAndRunSpawnCommands) {
 		// remove old team
 		EntityType oldTeam = playersToTeams.remove(player.getName().toLowerCase());
 		if (oldTeam != null && teamsToPlayers.containsKey(oldTeam)) {
@@ -554,14 +781,17 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		// add to collections
 		teamsToPlayers.get(team).add(player.getName().toLowerCase());
 		playersToTeams.put(player.getName().toLowerCase(), team);
-		
-		// teleport player
-		Location loc = getSpawnLocation(team);
-		player.teleport(loc);
-		
-		// run commands
+
 		runInitCommands(player, team);
-		runSpawnCommands(player, team);
+		
+		if (teleportAndRunSpawnCommands) {
+			// teleport player
+			Location loc = getSpawnLocation(team);
+			player.teleport(loc);
+		
+			// run commands
+			runSpawnCommands(player, team);
+		}
 		
 		player.sendMessage(ChatColor.GOLD + "You are on team " + team.name().toLowerCase());
 	}
@@ -586,6 +816,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm.replace("%p", pigCaptain));
 					}
 					player.sendMessage(ChatColor.GOLD + "You are the pig captain!");
+					System.out.println("THE PIG CAPTAIN IS " + player.getName());
 				} else {
 					pigCaptain = null;
 					attempts++;
@@ -619,40 +850,66 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	}
 	
 	public Location getSpawnLocation(EntityType team) {
+		long start = System.currentTimeMillis();
+		spawnIterations++;
 		if (team == EntityType.WOLF) {
-			Location loc = teamDefaultSpawns.get(EntityType.WOLF);
-			int x = loc.getBlockX() + random.nextInt(6) - 3;
-			int z = loc.getBlockZ() + random.nextInt(6) - 3;
-			int y = loc.getWorld().getHighestBlockYAt(x, z);
-			return new Location(loc.getWorld(), x, y+1, z);
+			CapturedArea area = teamDefaultSpawns.get(EntityType.WOLF);
+			List<Location> locs = capturedAreaSpawns.get(area);
+			if (locs != null) {
+				spawnTime += (System.currentTimeMillis() - start);
+				return locs.get(random.nextInt(locs.size()));
+			} else {
+				spawnTime += (System.currentTimeMillis() - start);
+				return area.getCenter(world, fieldY);
+			}
 		}
 		if (team == EntityType.PIG && pigCaptain != null) {
 			Player captain = Bukkit.getPlayerExact(pigCaptain);
 			if (captain != null) {
-				int x = captain.getLocation().getBlockX() + random.nextInt(6) - 3;
-				int z = captain.getLocation().getBlockZ() + random.nextInt(6) - 3;
-				int y = captain.getWorld().getHighestBlockYAt(x, z);
-				return new Location(captain.getWorld(), x, y+1, z);
+				CapturedArea area = new CapturedArea(captain.getLocation());
+				List<Location> locs = capturedAreaSpawns.get(area);
+				if (locs != null) {
+					spawnTime += (System.currentTimeMillis() - start);
+					return locs.get(random.nextInt(locs.size()));
+				} else {
+					spawnTime += (System.currentTimeMillis() - start);
+					return captain.getLocation().add(0, 1, 0);
+				}
 			}
 		}
 		if (team != null) {
 			Set<CapturedArea> areas = teamsToCapturedAreas.get(team);
 			if (areas != null && areas.size() > 0) {
 				CapturedArea area = areas.toArray(new CapturedArea[areas.size()])[random.nextInt(areas.size())];
-				return area.getRandomLocationInArea(world);
+				List<Location> locs = capturedAreaSpawns.get(area);
+				if (locs != null) {
+					spawnTime += (System.currentTimeMillis() - start);
+					return locs.get(random.nextInt(locs.size()));
+				} else {
+					spawnTime += (System.currentTimeMillis() - start);
+					return area.getCenter(world, fieldY);
+				}
 			} else {
-				Location loc = teamDefaultSpawns.get(team);
-				int x = loc.getBlockX() + random.nextInt(20) - 10;
-				int z = loc.getBlockZ() + random.nextInt(20) - 10;
-				int y = loc.getWorld().getHighestBlockYAt(x, z);
-				return new Location(loc.getWorld(), x, y+1, z);
+				CapturedArea area = teamDefaultSpawns.get(team);
+				if (area != null) {
+					List<Location> locs = capturedAreaSpawns.get(area);
+					if (locs != null) {
+						spawnTime += (System.currentTimeMillis() - start);
+						return locs.get(random.nextInt(locs.size()));
+					} else {
+						spawnTime += (System.currentTimeMillis() - start);
+						return area.getCenter(world, fieldY);
+					}
+				}
 			}
 		}
+		spawnTime += (System.currentTimeMillis() - start);
 		return world.getSpawnLocation();
 	}
 	
 	public void calculateCaptures() {
 		final Map<CapturedArea, Map<EntityType, Integer>> counts = new HashMap<CapturedArea, Map<EntityType,Integer>>();
+		final Map<CapturedArea, List<Player>> playersInAreas = new HashMap<CapturedArea, List<Player>>();
 		
 		// count em up
 		long start = System.currentTimeMillis();
@@ -665,14 +922,20 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			Map<EntityType, Integer> areaCounts = counts.get(area);
 			if (areaCounts == null) {
 				areaCounts = new HashMap<EntityType, Integer>();
-				areaCounts.put(team, 1);
+				areaCounts.put(team, team == EntityType.COW ? 2 : 1);
 				counts.put(area, areaCounts);
 			} else if (areaCounts.containsKey(team)) {
 				int count = areaCounts.get(team);
-				areaCounts.put(team, count + 1);
+				areaCounts.put(team, count + (team == EntityType.COW ? 2 : 1));
 			} else {
 				areaCounts.put(team, 1);
 			}
+			List<Player> players = playersInAreas.get(area);
+			if (players == null) {
+				players = new ArrayList<Player>();
+				playersInAreas.put(area, players);
+			}
+			players.add(player);
 		}
 		captureTime1 += (System.currentTimeMillis() - start);
 		captureIterations++;
@@ -697,7 +960,12 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 						}
 					}
 					if ((float)highestCount / (float)total > captureRatio) {
-						captureArea(entry.getKey(), highestTeam);
+						boolean capped = captureArea(entry.getKey(), highestTeam);
+						if (capped) {
+							for (Player player : playersInAreas.get(entry.getKey())) {
+								player.playSound(player.getLocation(), Sound.NOTE_PLING, 2.0F, 2.0F);
+							}
+						}
 					} else {
 						captureArea(entry.getKey(), null);
 					}
@@ -705,20 +973,44 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 				captureTime2 += (System.currentTimeMillis() - start);
 			}
 		}, 7);
+		
+		// do scoreboard
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+				TreeSet<TeamScore> scores = getScores();
+				for (TeamScore score : scores) {
+					ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(score.team.name().toLowerCase(), objective);
+					ss.setScore(score.getScore());
+				}
+			}
+		}, 14);
+		
+		// do game timer
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+				int health = 200 - (int) (eliminator.getPercentElapsedTime() * 200);
+				enderDragon.setHealth(health);
+				enderDragon.getDataWatcher().watch(16, Integer.valueOf(health));
+				Packet40EntityMetadata packet = new Packet40EntityMetadata(enderDragon.id, enderDragon.getDataWatcher(), false);
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+				}
+			}
+		}, 21);
 	}
 	
-	public void captureArea(CapturedArea area, EntityType team) {
-		if (team != null && !teamsToCapturedAreas.containsKey(team)) return;
+	public boolean captureArea(CapturedArea area, EntityType team) {
+		if (team != null && !teamsToCapturedAreas.containsKey(team)) return false;
 		// get area name
 		String areaName = capturedAreaNames.get(area);
 		if (areaName == null) areaName = "a zone";
 		// remove previous team owner
 		EntityType previousTeam = capturedAreasToTeams.get(area);
 		if (previousTeam != null) {
-			if (previousTeam == team) return;
+			if (previousTeam == team) return false;
 			teamsToCapturedAreas.get(previousTeam).remove(area);
 			sendMessageToTeam(previousTeam, ChatColor.GOLD + "Your team has LOST " + areaName + "!");
-		} else if (team == null) return;
+		} else if (team == null) return false;
 		// set captured
 		if (team != null) {
 			teamsToCapturedAreas.get(team).add(area);
@@ -746,14 +1038,17 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			area.setAreaType(world, wolfType1, wolfData1, wolfType2, wolfData2, fieldY);
 		}
 		// launch firework
-		int color = 0x9900FF;
-		if (teamColors.containsKey(team)) color = teamColors.get(team);
-		Firework firework = world.spawn(area.getCenter(world), Firework.class);
-		FireworkMeta meta = firework.getFireworkMeta();
-		meta.setPower(2);
-		meta.addEffect(FireworkEffect.builder().with(Type.BALL_LARGE).withColor(Color.fromRGB(color)).build());
-		meta.addEffect(FireworkEffect.builder().with(Type.BURST).withColor(Color.fromRGB(color)).withFlicker().build());
-		firework.setFireworkMeta(meta);
+		if (team != null) {
+			int color = 0x9900FF;
+			if (teamColors.containsKey(team)) color = teamColors.get(team);
+			Firework firework = world.spawn(area.getHighCenter(world), Firework.class);
+			FireworkMeta meta = firework.getFireworkMeta();
+			meta.setPower(1);
+			meta.addEffect(FireworkEffect.builder().with(Type.BALL_LARGE).withColor(Color.fromRGB(color)).build());
+			meta.addEffect(FireworkEffect.builder().with(Type.BURST).withColor(Color.fromRGB(color)).withFlicker().build());
+			firework.setFireworkMeta(meta);
+		}
+		return true;
 	}
 	
 	public void setAreaUncapturable(CapturedArea area) {
@@ -767,63 +1062,73 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	
 	public void calculateScoresAndDoElimination() {
 		TreeSet<TeamScore> scores = getScores();
+		EntityType winning = scores.last().getTeam();
 		for (TeamScore score : scores) {
 			EntityType team = score.getTeam();
-			if (team == EntityType.OCELOT && barnArea != null && teamsToCapturedAreas.get(team).contains(barnArea)) {
-				continue;
-			} else {
+			//if (team == EntityType.OCELOT && barnArea != null && teamsToCapturedAreas.get(team).contains(barnArea)) {
+			//	continue;
+			//} else {
+				eliminateTeam(team, winning);
 				Bukkit.broadcastMessage(ChatColor.GOLD + "TEAM " + team.name().toUpperCase() + " HAS BEEN ELIMINATED!");
-				eliminateTeam(team);
 				break;
-			}
+			//}
 		}
+		//teamKills.clear();
 	}
 	
 	public TreeSet<TeamScore> getScores() {
 		TreeSet<TeamScore> scores = new TreeSet<TeamScore>();
 		
 		for (EntityType team : teamsToCapturedAreas.keySet()) {
-			int score = 0;
+			int areaScore = 0;
+			int killScore = 0;
 			Set<CapturedArea> areas = teamsToCapturedAreas.get(team);
 			for (CapturedArea area : areas) {
 				if (capturedAreaValues.containsKey(area)) {
-					score += capturedAreaValues.get(area);
+					areaScore += capturedAreaValues.get(area);
 				}
 			}
-			if (teamKills.containsKey(team)) {
-				score += Math.round(teamKills.get(team).floatValue() * pointsPerKill);
+			if (team == EntityType.OCELOT && barnArea != null && teamsToCapturedAreas.get(team).contains(barnArea)) {
+				areaScore *= 2;
 			}
-			scores.add(new TeamScore(team, score));
+			if (teamKills.containsKey(team)) {
+				killScore = Math.round(teamKills.get(team).floatValue() * pointsPerKill);
+			}
+			scores.add(new TeamScore(team, areaScore, killScore));
 		}
 		
 		return scores;
 	}
 	
-	public void eliminateTeam(EntityType team) {
+	public void eliminateTeam(EntityType team, EntityType winning) {
+		if (winning == team) winning = null;
+		
 		// remove captured areas
 		Set<CapturedArea> areas = teamsToCapturedAreas.remove(team);
 		for (CapturedArea area : areas) {
-			area.setAreaType(world, uncapturedType1, uncapturedData1, fieldY);
+			//area.setAreaType(world, uncapturedType1, uncapturedData1, fieldY);
 			capturedAreasToTeams.remove(area);
+			setAreaUncapturable(area);
 		}
 		
 		// move players to other teams
 		Set<String> playersInTeam = teamsToPlayers.remove(team);
-		EntityType[] teams = teamsToPlayers.keySet().toArray(new EntityType[] {});
-		boolean chickensInGame = teamsToPlayers.containsKey(EntityType.CHICKEN);
+		List<EntityType> teams = new ArrayList<EntityType>(teamsToPlayers.keySet());
+		if (winning != null && teams.size() > 1) teams.remove(winning); // don't move to winning team
+		if (teams.contains(EntityType.CHICKEN)) teams.add(EntityType.CHICKEN); // chickens get double players
 		for (String playerName : playersInTeam) {
 			Player player = Bukkit.getPlayerExact(playerName);
 			if (player == null) {
 				playersToTeams.remove(playerName);
 			} else {
-				int i = random.nextInt(teams.length + (chickensInGame ? 1 : 0));
-				if (i >= teams.length && chickensInGame) {
-					putPlayerInTeam(player, EntityType.CHICKEN);
-				} else {
-					putPlayerInTeam(player, teams[i]);
-				}
+				putPlayerInTeam(player, teams.get(random.nextInt(teams.size())), false);
+				player.damage(50);
 			}
 		}
+		
+		// remove score
+		ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(team.name().toLowerCase(), objective);
+		ss.setScore(0);
 	}
 	
 	public void sendMessageToTeam(EntityType team, String message) {
@@ -846,17 +1151,20 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			if (team == null || !teamsToPlayers.containsKey(team)) {
 				putPlayerInRandomTeam(player);
 			}
+			((CraftPlayer)player).getHandle().playerConnection.sendPacket(new Packet24MobSpawn(enderDragon));
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		if (gameStarted) {
 			final Player player = event.getPlayer();
 			final EntityType team = playersToTeams.get(player.getName().toLowerCase());
 			
 			// set spawn location
-			event.setRespawnLocation(getSpawnLocation(team));
+			if (team != null) {
+				event.setRespawnLocation(getSpawnLocation(team));
+			}
 						
 			// run commands (and get new team if necessary)
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -865,6 +1173,8 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 						putPlayerInRandomTeam(player);
 					} else {
 						runSpawnCommands(player, team);
+						player.sendMessage(ChatColor.GOLD + "You are on team " + team.name().toLowerCase());
+						((CraftPlayer)player).getHandle().playerConnection.sendPacket(new Packet24MobSpawn(enderDragon));
 					}
 				}
 			});
@@ -875,6 +1185,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		event.getDrops().clear();
 		event.setDroppedExp(0);
+		event.setDeathMessage(null);
 		
 		// add kill
 		Player killer = event.getEntity().getKiller();
@@ -909,10 +1220,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if (event.getPlayer().isOp()) return;
-		Block b = event.getBlock();
-		if (b.getY() <= fieldY || b.getType() == Material.LONG_GRASS) {
-			event.setCancelled(true);
-		}
+		event.setCancelled(true);
 	}
 	
 	@EventHandler(ignoreCancelled=true)
@@ -923,6 +1231,18 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 				iter.remove();
 			}
 		}
+	}
+	
+	@EventHandler
+	public void onDropItem(PlayerDropItemEvent event) {
+		if (event.getPlayer().isOp()) return;
+		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onPickupItem(PlayerPickupItemEvent event) {
+		if (event.getPlayer().isOp()) return;
+		event.setCancelled(true);
 	}
 	
 	@EventHandler

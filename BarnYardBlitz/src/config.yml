@@ -2,11 +2,12 @@ area-size: 64
 no-capture-border: 16
 field-y: 3
 buff-interval: 100
+food-interval: 200
 capture-interval: 200
 capture-ratio: .9
 block-updates-per-tick: 150
 points-per-kill: .25
-replaceable-layer1: [ 2, 3, 8, 9, 35, 41, 43, 44, 88, 79 ]
+replaceable-layer1: [ 2, 3, 7, 8, 9, 35, 41, 43, 44, 88, 79 ]
 replaceable-layer2: [ 0, 31 ]
 elimination-intervals: [ 600, 240, 240, 240, 240, 240 ]
 
