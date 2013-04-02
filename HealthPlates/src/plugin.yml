@@ -10,6 +10,3 @@ permissions:
     healthplates.nocolor:
         description: Prevents the player from having their nameplate colored.
         default: false
-    healthplates.noview:
-        description: Prevents the player from seeing colored nameplates.
-        default: false
