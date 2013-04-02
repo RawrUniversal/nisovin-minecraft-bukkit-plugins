@@ -16,8 +16,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.minecraft.server.v1_5_R2.*;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -31,8 +29,6 @@ import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -148,10 +144,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	long spawnTime = 0;
 	long spawnIterations = 0;
 	
-	Scoreboard scoreboard;
-	ScoreboardObjective objective;
-	Map<EntityType, ScoreboardScore> scoreboardScores;
-	EntityEnderDragon enderDragon;
+	VolatileCode volatileCode = null;
 	
 	@Override
 	public void onEnable() {
@@ -333,24 +326,14 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			getLogger().severe("ERROR READING SPAWN POINTS FILE");
 			e.printStackTrace();
 		}
-		
-		// initialize scoreboard
-		scoreboard = ((CraftWorld)Bukkit.getWorlds().get(0)).getHandle().getScoreboard();
-		objective = scoreboard.getObjective("Score");
-		if (objective == null) {
-			objective = scoreboard.registerObjective("Score", IScoreboardCriteria.b);
-			objective.setDisplayName("Score");
-			scoreboard.setDisplaySlot(1, objective);
+
+		try {
+			Class.forName("net.minecraft.server.v1_5_R2.MinecraftServer");
+			volatileCode = new VolatileCode();
+		} catch (ClassNotFoundException e) {
+			getLogger().warning("BarnYardBlitz needs an update! Scoreboard and dragon timer are disabled.");
+			volatileCode = null;
 		}
-		
-		// initialize timer bar
-		enderDragon = new EntityEnderDragon(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle());
-		enderDragon.setPositionRotation(-130, 26, 1064, 115, 0);
-		enderDragon.setCustomName("Time Remaining Until Elimination");
-		
-		//for (EntityType team : validTeams) {
-		//	scoreboardScores
-		//}
 		
 	}
 	
@@ -721,8 +704,8 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		eliminator = new Eliminator(this);
 
 		// send enderdragon
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			((CraftPlayer)p).getHandle().playerConnection.sendPacket(new Packet24MobSpawn(enderDragon));
+		if (volatileCode != null) {
+			volatileCode.sendEnderDragonToAllPlayers();
 		}
 		
 		gameStarted = true;
@@ -975,28 +958,23 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		}, 7);
 		
 		// do scoreboard
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			public void run() {
-				TreeSet<TeamScore> scores = getScores();
-				for (TeamScore score : scores) {
-					ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(score.team.name().toLowerCase(), objective);
-					ss.setScore(score.getScore());
+		if (volatileCode != null) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+				public void run() {
+					volatileCode.updateScoreboard(getScores());
 				}
-			}
-		}, 14);
+			}, 14);
+		}
 		
 		// do game timer
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			public void run() {
-				int health = 200 - (int) (eliminator.getPercentElapsedTime() * 200);
-				enderDragon.setHealth(health);
-				enderDragon.getDataWatcher().watch(16, Integer.valueOf(health));
-				Packet40EntityMetadata packet = new Packet40EntityMetadata(enderDragon.id, enderDragon.getDataWatcher(), false);
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+		if (volatileCode != null) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+				public void run() {
+					int health = 200 - (int) (eliminator.getPercentElapsedTime() * 200);
+					volatileCode.setDragonHealth(health);
 				}
-			}
-		}, 21);
+			}, 21);
+		}
 	}
 	
 	public boolean captureArea(CapturedArea area, EntityType team) {
@@ -1127,8 +1105,9 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		}
 		
 		// remove score
-		ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(team.name().toLowerCase(), objective);
-		ss.setScore(0);
+		if (volatileCode != null) {
+			volatileCode.zeroScore(team);
+		}
 	}
 	
 	public void sendMessageToTeam(EntityType team, String message) {
@@ -1151,7 +1130,9 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			if (team == null || !teamsToPlayers.containsKey(team)) {
 				putPlayerInRandomTeam(player);
 			}
-			((CraftPlayer)player).getHandle().playerConnection.sendPacket(new Packet24MobSpawn(enderDragon));
+			if (volatileCode != null) {
+				volatileCode.sendEnderDragonToPlayer(player);
+			}
 		}
 	}
 	
@@ -1174,7 +1155,9 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 					} else {
 						runSpawnCommands(player, team);
 						player.sendMessage(ChatColor.GOLD + "You are on team " + team.name().toLowerCase());
-						((CraftPlayer)player).getHandle().playerConnection.sendPacket(new Packet24MobSpawn(enderDragon));
+						if (volatileCode != null) {
+							volatileCode.sendEnderDragonToPlayer(player);
+						}
 					}
 				}
 			});
