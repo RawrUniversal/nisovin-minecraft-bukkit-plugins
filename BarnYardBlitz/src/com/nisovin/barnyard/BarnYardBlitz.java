@@ -126,6 +126,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 
 	Map<EntityType, CapturedArea> teamDefaultSpawns;
 	Map<EntityType, Integer> teamColors;
+	Map<EntityType, String> teamNames;
 	Map<EntityType, String[]> initCommands;
 	Map<EntityType, String[]> spawnCommands;
 	String[] pigCaptainCommands = new String[] {};
@@ -158,6 +159,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		capturedAreaSpawns = new HashMap<CapturedArea, List<Location>>();
 		
 		teamDefaultSpawns = new HashMap<EntityType, CapturedArea>();
+		teamNames = new HashMap<EntityType, String>();
 		teamColors = new HashMap<EntityType, Integer>();
 		initCommands = new HashMap<EntityType, String[]>();
 		spawnCommands = new HashMap<EntityType, String[]>();
@@ -286,6 +288,15 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		wolfType2 = config.getInt("wolf.type2", wolfType2);
 		wolfData2 = (byte)config.getInt("wolf.data2", wolfData2);
 		
+		// set team names
+		teamNames.put(EntityType.CHICKEN, ChatColor.YELLOW + "Chicken");
+		teamNames.put(EntityType.COW, ChatColor.RED + "Cow");
+		teamNames.put(EntityType.OCELOT, ChatColor.GREEN + "Cat");
+		teamNames.put(EntityType.PIG, ChatColor.DARK_RED + "Pig");
+		teamNames.put(EntityType.SHEEP, ChatColor.LIGHT_PURPLE + "Sheep");
+		teamNames.put(EntityType.SQUID, ChatColor.BLUE + "Squid");
+		teamNames.put(EntityType.WOLF, ChatColor.GRAY + "Wolf");
+		
 		// reset playing field
 		for (CapturedArea area : capturedAreaNames.keySet()) {
 			area.setAreaTypeNoQueue(world, uncapturedType1, uncapturedData1, 0, (byte)0, fieldY);
@@ -345,10 +356,10 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 				sender.sendMessage(ChatColor.GOLD + "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
 				TreeSet<TeamScore> scores = getScores();
 				for (TeamScore score : scores.descendingSet()) {
-					sender.sendMessage(ChatColor.GOLD + "  Team " + score.getTeam().name().toLowerCase() + ": " + score.getScore() + " (captures: " + score.getAreaScore() + ", kills: " + score.getKillScore() + ")");
+					sender.sendMessage(ChatColor.GOLD + "  Team " + teamNames.get(score.getTeam()) + ChatColor.GOLD + ": " + score.getScore() + " (captures: " + score.getAreaScore() + ", kills: " + Math.round(score.getKillScore()) + ")");
 				}
 				if (teamsToCapturedAreas.containsKey(EntityType.OCELOT) && teamsToCapturedAreas.get(EntityType.OCELOT).contains(barnArea)) {
-					sender.sendMessage(ChatColor.GOLD + "  The cats have " + capturedAreaNames.get(barnArea) + ", and can't be eliminated!");
+					sender.sendMessage(ChatColor.GOLD + "  The cats have " + capturedAreaNames.get(barnArea) + "!");
 				}
 				if (eliminator != null) {
 					long seconds = eliminator.timeToNextElimination();
@@ -708,6 +719,11 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			volatileCode.sendEnderDragonToAllPlayers();
 		}
 		
+		// initialize scores
+		if (volatileCode != null) {
+			volatileCode.updateScoreboard(getScores(), teamNames);
+		}
+		
 		gameStarted = true;
 	}
 	
@@ -776,7 +792,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			runSpawnCommands(player, team);
 		}
 		
-		player.sendMessage(ChatColor.GOLD + "You are on team " + team.name().toLowerCase());
+		player.sendMessage(ChatColor.GOLD + "You are on team " + teamNames.get(team) + ChatColor.GOLD + ".");
 	}
 	
 	public void putPlayerInRandomTeam(Player player) {
@@ -961,7 +977,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		if (volatileCode != null) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
-					volatileCode.updateScoreboard(getScores());
+					volatileCode.updateScoreboard(getScores(), teamNames);
 				}
 			}, 14);
 		}
@@ -1047,7 +1063,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			//	continue;
 			//} else {
 				eliminateTeam(team, winning);
-				Bukkit.broadcastMessage(ChatColor.GOLD + "TEAM " + team.name().toUpperCase() + " HAS BEEN ELIMINATED!");
+				Bukkit.broadcastMessage(ChatColor.GOLD + "TEAM " + teamNames.get(team).toUpperCase() + ChatColor.GOLD + " HAS BEEN ELIMINATED!");
 				break;
 			//}
 		}
@@ -1059,7 +1075,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		
 		for (EntityType team : teamsToCapturedAreas.keySet()) {
 			int areaScore = 0;
-			int killScore = 0;
+			float killScore = 0;
 			Set<CapturedArea> areas = teamsToCapturedAreas.get(team);
 			for (CapturedArea area : areas) {
 				if (capturedAreaValues.containsKey(area)) {
@@ -1070,7 +1086,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 				areaScore *= 2;
 			}
 			if (teamKills.containsKey(team)) {
-				killScore = Math.round(teamKills.get(team).floatValue() * pointsPerKill);
+				killScore = teamKills.get(team).floatValue() * pointsPerKill;
 			}
 			scores.add(new TeamScore(team, areaScore, killScore));
 		}
@@ -1106,7 +1122,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		
 		// remove score
 		if (volatileCode != null) {
-			volatileCode.zeroScore(team);
+			volatileCode.zeroScore(team, teamNames);
 		}
 	}
 	

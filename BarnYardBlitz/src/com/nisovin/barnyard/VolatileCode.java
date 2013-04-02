@@ -12,6 +12,7 @@ import net.minecraft.server.v1_5_R2.ScoreboardObjective;
 import net.minecraft.server.v1_5_R2.ScoreboardScore;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
@@ -31,7 +32,7 @@ public class VolatileCode {
 		objective = scoreboard.getObjective("Score");
 		if (objective == null) {
 			objective = scoreboard.registerObjective("Score", IScoreboardCriteria.b);
-			objective.setDisplayName("Score");
+			objective.setDisplayName(ChatColor.GOLD.toString() + ChatColor.BOLD.toString() + "Score");
 			scoreboard.setDisplaySlot(1, objective);
 		}
 		
@@ -60,15 +61,15 @@ public class VolatileCode {
 		}
 	}
 	
-	public void updateScoreboard(TreeSet<TeamScore> scores) {
+	public void updateScoreboard(TreeSet<TeamScore> scores, Map<EntityType, String> teamNames) {
 		for (TeamScore score : scores) {
-			ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(score.team.name().toLowerCase(), objective);
+			ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(teamNames.get(score.team), objective);
 			ss.setScore(score.getScore());
 		}
 	}
 	
-	public void zeroScore(EntityType team) {
-		ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(team.name().toLowerCase(), objective);
+	public void zeroScore(EntityType team, Map<EntityType, String> teamNames) {
+		ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(teamNames.get(team), objective);
 		ss.setScore(0);
 	}
 	

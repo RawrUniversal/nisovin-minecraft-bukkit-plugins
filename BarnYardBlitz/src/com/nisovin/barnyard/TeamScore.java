@@ -6,13 +6,13 @@ public class TeamScore implements Comparable<TeamScore> {
 
 	EntityType team;
 	int areaScore;
-	int killScore;
+	float killScore;
 	
 	public TeamScore(EntityType team) {
 		this.team = team;
 	}
 	
-	public TeamScore(EntityType team, int areaScore, int killScore) {
+	public TeamScore(EntityType team, int areaScore, float killScore) {
 		this.team = team;
 		this.areaScore = areaScore;
 		this.killScore = killScore;
@@ -23,14 +23,14 @@ public class TeamScore implements Comparable<TeamScore> {
 	}
 	
 	public int getScore() {
-		return areaScore + killScore;
+		return areaScore + Math.round(killScore);
 	}
 	
 	public int getAreaScore() {
 		return areaScore;
 	}
 	
-	public int getKillScore() {
+	public float getKillScore() {
 		return killScore;
 	}
 
