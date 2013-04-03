@@ -39,6 +39,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -1219,6 +1220,12 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		if (event.getEntity().getName().equalsIgnoreCase(pigCaptain)) {
 			choosePigCaptain();
 		}
+	}
+	
+	@EventHandler
+	public void onEntityDeath(EntityDeathEvent event) {
+		event.getDrops().clear();
+		event.setDroppedExp(0);
 	}
 	
 	@EventHandler
