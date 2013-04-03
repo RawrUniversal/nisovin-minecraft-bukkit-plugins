@@ -33,6 +33,7 @@ chicken:
   spawn-z: 32
   init-commands: []
   spawn-commands: []
+  capture-commands: []
   color: FFFF00
   type1: 41
   data1: 0
@@ -44,6 +45,7 @@ cow:
   spawn-z: -32
   init-commands: []
   spawn-commands: []
+  capture-commands: []
   color: CC0000
   type1: 44
   data1: 4
@@ -55,6 +57,7 @@ ocelot:
   spawn-z: -32
   init-commands: []
   spawn-commands: []
+  capture-commands: []
   color: 00CC33
   type1: 2
   data1: 0
@@ -66,6 +69,7 @@ pig:
   spawn-z: 90
   init-commands: []
   spawn-commands: []
+  capture-commands: []
   captain-commands: []
   color: 663300
   type1: 88
@@ -78,6 +82,7 @@ sheep:
   spawn-z: 90
   init-commands: []
   spawn-commands: []
+  capture-commands: []
   color: FF66FF
   type1: 35
   data1: 6
@@ -89,6 +94,7 @@ squid:
   spawn-z: -32
   init-commands: []
   spawn-commands: []
+  capture-commands: []
   color: 0033FF
   type1: 9
   data1: 0
@@ -100,6 +106,7 @@ wolf:
   spawn-z: 32
   init-commands: []
   spawn-commands: []
+  capture-commands: []
   color: CCFFFF
   type1: 79
   data1: 0
