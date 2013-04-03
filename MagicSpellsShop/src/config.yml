@@ -1,3 +1,4 @@
+ignore-other-plugins: false
 require-known-spell: true
 require-teach-perm: true
 

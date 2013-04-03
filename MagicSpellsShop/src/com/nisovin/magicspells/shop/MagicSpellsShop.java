@@ -2,6 +2,7 @@ package com.nisovin.magicspells.shop;
 
 import java.io.File;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -25,6 +26,7 @@ import com.nisovin.magicspells.spells.command.ScrollSpell;
 
 public class MagicSpellsShop extends JavaPlugin implements Listener {
 
+	private boolean ignoreOtherPlugins;
 	private boolean requireKnownSpell;
 	private boolean requireTeachPerm;
 	
@@ -55,6 +57,8 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		}
 		
 		Configuration config = getConfig();
+		
+		ignoreOtherPlugins = config.getBoolean("ignore-other-plugins", false);
 		requireKnownSpell = config.getBoolean("require-known-spell", true);
 		requireTeachPerm = config.getBoolean("require-teach-perm", true);
 		
@@ -81,7 +85,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onInteract(PlayerInteractEvent event) {
-		if (event.isCancelled()) return;
+		if (!ignoreOtherPlugins && event.isCancelled()) return;
 		
 		// check for right-click on sign
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -220,6 +224,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		
 		// check permission
 		if (!event.getPlayer().hasPermission("magicspells.createsignshop")) {
+			event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to do that.");
 			event.setCancelled(true);
 			return;
 		}
@@ -228,7 +233,7 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		String spellName = lines[1];
 		Spell spell = MagicSpells.getSpellByInGameName(spellName);
 		if (spell == null) {
-			event.getPlayer().sendMessage("A spell by that name does not exist.");
+			event.getPlayer().sendMessage(ChatColor.RED + "A spell by that name does not exist.");
 			event.setCancelled(true);
 			return;
 		}
@@ -236,10 +241,12 @@ public class MagicSpellsShop extends JavaPlugin implements Listener {
 		// check permissions
 		Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
 		if (requireKnownSpell && !spellbook.hasSpell(spell)) {
+			event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to do that.");
 			event.setCancelled(true);
 			return;
 		}
 		if (requireTeachPerm && !spellbook.canTeach(spell)) {
+			event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to do that.");
 			event.setCancelled(true);
 			return;
 		}
