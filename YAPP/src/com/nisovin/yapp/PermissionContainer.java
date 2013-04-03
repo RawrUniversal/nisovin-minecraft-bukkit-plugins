@@ -453,7 +453,7 @@ public class PermissionContainer implements Comparable<PermissionContainer> {
 	public boolean has(String world, String permission) {
 		List<PermissionNode> nodes = getAllPermissions(world);
 		for (PermissionNode node : nodes) {
-			if (node.getNodeName().equals(permission) && node.getValue() == true) {
+			if (node.getNodeName().equalsIgnoreCase(permission) && node.getValue() == true) {
 				return true;
 			}
 		}

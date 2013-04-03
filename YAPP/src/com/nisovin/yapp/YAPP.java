@@ -55,6 +55,8 @@ public class YAPP extends JavaPlugin {
 	private Field permissionMapField;
 	private Map<String, PermissionAttachment> attachments;
 	
+	private DenyChatListener denyChatListener = null;
+	
 	private StorageMethod storageMethod;
 	
 	@Override
@@ -214,6 +216,13 @@ public class YAPP extends JavaPlugin {
 		}
 		if (config.getboolean("deny permissions.attack") || config.getboolean("deny permissions.damage")) {
 			pm.registerEvents(new DamageListener(config.getboolean("deny permissions.attack"), config.getboolean("deny permissions.damage")), this);
+		}
+		if (config.getboolean("deny permissions.chat")) {
+			denyChatListener = new DenyChatListener();
+			pm.registerEvents(denyChatListener, this);
+		}
+		if (config.getboolean("deny permissions.commands")) {
+			pm.registerEvents(new CommandsListener(), this);
 		}
 		
 		// create converation factory
@@ -425,6 +434,11 @@ public class YAPP extends JavaPlugin {
 			}
 		}
 		
+		// check chat perm
+		if (denyChatListener != null) {
+			denyChatListener.setDeniedChat(player, player.hasPermission("yapp.deny.chat"));
+		}
+		
 		if (debug) {
 			long elapsed = System.nanoTime() - start;
 			debug("  Elapsed time: " + (elapsed / 1000000F) + "ms");
@@ -585,6 +599,9 @@ public class YAPP extends JavaPlugin {
 		String playerName = player.getName().toLowerCase();
 		players.remove(playerName).save();
 		attachments.remove(playerName).remove();
+		if (denyChatListener != null) {
+			denyChatListener.remove(player);
+		}
 	}
 	
 	/**

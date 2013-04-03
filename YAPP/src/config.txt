@@ -34,6 +34,8 @@ interact : false
 targeted : false
 attack   : false
 damage   : false
+chat     : false
+commands : false
 
 == MYSQL ==
 
