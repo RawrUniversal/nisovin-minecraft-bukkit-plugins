@@ -34,6 +34,7 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 	private boolean tamed;
 	private ItemStack holding;
 	private int duration;
+	private String nameplateText;
 	
 	private Random random = new Random();
 	
@@ -49,6 +50,7 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 			holding.setAmount(1);
 		}
 		duration = getConfigInt("duration", 0);
+		nameplateText = getConfigString("nameplate-text", "");
 		
 		if (entityType == null) {
 			MagicSpells.error("SpawnMonster spell '" + spellName + "' has an invalid entity-type!");
@@ -140,6 +142,10 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 					EntityEquipment equip = ((LivingEntity)entity).getEquipment();
 					equip.setItemInHand(holding.clone());
 				}
+			}
+			if (nameplateText != null && !nameplateText.isEmpty() && entity instanceof LivingEntity) {
+				((LivingEntity)entity).setCustomName(nameplateText);
+				((LivingEntity)entity).setCustomNameVisible(true);
 			}
 			// play effects
 			playSpellEffects(player, entity);
