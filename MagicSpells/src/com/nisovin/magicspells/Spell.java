@@ -865,6 +865,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
+		// check if pvp is disabled
+		if (targetPlayers && !isBeneficial() && !player.getWorld().getPVP()) {
+			targetPlayers = false;
+		}
+		
 		// get nearby living entities, filtered by player targeting options
 		List<Entity> ne = player.getNearbyEntities(range, range, range);
 		ArrayList<LivingEntity> entities = new ArrayList<LivingEntity>(); 

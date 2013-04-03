@@ -35,6 +35,7 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 	private ItemStack holding;
 	private int duration;
 	private String nameplateText;
+	private boolean useCasterName;
 	
 	private Random random = new Random();
 	
@@ -51,6 +52,7 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 		}
 		duration = getConfigInt("duration", 0);
 		nameplateText = getConfigString("nameplate-text", "");
+		useCasterName = getConfigBoolean("use-caster-name", false);
 		
 		if (entityType == null) {
 			MagicSpells.error("SpawnMonster spell '" + spellName + "' has an invalid entity-type!");
@@ -124,6 +126,7 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 		if (entityType != null) {
 			// spawn it
 			final Entity entity = loc.getWorld().spawnEntity(loc.add(.5, .1, .5), entityType);
+			// set as baby
 			if (baby) {
 				if (entity instanceof Ageable) {
 					((Ageable)entity).setBaby();
@@ -131,10 +134,12 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 					((Zombie)entity).setBaby(true);
 				}
 			}
+			// set as tamed
 			if (tamed && entity instanceof Tameable) {
 				((Tameable)entity).setTamed(true);
 				((Tameable)entity).setOwner(player);
 			}
+			// set held item
 			if (holding != null && holding.getTypeId() > 0) {
 				if (entity instanceof Enderman) {
 					((Enderman)entity).setCarriedMaterial(new MaterialData(holding.getTypeId(), (byte)holding.getDurability()));
@@ -143,9 +148,15 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 					equip.setItemInHand(holding.clone());
 				}
 			}
-			if (nameplateText != null && !nameplateText.isEmpty() && entity instanceof LivingEntity) {
-				((LivingEntity)entity).setCustomName(nameplateText);
-				((LivingEntity)entity).setCustomNameVisible(true);
+			// set nameplate text
+			if (entity instanceof LivingEntity) {
+				if (useCasterName) {
+					((LivingEntity)entity).setCustomName(player.getName());
+					((LivingEntity)entity).setCustomNameVisible(true);
+				} else if (nameplateText != null && !nameplateText.isEmpty()) {
+					((LivingEntity)entity).setCustomName(nameplateText);
+					((LivingEntity)entity).setCustomNameVisible(true);
+				}
 			}
 			// play effects
 			playSpellEffects(player, entity);
