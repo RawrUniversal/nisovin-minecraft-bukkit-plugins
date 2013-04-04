@@ -38,7 +38,7 @@ class ParticlesEffect extends SpellEffect {
 			}
 		}
 		
-		MagicSpells.getVolatileCodeHandler().playParticleEffect(location, name, horizSpread, vertSpread, speed, count, 32, yOffset);
+		MagicSpells.getVolatileCodeHandler().playParticleEffect(location, name, horizSpread, vertSpread, speed, count, 15, yOffset);
 	}
 	
 }

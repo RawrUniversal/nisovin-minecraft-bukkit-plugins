@@ -224,7 +224,7 @@ public class PulserSpell extends TargetedLocationSpell {
 		public Pulser(Player caster, Block block, float power) {
 			this.caster = caster;
 			this.block = block;
-			this.location = block.getLocation();
+			this.location = block.getLocation().add(0.5, 0.5, 0.5);
 			this.power = power;
 			this.pulseCount = 0;
 		}

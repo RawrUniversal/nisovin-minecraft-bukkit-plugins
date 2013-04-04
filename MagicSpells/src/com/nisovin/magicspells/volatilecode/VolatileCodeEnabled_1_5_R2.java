@@ -61,7 +61,7 @@ public class VolatileCodeEnabled_1_5_R2 implements VolatileCodeHandle {
 			Field field = CraftItemStack.class.getDeclaredField("handle");
 			field.setAccessible(true);
 			nmsItem = ((net.minecraft.server.v1_5_R2.ItemStack)field.get(item));
-		} catch (Exception e) {				
+		} catch (Exception e) {
 		}
 		if (nmsItem == null) {
 			nmsItem = CraftItemStack.asNMSCopy(craftItem);
@@ -384,6 +384,7 @@ public class VolatileCodeEnabled_1_5_R2 implements VolatileCodeHandle {
 			for (Player player : location.getWorld().getPlayers()) {
 				if (player.getLocation().distanceSquared(location) <= rSq) {
 					((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
+				} else {
 				}
 			}
 		} catch (Exception e) {
