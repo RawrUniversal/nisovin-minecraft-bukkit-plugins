@@ -30,6 +30,17 @@ public class Eliminator implements Runnable {
 					}
 				}, 1);
 			}
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				public void run() {
+					plugin.stopGame();
+				}
+			}, 5);
+			Thread.sleep(20000);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				public void run() {
+					plugin.endGame();
+				}
+			});
 			//plugin.setHotZone(null);
 		} catch (InterruptedException e) {
 			e.printStackTrace();

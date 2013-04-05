@@ -23,6 +23,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -52,6 +53,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.Scoreboard;
 
 public class BarnYardBlitz extends JavaPlugin implements Listener {
 	
@@ -100,6 +105,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	
 	Random random = new Random();	
 
+	String worldName = "world";
 	static int areaSize = 64;
 	int fieldY = 3;
 	int buffInterval = 100;
@@ -116,6 +122,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	float pointsPerKill = 0.25F;
 	
 	boolean gameStarted = false;
+	boolean gameEnded = false;
 	World world;
 	String pigCaptain = null;
 	Eliminator eliminator = null;
@@ -147,12 +154,15 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	long spawnTime = 0;
 	long spawnIterations = 0;
 	
+	Scoreboard scoreboard;
+	Objective objective;
+	
 	VolatileCode volatileCode = null;
 	
 	@Override
 	public void onEnable() {
 		getServer().getPluginManager().registerEvents(this, this);		
-		world = getServer().getWorlds().get(0);
+		world = getServer().getWorld(worldName);
 		blockQueue = new BlockUpdateQueue(this);
 
 		// initialize containers
@@ -345,6 +355,16 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			e.printStackTrace();
 		}
 
+		// initialize scoreboard
+		scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+		objective = scoreboard.getObjective("Score");
+		if (objective == null) {
+			objective = scoreboard.registerNewObjective("Score", "BYBScore");
+			objective.setDisplayName(ChatColor.GOLD.toString() + ChatColor.BOLD.toString() + "Score");
+			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+		}
+		
+		// initialize volatile code
 		try {
 			Class.forName("net.minecraft.server.v1_5_R2.MinecraftServer");
 			volatileCode = new VolatileCode();
@@ -720,7 +740,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		
 		// initialize scores
 		if (volatileCode != null) {
-			volatileCode.updateScoreboard(getScores(), teamNames);
+			updateScoreboard(getScores());
 		}
 		
 		gameStarted = true;
@@ -988,7 +1008,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		if (volatileCode != null) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
-					volatileCode.updateScoreboard(getScores(), teamNames);
+					updateScoreboard(getScores());
 				}
 			}, 14);
 		}
@@ -1105,6 +1125,20 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		return scores;
 	}
 	
+	public void updateScoreboard(TreeSet<TeamScore> scores) {
+		for (TeamScore score : scores) {
+			OfflinePlayer fakePlayer = Bukkit.getOfflinePlayer(teamNames.get(score.getTeam()));
+			Score s = objective.getScore(fakePlayer);
+			s.setScore(score.getScore());
+		}
+	}
+	
+	public void zeroScore(EntityType team) {
+		OfflinePlayer fakePlayer = Bukkit.getOfflinePlayer(teamNames.get(team));
+		Score s = objective.getScore(fakePlayer);
+		s.setScore(0);
+	}
+	
 	public void eliminateTeam(EntityType team, EntityType winning) {
 		if (winning == team) winning = null;
 		
@@ -1133,7 +1167,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		
 		// remove score
 		if (volatileCode != null) {
-			volatileCode.zeroScore(team, teamNames);
+			zeroScore(team);
 		}
 	}
 	
@@ -1148,6 +1182,13 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			}
 		}
 	}
+	
+	/*@EventHandler
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		if (gameEnded) {
+			event.disallow(Result.KICK_OTHER, "The game has already ended.");
+		}
+	}*/
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
@@ -1285,10 +1326,19 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 	
+	public void endGame() {
+		//stopGame();
+		//gameEnded = true;
+		//for (Player p : Bukkit.getOnlinePlayers()) {
+		//	p.kickPlayer("The game has ended.");
+		//}
+	}
+	
 	@Override
 	public void onDisable() {
 		stopGame();
 		HandlerList.unregisterAll((Plugin)this);
+		objective.unregister();
 	}
 	
 }

@@ -4,15 +4,14 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import net.minecraft.server.v1_5_R2.EntityEnderDragon;
-import net.minecraft.server.v1_5_R2.IScoreboardCriteria;
 import net.minecraft.server.v1_5_R2.Packet24MobSpawn;
+import net.minecraft.server.v1_5_R2.Packet29DestroyEntity;
 import net.minecraft.server.v1_5_R2.Packet40EntityMetadata;
 import net.minecraft.server.v1_5_R2.Scoreboard;
 import net.minecraft.server.v1_5_R2.ScoreboardObjective;
 import net.minecraft.server.v1_5_R2.ScoreboardScore;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
@@ -23,18 +22,17 @@ public class VolatileCode {
 	
 	Scoreboard scoreboard;
 	ScoreboardObjective objective;
-	Map<EntityType, ScoreboardScore> scoreboardScores;
 	EntityEnderDragon enderDragon;
 	
-	public VolatileCode() {		
+	public VolatileCode() {
 		// initialize scoreboard
-		scoreboard = ((CraftWorld)Bukkit.getWorlds().get(0)).getHandle().getScoreboard();
+		/*scoreboard = ((CraftWorld)Bukkit.getWorlds().get(0)).getHandle().getScoreboard();
 		objective = scoreboard.getObjective("Score");
 		if (objective == null) {
 			objective = scoreboard.registerObjective("Score", IScoreboardCriteria.b);
 			objective.setDisplayName(ChatColor.GOLD.toString() + ChatColor.BOLD.toString() + "Score");
 			scoreboard.setDisplaySlot(1, objective);
-		}
+		}*/
 		
 		// initialize timer bar
 		enderDragon = new EntityEnderDragon(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle());
@@ -52,6 +50,12 @@ public class VolatileCode {
 		((CraftPlayer)p).getHandle().playerConnection.sendPacket(new Packet24MobSpawn(enderDragon));
 	}
 	
+	public void removeEnderDragonForAllPlayers() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			((CraftPlayer)p).getHandle().playerConnection.sendPacket(new Packet29DestroyEntity(enderDragon.id));
+		}
+	}
+	
 	public void setDragonHealth(int health) {
 		enderDragon.setHealth(health);
 		enderDragon.getDataWatcher().watch(16, Integer.valueOf(health));
@@ -61,14 +65,14 @@ public class VolatileCode {
 		}
 	}
 	
-	public void updateScoreboard(TreeSet<TeamScore> scores, Map<EntityType, String> teamNames) {
+	public void updateScoreboard2(TreeSet<TeamScore> scores, Map<EntityType, String> teamNames) {
 		for (TeamScore score : scores) {
 			ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(teamNames.get(score.team), objective);
 			ss.setScore(score.getScore());
 		}
 	}
 	
-	public void zeroScore(EntityType team, Map<EntityType, String> teamNames) {
+	public void zeroScore2(EntityType team, Map<EntityType, String> teamNames) {
 		ScoreboardScore ss = scoreboard.getPlayerScoreForObjective(teamNames.get(team), objective);
 		ss.setScore(0);
 	}
