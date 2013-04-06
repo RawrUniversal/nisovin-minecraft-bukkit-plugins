@@ -98,6 +98,15 @@ public class DisguiseSpell extends TargetedEntitySpell {
 				MagicSpells.error("Invalid sheep color on disguise spell '" + spellName + "'");
 			}
 			type = "sheep";
+		} else if (type.toLowerCase().startsWith("wolf ")) {
+			String color = type.toLowerCase().replace("wolf ", "");
+			if (color.matches("[0-9a-fA-F]+")) {
+				var = Integer.parseInt(color, 16);
+			}
+			type = "wolf";
+		} else if (type.toLowerCase().equalsIgnoreCase("saddled pig")) {
+			var = 1;
+			type = "pig";
 		} else if (type.equalsIgnoreCase("irongolem")) {
 			type = "villagergolem";
 		} else if (type.equalsIgnoreCase("mooshroom")) {
@@ -157,7 +166,7 @@ public class DisguiseSpell extends TargetedEntitySpell {
 
 	private void disguise(Player player) {
 		String nameplate = nameplateText;
-		if (showPlayerName) nameplate = player.getName();
+		if (showPlayerName) nameplate = player.getDisplayName();
 		Disguise disguise = new Disguise(player, entityType, nameplate, flag, var, duration, this);
 		manager.addDisguise(player, disguise);
 		disguised.put(player.getName().toLowerCase(), disguise);

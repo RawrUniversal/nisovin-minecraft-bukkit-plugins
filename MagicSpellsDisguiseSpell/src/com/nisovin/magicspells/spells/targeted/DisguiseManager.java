@@ -116,7 +116,7 @@ public class DisguiseManager implements Listener {
 				EntityLiving entity = getEntity(player, disguise);
 				if (entity != null) {
 					sendDestroyEntityPacket(p, player);
-					sendMobSpawnPacket(p, player, disguise);
+					sendMobSpawnPacket(p, player, disguise, entity);
 				}
 			}
 		}*/
@@ -182,6 +182,11 @@ public class DisguiseManager implements Listener {
 		} else if (entityType == EntityType.WOLF) {
 			entity = new EntityWolf(world);
 			((EntityAgeable)entity).setAge(flag ? -24000 : 0);
+			if (var > 0) {
+				((EntityWolf)entity).setTamed(true);
+				((EntityWolf)entity).setOwnerName(player.getName());
+				((EntityWolf)entity).setCollarColor(var);
+			}
 			
 		} else if (entityType == EntityType.OCELOT) {
 			entity = new EntityOcelot(world);
@@ -236,6 +241,9 @@ public class DisguiseManager implements Listener {
 		} else if (entityType == EntityType.PIG) {
 			entity = new EntityPig(world);
 			((EntityAgeable)entity).setAge(flag ? -24000 : 0);
+			if (var == 1) {
+				((EntityPig)entity).setSaddle(true);
+			}
 			
 		} else if (entityType == EntityType.SHEEP) {
 			entity = new EntitySheep(world);
@@ -429,7 +437,7 @@ public class DisguiseManager implements Listener {
 					event.setCancelled(true);
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
-							sendMobSpawnPacket(player, Bukkit.getPlayer(name), disguise);
+							sendMobSpawnPacket(player, Bukkit.getPlayer(name), disguise, null);
 						}
 					}, 0);
 				}
@@ -490,8 +498,8 @@ public class DisguiseManager implements Listener {
 		tracker.a(((CraftPlayer)disguised).getHandle(), packet29);
 	}
 	
-	private void sendMobSpawnPacket(Player viewer, Player disguised, Disguise disguise) {
-		EntityLiving entity = getEntity(disguised, disguise);
+	private void sendMobSpawnPacket(Player viewer, Player disguised, Disguise disguise, EntityLiving entity) {
+		if (entity == null) entity = getEntity(disguised, disguise);
 		if (entity != null) {
 			Packet24MobSpawn packet24 = new Packet24MobSpawn(entity);
 			packet24.a = disguised.getEntityId();
