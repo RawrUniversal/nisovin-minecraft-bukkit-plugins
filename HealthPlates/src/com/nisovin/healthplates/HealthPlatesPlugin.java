@@ -120,7 +120,7 @@ public class HealthPlatesPlugin extends JavaPlugin implements Listener {
 		if (!(event.getEntity() instanceof Player)) return;
 		
 		final Player player = (Player)event.getEntity();
-		//if (player.hasPermission("healthplates.nocolor")) return;
+		if (player.hasPermission("healthplates.nocolor")) return;
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
@@ -136,7 +136,7 @@ public class HealthPlatesPlugin extends JavaPlugin implements Listener {
 		if (!(event.getEntity() instanceof Player)) return;
 		
 		final Player player = (Player)event.getEntity();
-		//if (player.hasPermission("healthplates.nocolor")) return;
+		if (player.hasPermission("healthplates.nocolor")) return;
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
@@ -148,7 +148,7 @@ public class HealthPlatesPlugin extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		//if (player.hasPermission("healthplates.nocolor")) return;
+		if (player.hasPermission("healthplates.nocolor")) return;
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
@@ -160,7 +160,7 @@ public class HealthPlatesPlugin extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
-		//if (player.hasPermission("healthplates.nocolor")) return;
+		if (player.hasPermission("healthplates.nocolor")) return;
 		
 		scoreboard.addPlayerToTeam(event.getPlayer().getName(), teamWhite);
 		healthTeams.put(player.getName().toLowerCase(), teamWhite);
