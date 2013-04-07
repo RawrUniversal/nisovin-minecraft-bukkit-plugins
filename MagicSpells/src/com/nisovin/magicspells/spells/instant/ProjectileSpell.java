@@ -50,6 +50,7 @@ public class ProjectileSpell extends InstantSpell {
 	private double velocity;
 	private double horizSpread;
 	private double vertSpread;
+	private boolean applySpellPowerToVelocity;
 	private boolean requireHitEntity;
 	private boolean cancelDamage;
 	private boolean removeProjectile;
@@ -95,6 +96,7 @@ public class ProjectileSpell extends InstantSpell {
 		velocity = getConfigFloat("velocity", 0);
 		horizSpread = getConfigFloat("horizontal-spread", 0);
 		vertSpread = getConfigFloat("vertical-spread", 0);
+		applySpellPowerToVelocity = getConfigBoolean("apply-spell-power-to-velocity", false);
 		requireHitEntity = getConfigBoolean("require-hit-entity", false);
 		cancelDamage = getConfigBoolean("cancel-damage", true);
 		removeProjectile = getConfigBoolean("remove-projectile", true);
@@ -161,6 +163,9 @@ public class ProjectileSpell extends InstantSpell {
 					v.add(new Vector((random.nextDouble()-.5) * horizSpread, (random.nextDouble()-.5) * vertSpread, (random.nextDouble()-.5) * horizSpread));
 					projectile.setVelocity(v);
 				}
+				if (applySpellPowerToVelocity) {
+					projectile.setVelocity(projectile.getVelocity().multiply(power));
+				}
 				projectiles.put(projectile, new ProjectileInfo(player, power));
 				playSpellEffects(EffectPosition.CASTER, projectile);
 			} else if (projectileItem != null) {
@@ -168,6 +173,9 @@ public class ProjectileSpell extends InstantSpell {
 				Vector v = player.getLocation().getDirection().multiply(velocity > 0 ? velocity : 1);
 				if (horizSpread > 0 || vertSpread > 0) {
 					v.add(new Vector((random.nextDouble()-.5) * horizSpread, (random.nextDouble()-.5) * vertSpread, (random.nextDouble()-.5) * horizSpread));
+				}
+				if (applySpellPowerToVelocity) {
+					v.multiply(power);
 				}
 				item.setVelocity(v);
 				item.setPickupDelay(10);
