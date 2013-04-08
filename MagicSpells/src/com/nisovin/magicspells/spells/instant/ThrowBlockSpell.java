@@ -31,6 +31,7 @@ public class ThrowBlockSpell extends InstantSpell {
 	int blockType;
 	byte blockData;
 	float velocity;
+	boolean applySpellPowerToVelocity;
 	float verticalAdjustment;
 	int rotationOffset;
 	float fallDamage;
@@ -53,6 +54,7 @@ public class ThrowBlockSpell extends InstantSpell {
 		blockType = typeAndData.id;
 		blockData = (byte)typeAndData.data;
 		velocity = getConfigFloat("velocity", 1);
+		applySpellPowerToVelocity = getConfigBoolean("apply-spell-power-to-velocity", false);
 		verticalAdjustment = getConfigFloat("vertical-adjustment", 0.5F);
 		rotationOffset = getConfigInt("rotation-offset", 0);
 		fallDamage = getConfigFloat("fall-damage", 2.0F);
@@ -92,6 +94,9 @@ public class ThrowBlockSpell extends InstantSpell {
 				Util.rotateVector(v, rotationOffset);
 			}
 			v.normalize().multiply(velocity);
+			if (applySpellPowerToVelocity) {
+				v.multiply(power);
+			}
 			FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation().add(v), blockType, blockData);
 			block.setVelocity(v);
 			block.setDropItem(dropItem);
