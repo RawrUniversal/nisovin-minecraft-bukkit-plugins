@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -149,6 +150,8 @@ public class AreaEffectSpell extends TargetedLocationSpell {
 				}
 			}
 		}
+		
+		playSpellEffects(EffectPosition.SPECIAL, location);
 		
 		return count > 0;
 	}

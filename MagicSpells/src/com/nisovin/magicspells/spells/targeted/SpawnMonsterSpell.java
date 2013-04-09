@@ -151,7 +151,7 @@ public class SpawnMonsterSpell extends TargetedLocationSpell {
 			// set nameplate text
 			if (entity instanceof LivingEntity) {
 				if (useCasterName) {
-					((LivingEntity)entity).setCustomName(player.getName());
+					((LivingEntity)entity).setCustomName(player.getDisplayName());
 					((LivingEntity)entity).setCustomNameVisible(true);
 				} else if (nameplateText != null && !nameplateText.isEmpty()) {
 					((LivingEntity)entity).setCustomName(nameplateText);
