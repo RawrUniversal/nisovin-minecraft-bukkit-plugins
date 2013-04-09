@@ -2,13 +2,14 @@ area-size: 64
 no-capture-border: 16
 field-y: 3
 buff-interval: 100
-food-interval: 200
+food-per-buff-tick: 4
 capture-interval: 200
 capture-ratio: .9
 block-updates-per-tick: 150
 points-per-kill: .25
 replaceable-layer1: [ 2, 3, 7, 8, 9, 35, 41, 43, 44, 88, 79 ]
 replaceable-layer2: [ 0, 31 ]
+auto-start-time: 60
 elimination-intervals: [ 600, 240, 240, 240, 240, 240 ]
 
 capturable:
@@ -39,6 +40,7 @@ chicken:
   data1: 0
   type2: 0
   data2: 0
+  food-item: ""
 
 cow:
   spawn-x: -32
@@ -51,6 +53,7 @@ cow:
   data1: 4
   type2: 0
   data2: 0  
+  food-item: ""
 
 ocelot:
   spawn-x: 32
@@ -63,6 +66,7 @@ ocelot:
   data1: 0
   type2: 31
   data2: 1
+  food-item: ""
   
 pig:
   spawn-x: 90
@@ -76,6 +80,7 @@ pig:
   data1: 0
   type2: 0
   data2: 0
+  food-item: ""
   
 sheep:
   spawn-x: 32
@@ -88,6 +93,7 @@ sheep:
   data1: 6
   type2: 0
   data2: 0
+  food-item: ""
   
 squid:
   spawn-x: 90
@@ -100,6 +106,7 @@ squid:
   data1: 0
   type2: 0
   data2: 0
+  food-item: ""
   
 wolf:
   spawn-x: 90
@@ -112,3 +119,4 @@ wolf:
   data1: 0
   type2: 0
   data2: 0
+  food-item: ""

@@ -2,6 +2,8 @@ name: BarnYardBlitz
 version: 1.0
 main: com.nisovin.barnyard.BarnYardBlitz
 
+depend: [MagicSpells]
+
 commands:
     score:
         description: Check the score

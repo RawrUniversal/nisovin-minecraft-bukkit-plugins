@@ -48,6 +48,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -57,6 +58,9 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.Util;
 
 public class BarnYardBlitz extends JavaPlugin implements Listener {
 	
@@ -109,8 +113,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	static int areaSize = 64;
 	int fieldY = 3;
 	int buffInterval = 100;
-	int foodInterval = 200;
-	int foodIntervalBasedOnBuffInterval = 2;
+	int foodPerBuffTick = 4;
 	int captureInterval = 200;
 	float captureRatio = 0.9F;
 	static int noCaptureBorder = 16;
@@ -139,6 +142,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	Map<EntityType, String[]> spawnCommands;
 	String[] pigCaptainCommands = new String[] {};
 	Map<EntityType, String[]> captureCommands;
+	Map<EntityType, ItemStack> foodItems;
 	
 	Map<String, EntityType> playersToTeams;
 	Map<EntityType, Set<String>> teamsToPlayers;
@@ -176,6 +180,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		initCommands = new HashMap<EntityType, String[]>();
 		spawnCommands = new HashMap<EntityType, String[]>();
 		captureCommands = new HashMap<EntityType, String[]>();
+		foodItems = new HashMap<EntityType, ItemStack>();
 		
 		playersToTeams = new HashMap<String, EntityType>();
 		teamsToPlayers = new HashMap<EntityType, Set<String>>();
@@ -207,8 +212,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		areaSize = config.getInt("area-size", areaSize);
 		fieldY = config.getInt("field-y", fieldY);
 		buffInterval = config.getInt("buff-interval", buffInterval);
-		foodInterval = config.getInt("food-interval", foodInterval);
-		foodIntervalBasedOnBuffInterval = foodInterval / buffInterval;
+		foodPerBuffTick = config.getInt("food-per-buff-tick", foodPerBuffTick);
 		captureInterval = config.getInt("capture-interval", captureInterval);
 		captureRatio = (float)config.getDouble("capture-ratio", captureRatio);
 		noCaptureBorder = config.getInt("no-capture-border", noCaptureBorder);
@@ -305,6 +309,23 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		wolfType2 = config.getInt("wolf.type2", wolfType2);
 		wolfData2 = (byte)config.getInt("wolf.data2", wolfData2);
 		
+		// get food items
+		for (EntityType team : validTeams) {
+			String foodStr = config.getString(team.name().toLowerCase() + ".food-item");
+			if (foodStr != null && !foodStr.isEmpty()) {
+				String[] foodData = Util.splitParams(foodStr);
+				ItemStack foodItem = Util.getItemStackFromString(foodData[0]);
+				if (foodItem != null && foodItem.getTypeId() != 0) {
+					if (foodData.length > 1) {
+						foodItem.setAmount(Integer.parseInt(foodData[1]));
+					} else {
+						foodItem.setAmount(1);
+					}
+					foodItems.put(team, foodItem);
+				}
+			}			
+		}
+		
 		// set team names
 		teamNames.put(EntityType.CHICKEN, ChatColor.YELLOW + "Chicken");
 		teamNames.put(EntityType.COW, ChatColor.RED + "Cow");
@@ -371,6 +392,16 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		} catch (ClassNotFoundException e) {
 			getLogger().warning("BarnYardBlitz needs an update! Scoreboard and dragon timer are disabled.");
 			volatileCode = null;
+		}
+		
+		// auto start
+		int autoStartTime = config.getInt("auto-start-time", 0);
+		if (autoStartTime > 0) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+				public void run() {
+					startGame();
+				}
+			}, autoStartTime * 20);
 		}
 		
 	}
@@ -693,28 +724,31 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 					EntityType team = playersToTeams.get(player.getName().toLowerCase());
 					if (team != null) {
 						if (team == EntityType.COW) {
-							player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
+							MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
 						} else if (team == EntityType.WOLF) {
 							long time = player.getWorld().getTime();
 							if (time > 13000 && time < 23000) {
-								player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, buffInterval + 10, 0), true);
-								player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 1), true);
+								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.INCREASE_DAMAGE, buffInterval + 10, 0), true);
+								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 1), true);
 							}
 						} else if (team == EntityType.SQUID) {
 							Material type = player.getLocation().getBlock().getType();
 							if (type != Material.WATER && type != Material.STATIONARY_WATER) {
-								player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, buffInterval + 10, 1), true);
+								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.SLOW, buffInterval + 10, 1), true);
 							}
 						}
 						EntityType areaTeam = capturedAreasToTeams.get(new CapturedArea(player.getLocation()));
 						if (areaTeam != null) {
 							if (areaTeam == team) {
-								player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, buffInterval + 10, 0), true);
+								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, buffInterval + 10, 0), true);
+								int hunger = player.getFoodLevel() + foodPerBuffTick;
+								if (hunger > 19) hunger = 19;
+								player.setFoodLevel(hunger);
+								player.setSaturation(10);
 							}
 							if (areaTeam == EntityType.COW) {
-								player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
+								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
 							}
-							player.setFoodLevel(player.getFoodLevel() + (team == EntityType.COW ? 6 : 4));
 						}
 					}
 				}
@@ -745,45 +779,6 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		
 		gameStarted = true;
 	}
-	
-	/*public void chooseRandomHotZone() {
-		List<CapturedArea> areas = new ArrayList<CapturedArea>(capturedAreaValues.keySet());
-		if (barnArea != null) areas.remove(barnArea);
-		if (areas.size() > 0) {
-			CapturedArea area = areas.get(random.nextInt(areas.size()));
-			setHotZone(area);
-			getServer().broadcastMessage(ChatColor.GOLD + capturedAreaNames.get(area) + " is the new hot zone!");
-		} else {
-			setHotZone(null);
-		}
-	}
-	
-	private BlockFace[] faces = new BlockFace[] { BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_WEST, BlockFace.NORTH_EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST };
-	public void setHotZone(CapturedArea area) {
-		if (barnArea != null) {
-			Location loc = barnArea.getHighCenter(world);
-			if (loc.getBlockY() < fieldY + 20) {
-				loc.setY(loc.getY() + 10);
-			}
-			Block b = loc.getBlock();
-			for (BlockFace face : faces) {
-				b.getRelative(face).setType(Material.AIR);
-			}
-			b.getRelative(BlockFace.UP).setType(Material.AIR);
-		}
-		if (area != null) {
-			Location loc = area.getHighCenter(world);
-			if (loc.getBlockY() < fieldY + 20) {
-				loc.setY(loc.getY() + 10);
-			}
-			Block b = loc.getBlock();
-			for (BlockFace face : faces) {
-				b.getRelative(face).setType(Material.DIAMOND_BLOCK);
-			}
-			b.getRelative(BlockFace.UP).setType(Material.BEACON);
-		}
-		barnArea = area;
-	}*/
 	
 	public void putPlayerInTeam(Player player, EntityType team) {
 		putPlayerInTeam(player, team, true);
@@ -941,28 +936,30 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		// count em up
 		long start = System.currentTimeMillis();
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			EntityType team = playersToTeams.get(player.getName().toLowerCase());
-			if (team == null) continue;
-			CapturedArea area = new CapturedArea(player.getLocation());
-			if (!capturedAreaValues.containsKey(area)) continue;
-			if (!area.inCaptureArea(player.getLocation())) continue;
-			Map<EntityType, Integer> areaCounts = counts.get(area);
-			if (areaCounts == null) {
-				areaCounts = new HashMap<EntityType, Integer>();
-				areaCounts.put(team, team == EntityType.COW ? 2 : 1);
-				counts.put(area, areaCounts);
-			} else if (areaCounts.containsKey(team)) {
-				int count = areaCounts.get(team);
-				areaCounts.put(team, count + (team == EntityType.COW ? 2 : 1));
-			} else {
-				areaCounts.put(team, 1);
+			if (player.isValid()) {
+				EntityType team = playersToTeams.get(player.getName().toLowerCase());
+				if (team == null) continue;
+				CapturedArea area = new CapturedArea(player.getLocation());
+				if (!capturedAreaValues.containsKey(area)) continue;
+				if (!area.inCaptureArea(player.getLocation())) continue;
+				Map<EntityType, Integer> areaCounts = counts.get(area);
+				if (areaCounts == null) {
+					areaCounts = new HashMap<EntityType, Integer>();
+					areaCounts.put(team, team == EntityType.COW ? 2 : 1);
+					counts.put(area, areaCounts);
+				} else if (areaCounts.containsKey(team)) {
+					int count = areaCounts.get(team);
+					areaCounts.put(team, count + (team == EntityType.COW ? 2 : 1));
+				} else {
+					areaCounts.put(team, 1);
+				}
+				List<Player> players = playersInAreas.get(area);
+				if (players == null) {
+					players = new ArrayList<Player>();
+					playersInAreas.put(area, players);
+				}
+				players.add(player);
 			}
-			List<Player> players = playersInAreas.get(area);
-			if (players == null) {
-				players = new ArrayList<Player>();
-				playersInAreas.put(area, players);
-			}
-			players.add(player);
 		}
 		captureTime1 += (System.currentTimeMillis() - start);
 		captureIterations++;
@@ -1183,13 +1180,6 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		}
 	}
 	
-	/*@EventHandler
-	public void onPlayerLogin(PlayerLoginEvent event) {
-		if (gameEnded) {
-			event.disallow(Result.KICK_OTHER, "The game has already ended.");
-		}
-	}*/
-	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (gameStarted) {
@@ -1244,9 +1234,9 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		event.setDroppedExp(0);
 		event.setDeathMessage(null);
 		
-		// add kill
 		Player killer = event.getEntity().getKiller();
 		if (killer != null) {
+			// add kill
 			EntityType team = playersToTeams.get(killer.getName().toLowerCase());
 			if (team != null) {
 				int kills = 1;
@@ -1254,6 +1244,14 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 					kills = teamKills.get(team) + 1;
 				}
 				teamKills.put(team, kills);
+			}
+			// give food item
+			EntityType deadTeam = playersToTeams.get(event.getEntity().getName().toLowerCase());
+			if (deadTeam != null) {
+				ItemStack food = foodItems.get(deadTeam);
+				if (food != null) {
+					killer.getInventory().addItem(food);
+				}
 			}
 		}
 		
@@ -1327,6 +1325,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	}
 	
 	public void endGame() {
+		System.out.println("Barnyard End: asdf8907sdfbn3lkasdf83");
 		//stopGame();
 		//gameEnded = true;
 		//for (Player p : Bukkit.getOnlinePlayers()) {

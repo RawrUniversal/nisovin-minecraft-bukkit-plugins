@@ -26,7 +26,6 @@ public class Eliminator implements Runnable {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					public void run() {
 						plugin.calculateScoresAndDoElimination();
-						//plugin.chooseRandomHotZone();
 					}
 				}, 1);
 			}
@@ -35,13 +34,12 @@ public class Eliminator implements Runnable {
 					plugin.stopGame();
 				}
 			}, 5);
-			Thread.sleep(20000);
+			Thread.sleep(10000);
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				public void run() {
 					plugin.endGame();
 				}
 			});
-			//plugin.setHotZone(null);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
