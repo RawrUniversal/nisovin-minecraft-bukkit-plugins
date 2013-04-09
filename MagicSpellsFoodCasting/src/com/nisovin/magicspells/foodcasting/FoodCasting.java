@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -30,6 +31,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.Util;
@@ -43,6 +45,15 @@ public class FoodCasting extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onEnable() {
+		load();
+	}
+	
+	@Override
+	public void onDisable() {
+		unload();
+	}
+	
+	public void load() {
 		foodCastItems = new HashMap<CastItem, Spell>();
 		eating = new HashMap<String, Long>();
 		spellPower = new HashMap<String, Float>();
@@ -81,8 +92,20 @@ public class FoodCasting extends JavaPlugin implements Listener {
 		}
 	}
 	
+	public void unload() {
+		ProtocolLibrary.getProtocolManager().removePacketListener(packetListener);
+		HandlerList.unregisterAll((Listener)this);
+	}
+	
+	@EventHandler
+	public void onMagicSpellsLoad(MagicSpellsLoadedEvent event) {
+		unload();
+		load();
+	}
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+		((Player)sender).sendMessage("Food: " + ((Player)sender).getFoodLevel());
 		((Player)sender).setFoodLevel(4);
 		return true;
 	}
@@ -117,9 +140,12 @@ public class FoodCasting extends JavaPlugin implements Listener {
 		if (eating.containsKey(event.getPlayer().getName())) {
 			eating.remove(event.getPlayer().getName());
 			event.setCancelled(true);
+			final int food = event.getPlayer().getFoodLevel();
+			event.getPlayer().setFoodLevel(0);
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
 					castWithPower(event.getPlayer(), 1.0F);
+					event.getPlayer().setFoodLevel(food);
 				}
 			});
 		}
@@ -135,20 +161,29 @@ public class FoodCasting extends JavaPlugin implements Listener {
 	
 	class PacketListener extends PacketAdapter {
 		
+		Plugin plugin;
+		
 		public PacketListener(Plugin plugin) {
 			super(plugin, ConnectionSide.CLIENT_SIDE, ListenerPriority.NORMAL, 14);
+			this.plugin = plugin;
 		}
 		
 		@Override
-		public void onPacketReceiving(PacketEvent event) {
+		public void onPacketReceiving(final PacketEvent event) {
 			if (eating.containsKey(event.getPlayer().getName())) {
-				long eatStart = eating.remove(event.getPlayer().getName());
+				final long eatStart = eating.remove(event.getPlayer().getName());
 				Packet14BlockDig packet = (Packet14BlockDig)event.getPacket().getHandle();
 				if (packet.e == 5 && packet.a == 0 && packet.b == 0 && packet.c == 0 && packet.face == 255) {
-					long eatDuration = (System.currentTimeMillis() - eatStart);
-					float power = eatDuration / 1800F;
-					if (power > 0.9) power = 0.9F;
-					castWithPower(event.getPlayer(), power);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						public void run() {
+							long eatDuration = (System.currentTimeMillis() - eatStart);
+							if (eatDuration > 300) {
+								float power = eatDuration / 1800F;
+								if (power > 0.9) power = 0.9F;
+								castWithPower(event.getPlayer(), power);
+							}
+						}
+					});
 				}
 			}
 		}

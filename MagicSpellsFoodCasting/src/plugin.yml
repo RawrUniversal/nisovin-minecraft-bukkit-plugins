@@ -2,3 +2,6 @@ name: MagicSpellsFoodCasting
 version: 1.0
 main: com.nisovin.magicspells.foodcasting.FoodCasting
 depend: [ MagicSpells, ProtocolLib ]
+commands:
+    setfood:
+       description: asdf
