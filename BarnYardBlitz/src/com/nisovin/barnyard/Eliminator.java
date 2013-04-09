@@ -31,12 +31,13 @@ public class Eliminator implements Runnable {
 			}
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				public void run() {
-					plugin.stopGame();
+					plugin.announceWinner();
 				}
 			}, 5);
-			Thread.sleep(10000);
+			Thread.sleep(15000);
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				public void run() {
+					plugin.stopGame();
 					plugin.endGame();
 				}
 			});

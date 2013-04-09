@@ -39,9 +39,11 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -345,7 +347,6 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		for (EntityType team : teamsToPlayers.keySet()) {
 			CapturedArea area = areas.remove(random.nextInt(areas.size()));
 			teamDefaultSpawns.put(team, area);
-			captureArea(area, team);
 			getLogger().info("Starting area for " + team.name().toLowerCase() + " is " + capturedAreaNames.get(area));
 		}
 		
@@ -680,9 +681,6 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			CapturedArea area = teamDefaultSpawns.get(team);
 			captureArea(area, team);
 		}
-		
-		// choose barn
-		//chooseRandomHotZone();
 		
 		// get players
 		List<Player> players = Arrays.asList(getServer().getOnlinePlayers());
@@ -1218,7 +1216,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 						putPlayerInRandomTeam(player);
 					} else {
 						runSpawnCommands(player, team);
-						player.sendMessage(ChatColor.GOLD + "You are on team " + team.name().toLowerCase());
+						player.sendMessage(ChatColor.GOLD + "You are on team " + teamNames.get(team));
 					}
 					if (volatileCode != null) {
 						volatileCode.sendEnderDragonToPlayer(player);
@@ -1284,6 +1282,12 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		event.setCancelled(true);
 	}
 	
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent event) {
+		if (event.getPlayer().isOp()) return;
+		event.setCancelled(true);
+	}
+	
 	@EventHandler(ignoreCancelled=true)
 	public void onExplode(EntityExplodeEvent event) {
 		Iterator<Block> iter = event.blockList().iterator();
@@ -1307,6 +1311,12 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
+	public void onItemSpawn(ItemSpawnEvent event) {
+		event.setCancelled(true);
+		event.getEntity().remove();
+	}
+	
+	@EventHandler
 	public void onBlockFade(BlockFadeEvent event) {
 		event.setCancelled(true);
 	}
@@ -1314,6 +1324,29 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onBlockSpread(BlockSpreadEvent event) {
 		event.setCancelled(true);
+	}
+	
+	public void announceWinner() {
+		TreeSet<TeamScore> scores = getScores();
+		TeamScore winningScore = scores.last();
+		if (winningScore != null) {
+			EntityType winner = winningScore.getTeam();
+			Bukkit.broadcastMessage(ChatColor.GOLD + "TEAM " + teamNames.get(winner).toUpperCase() + ChatColor.GOLD + " WINS!!!");
+			if (!teamColors.containsKey(winner)) return;
+			final int color = teamColors.get(winner);
+			Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+				public void run() {
+					for (CapturedArea area : capturedAreaNames.keySet()) {
+						Firework firework = world.spawn(area.getHighCenter(world), Firework.class);
+						FireworkMeta meta = firework.getFireworkMeta();
+						meta.setPower(1);
+						meta.addEffect(FireworkEffect.builder().with(Type.BALL_LARGE).withColor(Color.fromRGB(color)).build());
+						meta.addEffect(FireworkEffect.builder().with(Type.BURST).withColor(Color.fromRGB(color)).withFlicker().build());
+						firework.setFireworkMeta(meta);
+					}
+				}
+			}, 30, 30);
+		}
 	}
 	
 	public void stopGame() {
@@ -1326,11 +1359,6 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	
 	public void endGame() {
 		System.out.println("Barnyard End: asdf8907sdfbn3lkasdf83");
-		//stopGame();
-		//gameEnded = true;
-		//for (Player p : Bukkit.getOnlinePlayers()) {
-		//	p.kickPlayer("The game has ended.");
-		//}
 	}
 	
 	@Override
