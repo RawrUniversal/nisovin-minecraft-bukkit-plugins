@@ -1184,16 +1184,20 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			final Player player = event.getPlayer();
 			EntityType team = playersToTeams.get(player.getName().toLowerCase());
 			if (team == null || !teamsToPlayers.containsKey(team)) {
-				putPlayerInRandomTeam(player);
-				if (volatileCode != null) {
-					volatileCode.sendEnderDragonToPlayer(player);
-				}
+				Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+					public void run() {
+						putPlayerInRandomTeam(player);
+						if (volatileCode != null) {
+							volatileCode.sendEnderDragonToPlayer(player);
+						}
+					}
+				}, 1);
 			} else {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 					public void run() {
 						player.setHealth(0);
 					}
-				});
+				}, 1);
 			}
 		}
 	}
