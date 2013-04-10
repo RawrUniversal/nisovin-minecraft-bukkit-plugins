@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -124,7 +125,7 @@ public class DisguiseSpell extends TargetedEntitySpell {
 		}
 		entityType = EntityType.fromName(type);
 		showPlayerName = getConfigBoolean("show-player-name", false);
-		nameplateText = getConfigString("nameplate-text", "");
+		nameplateText = ChatColor.translateAlternateColorCodes('&', getConfigString("nameplate-text", ""));
 		preventPickups = getConfigBoolean("prevent-pickups", true);
 		friendlyMobs = getConfigBoolean("friendly-mobs", true);
 		undisguiseOnDeath = getConfigBoolean("undisguise-on-death", true);

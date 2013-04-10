@@ -433,7 +433,7 @@ public class DisguiseManager implements Listener {
 				final Player player = event.getPlayer();
 				final String name = event.getPacket().getStrings().getValues().get(0);
 				final Disguise disguise = disguises.get(name.toLowerCase());
-				if (disguise != null) {
+				if (player != null && disguise != null) {
 					event.setCancelled(true);
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
