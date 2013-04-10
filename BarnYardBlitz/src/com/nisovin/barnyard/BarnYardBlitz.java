@@ -784,6 +784,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		if (volatileCode != null) {
 			updateScoreboard(getScores());
 		}
+		pointsPerKill *= (100F / Bukkit.getOnlinePlayers().length);
 		
 		gameStarted = true;
 	}
