@@ -159,6 +159,10 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	int captureIterations = 0;
 	long spawnTime = 0;
 	long spawnIterations = 0;
+	long scoreboardTime = 0;
+	int scoreboardIterations = 0;
+	long dragonTime = 0;
+	int dragonIterations = 0;
 	
 	Scoreboard scoreboard;
 	Objective objective;
@@ -646,6 +650,12 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			if (spawnIterations > 0) {
 				sender.sendMessage(ChatColor.GOLD + "  Spawn calculation: " + (spawnTime/spawnIterations) + " (" + spawnTime + "/" + spawnIterations + ")");
 			}
+			if (scoreboardIterations > 0) {
+				sender.sendMessage(ChatColor.GOLD + "  Scoreboard: " + (scoreboardTime/scoreboardIterations) + " (" + scoreboardTime + "/" + scoreboardIterations + ")");
+			}
+			if (dragonIterations > 0) {
+				sender.sendMessage(ChatColor.GOLD + "  Timer updating: " + (dragonTime/dragonIterations) + " (" + dragonTime + "/" + dragonIterations + ")");
+			}
 			sender.sendMessage(ChatColor.GOLD + "Current block update queue: " + blockQueue.size());
 		} else {
 			sender.sendMessage("HUH?");
@@ -1003,7 +1013,10 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		if (volatileCode != null) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
+					long start = System.currentTimeMillis();
 					updateScoreboard(getScores());
+					scoreboardTime += (System.currentTimeMillis() - start);
+					scoreboardIterations++;
 				}
 			}, 14);
 		}
@@ -1012,8 +1025,11 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		if (volatileCode != null) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
+					long start = System.currentTimeMillis();
 					int health = 200 - (int) (eliminator.getPercentElapsedTime() * 200);
 					volatileCode.setDragonHealth(health);
+					dragonTime += (System.currentTimeMillis() - start);
+					dragonIterations++;
 				}
 			}, 21);
 		}
