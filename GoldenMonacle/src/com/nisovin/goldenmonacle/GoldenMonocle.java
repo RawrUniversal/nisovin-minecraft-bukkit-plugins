@@ -227,6 +227,8 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		if (commandName.equals("startgame")) {
 			startGame();
 			sender.sendMessage("Game started!");
+		} else if (commandName.equals("stopgame")) {
+			endGame();
 		} else if (commandName.equals("addspawnpoint")) {
 			if (sender instanceof Player) {
 				Player player = (Player)sender;
@@ -344,16 +346,36 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		}
 		
 		// run game timer
-		if (volatileCode != null && gameDuration > 0) {
-			volatileCode.sendEnderDragonToAllPlayers();
+		if (gameDuration > 0) {
+			if (volatileCode != null) {
+				volatileCode.sendEnderDragonToAllPlayers();
+			}
 			Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 				public void run() {
 					long elapsed = System.currentTimeMillis() - gameStartedTime;
 					double remainingPct = 1.0 - ((double)elapsed / (double)gameDuration);
-					volatileCode.setDragonHealth((int)(remainingPct * 200));
+					if (volatileCode != null) {
+						volatileCode.setDragonHealth((int)(remainingPct * 200));
+					}
+					if (elapsed >= gameDuration) {
+						endGame();
+					}
 				}
 			}, 0, 200);
 		}
+	}
+	
+	public void endGame() {
+		gameStarted = false;
+		Bukkit.broadcastMessage(ChatColor.GOLD + "GAME OVER!");
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			player.getInventory().clear();
+		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+				System.out.println("Golden Monocle End: asdf8907sdfbn3lkasdf83");
+			}
+		}, 200);
 	}
 	
 	public void respawnPlayer(final Player player) {

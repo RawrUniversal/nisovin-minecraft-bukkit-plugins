@@ -9,6 +9,10 @@ commands:
         description: Starts the game
         usage: /<command>
         permission: monocle.admin
+    stopgame:
+        description: Ends the game
+        usage: /<command>
+        permission: monocle.admin
     addspawnpoint:
         description: Adds a spawn point
         usage: /<command>
