@@ -5,10 +5,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,9 +27,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -74,6 +80,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	VolatileCode volatileCode;
 	
 	Map<String, String> lastDamagers;
+	Set<String> deadPlayers;
 	
 	@Override
 	public void onEnable() {
@@ -145,6 +152,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		// initialize stuff
 		scoreboardHandler = new ScoreboardHandler(this);		
 		lastDamagers = new HashMap<String, String>();
+		deadPlayers = new HashSet<String>();
 		
 		// load spawn points
 		deadSpawn = world.getSpawnLocation();
@@ -194,6 +202,15 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		} catch (ClassNotFoundException e) {
 			getLogger().warning("GoldenMonocle needs an update! Dragon timer is disabled.");
 			volatileCode = null;
+		}
+		
+		// auto start game
+		if (autoStartTime > 0) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+				public void run() {
+					startGame();
+				}
+			}, autoStartTime * 20);
 		}
 	}
 	
@@ -340,6 +357,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	}
 	
 	public void respawnPlayer(final Player player) {
+		deadPlayers.add(player.getName());
 		player.getInventory().clear();
 		player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 5000, 0));
 		player.teleport(deadSpawn);
@@ -356,6 +374,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		player.removePotionEffect(PotionEffectType.INVISIBILITY);
 		giveRandomItems(player);
 		teleportToRandomSpawn(player);
+		deadPlayers.remove(player.getName());
 	}
 	
 	public void giveRandomItems(Player player) {
@@ -416,12 +435,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		Entity damaged = event.getEntity();
 		if (damaged.getType() == EntityType.ENDER_CRYSTAL) {
 			event.setCancelled(true);
-			System.out.println("dam " + event.getDamager());
 			if (event.getDamager().getType() == EntityType.PLAYER) {
 				Player player = (Player)event.getDamager();
 				event.getEntity().remove();
@@ -429,7 +447,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 				dropsSpawned--;
 			}
 		} else if (damaged.getType() == EntityType.PLAYER && event.getDamager().getType() == EntityType.PLAYER) {
-			lastDamagers.put(((Player)damaged).getName(), ((Player)event.getDamager()).getName());
+			if (deadPlayers.contains(((Player)damaged).getName()) || deadPlayers.contains(((Player)event.getDamager()).getName())) {
+				event.setCancelled(true);
+			} else {
+				lastDamagers.put(((Player)damaged).getName(), ((Player)event.getDamager()).getName());
+			}
 		}
 	}
 	
@@ -452,6 +474,27 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	public void onItemSpawn(ItemSpawnEvent event) {
 		event.setCancelled(true);
 		event.getEntity().remove();
+	}
+	
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event) {
+		if (!event.getPlayer().isOp()) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent event) {
+		if (!event.getPlayer().isOp()) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onInteract(PlayerInteractEvent event) {
+		if (!event.getPlayer().isOp() && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+			event.setCancelled(true);
+		}
 	}
 	
 	private void saveSpawnPoints(CommandSender sender) {
