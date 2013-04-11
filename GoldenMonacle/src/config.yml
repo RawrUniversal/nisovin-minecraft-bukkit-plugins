@@ -1,0 +1,18 @@
+auto-start-time: 0
+game-duration: 600
+spawn-delay: 200
+
+weapon-items:
+  - stone
+  - brick
+heal-items:
+  - bucket
+  - potion
+weapon-item-count: 2
+heal-item-count: 1
+
+drop-items:
+  - blaze_rod
+  - stick
+drop-item-interval: 600
+max-drop-count: 3

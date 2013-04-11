@@ -1,0 +1,40 @@
+name: GoldenMonocle
+version: 1.0
+main: com.nisovin.goldenmonacle.GoldenMonocle
+
+depend: [MagicSpells]
+
+commands:
+    startgame:
+        description: Starts the game
+        usage: /<command>
+        permission: monocle.admin
+    addspawnpoint:
+        description: Adds a spawn point
+        usage: /<command>
+        permission: monocle.admin
+    removespawnpoint:
+        description: Removes a nearby spawn point
+        usage: /<command>
+        permission: monocle.admin
+    viewspawnpoints:
+        description: Views spawn points
+        usage: /<command>
+        permission: monocle.admin
+    adddroppoint:
+        description: Adds a drop point
+        usage: /<command>
+        permission: monocle.admin
+    removedroppoint:
+        description: Removes a nearby drop point
+        usage: /<command>
+        permission: monocle.admin
+    viewdroppoints:
+        description: Views drop points
+        usage: /<command>
+        permission: monocle.admin
+
+permissions:
+    monocle.admin:
+        description: Allows usage of admin commands
+        default: op
