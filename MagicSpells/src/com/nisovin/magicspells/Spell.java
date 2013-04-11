@@ -866,7 +866,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
 		// check if pvp is disabled
-		if (targetPlayers && !isBeneficial() && !player.getWorld().getPVP()) {
+		if (MagicSpells.checkWorldPvpFlag && targetPlayers && !isBeneficial() && !player.getWorld().getPVP()) {
 			targetPlayers = false;
 		}
 		
