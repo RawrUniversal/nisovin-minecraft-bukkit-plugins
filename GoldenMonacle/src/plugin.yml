@@ -42,3 +42,6 @@ permissions:
     monocle.admin:
         description: Allows usage of admin commands
         default: op
+    monocle.ignore:
+        description: Causes the player to be ignored by the game
+        default: false

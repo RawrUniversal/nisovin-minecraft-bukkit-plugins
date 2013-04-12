@@ -324,6 +324,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		// teleport players
 		List<Location> locs = new ArrayList<Location>(spawnPoints);
 		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (p.hasPermission("monocle.ignore")) continue;
 			p.setHealth(p.getMaxHealth());
 			p.setFoodLevel(20);			
 			giveRandomItems(p);
@@ -371,6 +372,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		gameStarted = false;
 		Bukkit.broadcastMessage(ChatColor.GOLD + "GAME OVER!");
 		for (Player player : Bukkit.getOnlinePlayers()) {
+			if (player.hasPermission("monocle.ignore")) continue;
 			player.getInventory().clear();
 		}
 		Bukkit.getScheduler().cancelTasks(this);
@@ -434,6 +436,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (gameStarted) {
 			final Player player = event.getPlayer();
+			if (player.hasPermission("monocle.ignore")) return;
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
 					respawnPlayer(player);
@@ -453,6 +456,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		
 		// give scores
 		Player killed = event.getEntity();
+		if (killed.hasPermission("monocle.ignore")) return;
 		Player killer = killed.getKiller();
 		if (killer == null) {
 			String lastDamager = lastDamagers.get(killed.getName());
@@ -460,6 +464,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 				killer = Bukkit.getPlayerExact(lastDamager);
 			}
 		}
+		if (killer != null && killer.hasPermission("monocle.ignore")) return;
 		int score = scoreboardHandler.getScore(killed);
 		scoreboardHandler.setScore(killed, 0);
 		if (killer != null) {
@@ -475,7 +480,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		}
 		Entity damaged = event.getEntity();
 		if (damaged.getType() == EntityType.PLAYER && event.getDamager().getType() == EntityType.PLAYER) {
-			if (deadPlayers.contains(((Player)damaged).getName()) || deadPlayers.contains(((Player)event.getDamager()).getName())) {
+			Player pDamaged = (Player)damaged;
+			Player pDamager = (Player)event.getDamager();
+			if (deadPlayers.contains(pDamaged.getName()) || deadPlayers.contains(pDamager.getName())) {
+				event.setCancelled(true);
+			} else if (pDamaged.hasPermission("monocle.ignore") || pDamager.hasPermission("monocle.ignore")) {
 				event.setCancelled(true);
 			} else {
 				lastDamagers.put(((Player)damaged).getName(), ((Player)event.getDamager()).getName());
@@ -484,6 +493,10 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 			event.setCancelled(true);
 			if (event.getDamager().getType() == EntityType.PLAYER) {
 				Player player = (Player)event.getDamager();
+				if (player.hasPermission("monocle.ignore")) {
+					event.setCancelled(true);
+					return;
+				}
 				if (deadPlayers.contains(player.getName())) {
 					return;
 				}
@@ -498,6 +511,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		if (gameStarted) {
 			final Player player = event.getPlayer();
+			if (player.hasPermission("monocle.ignore")) return;
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
 					respawnPlayer(player);
