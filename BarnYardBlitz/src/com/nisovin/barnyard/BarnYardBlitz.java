@@ -729,6 +729,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 			public void run() {
 				long start = System.currentTimeMillis();
 				for (Player player : Bukkit.getOnlinePlayers()) {
+					if (player.hasPermission("barnyard.ignore")) continue;
 					EntityType team = playersToTeams.get(player.getName().toLowerCase());
 					if (team != null) {
 						if (team == EntityType.COW) {
@@ -952,7 +953,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 		// count em up
 		long start = System.currentTimeMillis();
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (player.isValid()) {
+			if (player.isValid() && !player.hasPermission("barnyard.ignore")) {
 				EntityType team = playersToTeams.get(player.getName().toLowerCase());
 				if (team == null) continue;
 				CapturedArea area = new CapturedArea(player.getLocation());
@@ -1206,6 +1207,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (gameStarted) {
 			final Player player = event.getPlayer();
+			if (player.hasPermission("barnyard.ignore")) return;
 			EntityType team = playersToTeams.get(player.getName().toLowerCase());
 			if (team == null || !teamsToPlayers.containsKey(team)) {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -1230,6 +1232,7 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		if (gameStarted) {
 			final Player player = event.getPlayer();
+			if (player.hasPermission("barnyard.ignore")) return;
 			final EntityType team = playersToTeams.get(player.getName().toLowerCase());
 			
 			// set spawn location

@@ -64,6 +64,9 @@ commands:
         permission: barnyard.gametimings
     
 permissions:
+    barnyard.ignore:
+        description: The player is ignored by the game.
+        default: false
     barnyard.score:
         description: Allows usage of the score command
         default: op
