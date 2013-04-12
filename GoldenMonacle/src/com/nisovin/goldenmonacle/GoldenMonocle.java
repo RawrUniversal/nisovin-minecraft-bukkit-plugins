@@ -324,6 +324,8 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		// teleport players
 		List<Location> locs = new ArrayList<Location>(spawnPoints);
 		for (Player p : Bukkit.getOnlinePlayers()) {
+			p.setHealth(p.getMaxHealth());
+			p.setFoodLevel(20);			
 			giveRandomItems(p);
 			if (locs.size() == 0) {
 				locs = new ArrayList<Location>(spawnPoints);
@@ -371,6 +373,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			player.getInventory().clear();
 		}
+		Bukkit.getScheduler().cancelTasks(this);
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
 				System.out.println("Golden Monocle End: asdf8907sdfbn3lkasdf83");
@@ -397,6 +400,8 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		giveRandomItems(player);
 		teleportToRandomSpawn(player);
 		deadPlayers.remove(player.getName());
+		player.setHealth(player.getMaxHealth());
+		player.setFoodLevel(20);
 	}
 	
 	public void giveRandomItems(Player player) {
@@ -415,7 +420,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	}
 	
 	public void teleportToRandomSpawn(Player player) {
-		Location spawnPoint = spawnPoints.get(random.nextInt(spawnPoints.size()));
+		Location spawnPoint = spawnPoints.get(random.nextInt(spawnPoints.size())).clone();
+		while (spawnPoint.getBlock().getType() == Material.AIR && spawnPoint.getY() > 1) {
+			spawnPoint.subtract(0, 1, 0);
+		}
+		spawnPoint.add(0, 1.5, 0);
 		player.setFlying(false);
 		player.setAllowFlight(false);
 		player.teleport(spawnPoint);
@@ -451,28 +460,36 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 				killer = Bukkit.getPlayerExact(lastDamager);
 			}
 		}
-		scoreboardHandler.modifyScore(killed, -1);
+		int score = scoreboardHandler.getScore(killed);
+		scoreboardHandler.setScore(killed, 0);
 		if (killer != null) {
-			scoreboardHandler.modifyScore(killer, 2);
+			scoreboardHandler.modifyScore(killer, score);
 		}
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		Entity damaged = event.getEntity();
-		if (damaged.getType() == EntityType.ENDER_CRYSTAL) {
+		if (!gameStarted) {
 			event.setCancelled(true);
-			if (event.getDamager().getType() == EntityType.PLAYER) {
-				Player player = (Player)event.getDamager();
-				event.getEntity().remove();
-				player.getInventory().addItem(dropItems.get(random.nextInt(dropItems.size())));
-				dropsSpawned--;
-			}
-		} else if (damaged.getType() == EntityType.PLAYER && event.getDamager().getType() == EntityType.PLAYER) {
+			return;
+		}
+		Entity damaged = event.getEntity();
+		if (damaged.getType() == EntityType.PLAYER && event.getDamager().getType() == EntityType.PLAYER) {
 			if (deadPlayers.contains(((Player)damaged).getName()) || deadPlayers.contains(((Player)event.getDamager()).getName())) {
 				event.setCancelled(true);
 			} else {
 				lastDamagers.put(((Player)damaged).getName(), ((Player)event.getDamager()).getName());
+			}
+		} else if (damaged.getType() == EntityType.ENDER_CRYSTAL) {
+			event.setCancelled(true);
+			if (event.getDamager().getType() == EntityType.PLAYER) {
+				Player player = (Player)event.getDamager();
+				if (deadPlayers.contains(player.getName())) {
+					return;
+				}
+				event.getEntity().remove();
+				player.getInventory().addItem(dropItems.get(random.nextInt(dropItems.size())));
+				dropsSpawned--;
 			}
 		}
 	}

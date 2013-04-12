@@ -50,16 +50,48 @@ public class ScoreboardHandler {
 	}
 	
 	public void modifyScore(Player player, int amount) {
-		String name = player.getName();
+		modifyScore(player.getName(), amount);
+	}
+	
+	public void modifyScore(String name, int amount) {
 		PlayerScore score = scoresMap.get(name);
 		if (score != null) {
 			scoresSorted.remove(score);
 			score.modifyScore(amount);
 		} else {
-			score = new PlayerScore(player, amount);
+			score = new PlayerScore(name, amount);
 			scoresMap.put(name, score);
 		}
 		scoresSorted.add(score);
+	}
+	
+	public void setScore(Player player, int amount) {
+		setScore(player.getName(), amount);
+	}
+	
+	public void setScore(String name, int amount) {
+		PlayerScore score = scoresMap.get(name);
+		if (score != null) {
+			scoresSorted.remove(score);
+			score.setScore(amount);
+		} else {
+			score = new PlayerScore(name, amount);
+			scoresMap.put(name, score);
+		}
+		scoresSorted.add(score);
+	}
+	
+	public int getScore(Player player) {
+		return getScore(player.getName());
+	}
+	
+	public int getScore(String name) {
+		PlayerScore score = scoresMap.get(name);
+		if (score != null) {
+			return score.score;
+		} else {
+			return 0;
+		}
 	}
 	
 	public void updateScoreboard() {
@@ -73,7 +105,9 @@ public class ScoreboardHandler {
 			players[i] = score.playerName;
 			scores[i] = score.score;
 			newTopPlayers.add(score.playerName);
-			if (++i >= numPlayersOnScoreboard) break;
+			if (++i >= numPlayersOnScoreboard) {
+				break;
+			}
 		}
 		
 		// remove players who are no longer in top score list

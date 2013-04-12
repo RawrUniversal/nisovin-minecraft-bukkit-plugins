@@ -12,6 +12,11 @@ public class PlayerScore implements Comparable<PlayerScore> {
 		this.score = score > 0 ? score : 0;
 	}
 	
+	public PlayerScore(String name, int score) {
+		this.playerName = name;
+		this.score = score > 0 ? score : 0;
+	}
+	
 	public void modifyScore(int amount) {
 		int newScore = score + amount;
 		if (newScore < 0) {
@@ -32,7 +37,7 @@ public class PlayerScore implements Comparable<PlayerScore> {
 		} else if (o.score < this.score) {
 			return -1;
 		} else {
-			return 0;
+			return o.playerName.compareTo(this.playerName);
 		}
 	}
 	
