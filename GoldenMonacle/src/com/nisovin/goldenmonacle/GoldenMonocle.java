@@ -31,10 +31,12 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -59,6 +61,10 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	List<Location> dropPoints;
 	Location deadSpawn;
 	int spawnDelay = 10*20;
+	
+	int pointsGainedPerKill = 1;
+	int pointsLostPerDeath = 8;
+	int pointsStolenPerKill = 8;
 	
 	List<ItemStack> weaponItems;
 	List<ItemStack> healItems;
@@ -111,6 +117,9 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		maxDropCount = config.getInt("max-drop-count", maxDropCount);
 		autoStartTime = config.getInt("auto-start-time", autoStartTime);
 		gameDuration = config.getInt("game-duration", gameDuration) * 1000;
+		pointsGainedPerKill = config.getInt("points-gained-per-kill", pointsGainedPerKill);
+		pointsStolenPerKill = config.getInt("points-stolen-per-kill", pointsStolenPerKill);
+		pointsLostPerDeath = config.getInt("points-lost-per-death", pointsLostPerDeath);
 		
 		// load weapon and healing items
 		weaponItems = new ArrayList<ItemStack>();
@@ -465,11 +474,17 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 			}
 		}
 		if (killer != null && killer.hasPermission("monocle.ignore")) return;
-		int score = scoreboardHandler.getScore(killed);
-		scoreboardHandler.setScore(killed, 0);
+		int stolen = scoreboardHandler.getScore(killed);
+		if (stolen > pointsStolenPerKill) stolen = pointsStolenPerKill;
+		scoreboardHandler.modifyScore(killed, -pointsLostPerDeath);
 		if (killer != null) {
-			scoreboardHandler.modifyScore(killer, score);
+			scoreboardHandler.modifyScore(killer, pointsGainedPerKill + stolen);
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		scoreboardHandler.modifyScore(event.getPlayer(), -pointsLostPerDeath);
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
@@ -541,6 +556,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		if (!event.getPlayer().isOp()) {
 			event.setCancelled(true);
 		}
+	}
+	
+	@EventHandler
+	public void onFoodChange(FoodLevelChangeEvent event) {
+		event.setFoodLevel(20);
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)

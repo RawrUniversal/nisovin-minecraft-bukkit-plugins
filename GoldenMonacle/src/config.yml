@@ -2,6 +2,10 @@ auto-start-time: 0
 game-duration: 600
 spawn-delay: 200
 
+points-gained-per-kill: 1
+points-stolen-per-kill: 8
+points-lost-per-death: 8
+
 weapon-items:
   - stone
   - brick
