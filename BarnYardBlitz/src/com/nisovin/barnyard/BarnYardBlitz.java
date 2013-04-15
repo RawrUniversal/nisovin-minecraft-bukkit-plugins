@@ -61,7 +61,6 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
-import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.util.Util;
 
 public class BarnYardBlitz extends JavaPlugin implements Listener {
@@ -733,30 +732,30 @@ public class BarnYardBlitz extends JavaPlugin implements Listener {
 					EntityType team = playersToTeams.get(player.getName().toLowerCase());
 					if (team != null) {
 						if (team == EntityType.COW) {
-							MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
+							player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10, true), true);
 						} else if (team == EntityType.WOLF) {
 							long time = player.getWorld().getTime();
 							if (time > 13000 && time < 23000) {
-								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.INCREASE_DAMAGE, buffInterval + 10, 0), true);
-								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 1), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, buffInterval + 10, 0, true), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, buffInterval + 10, 1, true), true);
 							}
 						} else if (team == EntityType.SQUID) {
 							Material type = player.getLocation().getBlock().getType();
 							if (type != Material.WATER && type != Material.STATIONARY_WATER) {
-								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.SLOW, buffInterval + 10, 1), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, buffInterval + 10, 1, true), true);
 							}
 						}
 						EntityType areaTeam = capturedAreasToTeams.get(new CapturedArea(player.getLocation()));
 						if (areaTeam != null) {
 							if (areaTeam == team) {
-								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, buffInterval + 10, 0), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, buffInterval + 10, 0, true), true);
 								int hunger = player.getFoodLevel() + foodPerBuffTick;
 								if (hunger > 19) hunger = 19;
 								player.setFoodLevel(hunger);
 								player.setSaturation(10);
 							}
 							if (areaTeam == EntityType.COW) {
-								MagicSpells.getVolatileCodeHandler().addPotionEffect(player, new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10), true);
+								player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, buffInterval + 10, -10, true), true);
 							}
 						}
 					}
