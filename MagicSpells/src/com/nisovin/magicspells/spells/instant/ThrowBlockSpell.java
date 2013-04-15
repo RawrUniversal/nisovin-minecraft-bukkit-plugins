@@ -41,6 +41,7 @@ public class ThrowBlockSpell extends InstantSpell {
 	boolean preventBlocks;
 	boolean callTargetEvent;
 	boolean checkPlugins;
+	String spellOnLand;
 	TargetedLocationSpell spell;
 	
 	Map<FallingBlock, FallingBlockInfo> fallingBlocks;
@@ -64,19 +65,19 @@ public class ThrowBlockSpell extends InstantSpell {
 		preventBlocks = getConfigBoolean("prevent-blocks", false);
 		callTargetEvent = getConfigBoolean("call-target-event", true);
 		checkPlugins = getConfigBoolean("check-plugins", false);
-		String spellOnLand = getConfigString("spell-on-land", null);
+		spellOnLand = getConfigString("spell-on-land", null);
+	}	
+	
+	@Override
+	public void initialize() {
 		if (spellOnLand != null && !spellOnLand.isEmpty()) {
 			Spell s = MagicSpells.getSpellByInternalName(spellOnLand);
 			if (s != null && s instanceof TargetedLocationSpell) {
 				spell = (TargetedLocationSpell)s;
 			} else {
-				MagicSpells.error("Invalid spell-on-land for " + spellName + " spell");
+				MagicSpells.error("Invalid spell-on-land for " + name + " spell");
 			}
 		}
-	}	
-	
-	@Override
-	public void initialize() {
 		if (fallDamage > 0 || removeBlocks || preventBlocks || spell != null) {
 			fallingBlocks = new HashMap<FallingBlock, ThrowBlockSpell.FallingBlockInfo>();
 			registerEvents(this);
