@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -23,6 +24,7 @@ public class ScoreboardHandler {
 	Map<String, PlayerScore> scoresMap;
 	TreeSet<PlayerScore> scoresSorted;
 	Set<String> currentTopPlayers;
+	String previousFirstPlace = "";
 	
 	Scoreboard scoreboard;
 	Objective objective;
@@ -101,7 +103,11 @@ public class ScoreboardHandler {
 		
 		// get top scores
 		int i = 0;
+		String firstPlace = null;
 		for (PlayerScore score : scoresSorted) {
+			if (i == 0) {
+				firstPlace = score.playerName;
+			}
 			players[i] = score.playerName;
 			scores[i] = score.score;
 			newTopPlayers.add(score.playerName);
@@ -125,6 +131,20 @@ public class ScoreboardHandler {
 			}
 		}
 		currentTopPlayers = newTopPlayers;
+		
+		// update compasses
+		if (firstPlace != null && !previousFirstPlace.equals(firstPlace)) {
+			Player first = Bukkit.getPlayerExact(firstPlace);
+			if (first != null) {
+				Location loc = first.getLocation();
+				for (Player p : Bukkit.getOnlinePlayers()) {
+					if (p.isValid()) {
+						p.setCompassTarget(loc);
+					}
+				}
+			}
+			previousFirstPlace = firstPlace;
+		}
 	}
 	
 	public void stopUpdater() {

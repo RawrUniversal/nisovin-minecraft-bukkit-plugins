@@ -44,6 +44,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.util.Util;
 
 public class GoldenMonocle extends JavaPlugin implements Listener {
@@ -61,6 +64,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	List<Location> dropPoints;
 	Location deadSpawn;
 	int spawnDelay = 10*20;
+	Spell spawnSpell = null;
 	
 	int pointsGainedPerKill = 1;
 	int pointsLostPerDeath = 8;
@@ -87,6 +91,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	
 	Map<String, String> lastDamagers;
 	Set<String> deadPlayers;
+	Map<String, Location> deathLocations;
 	
 	@Override
 	public void onEnable() {
@@ -120,6 +125,10 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		pointsGainedPerKill = config.getInt("points-gained-per-kill", pointsGainedPerKill);
 		pointsStolenPerKill = config.getInt("points-stolen-per-kill", pointsStolenPerKill);
 		pointsLostPerDeath = config.getInt("points-lost-per-death", pointsLostPerDeath);
+		String spawnSpellName = config.getString("spawn-spell", "");
+		if (spawnSpellName != null && !spawnSpellName.isEmpty()) {
+			spawnSpell = MagicSpells.getSpellByInternalName(spawnSpellName);
+		}
 		
 		// load weapon and healing items
 		weaponItems = new ArrayList<ItemStack>();
@@ -162,6 +171,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		scoreboardHandler = new ScoreboardHandler(this);		
 		lastDamagers = new HashMap<String, String>();
 		deadPlayers = new HashSet<String>();
+		deathLocations = new HashMap<String, Location>();
 		
 		// load spawn points
 		deadSpawn = world.getSpawnLocation();
@@ -393,10 +403,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	}
 	
 	public void respawnPlayer(final Player player) {
+		player.sendMessage(ChatColor.GOLD + "You are " + ChatColor.RED + "dead" + ChatColor.GOLD + ". Please wait to respawn.");
 		deadPlayers.add(player.getName());
 		player.getInventory().clear();
 		player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 5000, 0));
-		player.teleport(deadSpawn);
+		//player.teleport(deadSpawn);
 		player.setAllowFlight(true);
 		player.setFlying(true);
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -413,6 +424,9 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		deadPlayers.remove(player.getName());
 		player.setHealth(player.getMaxHealth());
 		player.setFoodLevel(20);
+		if (spawnSpell != null) {
+			spawnSpell.cast(player);
+		}
 	}
 	
 	public void giveRandomItems(Player player) {
@@ -427,6 +441,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		inv.addItem(item1);
 		inv.addItem(item2);
 		inv.addItem(item3);
+		inv.setItem(8, new ItemStack(Material.COMPASS, 1));
 		inv.setHeldItemSlot(0);
 	}
 	
@@ -479,7 +494,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		scoreboardHandler.modifyScore(killed, -pointsLostPerDeath);
 		if (killer != null) {
 			scoreboardHandler.modifyScore(killer, pointsGainedPerKill + stolen);
+			
 		}
+		
+		// save death location
+		deathLocations.put(killed.getName(), killed.getLocation());
 	}
 	
 	@EventHandler
@@ -522,11 +541,23 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		}
 	}
 	
+	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+	public void onSpellTarget(SpellTargetEvent event) {
+		if (event.getTarget() instanceof Player) {
+			lastDamagers.put(((Player)event.getTarget()).getName(), event.getCaster().getName());
+		}
+	}
+	
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		if (gameStarted) {
 			final Player player = event.getPlayer();
 			if (player.hasPermission("monocle.ignore")) return;
+			Location loc = deathLocations.remove(player.getName());
+			System.out.println(loc);
+			if (loc != null) {
+				event.setRespawnLocation(loc);
+			}
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
 					respawnPlayer(player);
@@ -534,7 +565,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 						volatileCode.sendEnderDragonToPlayer(player);
 					}
 				}
-			}, 1);
+			});
 		}
 	}
 	
