@@ -197,6 +197,9 @@ public class RitualSpell extends InstantSpell {
 			}
 			if (interrupted) {
 				stop(strRitualInterrupted);
+				if (spellOnInterrupt != null && caster.isValid()) {
+					spellOnInterrupt.castSpell(caster, SpellCastState.NORMAL, power, null);
+				}
 			}
 			
 			if (duration >= ritualDuration) {
