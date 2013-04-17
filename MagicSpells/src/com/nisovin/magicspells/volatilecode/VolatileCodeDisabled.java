@@ -1,8 +1,5 @@
 package com.nisovin.magicspells.volatilecode;
 
-import java.util.Set;
-
-import org.bukkit.Chunk;
 import org.bukkit.Color;
 import org.bukkit.EntityEffect;
 import org.bukkit.FireworkEffect;
@@ -36,10 +33,6 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	}
 
 	@Override
-	public void queueChunksForUpdate(Player player, Set<Chunk> chunks) {
-	}
-
-	@Override
 	public void sendFakeSlotUpdate(Player player, int slot, ItemStack item) {
 	}
 	
@@ -58,12 +51,6 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	@Override
 	public void pressPressurePlate(Block block) {
 		block.setData((byte) (block.getData() ^ 0x1));
-	}
-
-	@Override
-	public void removeMobEffect(LivingEntity entity, PotionEffectType type) {
-		entity.addPotionEffect(new PotionEffect(type, 1, 0), true);
-		entity.removePotionEffect(type);
 	}
 
 	@Override
@@ -114,11 +101,6 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	@Override
 	public void setFallingBlockHurtEntities(FallingBlock block, float damage, int max) {
 	}
-
-	@Override
-	public void addPotionEffect(LivingEntity entity, PotionEffect effect, boolean ambient) {
-		entity.addPotionEffect(effect, true);
-	}
 	
 	@Override
 	public void playEntityAnimation(Location location, EntityType entityType, int animationId, boolean instant) {
@@ -162,10 +144,6 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 		meta.addEffect(effect);
 		meta.setPower(flightDuration < 1 ? 1 : flightDuration);
 		firework.setFireworkMeta(meta);
-	}
-
-	@Override
-	public void setHeldItemSlot(Player player, int slot) {
 	}
 	
 	@Override

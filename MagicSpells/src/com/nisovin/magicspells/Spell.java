@@ -68,7 +68,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected boolean interruptOnMove;
 	protected boolean interruptOnDamage;
 	protected boolean interruptOnCast;
-	protected String spellOnInterrupt;
+	protected String spellNameOnInterrupt;
+	protected Spell spellOnInterrupt;
 	
 	protected SpellReagents reagents;
 	protected float cooldown;
@@ -159,7 +160,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.interruptOnMove = config.getBoolean(section + "." + spellName + ".interrupt-on-move", true);
 		this.interruptOnDamage = config.getBoolean(section + "." + spellName + ".interrupt-on-damage", false);
 		this.interruptOnCast = config.getBoolean(section + "." + spellName + ".interrupt-on-cast", true);
-		this.spellOnInterrupt = config.getString(section + "." + spellName + ".spell-on-interrupt", null);
+		this.spellNameOnInterrupt = config.getString(section + "." + spellName + ".spell-on-interrupt", null);
 		
 		// graphical effects
 		List<String> effectsList = config.getStringList(section + "." + spellName + ".effects", null);
@@ -283,7 +284,13 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			rawSharedCooldowns = null;
 		}
 		
+		// register events
 		registerEvents();
+		
+		// other processing
+		if (spellNameOnInterrupt != null && !spellNameOnInterrupt.isEmpty()) {
+			spellOnInterrupt = MagicSpells.getSpellByInternalName(spellNameOnInterrupt);
+		}
 	}
 	
 	/**
@@ -1331,10 +1338,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		private void interrupt() {
 			sendMessage(player, strInterrupted);
 			if (spellOnInterrupt != null) {
-				Spell spell = MagicSpells.getSpellByInternalName(spellOnInterrupt);
-				if (spell != null) {
-					spell.castSpell(player, SpellCastState.NORMAL, power, null);
-				}
+				spellOnInterrupt.castSpell(player, SpellCastState.NORMAL, power, null);
 			}
 		}
 	}
@@ -1414,10 +1418,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			sendMessage(player, strInterrupted);
 			end();
 			if (spellOnInterrupt != null) {
-				Spell spell = MagicSpells.getSpellByInternalName(spellOnInterrupt);
-				if (spell != null) {
-					spell.castSpell(player, SpellCastState.NORMAL, power, null);
-				}
+				spellOnInterrupt.castSpell(player, SpellCastState.NORMAL, power, null);
 			}
 		}
 		

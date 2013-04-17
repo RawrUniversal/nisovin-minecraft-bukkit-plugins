@@ -148,11 +148,11 @@ public class CastListenerNew implements Listener {
 				meta.setDisplayName(MagicSpells.textColor + "Spell: " + spell.getName());
 				fakeItem.setItemMeta(meta);
 				MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, slot, fakeItem);
-				MagicSpells.getVolatileCodeHandler().setHeldItemSlot(player, slot);
+				player.getInventory().setHeldItemSlot(slot);
 			} else {
 				// cycled to no spell
 				endCycling(player, slot);
-				MagicSpells.getVolatileCodeHandler().setHeldItemSlot(player, slot);
+				player.getInventory().setHeldItemSlot(slot);
 			}
 		} else if (cycling.contains(player)) {
 			// no longer sneaking

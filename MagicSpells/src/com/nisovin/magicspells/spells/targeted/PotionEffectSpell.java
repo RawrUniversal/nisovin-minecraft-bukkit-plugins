@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -53,7 +52,7 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 				return noTarget(player);
 			}
 			
-			MagicSpells.getVolatileCodeHandler().addPotionEffect(target, new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier), ambient);
+			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier, ambient), true);
 			if (targeted) {
 				playSpellEffects(player, target);
 			} else {
@@ -72,12 +71,12 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 		} else if (!(target instanceof Player) && !targetNonPlayers) {
 			return false;
 		} else {
-			PotionEffect effect = new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier);
+			PotionEffect effect = new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier, ambient);
 			if (targeted) {
-				MagicSpells.getVolatileCodeHandler().addPotionEffect(target, effect, ambient);
+				target.addPotionEffect(effect, true);
 				playSpellEffects(caster, target);
 			} else {
-				MagicSpells.getVolatileCodeHandler().addPotionEffect(caster, effect, ambient);
+				caster.addPotionEffect(effect, true);
 				playSpellEffects(EffectPosition.CASTER, caster);
 			}
 			return true;

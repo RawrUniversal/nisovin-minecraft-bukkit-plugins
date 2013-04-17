@@ -2,12 +2,10 @@ package com.nisovin.magicspells.volatilecode;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Set;
 
 import net.minecraft.server.v1_5_R2.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_5_R2.CraftServer;
@@ -26,12 +24,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
-
 
 public class VolatileCodeEnabled_1_5_R2 implements VolatileCodeHandle {
 
@@ -120,15 +115,6 @@ public class VolatileCodeEnabled_1_5_R2 implements VolatileCodeHandle {
 		entity.pathEntity = entity.world.findPath(entity, ((CraftLivingEntity)target).getHandle(), 16.0F, true, false, false, false);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void queueChunksForUpdate(Player player, Set<Chunk> chunks) {
-		for (Chunk chunk : chunks) {
-			ChunkCoordIntPair intPair = new ChunkCoordIntPair(chunk.getX(), chunk.getZ());
-			((CraftPlayer)player).getHandle().chunkCoordIntPairQueue.add(intPair);
-		}
-	}
-
 	@Override
 	public void sendFakeSlotUpdate(Player player, int slot, ItemStack item) {
 		net.minecraft.server.v1_5_R2.ItemStack nmsItem;
@@ -152,23 +138,6 @@ public class VolatileCodeEnabled_1_5_R2 implements VolatileCodeHandle {
 		net.minecraft.server.v1_5_R2.World w = ((CraftWorld)block.getWorld()).getHandle();
 		w.applyPhysics(block.getX(), block.getY(), block.getZ(), block.getType().getId());
 		w.applyPhysics(block.getX(), block.getY()-1, block.getZ(), block.getType().getId());
-	}
-
-	@Override
-	public void removeMobEffect(LivingEntity entity, PotionEffectType type) {
-        try {
-            // remove effect
-    		entity.removePotionEffect(type);
-            // alert player that effect is gone
-            if (entity instanceof Player) {
-                    EntityPlayer player = ((CraftPlayer)entity).getHandle();
-                    player.playerConnection.sendPacket(new Packet42RemoveMobEffect(player.id, new MobEffect(type.getId(), 0, 0)));
-            }
-            // remove graphical effect
-            ((CraftLivingEntity)entity).getHandle().getDataWatcher().watch(8, Integer.valueOf(0));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 	}
 
 	@Override
@@ -275,18 +244,6 @@ public class VolatileCodeEnabled_1_5_R2 implements VolatileCodeHandle {
 	}
 
 	@Override
-	public void addPotionEffect(LivingEntity entity, PotionEffect effect, boolean ambient) {
-		if (!ambient) {
-			entity.addPotionEffect(effect, true);
-		} else {
-			if (entity.hasPotionEffect(effect.getType())) {
-				entity.removePotionEffect(effect.getType());
-			}
-			((CraftLivingEntity)entity).getHandle().addEffect(new MobEffect(effect.getType().getId(), effect.getDuration(), effect.getAmplifier(), true));
-		}
-	}
-
-	@Override
 	public void playEntityAnimation(final Location location, final EntityType entityType, final int animationId, boolean instant) {
 		final EntityLiving entity;
 		if (entityType == EntityType.VILLAGER) {
@@ -356,12 +313,6 @@ public class VolatileCodeEnabled_1_5_R2 implements VolatileCodeHandle {
 			((CraftWorld)location.getWorld()).getHandle().broadcastEntityEffect(fireworks, (byte)17);
 			fireworks.die();
 		}
-	}
-
-	@Override
-	public void setHeldItemSlot(Player player, int slot) {
-		((CraftPlayer)player).getHandle().inventory.itemInHandIndex = slot;
-		((CraftPlayer)player).getHandle().playerConnection.sendPacket(new Packet16BlockItemSwitch(slot));
 	}
 	
 	Field[] packet63Fields = new Field[9];
