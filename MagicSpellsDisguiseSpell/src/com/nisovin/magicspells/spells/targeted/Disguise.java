@@ -12,17 +12,18 @@ public class Disguise {
 	private EntityType entityType;
 	private String nameplateText;
 	private boolean flag;
-	private int var;
+	private int var1;
+	private int var2;
 	private DisguiseSpell spell;
 	
 	private int taskId;
 	
-	public Disguise(Player player, EntityType entityType, String nameplateText, boolean flag, int var, int duration, DisguiseSpell spell) {
+	public Disguise(Player player, EntityType entityType, String nameplateText, boolean flag, int var1, int var2, int duration, DisguiseSpell spell) {
 		this.player = player;
 		this.entityType = entityType;
 		this.nameplateText = nameplateText;
 		this.flag = flag;
-		this.var = var;
+		this.var1 = var1;
 		if (duration > 0) {
 			startDuration(duration);
 		}
@@ -45,10 +46,14 @@ public class Disguise {
 		return flag;
 	}
 	
-	public int getVar() {
-		return var;
+	public int getVar1() {
+		return var1;
 	}
 	
+	public int getVar2() {
+		return var2;
+	}
+		
 	private void startDuration(int duration) {
 		taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 			public void run() {

@@ -27,7 +27,8 @@ public class DisguiseSpell extends TargetedEntitySpell {
 	
 	private EntityType entityType;
 	private boolean flag = false;
-	private int var = 0;
+	private int var1 = 0;
+	private int var2 = 0;
 	private boolean showPlayerName = false;
 	private String nameplateText = "";
 	private boolean preventPickups = false;
@@ -58,19 +59,19 @@ public class DisguiseSpell extends TargetedEntitySpell {
 			flag = true;
 		} else if (type.equalsIgnoreCase("zombie villager") || type.equalsIgnoreCase("villager zombie")) {
 			type = "zombie";
-			var = 1;
+			var1 = 1;
 		} else if (type.equalsIgnoreCase("powered creeper")) {
 			type = "creeper";
 			flag = true;
 		} else if (type.toLowerCase().startsWith("villager ")) {
 			String prof = type.toLowerCase().replace("villager ", "");
 			if (prof.matches("^[0-5]$")) {
-				var = Integer.parseInt(prof);
+				var1 = Integer.parseInt(prof);
 			} else if (prof.toLowerCase().startsWith("green")) {
-				var = 5;
+				var1 = 5;
 			} else {
 				try {
-					var = Profession.valueOf(prof.toUpperCase()).getId();
+					var1 = Profession.valueOf(prof.toUpperCase()).getId();
 				} catch (Exception e) {
 					MagicSpells.error("Invalid villager profession on disguise spell '" + spellName + "'");
 				}
@@ -79,10 +80,10 @@ public class DisguiseSpell extends TargetedEntitySpell {
 		} else if (type.toLowerCase().endsWith(" villager")) {
 			String prof = type.toLowerCase().replace(" villager", "");
 			if (prof.toLowerCase().startsWith("green")) {
-				var = 5;
+				var1 = 5;
 			} else {
 				try {
-					var = Profession.valueOf(prof.toUpperCase()).getId();
+					var1 = Profession.valueOf(prof.toUpperCase()).getId();
 				} catch (Exception e) {
 					MagicSpells.error("Invalid villager profession on disguise spell '" + spellName + "'");
 				}
@@ -90,23 +91,27 @@ public class DisguiseSpell extends TargetedEntitySpell {
 			type = "villager";
 		} else if (type.toLowerCase().endsWith(" sheep")) {
 			String color = type.toLowerCase().replace(" sheep", "");
-			try {
-				DyeColor dyeColor = DyeColor.valueOf(color.toUpperCase().replace(" ", "_"));
-				if (dyeColor != null) {
-					var = dyeColor.getWoolData();
+			if (color.equalsIgnoreCase("random")) {
+				var1 = -1;
+			} else {
+				try {
+					DyeColor dyeColor = DyeColor.valueOf(color.toUpperCase().replace(" ", "_"));
+					if (dyeColor != null) {
+						var1 = dyeColor.getWoolData();
+					}
+				} catch (IllegalArgumentException e) {
+					MagicSpells.error("Invalid sheep color on disguise spell '" + spellName + "'");
 				}
-			} catch (IllegalArgumentException e) {
-				MagicSpells.error("Invalid sheep color on disguise spell '" + spellName + "'");
 			}
 			type = "sheep";
 		} else if (type.toLowerCase().startsWith("wolf ")) {
 			String color = type.toLowerCase().replace("wolf ", "");
 			if (color.matches("[0-9a-fA-F]+")) {
-				var = Integer.parseInt(color, 16);
+				var1 = Integer.parseInt(color, 16);
 			}
 			type = "wolf";
 		} else if (type.toLowerCase().equalsIgnoreCase("saddled pig")) {
-			var = 1;
+			var1 = 1;
 			type = "pig";
 		} else if (type.equalsIgnoreCase("irongolem")) {
 			type = "villagergolem";
@@ -118,9 +123,22 @@ public class DisguiseSpell extends TargetedEntitySpell {
 			type = type.toLowerCase().replace("ocelot", "ozelot");
 		} else if (type.equalsIgnoreCase("snowgolem")) {
 			type = "snowman";
+		} else if (type.toLowerCase().startsWith("block") || type.toLowerCase().startsWith("fallingblock")) {
+			String data = type.split(" ")[1];
+			if (data.contains(":")) {
+				String[] subdata = data.split(":");
+				var1 = Integer.parseInt(subdata[0]);
+				var2 = Integer.parseInt(subdata[1]);
+			} else {
+				var1 = Integer.parseInt(data);
+			}
+			type = "fallingsand";
 		}
 		if (type.toLowerCase().matches("ozelot [0-3]")) {
-			var = Integer.parseInt(type.split(" ")[1]);
+			var1 = Integer.parseInt(type.split(" ")[1]);
+			type = "ozelot";
+		} else if (type.toLowerCase().equals("ozelot random") || type.toLowerCase().equals("random ozelot")) {
+			var1 = -1;
 			type = "ozelot";
 		}
 		entityType = EntityType.fromName(type);
@@ -168,7 +186,7 @@ public class DisguiseSpell extends TargetedEntitySpell {
 	private void disguise(Player player) {
 		String nameplate = nameplateText;
 		if (showPlayerName) nameplate = player.getDisplayName();
-		Disguise disguise = new Disguise(player, entityType, nameplate, flag, var, duration, this);
+		Disguise disguise = new Disguise(player, entityType, nameplate, flag, var1, var2, duration, this);
 		manager.addDisguise(player, disguise);
 		disguised.put(player.getName().toLowerCase(), disguise);
 	}

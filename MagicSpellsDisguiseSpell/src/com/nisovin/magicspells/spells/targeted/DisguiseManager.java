@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spells.targeted;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import net.minecraft.server.v1_5_R2.*;
@@ -46,6 +47,7 @@ public class DisguiseManager implements Listener {
 	private Set<Integer> dragons = new HashSet<Integer>();
 
 	private PacketListener packetListener = null;
+	private Random random = new Random();
 	
 	public DisguiseManager(MagicConfig config) {
 		this.hideArmor = config.getBoolean("general.disguise-spell-hide-armor", false);
@@ -121,7 +123,7 @@ public class DisguiseManager implements Listener {
 			}
 		}*/
 		sendDestroyEntityPackets(player);
-		sendMobSpawnPackets(player, disguise);
+		sendDisguisedSpawnPackets(player, disguise);
 	}
 	
 	private void clearDisguise(Player player) {
@@ -139,12 +141,12 @@ public class DisguiseManager implements Listener {
 		}
 	}
 
-	private EntityLiving getEntity(Player player, Disguise disguise) {
+	private Entity getEntity(Player player, Disguise disguise) {
 		EntityType entityType = disguise.getEntityType();
 		boolean flag = disguise.getFlag();
-		int var = disguise.getVar();
+		int var = disguise.getVar1();
 		Location location = player.getLocation();
-		EntityLiving entity = null;
+		Entity entity = null;
 		World world = ((CraftWorld)location.getWorld()).getHandle();
 		if (entityType == EntityType.ZOMBIE) {
 			entity = new EntityZombie(world);
@@ -191,7 +193,11 @@ public class DisguiseManager implements Listener {
 		} else if (entityType == EntityType.OCELOT) {
 			entity = new EntityOcelot(world);
 			((EntityAgeable)entity).setAge(flag ? -24000 : 0);
-			((EntityOcelot)entity).setCatType(var);
+			if (var == -1) {
+				((EntityOcelot)entity).setCatType(random.nextInt(4));
+			} else if (var >= 0 && var < 4) {
+				((EntityOcelot)entity).setCatType(var);
+			}
 			
 		} else if (entityType == EntityType.BLAZE) {
 			entity = new EntityBlaze(world);
@@ -248,22 +254,35 @@ public class DisguiseManager implements Listener {
 		} else if (entityType == EntityType.SHEEP) {
 			entity = new EntitySheep(world);
 			((EntityAgeable)entity).setAge(flag ? -24000 : 0);
-			((EntitySheep)entity).setColor(var);
+			if (var == -1) {
+				((EntitySheep)entity).setColor(random.nextInt(16));
+			} else if (var >= 0 && var < 16) {
+				((EntitySheep)entity).setColor(var);
+			}
 			
 		} else if (entityType == EntityType.SQUID) {
 			entity = new EntitySquid(world);
 			
 		} else if (entityType == EntityType.ENDER_DRAGON) {
 			entity = new EntityEnderDragon(world);
+						
+		} else if (entityType == EntityType.FALLING_BLOCK) {
+			int id = disguise.getVar1();
+			int data = disguise.getVar2();
+			entity = new EntityFallingBlock(world, 0, 0, 0, id > 0 ? id : 1, data > 15 ? 0 : data);
 			
-		}		
+		} else if (entityType == EntityType.DROPPED_ITEM) {
+			entity = new EntityItem(world);
+			((EntityItem)entity).setItemStack(new net.minecraft.server.v1_5_R2.ItemStack(disguise.getVar1(), 1, disguise.getVar2()));
+			
+		}
 		
 		if (entity != null) {
 			
 			String nameplateText = disguise.getNameplateText();
-			if (nameplateText != null && !nameplateText.isEmpty()) {
-				entity.setCustomName(nameplateText);
-				entity.setCustomNameVisible(true);
+			if (entity instanceof EntityLiving && nameplateText != null && !nameplateText.isEmpty()) {
+				((EntityLiving)entity).setCustomName(nameplateText);
+				((EntityLiving)entity).setCustomNameVisible(true);
 			}
 			
 			entity.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
@@ -437,7 +456,7 @@ public class DisguiseManager implements Listener {
 					event.setCancelled(true);
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
-							sendMobSpawnPacket(player, Bukkit.getPlayer(name), disguise, null);
+							sendDisguisedSpawnPacket(player, Bukkit.getPlayer(name), disguise, null);
 						}
 					}, 0);
 				}
@@ -446,7 +465,7 @@ public class DisguiseManager implements Listener {
 				if (packet.b > 0 && disguisedEntityIds.contains(packet.a)) {
 					event.setCancelled(true);
 				}
-			} else if (event.getPacketID() == 0x20) {
+			/*} else if (event.getPacketID() == 0x20) {
 				Packet32EntityLook packet = (Packet32EntityLook)event.getPacket().getHandle();
 				if (dragons.contains(packet.a)) {
 					int dir = packet.e + 128;
@@ -473,7 +492,7 @@ public class DisguiseManager implements Listener {
 					int dir = packet.b + 128;
 					if (dir > 127) dir -= 256;
 					packet.b = (byte)dir;
-				}
+				}*/
 			} else if (event.getPacketID() == 0x28) {
 				Packet40EntityMetadata packet = (Packet40EntityMetadata)event.getPacket().getHandle();
 				if (packet.a < 0) {
@@ -498,50 +517,65 @@ public class DisguiseManager implements Listener {
 		tracker.a(((CraftPlayer)disguised).getHandle(), packet29);
 	}
 	
-	private void sendMobSpawnPacket(Player viewer, Player disguised, Disguise disguise, EntityLiving entity) {
+	private void sendDisguisedSpawnPacket(Player viewer, Player disguised, Disguise disguise, Entity entity) {
 		if (entity == null) entity = getEntity(disguised, disguise);
 		if (entity != null) {
-			Packet24MobSpawn packet24 = new Packet24MobSpawn(entity);
-			packet24.a = disguised.getEntityId();
-			if (dragons.contains(disguised.getEntityId())) {
-				int dir = packet24.i + 128;
-				if (dir > 127) dir -= 256;
-				packet24.i = (byte)dir;
-				packet24.k = (byte)dir;
-			}
-			EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
-			ep.playerConnection.sendPacket(packet24);
-			
-			if (disguise.getEntityType() == EntityType.ZOMBIE || disguise.getEntityType() == EntityType.SKELETON) {
-				ItemStack inHand = disguised.getItemInHand();
-				if (inHand != null && inHand.getType() != Material.AIR) {
-					Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
-					ep.playerConnection.sendPacket(packet5);
+			if (entity instanceof EntityLiving) {
+				Packet24MobSpawn packet24 = new Packet24MobSpawn((EntityLiving)entity);
+				packet24.a = disguised.getEntityId();
+				if (dragons.contains(disguised.getEntityId())) {
+					int dir = packet24.i + 128;
+					if (dir > 127) dir -= 256;
+					packet24.i = (byte)dir;
+					packet24.k = (byte)dir;
 				}
+				EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
+				ep.playerConnection.sendPacket(packet24);
+				
+				if (disguise.getEntityType() == EntityType.ZOMBIE || disguise.getEntityType() == EntityType.SKELETON) {
+					ItemStack inHand = disguised.getItemInHand();
+					if (inHand != null && inHand.getType() != Material.AIR) {
+						Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
+						ep.playerConnection.sendPacket(packet5);
+					}
+				}
+			} else {
+				Packet23VehicleSpawn packet23 = new Packet23VehicleSpawn(entity, entity.getBukkitEntity().getType().getTypeId());
+				packet23.a = disguised.getEntityId();
+				EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
+				ep.playerConnection.sendPacket(packet23);
 			}
 		}
 	}
 	
-	private void sendMobSpawnPackets(Player disguised, Disguise disguise) {
-		EntityLiving entity = getEntity(disguised, disguise);
+	private void sendDisguisedSpawnPackets(Player disguised, Disguise disguise) {
+		Entity entity = getEntity(disguised, disguise);
 		if (entity != null) {
-			Packet24MobSpawn packet24 = new Packet24MobSpawn(entity);
-			packet24.a = disguised.getEntityId();
-			if (dragons.contains(disguised.getEntityId())) {
-				int dir = packet24.i + 128;
-				if (dir > 127) dir -= 256;
-				packet24.i = (byte)dir;
-				packet24.k = (byte)dir;
-			}
-			final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
-			tracker.a(((CraftPlayer)disguised).getHandle(), packet24);
-			
-			if (disguise.getEntityType() == EntityType.ZOMBIE || disguise.getEntityType() == EntityType.SKELETON) {
-				ItemStack inHand = disguised.getItemInHand();
-				if (inHand != null && inHand.getType() != Material.AIR) {
-					Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
-					tracker.a(((CraftPlayer)disguised).getHandle(), packet5);
+			if (entity instanceof EntityLiving) {
+				Packet24MobSpawn packet24 = new Packet24MobSpawn((EntityLiving)entity);
+				packet24.a = disguised.getEntityId();
+				if (dragons.contains(disguised.getEntityId())) {
+					int dir = packet24.i + 128;
+					if (dir > 127) dir -= 256;
+					packet24.i = (byte)dir;
+					packet24.k = (byte)dir;
 				}
+				final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
+				tracker.a(((CraftPlayer)disguised).getHandle(), packet24);
+				
+				if (disguise.getEntityType() == EntityType.ZOMBIE || disguise.getEntityType() == EntityType.SKELETON) {
+					ItemStack inHand = disguised.getItemInHand();
+					if (inHand != null && inHand.getType() != Material.AIR) {
+						Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
+						tracker.a(((CraftPlayer)disguised).getHandle(), packet5);
+					}
+				}
+			} else {
+				System.out.println("yep");
+				Packet23VehicleSpawn packet23 = new Packet23VehicleSpawn(entity, entity.getBukkitEntity().getType().getTypeId());
+				packet23.a = disguised.getEntityId();
+				final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
+				tracker.a(((CraftPlayer)disguised).getHandle(), packet23);
 			}
 		}
 	}
