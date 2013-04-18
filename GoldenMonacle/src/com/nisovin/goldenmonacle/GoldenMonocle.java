@@ -14,6 +14,8 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -40,6 +42,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -393,6 +396,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("monocle.ignore")) continue;
 			player.getInventory().clear();
+			if (player.isValid()) {
+				for (int i = 0; i < 3; i++) {
+					player.getInventory().addItem(generateRandomFirework());
+				}
+			}
 		}
 		Bukkit.getScheduler().cancelTasks(this);
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -400,6 +408,22 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 				System.out.println("Golden Monocle End: asdf8907sdfbn3lkasdf83");
 			}
 		}, 200);
+	}
+	
+	public ItemStack generateRandomFirework() {
+		ItemStack item = new ItemStack(Material.FIREWORK);
+		FireworkMeta meta = (FireworkMeta)item.getItemMeta();
+		FireworkEffect.Type[] types = FireworkEffect.Type.values();
+		meta.addEffect(FireworkEffect.builder()
+			.with(types[random.nextInt(types.length)])
+			.flicker(random.nextInt(2) == 1)
+			.trail(random.nextInt(2) == 1)
+			.withColor(Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255)))
+			.withFade(Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255)))
+			.build());
+		meta.setPower(random.nextInt(3) + 1);
+		item.setItemMeta(meta);
+		return item;
 	}
 	
 	public void respawnPlayer(final Player player) {
@@ -597,7 +621,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onInteract(PlayerInteractEvent event) {
 		if (!event.getPlayer().isOp() && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-			event.setCancelled(true);
+			if (!gameStarted && event.getAction() == Action.RIGHT_CLICK_BLOCK && event.hasItem() && event.getItem().getType() == Material.FIREWORK) {
+				// allowed
+			} else {
+				event.setCancelled(true);
+			}
 		}
 	}
 	
