@@ -30,7 +30,7 @@ public class Database {
 	
 	public void registerStatistic(GymGameMode gameMode, String name, StatisticType type) {
 		try {
-			int id = getStatisticId(name, gameMode);
+			int id = getStatisticId(name);
 			if (id > 0) {
 				statisticIds.put(name, id);
 				statisticTypes.put(name, type);
@@ -104,10 +104,9 @@ public class Database {
 		}
 	}
 	
-	private int getStatisticId(String name, GymGameMode gameMode) throws SQLException {
-		PreparedStatement stmt = connection.prepareStatement("SELECT `stat_id` FROM `gym_stats` WHERE `code` = ? AND `game_id` = ?");
+	private int getStatisticId(String name) throws SQLException {
+		PreparedStatement stmt = connection.prepareStatement("SELECT `stat_id` FROM `gym_stats` WHERE `code` = ?");
 		stmt.setString(1, name);
-		stmt.setInt(2, gameMode.getId());
 		if (stmt.execute()) {
 			ResultSet results = stmt.getResultSet();
 			if (results != null && results.next()) {
@@ -118,10 +117,11 @@ public class Database {
 	}
 	
 	private int createStatistic(String name, GymGameMode gameMode, StatisticType type) throws SQLException {
-		PreparedStatement stmt = connection.prepareStatement("INSERT INTO `gym_stats` (`game_id`, `stat_type`, `code`) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO `gym_stats` (`game_id`, `stat_type`, `code`, `name`) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		stmt.setInt(1, gameMode.getId());
 		stmt.setString(2, type.getCode());
 		stmt.setString(3, name);
+		stmt.setString(4, name);
 		int count = stmt.executeUpdate();
 		if (count == 1) {
 			ResultSet rs = stmt.getGeneratedKeys();
@@ -146,7 +146,7 @@ public class Database {
 	}
 	
 	private void setStatisticValue(String playerName, int id, int value) throws SQLException {
-		PreparedStatement stmt = connection.prepareStatement("UDPATE `gym_stat_values` SET `value` = ? WHERE `player_name` = ? AND `stat_id` = ?");
+		PreparedStatement stmt = connection.prepareStatement("UPDATE `gym_stat_values` SET `value` = ? WHERE `player_name` = ? AND `stat_id` = ?");
 		stmt.setInt(1, value);
 		stmt.setString(2, playerName);
 		stmt.setInt(3, id);

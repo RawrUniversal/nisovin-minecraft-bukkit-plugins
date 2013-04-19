@@ -24,6 +24,8 @@ public class BrucesGym extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		plugin = this;
+		
 		// get config file
 		File configFile = new File(getDataFolder(), "config.yml");
 		if (!configFile.exists()) {
@@ -41,7 +43,7 @@ public class BrucesGym extends JavaPlugin {
 		
 		// load database
 		database = new Database(this);
-		boolean connected = database.connect(config.getString("host"), config.getString("user"), config.getString("pass"), config.getString("db"));
+		boolean connected = database.connect(config.getString("database.host"), config.getString("database.user"), config.getString("database.pass"), config.getString("database.db"));
 		if (!connected) {
 			getLogger().severe("DATABASE CONNECTION ERROR, STATS WILL NOT BE SAVED");
 			return;
