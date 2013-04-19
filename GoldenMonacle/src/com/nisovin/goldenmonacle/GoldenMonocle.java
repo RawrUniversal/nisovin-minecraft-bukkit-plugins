@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -47,6 +48,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.nisovin.brucesgym.BrucesGym;
+import com.nisovin.brucesgym.GymGameMode;
+import com.nisovin.brucesgym.StatisticType;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
@@ -225,6 +229,18 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 			getLogger().warning("GoldenMonocle needs an update! Dragon timer is disabled.");
 			volatileCode = null;
 		}
+		
+		// register stats
+		BrucesGym.initializeGameMode(GymGameMode.GOLDEN_MONOCLE);
+		BrucesGym.registerStatistic("global_xp", StatisticType.XP, GymGameMode.GLOBAL);
+		BrucesGym.registerStatistic("gm_xp", StatisticType.XP);
+		BrucesGym.registerStatistic("gm_kills", StatisticType.TOTAL);
+		BrucesGym.registerStatistic("gm_deaths", StatisticType.TOTAL);
+		BrucesGym.registerStatistic("gm_first_place", StatisticType.TOTAL);
+		BrucesGym.registerStatistic("gm_second_place", StatisticType.TOTAL);
+		BrucesGym.registerStatistic("gm_third_place", StatisticType.TOTAL);
+		BrucesGym.registerStatistic("gm_top_ten", StatisticType.TOTAL);
+		BrucesGym.registerStatistic("gm_highest_score", StatisticType.MAX);
 		
 		// auto start game
 		if (autoStartTime > 0) {
@@ -426,6 +442,39 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		return item;
 	}
 	
+	public void giveEndOfGamePoints() {
+		Player[] players = Bukkit.getOnlinePlayers();
+				
+		// score points
+		int place = 1;
+		TreeSet<PlayerScore> scores = scoreboardHandler.getScores();
+		for (PlayerScore score : scores) {
+			// regular score
+			int s = 1000 + score.score * 25;
+			// top scorers
+			if (players.length > 40) {
+				if (place == 1) {
+					s += 9000;
+					BrucesGym.updateStatistic(score.playerName, "gm_first_place", 1);
+				} else if (place == 2) {
+					s += 3000;
+					BrucesGym.updateStatistic(score.playerName, "gm_second_place", 1);
+				} else if (place == 3) {
+					s += 2000;
+					BrucesGym.updateStatistic(score.playerName, "gm_third_place", 1);
+				} else if (place >= 10) {
+					s += 1000;
+					BrucesGym.updateStatistic(score.playerName, "gm_top_ten", 1);
+				}
+			}
+			place++;
+			// update stats
+			BrucesGym.updateStatistic(score.playerName, "global_xp", s);
+			BrucesGym.updateStatistic(score.playerName, "gm_xp", s);
+			BrucesGym.updateStatistic(score.playerName, "gm_highest_score", s);
+		}
+	}
+	
 	public void respawnPlayer(final Player player) {
 		player.sendMessage(ChatColor.GOLD + "You are " + ChatColor.RED + "dead" + ChatColor.GOLD + ". Please wait to respawn.");
 		deadPlayers.add(player.getName());
@@ -501,28 +550,33 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		// disallow drops
 		event.setDroppedExp(0);
 		event.getDrops().clear();
-		
-		// give scores
+
 		Player killed = event.getEntity();
-		if (killed.hasPermission("monocle.ignore")) return;
-		Player killer = killed.getKiller();
-		if (killer == null) {
-			String lastDamager = lastDamagers.get(killed.getName());
-			if (lastDamager != null) {
-				killer = Bukkit.getPlayerExact(lastDamager);
-			}
-		}
-		if (killer != null && killer.hasPermission("monocle.ignore")) return;
-		int stolen = scoreboardHandler.getScore(killed);
-		if (stolen > pointsStolenPerKill) stolen = pointsStolenPerKill;
-		scoreboardHandler.modifyScore(killed, -pointsLostPerDeath);
-		if (killer != null) {
-			scoreboardHandler.modifyScore(killer, pointsGainedPerKill + stolen);
+		if (gameStarted && !deathLocations.containsKey(killed.getName())) {
+			// give scores
+			if (killed.hasPermission("monocle.ignore")) return;
 			
+			Player killer = killed.getKiller();
+			if (killer == null) {
+				String lastDamager = lastDamagers.get(killed.getName());
+				if (lastDamager != null) {
+					killer = Bukkit.getPlayerExact(lastDamager);
+				}
+			}
+			if (killer != null && killer.hasPermission("monocle.ignore")) return;
+			int stolen = scoreboardHandler.getScore(killed);
+			if (stolen > pointsStolenPerKill) stolen = pointsStolenPerKill;
+			scoreboardHandler.modifyScore(killed, -pointsLostPerDeath);
+			BrucesGym.updateStatistic(killed.getName(), "gm_deaths", 1);
+			if (killer != null) {
+				scoreboardHandler.modifyScore(killer, pointsGainedPerKill + stolen);
+				BrucesGym.updateStatistic(killer.getName(), "gm_kills", 1);
+				BrucesGym.addKill(killer.getName(), killed.getName(), ChatColor.stripColor(killer.getItemInHand().getItemMeta().getDisplayName()));
+			}
+			
+			// save death location
+			deathLocations.put(killed.getName(), killed.getLocation());
 		}
-		
-		// save death location
-		deathLocations.put(killed.getName(), killed.getLocation());
 	}
 	
 	@EventHandler
@@ -578,7 +632,6 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 			final Player player = event.getPlayer();
 			if (player.hasPermission("monocle.ignore")) return;
 			Location loc = deathLocations.remove(player.getName());
-			System.out.println(loc);
 			if (loc != null) {
 				event.setRespawnLocation(loc);
 			}

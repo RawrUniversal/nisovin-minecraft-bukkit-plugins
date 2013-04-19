@@ -83,6 +83,10 @@ public class ScoreboardHandler {
 		scoresSorted.add(score);
 	}
 	
+	public TreeSet<PlayerScore> getScores() {
+		return scoresSorted;
+	}
+	
 	public int getScore(Player player) {
 		return getScore(player.getName());
 	}
