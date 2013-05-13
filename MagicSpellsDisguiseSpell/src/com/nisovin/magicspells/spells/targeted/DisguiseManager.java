@@ -6,16 +6,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import net.minecraft.server.v1_5_R2.*;
+import net.minecraft.server.v1_5_R3.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_5_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -273,7 +273,7 @@ public class DisguiseManager implements Listener {
 			
 		} else if (entityType == EntityType.DROPPED_ITEM) {
 			entity = new EntityItem(world);
-			((EntityItem)entity).setItemStack(new net.minecraft.server.v1_5_R2.ItemStack(disguise.getVar1(), 1, disguise.getVar2()));
+			((EntityItem)entity).setItemStack(new net.minecraft.server.v1_5_R3.ItemStack(disguise.getVar1(), 1, disguise.getVar2()));
 			
 		}
 		
