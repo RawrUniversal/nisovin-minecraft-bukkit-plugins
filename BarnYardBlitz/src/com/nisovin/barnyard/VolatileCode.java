@@ -1,14 +1,11 @@
 package com.nisovin.barnyard;
 
 
-import net.minecraft.server.v1_5_R2.EntityEnderDragon;
-import net.minecraft.server.v1_5_R2.Packet24MobSpawn;
-import net.minecraft.server.v1_5_R2.Packet29DestroyEntity;
-import net.minecraft.server.v1_5_R2.Packet40EntityMetadata;
+import net.minecraft.server.v1_5_R3.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class VolatileCode {
