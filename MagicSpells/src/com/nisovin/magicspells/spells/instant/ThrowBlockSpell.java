@@ -11,6 +11,7 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -70,6 +71,7 @@ public class ThrowBlockSpell extends InstantSpell {
 	
 	@Override
 	public void initialize() {
+		super.initialize();
 		if (spellOnLand != null && !spellOnLand.isEmpty()) {
 			Spell s = MagicSpells.getSpellByInternalName(spellOnLand);
 			if (s != null && s instanceof TargetedLocationSpell) {
@@ -80,10 +82,10 @@ public class ThrowBlockSpell extends InstantSpell {
 		}
 		if (fallDamage > 0 || removeBlocks || preventBlocks || spell != null) {
 			fallingBlocks = new HashMap<FallingBlock, ThrowBlockSpell.FallingBlockInfo>();
-			registerEvents(this);
+			registerEvents(new ThrowBlockListener(this));
 		}
 	}
-
+	
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
@@ -139,55 +141,66 @@ public class ThrowBlockSpell extends InstantSpell {
 			}
 		}, 100);
 	}
-	
-	@EventHandler(ignoreCancelled=true)
-	public void onDamage(EntityDamageByEntityEvent event) {
-		FallingBlockInfo info = null;
-		if (removeBlocks || preventBlocks) {
-			info = fallingBlocks.get(event.getDamager());
-		} else {
-			info = fallingBlocks.remove(event.getDamager());
+
+
+	class ThrowBlockListener implements Listener {
+		
+		ThrowBlockSpell thisSpell;
+		
+		public ThrowBlockListener(ThrowBlockSpell spell) {
+			this.thisSpell = spell;
 		}
-		if (info != null && event.getEntity() instanceof LivingEntity) {
-			int damage = Math.round(event.getDamage() * info.power);
-			if (callTargetEvent) {
-				SpellTargetEvent evt = new SpellTargetEvent(this, info.player, (LivingEntity)event.getEntity());
-				Bukkit.getPluginManager().callEvent(evt);
-				if (evt.isCancelled()) {
-					event.setCancelled(true);
-					return;
+		
+		@EventHandler(ignoreCancelled=true)
+		public void onDamage(EntityDamageByEntityEvent event) {
+			FallingBlockInfo info = null;
+			if (removeBlocks || preventBlocks) {
+				info = fallingBlocks.get(event.getDamager());
+			} else {
+				info = fallingBlocks.remove(event.getDamager());
+			}
+			if (info != null && event.getEntity() instanceof LivingEntity) {
+				int damage = Math.round(event.getDamage() * info.power);
+				if (callTargetEvent) {
+					SpellTargetEvent evt = new SpellTargetEvent(thisSpell, info.player, (LivingEntity)event.getEntity());
+					Bukkit.getPluginManager().callEvent(evt);
+					if (evt.isCancelled()) {
+						event.setCancelled(true);
+						return;
+					}
+				}
+				if (checkPlugins) {
+					EntityDamageByEntityEvent evt = new EntityDamageByEntityEvent(info.player, event.getEntity(), DamageCause.ENTITY_ATTACK, damage);
+					Bukkit.getPluginManager().callEvent(evt);
+					if (evt.isCancelled()) {
+						event.setCancelled(true);
+						return;
+					}
+				}
+				event.setDamage(damage);
+				if (spell != null && !info.spellActivated) {
+					spell.castAtLocation(info.player, event.getEntity().getLocation(), info.power);
+					info.spellActivated = true;
 				}
 			}
-			if (checkPlugins) {
-				EntityDamageByEntityEvent evt = new EntityDamageByEntityEvent(info.player, event.getEntity(), DamageCause.ENTITY_ATTACK, damage);
-				Bukkit.getPluginManager().callEvent(evt);
-				if (evt.isCancelled()) {
+		}
+		
+		@EventHandler(ignoreCancelled=true)
+		public void onBlockLand(EntityChangeBlockEvent event) {
+			if (!preventBlocks && spell == null) return;
+			FallingBlockInfo info = fallingBlocks.remove(event.getEntity());
+			if (info != null) {
+				if (preventBlocks) {
+					event.getEntity().remove();
 					event.setCancelled(true);
-					return;
+				}
+				if (spell != null && !info.spellActivated) {
+					spell.castAtLocation(info.player, event.getBlock().getLocation().add(.5, .5, .5), info.power);
+					info.spellActivated = true;
 				}
 			}
-			event.setDamage(damage);
-			if (spell != null && !info.spellActivated) {
-				spell.castAtLocation(info.player, event.getEntity().getLocation(), info.power);
-				info.spellActivated = true;
-			}
 		}
-	}
 	
-	@EventHandler(ignoreCancelled=true)
-	public void onBlockLand(EntityChangeBlockEvent event) {
-		if (!preventBlocks && spell == null) return;
-		FallingBlockInfo info = fallingBlocks.remove(event.getEntity());
-		if (info != null) {
-			if (preventBlocks) {
-				event.getEntity().remove();
-				event.setCancelled(true);
-			}
-			if (spell != null && !info.spellActivated) {
-				spell.castAtLocation(info.player, event.getBlock().getLocation().add(.5, .5, .5), info.power);
-				info.spellActivated = true;
-			}
-		}
 	}
 		
 	@Override
