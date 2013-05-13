@@ -1,0 +1,20 @@
+auto-start-time: 0
+monster-release-time: 0
+score-interval: 30
+monster-special-interval: 480
+percent-monsters: 30
+kill-dwarves-on-join: false
+
+shrine: 0,0,0
+shrine-radius: 20
+dwarf-value: 10
+monster-value: 1
+
+start-end-timer-at-percent: 0
+end-timer-duration: 300
+
+become-dwarf-spell: become_dwarf
+become-monster-spell: become_monster
+monster-special-spell: monster_special
+start-commands: []
+monster-release-commands: []

@@ -1,0 +1,18 @@
+name: DwarvesVsZombies
+version: 1.0
+main: com.nisovin.dvz.DvZ
+
+depend: [ MagicSpells ]
+
+commands:
+    startgame:
+        description: Starts the game
+        permission: dvz.admin
+    override:
+        description: Overrides the auto system
+        permission: dvz.admin
+        
+permissions:
+    dvz.admin:
+        description: Perm for admin commands
+        default: op
