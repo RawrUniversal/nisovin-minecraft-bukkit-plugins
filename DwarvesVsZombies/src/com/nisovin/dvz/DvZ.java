@@ -17,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -24,6 +25,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -33,11 +36,12 @@ import org.bukkit.scoreboard.Scoreboard;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spell.SpellCastState;
+import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.util.BoundingBox;
 
 public class DvZ extends JavaPlugin implements Listener {
 
-	// TODO: special players, special monsters
+	// TODO: special players
 	
 	boolean gameStarted = false;
 	boolean override = false;
@@ -75,6 +79,8 @@ public class DvZ extends JavaPlugin implements Listener {
 	BukkitTask counterTask;
 	BukkitTask endTask;
 	BukkitTask monsterSpecialTask;
+	
+	VolatileCode volatileCode;
 	
 	@Override
 	public void onEnable() {
@@ -123,8 +129,20 @@ public class DvZ extends JavaPlugin implements Listener {
 			setEnabled(false);
 			return;
 		}
+		if (monsterSpecialSpell == null) {
+			getLogger().warning("MONSTER-SPECIAL-SPELL IS INVALID!");
+		}
 		
 		getServer().getPluginManager().registerEvents(this, this);
+				
+		// initialize volatile code
+		try {
+			Class.forName("net.minecraft.server.v1_5_R3.MinecraftServer");
+			volatileCode = new VolatileCode(shrineCenter);
+		} catch (ClassNotFoundException e) {
+			getLogger().warning("DvZ needs an update! Dragon bar is disabled.");
+			volatileCode = null;
+		}
 		
 		if (autoStartTime > 0) {
 			startTask = Bukkit.getScheduler().runTaskLater(this, new Runnable() {
@@ -161,6 +179,8 @@ public class DvZ extends JavaPlugin implements Listener {
 	}
 	
 	public void startGame() {
+		gameStarted = true;
+		
 		// run start commands
 		if (startCommands != null) {
 			for (String comm : startCommands) {
@@ -168,16 +188,10 @@ public class DvZ extends JavaPlugin implements Listener {
 			}
 		}
 		
-		// do player split
+		// make everyone a dwarf
 		List<Player> players = Arrays.asList(Bukkit.getOnlinePlayers());
 		Collections.shuffle(players);
-		int monsterCount = Math.round(players.size() * (percentMonsters / 100F));
-		if (override) monsterCount = 0;
-		int i = 0;
-		for (; i < monsterCount; i++) {
-			becomeMonsterSpell.castSpell(players.get(i), SpellCastState.NORMAL, 1.0F, null);
-		}
-		for (; i < players.size(); i++) {
+		for (int i = 0; i < players.size(); i++) {
 			becomeDwarfSpell.castSpell(players.get(i), SpellCastState.NORMAL, 1.0F, null);
 		}
 		
@@ -188,10 +202,46 @@ public class DvZ extends JavaPlugin implements Listener {
 		// start monster release task
 		if (monsterReleaseTime > 0 && monsterReleaseCommands != null && monsterReleaseCommands.size() > 0) {
 			Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-				public void run() {
+				public void run() {					
+					// run commands
 					for (String comm : monsterReleaseCommands) {
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
 					}
+					
+					// make monsters
+					List<Player> players = Arrays.asList(Bukkit.getOnlinePlayers());
+					Collections.shuffle(players);
+					int monsterCount = Math.round(players.size() * (percentMonsters / 100F));
+					if (override) monsterCount = 0;
+					if (monsterCount > 0) {
+						// check for already existing monsters
+						for (int i = 0; i < players.size(); i++) {
+							if (players.get(i).hasPermission("dvz.monster")) {
+								monsterCount--;
+							}
+						}
+						// make some new monsters
+						if (monsterCount > 0) {
+							int c = 0;
+							for (int i = 0; i < players.size(); i++) {
+								Player player = players.get(i);
+								if (player.hasPermission("dvz.dwarf")) {
+									player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Short.MAX_VALUE - 1, 4));
+									player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, Short.MAX_VALUE - 1, 2));
+									player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Short.MAX_VALUE - 1, 0));
+									player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Short.MAX_VALUE - 1, 2));
+									MagicSpells.getManaHandler().addMana(player, -1000, ManaChangeReason.OTHER);
+									player.sendMessage(ChatColor.DARK_RED + "You have contracted the " + ChatColor.GREEN + "Zombie " + ChatColor.LIGHT_PURPLE + "Plague" + ChatColor.DARK_RED + "!");
+									//becomeMonsterSpell.castSpell(players.get(i), SpellCastState.NORMAL, 1.0F, null);
+									if (++c >= monsterCount) {
+										break;
+									}
+								}
+							}
+						}
+					}
+					
+					// start special task
 					startMonsterSpecialTask();
 				}
 			}, monsterReleaseTime*20);
@@ -203,6 +253,11 @@ public class DvZ extends JavaPlugin implements Listener {
 				recount();
 			}
 		}, scoreInterval*20, scoreInterval*20);
+		
+		// initialize power bar
+		if (volatileCode != null) {
+			volatileCode.sendEnderDragonToAllPlayers();
+		}
 	}
 	
 	private void startMonsterSpecialTask() {
@@ -226,6 +281,14 @@ public class DvZ extends JavaPlugin implements Listener {
 			if (endTask != null) {
 				endTask.cancel();
 				endTask = null;
+			}
+			if (monsterSpecialTask != null) {
+				monsterSpecialTask.cancel();
+				monsterSpecialTask = null;
+			}
+			
+			if (volatileCode != null) {
+				volatileCode.removeEnderDragonForAllPlayers();
 			}
 			
 			// destroy shrine
@@ -273,7 +336,11 @@ public class DvZ extends JavaPlugin implements Listener {
 	}
 	
 	private void recount() {
+		System.out.println("SCORE TICK!");
+		long start = System.currentTimeMillis();
+		
 		// do dwarf count and shrine power
+		int oldShrinePower = shrinePower;
 		int c = 0;
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (p.hasPermission("dvz.dwarf")) {
@@ -293,7 +360,9 @@ public class DvZ extends JavaPlugin implements Listener {
 		} else if (shrinePower < 0) {
 			shrinePower = 0;
 		}
-		Bukkit.broadcastMessage("Shrine power: " + shrinePower);
+		if (oldShrinePower != shrinePower && volatileCode != null) {
+			volatileCode.setDragonHealth(shrinePower * 2);
+		}
 		
 		// check end game conditions
 		if (c == 0 || shrinePower == 0) {
@@ -305,6 +374,8 @@ public class DvZ extends JavaPlugin implements Listener {
 				}
 			}, endTimerDuration * 20);
 		}
+		
+		System.out.println("    DURATION: " + (System.currentTimeMillis() - start) + "ms");
 	}
 	
 	private void runMonsterSpecial() {
@@ -320,10 +391,11 @@ public class DvZ extends JavaPlugin implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onDeath(PlayerDeathEvent event) {
 		if (gameStarted) {
 			Player p = event.getEntity();
+			p.setSneaking(false);
 			
 			// check last death
 			if (deathTimes.containsKey(p.getName())) {
@@ -359,6 +431,9 @@ public class DvZ extends JavaPlugin implements Listener {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
 					becomeMonsterSpell.castSpell(event.getPlayer(), SpellCastState.NORMAL, 1.0F, null);
+					if (volatileCode != null) {
+						volatileCode.sendEnderDragonToPlayer(event.getPlayer());
+					}
 				}
 			});
 		}
@@ -373,6 +448,9 @@ public class DvZ extends JavaPlugin implements Listener {
 						event.getPlayer().setHealth(0);
 					}
 				});
+			}
+			if (volatileCode != null) {
+				volatileCode.sendEnderDragonToPlayer(event.getPlayer());
 			}
 		}
 	}
