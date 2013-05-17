@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,6 +46,7 @@ public class DvZ extends JavaPlugin implements Listener {
 	// TODO: special players
 	
 	boolean gameStarted = false;
+	boolean monstersReleased = false;
 	boolean override = false;
 
 	int autoStartTime;
@@ -65,6 +68,9 @@ public class DvZ extends JavaPlugin implements Listener {
 	int dwarfValue;
 	int monsterValue;
 	int shrinePower = 100;
+	
+	Set<String> dwarves;
+	Set<String> monsters;
 	
 	Scoreboard scoreboard;
 	Objective objective;
@@ -119,6 +125,9 @@ public class DvZ extends JavaPlugin implements Listener {
 		shrine = new BoundingBox(shrineCenter, shrineRadius);
 		dwarfValue = config.getInt("dwarf-value", 10);
 		monsterValue = config.getInt("monster-value", 1);
+		
+		dwarves = new HashSet<String>();
+		monsters = new HashSet<String>();
 		
 		if (becomeDwarfSpell == null) {
 			getLogger().severe("BECOME-DWARF-SPELL IS INVALID!");
@@ -189,10 +198,9 @@ public class DvZ extends JavaPlugin implements Listener {
 		}
 		
 		// make everyone a dwarf
-		List<Player> players = Arrays.asList(Bukkit.getOnlinePlayers());
-		Collections.shuffle(players);
-		for (int i = 0; i < players.size(); i++) {
-			becomeDwarfSpell.castSpell(players.get(i), SpellCastState.NORMAL, 1.0F, null);
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			becomeDwarfSpell.castSpell(player, SpellCastState.NORMAL, 1.0F, null);
+			dwarves.add(player.getName());
 		}
 		
 		// create scoreboard
@@ -202,7 +210,10 @@ public class DvZ extends JavaPlugin implements Listener {
 		// start monster release task
 		if (monsterReleaseTime > 0 && monsterReleaseCommands != null && monsterReleaseCommands.size() > 0) {
 			Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-				public void run() {					
+				public void run() {
+					System.out.println("BEGIN MONSTER RELEASE");
+					monstersReleased = true;
+					
 					// run commands
 					for (String comm : monsterReleaseCommands) {
 						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
@@ -213,20 +224,19 @@ public class DvZ extends JavaPlugin implements Listener {
 					Collections.shuffle(players);
 					int monsterCount = Math.round(players.size() * (percentMonsters / 100F));
 					if (override) monsterCount = 0;
+					System.out.println("  Initial monster count: " + monsterCount);
 					if (monsterCount > 0) {
-						// check for already existing monsters
-						for (int i = 0; i < players.size(); i++) {
-							if (players.get(i).hasPermission("dvz.monster")) {
-								monsterCount--;
-							}
-						}
+						// adjust for already existing monsters
+						monsterCount -= monsters.size();
+						System.out.println("  Adjusted monster count: " + monsterCount);
 						// make some new monsters
 						if (monsterCount > 0) {
 							int c = 0;
 							for (int i = 0; i < players.size(); i++) {
 								Player player = players.get(i);
-								if (player.hasPermission("dvz.dwarf")) {
-									player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Short.MAX_VALUE - 1, 4));
+								if (dwarves.contains(player.getName())) {
+									System.out.println("  Player " + player.getName() + " has been given the plague");
+									player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Short.MAX_VALUE - 1, 2));
 									player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, Short.MAX_VALUE - 1, 2));
 									player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Short.MAX_VALUE - 1, 0));
 									player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Short.MAX_VALUE - 1, 2));
@@ -234,8 +244,11 @@ public class DvZ extends JavaPlugin implements Listener {
 									player.sendMessage(ChatColor.DARK_RED + "You have contracted the " + ChatColor.GREEN + "Zombie " + ChatColor.LIGHT_PURPLE + "Plague" + ChatColor.DARK_RED + "!");
 									//becomeMonsterSpell.castSpell(players.get(i), SpellCastState.NORMAL, 1.0F, null);
 									if (++c >= monsterCount) {
+										System.out.println("  Plague completed " + c);
 										break;
 									}
+								} else {
+									System.out.println("  Tried to plague " + player.getName() + ", but that player is not a dwarf");
 								}
 							}
 						}
@@ -243,6 +256,8 @@ public class DvZ extends JavaPlugin implements Listener {
 					
 					// start special task
 					startMonsterSpecialTask();
+					
+					System.out.println("END MONSTER RELEASE");
 				}
 			}, monsterReleaseTime*20);
 		}
@@ -343,12 +358,12 @@ public class DvZ extends JavaPlugin implements Listener {
 		int oldShrinePower = shrinePower;
 		int c = 0;
 		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (p.hasPermission("dvz.dwarf")) {
+			if (dwarves.contains(p.getName())) {
 				c++;
 				if (shrine.contains(p)) {
 					shrinePower += dwarfValue;
 				}
-			} else if (p.hasPermission("dvz.monster") && shrine.contains(p)) {
+			} else if (monsters.contains(p.getName()) && shrine.contains(p)) {
 				shrinePower -= monsterValue;
 			}
 		}
@@ -383,7 +398,7 @@ public class DvZ extends JavaPlugin implements Listener {
 			List<Player> players = Arrays.asList(Bukkit.getOnlinePlayers());
 			Collections.shuffle(players);
 			for (Player p : players) {
-				if (p.hasPermission("dvz.monster") && p.isValid() && !p.isDead()) {
+				if (monsters.contains(p.getName()) && p.isValid() && !p.isDead()) {
 					monsterSpecialSpell.castSpell(p, SpellCastState.NORMAL, 1.0F, null);
 					break;
 				}
@@ -407,14 +422,14 @@ public class DvZ extends JavaPlugin implements Listener {
 			deathTimes.put(p.getName(), System.currentTimeMillis());
 			
 			// adjust scores
-			if (p.hasPermission("dvz.dwarf")) {
+			if (dwarves.contains(p.getName())) {
 				int s = remainingDwarvesScore.getScore() - 1;
 				if (s < 0) s = 0;
 				remainingDwarvesScore.setScore(s);
 				if (s == 0) {
 					recount();
 				}
-			} else if (p.hasPermission("dvz.monster")) {
+			} else if (monsters.contains(p.getName())) {
 				monsterKillsScore.setScore(monsterKillsScore.getScore() + 1);
 			}
 			
@@ -430,7 +445,10 @@ public class DvZ extends JavaPlugin implements Listener {
 		if (gameStarted) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 				public void run() {
-					becomeMonsterSpell.castSpell(event.getPlayer(), SpellCastState.NORMAL, 1.0F, null);
+					Player player = event.getPlayer();
+					dwarves.remove(player.getName());
+					monsters.add(player.getName());
+					becomeMonsterSpell.castSpell(player, SpellCastState.NORMAL, 1.0F, null);
 					if (volatileCode != null) {
 						volatileCode.sendEnderDragonToPlayer(event.getPlayer());
 					}
@@ -442,12 +460,18 @@ public class DvZ extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onJoin(final PlayerJoinEvent event) {
 		if (gameStarted) {
-			if (!event.getPlayer().hasPermission("dvz.dwarf") || killDwarvesOnJoin) {
-				Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-					public void run() {
-						event.getPlayer().setHealth(0);
-					}
-				});
+			final Player player = event.getPlayer();
+			if (monstersReleased) {
+				if (!dwarves.contains(player.getName()) || killDwarvesOnJoin) {
+					Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+						public void run() {
+							player.setHealth(0);
+						}
+					});
+				}
+			} else if (!dwarves.contains(player.getName()) && !monsters.contains(player.getName())) {
+				becomeDwarfSpell.castSpell(player, SpellCastState.NORMAL, 1.0F, null);
+				dwarves.add(player.getName());
 			}
 			if (volatileCode != null) {
 				volatileCode.sendEnderDragonToPlayer(event.getPlayer());
