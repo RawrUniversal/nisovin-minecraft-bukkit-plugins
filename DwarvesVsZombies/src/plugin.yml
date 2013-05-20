@@ -2,7 +2,7 @@ name: DwarvesVsZombies
 version: 1.0
 main: com.nisovin.dvz.DvZ
 
-depend: [ MagicSpells ]
+depend: [ MagicSpells, BrucesGym ]
 
 commands:
     startgame:
@@ -11,8 +11,20 @@ commands:
     override:
         description: Overrides the auto system
         permission: dvz.admin
+    releasemonsters:
+        description: Releases the monsters
+        permission: dvz.admin
+    hide:
+        description: Hides player identity
+        permission: dvz.hide
         
 permissions:
     dvz.admin:
         description: Perm for admin commands
         default: op
+    dvz.ignore:
+        description: Ignore this player for the game
+        default: false
+    dvz.hide:
+        description: Allows a player to hide
+        default: false

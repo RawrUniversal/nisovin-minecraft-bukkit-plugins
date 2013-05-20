@@ -16,5 +16,10 @@ end-timer-duration: 300
 become-dwarf-spell: become_dwarf
 become-monster-spell: become_monster
 monster-special-spell: monster_special
+hide-player-spell: hide_player
 start-commands: []
 monster-release-commands: []
+
+special-dwarves:
+- OldManWillakers
+- nisovin
