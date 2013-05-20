@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -36,7 +37,7 @@ public class ArrowSpell extends Spell {
 	public ArrowSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		bowName = getConfigString("bow-name", null);
+		bowName = ChatColor.translateAlternateColorCodes('&', getConfigString("bow-name", null));
 		spellNameOnHitEntity = getConfigString("spell-on-hit-entity", null);
 		spellNameOnHitGround = getConfigString("spell-on-hit-ground", null);
 	}
@@ -84,7 +85,6 @@ public class ArrowSpell extends Spell {
 		Map<String, ArrowSpell> spells = new HashMap<String, ArrowSpell>();
 		
 		public ArrowSpellHandler() {
-			System.out.println("REGISTERED");
 			registerEvents(this);
 		}
 		
@@ -119,8 +119,10 @@ public class ArrowSpell extends Spell {
 				if (data.spell.spellOnHitGround != null) {
 					MagicSpells.scheduleDelayedTask(new Runnable() {
 						public void run() {
-							if (!data.casted) {
-								data.spell.spellOnHitGround.castAtLocation((Player)arrow.getShooter(), arrow.getLocation(), 1.0F);
+							Player shooter = (Player)arrow.getShooter();
+							if (!data.casted && !data.spell.onCooldown(shooter)) {
+								data.spell.spellOnHitGround.castAtLocation(shooter, arrow.getLocation(), 1.0F);
+								data.spell.setCooldown(shooter, data.spell.cooldown);
 								data.casted = true;
 								arrow.removeMetadata("MSArrowSpell", MagicSpells.plugin);
 							}
@@ -139,14 +141,19 @@ public class ArrowSpell extends Spell {
 			Projectile arrow = (Projectile)event.getDamager();
 			List<MetadataValue> metas = arrow.getMetadata("MSArrowSpell");
 			if (metas == null || metas.size() == 0) return;
+			Player shooter = (Player)arrow.getShooter();
 			for (MetadataValue meta : metas) {
 				ArrowSpellData data = (ArrowSpellData)meta.value();
-				if (data.spell.spellOnHitEntity != null) {
-					data.spell.spellOnHitEntity.castAtEntity((Player)arrow.getShooter(), (LivingEntity)event.getEntity(), 1.0F);
-					data.casted = true;
-				} else if (data.spell.spellOnHitGround != null) {
-					data.spell.spellOnHitGround.castAtLocation((Player)arrow.getShooter(), arrow.getLocation(), 1.0F);
-					data.casted = true;
+				if (!data.spell.onCooldown(shooter)) {
+					if (data.spell.spellOnHitEntity != null) {
+						data.spell.spellOnHitEntity.castAtEntity(shooter, (LivingEntity)event.getEntity(), 1.0F);
+						data.spell.setCooldown(shooter, data.spell.cooldown);
+						data.casted = true;
+					} else if (data.spell.spellOnHitGround != null) {
+						data.spell.spellOnHitGround.castAtLocation(shooter, arrow.getLocation(), 1.0F);
+						data.spell.setCooldown(shooter, data.spell.cooldown);
+						data.casted = true;
+					}
 				}
 				break;
 			}

@@ -872,6 +872,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
+		return getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, checkLos, callSpellTargetEvent, null);
+	}
+	
+	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent, ValidTargetChecker checker) {
 		// check if pvp is disabled
 		if (MagicSpells.checkWorldPvpFlag && targetPlayers && !isBeneficial() && !player.getWorld().getPVP()) {
 			targetPlayers = false;
@@ -945,6 +949,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 								continue;
 							} else {
 								target = event.getTarget();
+							}
+						}
+						
+						// run checker
+						if (target != null && checker != null) {
+							if (!checker.isValidTarget(target)) {
+								target = null;
+								continue;
 							}
 						}
 						
@@ -1433,6 +1445,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				mana.showMana(player);
 			}
 		}
+	}
+	
+	public interface ValidTargetChecker {
+		public boolean isValidTarget(LivingEntity entity);
 	}
 
 }

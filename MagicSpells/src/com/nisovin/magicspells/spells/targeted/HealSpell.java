@@ -31,10 +31,16 @@ public class HealSpell extends TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Player target = getTargetedPlayer(player, minRange, range, obeyLos);
+			Player target = (Player)getTargetedEntity(player, minRange, range, true, false, obeyLos, true, new ValidTargetChecker() {				
+				@Override
+				public boolean isValidTarget(LivingEntity entity) {
+					return entity instanceof Player && entity.getHealth() < entity.getMaxHealth();
+				}
+			});
+			//Player target = getTargetedPlayer(player, minRange, range, obeyLos);
 			if (target == null) {
 				return noTarget(player);
-			} else if (cancelIfFull && target.getHealth() == 20) {
+			} else if (cancelIfFull && target.getHealth() == target.getMaxHealth()) {
 				return noTarget(player, formatMessage(strMaxHealth, "%t", target.getName()));
 			} else {
 				boolean healed = heal(player, target, power);
