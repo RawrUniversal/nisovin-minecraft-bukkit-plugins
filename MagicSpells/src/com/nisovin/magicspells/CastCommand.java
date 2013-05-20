@@ -17,9 +17,11 @@ import com.nisovin.magicspells.util.Util;
 public class CastCommand implements CommandExecutor, TabCompleter {
 
 	MagicSpells plugin;
+	boolean enableTabComplete;
 	
-	public CastCommand(MagicSpells plugin) {
+	public CastCommand(MagicSpells plugin, boolean enableTabComplete) {
 		this.plugin = plugin;
+		this.enableTabComplete = enableTabComplete;
 	}
 	
 	@Override
@@ -151,7 +153,7 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-		if (sender instanceof Player) {
+		if (enableTabComplete && sender instanceof Player) {
 			Spellbook spellbook = MagicSpells.getSpellbook((Player)sender);
 			String partial = Util.arrayJoin(args, ' ');
 			return spellbook.tabComplete(partial);
