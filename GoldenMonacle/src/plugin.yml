@@ -2,7 +2,7 @@ name: GoldenMonocle
 version: 1.1
 main: com.nisovin.goldenmonacle.GoldenMonocle
 
-depend: [BrucesGym, MagicSpells]
+depend: [MagicSpells, BrucesGym]
 
 commands:
     startgame:

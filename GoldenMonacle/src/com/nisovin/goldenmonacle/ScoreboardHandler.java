@@ -24,7 +24,6 @@ public class ScoreboardHandler {
 	Map<String, PlayerScore> scoresMap;
 	TreeSet<PlayerScore> scoresSorted;
 	Set<String> currentTopPlayers;
-	String previousFirstPlace = "";
 	
 	Scoreboard scoreboard;
 	Objective objective;
@@ -137,7 +136,7 @@ public class ScoreboardHandler {
 		currentTopPlayers = newTopPlayers;
 		
 		// update compasses
-		if (firstPlace != null && !previousFirstPlace.equals(firstPlace)) {
+		if (firstPlace != null) {
 			Player first = Bukkit.getPlayerExact(firstPlace);
 			if (first != null) {
 				Location loc = first.getLocation();
@@ -147,7 +146,6 @@ public class ScoreboardHandler {
 					}
 				}
 			}
-			previousFirstPlace = firstPlace;
 		}
 	}
 	

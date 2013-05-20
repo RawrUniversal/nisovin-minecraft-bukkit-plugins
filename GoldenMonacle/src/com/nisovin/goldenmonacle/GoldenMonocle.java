@@ -34,6 +34,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -57,13 +58,6 @@ import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.util.Util;
 
 public class GoldenMonocle extends JavaPlugin implements Listener {
-
-	//   start and end time
-	// X control spawn points
-	// X give out items
-	// X top 10 scoreboard
-	// X prevent drops, block break, block place
-	// X special drop spawn points
 
 	Random random = new Random();
 	
@@ -223,7 +217,7 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		
 		// initialize volatile code
 		try {
-			Class.forName("net.minecraft.server.v1_5_R2.MinecraftServer");
+			Class.forName("net.minecraft.server.v1_5_R3.MinecraftServer");
 			volatileCode = new VolatileCode();
 		} catch (ClassNotFoundException e) {
 			getLogger().warning("GoldenMonocle needs an update! Dragon timer is disabled.");
@@ -407,23 +401,31 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 	}
 	
 	public void endGame() {
-		gameStarted = false;
-		Bukkit.broadcastMessage(ChatColor.GOLD + "GAME OVER!");
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (player.hasPermission("monocle.ignore")) continue;
-			player.getInventory().clear();
-			if (player.isValid()) {
-				for (int i = 0; i < 3; i++) {
-					player.getInventory().addItem(generateRandomFirework());
+		if (gameStarted) {
+			gameStarted = false;
+			
+			giveEndOfGamePoints();
+			
+			Bukkit.broadcastMessage(ChatColor.GOLD + "GAME OVER!");
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				if (player.hasPermission("monocle.ignore")) continue;
+				player.getInventory().clear();
+				if (player.isValid()) {
+					for (int i = 0; i < 3; i++) {
+						player.getInventory().addItem(generateRandomFirework());
+					}
 				}
 			}
+			
+			Bukkit.getScheduler().cancelTasks(this);
+			
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+				public void run() {
+					System.out.println("Golden Monocle End: asdf8907sdfbn3lkasdf83");
+				}
+			}, 200);
+			
 		}
-		Bukkit.getScheduler().cancelTasks(this);
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			public void run() {
-				System.out.println("Golden Monocle End: asdf8907sdfbn3lkasdf83");
-			}
-		}, 200);
 	}
 	
 	public ItemStack generateRandomFirework() {
@@ -497,6 +499,10 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		deadPlayers.remove(player.getName());
 		player.setHealth(player.getMaxHealth());
 		player.setFoodLevel(20);
+		player.setFireTicks(0);
+		for (PotionEffect effect : player.getActivePotionEffects()) {
+			player.removePotionEffect(effect.getType());
+		}
 		if (spawnSpell != null) {
 			spawnSpell.cast(player);
 		}
@@ -550,10 +556,9 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		// disallow drops
 		event.setDroppedExp(0);
 		event.getDrops().clear();
-
+		
 		Player killed = event.getEntity();
-		if (gameStarted && !deathLocations.containsKey(killed.getName())) {
-			// give scores
+		if (gameStarted && !deathLocations.containsKey(killed.getName()) && !deadPlayers.contains(killed.getName())) {
 			if (killed.hasPermission("monocle.ignore")) return;
 			
 			Player killer = killed.getKiller();
@@ -564,24 +569,45 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 				}
 			}
 			if (killer != null && killer.hasPermission("monocle.ignore")) return;
-			int stolen = scoreboardHandler.getScore(killed);
-			if (stolen > pointsStolenPerKill) stolen = pointsStolenPerKill;
+			
+			// give scores
+			if (killer != null) {
+				int killedScore = scoreboardHandler.getScore(killed);
+				int killerScore = scoreboardHandler.getScore(killer);
+				if (killerScore <= killedScore) {
+					int stolen = pointsStolenPerKill;
+					if (pointsStolenPerKill > killedScore) stolen = killedScore;
+					scoreboardHandler.modifyScore(killed, -stolen);
+					scoreboardHandler.modifyScore(killer, stolen);
+				}
+				scoreboardHandler.modifyScore(killer, pointsGainedPerKill);
+			}
 			scoreboardHandler.modifyScore(killed, -pointsLostPerDeath);
+			
+			// add stats
 			BrucesGym.updateStatistic(killed.getName(), "gm_deaths", 1);
 			if (killer != null) {
-				scoreboardHandler.modifyScore(killer, pointsGainedPerKill + stolen);
 				BrucesGym.updateStatistic(killer.getName(), "gm_kills", 1);
-				BrucesGym.addKill(killer.getName(), killed.getName(), ChatColor.stripColor(killer.getItemInHand().getItemMeta().getDisplayName()));
+				BrucesGym.addKill(killer.getName(), killed.getName(), getWeaponName(killer.getItemInHand()));
 			}
 			
 			// save death location
-			deathLocations.put(killed.getName(), killed.getLocation());
+			deathLocations.put(killed.getName(), killer != null ? killer.getLocation() : killed.getLocation());
 		}
+	}
+	
+	private String getWeaponName(ItemStack item) {
+		if (item != null) {
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+				return ChatColor.stripColor(item.getItemMeta().getDisplayName());
+			}
+		}
+		return "";
 	}
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		scoreboardHandler.modifyScore(event.getPlayer(), -pointsLostPerDeath);
+		scoreboardHandler.modifyScore(event.getPlayer(), -pointsLostPerDeath - pointsStolenPerKill);
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
@@ -619,14 +645,21 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		}
 	}
 	
+	@EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
+	public void onEntityDamage(EntityDamageEvent event) {
+		if (!gameStarted || (event.getEntity() instanceof Player && deadPlayers.contains(((Player)event.getEntity()).getName()))) {
+			event.setCancelled(true);
+		}
+	}
+	
 	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 	public void onSpellTarget(SpellTargetEvent event) {
-		if (event.getTarget() instanceof Player) {
+		if (event.getTarget() instanceof Player && !event.getTarget().equals(event.getCaster())) {
 			lastDamagers.put(((Player)event.getTarget()).getName(), event.getCaster().getName());
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		if (gameStarted) {
 			final Player player = event.getPlayer();
