@@ -54,7 +54,9 @@ public class DisguiseSpell extends TargetedEntitySpell {
 			flag = true;
 			type = type.replace("baby ", "");
 		}
-		if (type.equalsIgnoreCase("wither skeleton")) {
+		if (type.equalsIgnoreCase("human") || type.equalsIgnoreCase("player")) {
+			type = "player";
+		} else if (type.equalsIgnoreCase("wither skeleton")) {
 			type = "skeleton";
 			flag = true;
 		} else if (type.equalsIgnoreCase("zombie villager") || type.equalsIgnoreCase("villager zombie")) {
@@ -141,7 +143,11 @@ public class DisguiseSpell extends TargetedEntitySpell {
 			var1 = -1;
 			type = "ozelot";
 		}
-		entityType = EntityType.fromName(type);
+		if (type.equals("player")) {
+			entityType = EntityType.PLAYER;
+		} else {
+			entityType = EntityType.fromName(type);
+		}
 		showPlayerName = getConfigBoolean("show-player-name", false);
 		nameplateText = ChatColor.translateAlternateColorCodes('&', getConfigString("nameplate-text", ""));
 		preventPickups = getConfigBoolean("prevent-pickups", true);
