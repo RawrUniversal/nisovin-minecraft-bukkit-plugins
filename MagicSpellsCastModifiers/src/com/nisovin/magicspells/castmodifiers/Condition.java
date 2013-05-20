@@ -57,6 +57,7 @@ public abstract class Condition {
 		conditions.put("buffactive", BuffActiveCondition.class);
 		conditions.put("world", InWorldCondition.class);
 		conditions.put("permission", PermissionCondition.class);
+		conditions.put("playeronline", PlayerOnlineCondition.class);
 		conditions.put("chance", ChanceCondition.class);
 	}
 	
