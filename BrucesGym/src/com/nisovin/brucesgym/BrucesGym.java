@@ -50,7 +50,7 @@ public class BrucesGym extends JavaPlugin {
 		}
 		
 		// start updater
-		updateTask = Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+		updateTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
 			public void run() {
 				database.performUpdates(updates);
 			}
