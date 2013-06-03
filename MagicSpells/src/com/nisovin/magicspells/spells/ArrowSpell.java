@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -22,6 +23,7 @@ import org.bukkit.metadata.MetadataValue;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class ArrowSpell extends Spell {
@@ -134,7 +136,7 @@ public class ArrowSpell extends Spell {
 			arrow.remove();
 		}
 
-		@EventHandler
+		@EventHandler(ignoreCancelled=true)
 		public void onArrowHitEntity(EntityDamageByEntityEvent event) {
 			if (event.getDamager().getType() != EntityType.ARROW) return;
 			if (!(event.getEntity() instanceof LivingEntity)) return;
@@ -146,8 +148,12 @@ public class ArrowSpell extends Spell {
 				ArrowSpellData data = (ArrowSpellData)meta.value();
 				if (!data.spell.onCooldown(shooter)) {
 					if (data.spell.spellOnHitEntity != null) {
-						data.spell.spellOnHitEntity.castAtEntity(shooter, (LivingEntity)event.getEntity(), 1.0F);
-						data.spell.setCooldown(shooter, data.spell.cooldown);
+						SpellTargetEvent evt = new SpellTargetEvent(data.spell, shooter, (LivingEntity)event.getEntity());
+						Bukkit.getPluginManager().callEvent(evt);
+						if (!evt.isCancelled()) {
+							data.spell.spellOnHitEntity.castAtEntity(shooter, (LivingEntity)event.getEntity(), 1.0F);
+							data.spell.setCooldown(shooter, data.spell.cooldown);
+						}
 						data.casted = true;
 					} else if (data.spell.spellOnHitGround != null) {
 						data.spell.spellOnHitGround.castAtLocation(shooter, arrow.getLocation(), 1.0F);

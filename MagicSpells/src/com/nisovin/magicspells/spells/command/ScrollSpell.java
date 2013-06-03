@@ -140,7 +140,7 @@ public class ScrollSpell extends CommandSpell {
 			if (args.length > 1 && args[1].matches("^-?[0-9]+$")) {
 				uses = Integer.parseInt(args[1]);
 			}
-			if (uses > maxUses || (maxUses > 0 && uses < 0)) {
+			if (uses > maxUses || (maxUses > 0 && uses <= 0)) {
 				uses = maxUses;
 			}
 			
