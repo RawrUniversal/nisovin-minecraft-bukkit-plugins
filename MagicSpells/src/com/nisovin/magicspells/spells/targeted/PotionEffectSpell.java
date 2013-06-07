@@ -37,6 +37,14 @@ public class PotionEffectSpell extends TargetedEntitySpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		beneficial = getConfigBoolean("beneficial", false);
 	}
+	
+	public int getType() {
+		return type;
+	}
+	
+	public int getDuration() {
+		return duration;
+	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {

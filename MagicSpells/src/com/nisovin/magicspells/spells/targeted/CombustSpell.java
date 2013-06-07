@@ -36,6 +36,10 @@ public class CombustSpell extends TargetedEntitySpell {
 		checkPlugins = getConfigBoolean("check-plugins", true);
 	}
 	
+	public int getDuration() {
+		return fireTicks;
+	}
+	
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
