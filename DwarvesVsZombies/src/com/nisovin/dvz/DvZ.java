@@ -71,6 +71,7 @@ public class DvZ extends JavaPlugin implements Listener {
 	List<String> monsterReleaseCommands;
 	List<String> specialDwarves;
 	
+	int shrineRadius;
 	Location shrineCenter;
 	BoundingBox shrine;
 	int dwarfValue;
@@ -133,7 +134,7 @@ public class DvZ extends JavaPlugin implements Listener {
 		
 		specialDwarves = config.getStringList("special-dwarves");
 		
-		int shrineRadius = config.getInt("shrine-radius", 20);
+		shrineRadius = config.getInt("shrine-radius", 20);
 		String[] coords = config.getString("shrine", "0,0,0").split(",");
 		shrineCenter = new Location(Bukkit.getWorlds().get(0), Integer.parseInt(coords[0]), Integer.parseInt(coords[1]), Integer.parseInt(coords[2]));
 		shrine = new BoundingBox(shrineCenter, shrineRadius);
@@ -215,11 +216,11 @@ public class DvZ extends JavaPlugin implements Listener {
 			}
 		} else if (command.getName().equalsIgnoreCase("releasemonsters")) {
 			if (gameStarted) {
-				if (override) {
+				if (!monstersReleased) {
 					releaseMonsters();
 					sender.sendMessage("Monsters released.");
 				} else {
-					sender.sendMessage("Can only use this command if /override was used.");
+					sender.sendMessage("Monsters have already been released.");
 				}
 			} else {
 				sender.sendMessage("Game hasn't started");
@@ -234,6 +235,13 @@ public class DvZ extends JavaPlugin implements Listener {
 			} else {
 				sender.sendMessage("You are a monster, no need to hide!");
 			}
+		} else if (command.getName().equalsIgnoreCase("setshrine") && sender instanceof Player) {
+			shrineCenter = ((Player)sender).getLocation();
+			if (args != null && args.length > 0 && args[0].matches("^[0-9]+$")) {
+				shrineRadius = Integer.parseInt(args[0]);
+			}
+			shrine = new BoundingBox(shrineCenter, shrineRadius);
+			sender.sendMessage("Shrine now centered at your location, with radius " + shrineRadius + ".");
 		}
 		return true;
 	}
@@ -353,7 +361,7 @@ public class DvZ extends JavaPlugin implements Listener {
 				int c = 0;
 				for (int i = 0; i < players.size(); i++) {
 					Player player = players.get(i);
-					if (dwarves.contains(player.getName())) {
+					if (!player.hasPermission("dvz.immune") && dwarves.contains(player.getName())) {
 						System.out.println("  Player " + player.getName() + " has been given the plague");
 						player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Short.MAX_VALUE - 1, 2));
 						player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, Short.MAX_VALUE - 1, 2));
