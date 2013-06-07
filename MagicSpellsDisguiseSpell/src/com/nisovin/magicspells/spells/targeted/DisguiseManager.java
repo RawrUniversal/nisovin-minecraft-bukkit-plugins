@@ -280,6 +280,9 @@ public class DisguiseManager implements Listener {
 		} else if (entityType == EntityType.SQUID) {
 			entity = new EntitySquid(world);
 			
+		} else if (entityType == EntityType.GHAST) {
+			entity = new EntityGhast(world);
+			
 		} else if (entityType == EntityType.ENDER_DRAGON) {
 			entity = new EntityEnderDragon(world);
 						
