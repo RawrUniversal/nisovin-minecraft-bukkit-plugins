@@ -19,11 +19,15 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -615,6 +619,37 @@ public class DvZ extends JavaPlugin implements Listener {
 			if (volatileCode != null) {
 				volatileCode.sendEnderDragonToPlayer(event.getPlayer());
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onDamage(EntityDamageEvent event) {
+		if (!gameStarted) {
+			event.setCancelled(true);
+			return;
+		}		
+	}
+	
+	@EventHandler(ignoreCancelled = true)
+	public void onDamage2(EntityDamageByEntityEvent event) {
+		if (!gameStarted) {
+			event.setCancelled(true);
+			return;
+		}		
+		if (!(event.getEntity() instanceof Player)) return;
+		Player attacked = (Player)event.getEntity();
+		Entity e = event.getDamager();
+		if (e instanceof Projectile) {
+			e = ((Projectile)e).getShooter();
+		}
+		if (!(e instanceof Player)) return;
+		Player attacker = (Player)e;
+		if (dwarves.contains(attacked.getName()) && dwarves.contains(attacker.getName())) {
+			event.setCancelled(true);
+			return;
+		} else if (monsters.contains(attacked.getName()) && monsters.contains(attacker.getName())) {
+			event.setCancelled(true);
+			return;
 		}
 	}
 	
