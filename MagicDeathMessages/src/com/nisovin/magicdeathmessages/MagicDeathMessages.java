@@ -1,9 +1,16 @@
 package com.nisovin.magicdeathmessages;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,18 +28,76 @@ import com.nisovin.magicspells.spells.targeted.PotionEffectSpell;
 
 public class MagicDeathMessages extends JavaPlugin implements Listener {
 
-	Map<String, String> causeStringsKillers;
-	Map<String, String> causeStringsSuicides;
+	// TODO: track arrow shots maybe
+	// TODO: check for potion effects
+	// TODO: prevent 'double' deaths
 	
-	Map<String, AttackData> poisonedBy;
-	Map<String, AttackData> witheredBy;
-	Map<String, AttackData> combustedBy;
-	Map<String, AttackData> targetedBy;
+	Map<String, String> causeStringsWeapons = new HashMap<String, String>();
+	Map<String, String> causeStringsKillers = new HashMap<String, String>();
+	Map<String, String> causeStringsSuicides = new HashMap<String, String>();
+	
+	Map<String, AttackData> poisonedBy = new HashMap<String, AttackData>();
+	Map<String, AttackData> witheredBy = new HashMap<String, AttackData>();
+	Map<String, AttackData> combustedBy = new HashMap<String, AttackData>();
+	Map<String, AttackData> targetedBy = new HashMap<String, AttackData>();
 	
 	@Override
 	public void onEnable() {
-		
+		loadConfig();
 		getServer().getPluginManager().registerEvents(this, this);
+	}
+	
+	void loadConfig() {
+		causeStringsWeapons.clear();
+		causeStringsKillers.clear();
+		causeStringsSuicides.clear();
+		
+		File configFile = new File(getDataFolder(), "config.yml");
+		if (!configFile.exists()) {
+			saveDefaultConfig();
+		}
+		YamlConfiguration config = new YamlConfiguration();
+		try {
+			config.load(configFile);
+			
+			ConfigurationSection sec = config.getConfigurationSection("cause-strings-weapons");
+			Set<String> keys;
+			if (sec != null) {
+				keys = sec.getKeys(false);
+				for (String key : keys) {
+					causeStringsWeapons.put(key, ChatColor.translateAlternateColorCodes('&', sec.getString(key)));
+				}
+			}
+			
+			sec = config.getConfigurationSection("cause-strings-killers");
+			if (sec != null) {
+				keys = sec.getKeys(false);
+				for (String key : keys) {
+					causeStringsKillers.put(key, ChatColor.translateAlternateColorCodes('&', sec.getString(key)));
+				}
+			}
+			
+			sec = config.getConfigurationSection("cause-strings-suicides");
+			if (sec != null) {
+				keys = sec.getKeys(false);
+				for (String key : keys) {
+					causeStringsSuicides.put(key, ChatColor.translateAlternateColorCodes('&', sec.getString(key)));
+				}
+			}
+			
+		} catch (Exception e) {
+			getLogger().severe("ERROR LOADING CONFIG");
+			e.printStackTrace();
+		}		
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+		if (sender.isOp()) {
+			loadConfig();
+			sender.sendMessage("MagicDeathMessages config reloaded.");
+		}
+		return true;
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -45,6 +110,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 					poisonedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), spell.getDuration() * 1000 / 20));
 				} else if (type == 20) {
 					witheredBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), spell.getDuration() * 1000 / 20));
+					System.out.println("WITHER " + event.getCaster().getName() + " " + ((Player)event.getTarget()).getName());
 				}
 			} else if (event.getSpell() instanceof CombustSpell) {
 				combustedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), ((CombustSpell)event.getSpell()).getDuration() * 1000 / 20));
@@ -57,14 +123,15 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		EntityDamageEvent dam = player.getLastDamageCause();
+		DamageCause damageCause = dam != null ? dam.getCause() : DamageCause.CUSTOM;
 		
 		// get attacker data
 		AttackData data = null;
-		if (dam.getCause() == DamageCause.POISON) {
+		if (damageCause == DamageCause.POISON) {
 			data = poisonedBy.get(player.getName());
-		} else if (dam.getCause() == DamageCause.WITHER) {
+		} else if (damageCause == DamageCause.WITHER) {
 			data = witheredBy.get(player.getName());
-		} else if (dam.getCause() == DamageCause.FIRE_TICK) {
+		} else if (damageCause == DamageCause.FIRE_TICK) {
 			data = combustedBy.get(player.getName());
 		}
 		if (data == null) {
@@ -104,7 +171,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 			weapon = data.weapon;
 		} else if (killer != null) {
 			ItemStack item = killer.getItemInHand();
-			if (item != null) {
+			if (item != null && item.getTypeId() > 0 && item.hasItemMeta()) {
 				weapon = item.getItemMeta().getDisplayName();
 			}
 		}
@@ -123,7 +190,13 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 		// set death message
 		String message = null;
 		if (killerDisplayName != null) {
-			String cause = causeStringsKillers.get(dam.getCause().name().toLowerCase());
+			String cause = null;
+			if (weapon != null && damageCause == DamageCause.ENTITY_ATTACK) {
+				cause = causeStringsWeapons.get(ChatColor.stripColor(weapon));
+			}
+			if (cause == null) {
+				cause = causeStringsKillers.get(damageCause.name().toLowerCase());
+			}
 			if (cause == null) {
 				cause = "was killed by";
 			}
@@ -134,11 +207,11 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 				message += ChatColor.WHITE + ".";
 			}
 		} else {
-			String cause = causeStringsSuicides.get(dam.getCause().name().toLowerCase());
+			String cause = causeStringsSuicides.get(damageCause.name().toLowerCase());
 			if (cause == null) {
 				cause = "died";
 			}
-			message = player.getDisplayName() + ChatColor.WHITE + cause + ChatColor.WHITE + ".";
+			message = player.getDisplayName() + ChatColor.WHITE + " " + cause + ChatColor.WHITE + ".";
 		}
 		event.setDeathMessage(message);
 	}
@@ -152,7 +225,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 		public AttackData(Player player) {
 			attackerName = player.getName();
 			ItemStack item = player.getItemInHand();
-			if (item != null) {
+			if (item != null && item.getTypeId() > 0 && item.hasItemMeta()) {
 				weapon = item.getItemMeta().getDisplayName();
 			}
 			duration = 10000;
