@@ -29,6 +29,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -378,7 +379,7 @@ public class DvZ extends JavaPlugin implements Listener {
 							break;
 						}
 					} else {
-						System.out.println("  Tried to plague " + player.getName() + ", but that player is not a dwarf");
+						System.out.println("  Tried to plague " + player.getName() + ", but that player is not a dwarf or is immune");
 					}
 				}
 			}
@@ -659,6 +660,13 @@ public class DvZ extends JavaPlugin implements Listener {
 			if (event.getClickedBlock().getData() >= 4) {
 				event.getClickedBlock().setData((byte)0);
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onDropItem(PlayerDropItemEvent event) {
+		if (monsters.contains(event.getPlayer().getName())) {
+			event.setCancelled(true);
 		}
 	}
 	
