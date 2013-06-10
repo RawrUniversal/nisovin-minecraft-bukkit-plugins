@@ -46,6 +46,7 @@ public class BrucesGym extends JavaPlugin {
 		boolean connected = database.connect(config.getString("database.host"), config.getString("database.user"), config.getString("database.pass"), config.getString("database.db"));
 		if (!connected) {
 			getLogger().severe("DATABASE CONNECTION ERROR, STATS WILL NOT BE SAVED");
+			database = null;
 			return;
 		}
 		
@@ -75,15 +76,21 @@ public class BrucesGym extends JavaPlugin {
 	}
 	
 	public static void registerStatistic(String statistic, StatisticType type, GymGameMode gameMode) {
-		plugin.database.registerStatistic(gameMode, statistic, type);
+		if (plugin.database != null) {
+			plugin.database.registerStatistic(gameMode, statistic, type);
+		}
 	}
 	
 	public static void updateStatistic(String playerName, String statistic, int amount) {
-		plugin.updates.add(new StatisticUpdate(playerName, statistic, amount));
+		if (plugin.database != null) {
+			plugin.updates.add(new StatisticUpdate(playerName, statistic, amount));
+		}
 	}
 	
 	public static void addKill(String killerName, String killedName, String weaponName) {
-		plugin.updates.add(new KillUpdate(killerName, killedName, plugin.gameMode, weaponName));
+		if (plugin.database != null) {
+			plugin.updates.add(new KillUpdate(killerName, killedName, plugin.gameMode, weaponName));
+		}
 	}
 	
 }
