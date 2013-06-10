@@ -61,6 +61,9 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 
 	Random random = new Random();
 	
+	int centerX;
+	int centerZ;
+	
 	List<Location> spawnPoints;
 	List<Location> dropPoints;
 	Location deadSpawn;
@@ -116,6 +119,8 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 		}
 		
 		// load config values
+		centerX = config.getInt("center-x", centerX);
+		centerZ = config.getInt("center-z", centerZ);
 		spawnDelay = config.getInt("spawn-delay", spawnDelay);
 		weaponItemCount = config.getInt("weapon-item-count", weaponItemCount);
 		healItemCount = config.getInt("heal-item-count", healItemCount);
@@ -580,7 +585,11 @@ public class GoldenMonocle extends JavaPlugin implements Listener {
 					scoreboardHandler.modifyScore(killed, -stolen);
 					scoreboardHandler.modifyScore(killer, stolen);
 				}
-				scoreboardHandler.modifyScore(killer, pointsGainedPerKill);
+				int points = pointsGainedPerKill;
+				double distSq = Math.pow(centerX - killer.getLocation().getX(), 2) + Math.pow(centerZ - killer.getLocation().getZ(), 2);
+				if (distSq < 10000) points++;
+				if (distSq < 3025) points++;
+				scoreboardHandler.modifyScore(killer, points);
 			}
 			scoreboardHandler.modifyScore(killed, -pointsLostPerDeath);
 			
