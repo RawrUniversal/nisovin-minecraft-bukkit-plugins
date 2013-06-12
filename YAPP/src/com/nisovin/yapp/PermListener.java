@@ -20,9 +20,7 @@ class PermListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Player player = event.getPlayer();
-		if (!plugin.hasLoadedPermissions(player)) {
-			plugin.loadPlayerPermissions(player);
-		}
+		plugin.loadPlayerPermissions(player);
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
