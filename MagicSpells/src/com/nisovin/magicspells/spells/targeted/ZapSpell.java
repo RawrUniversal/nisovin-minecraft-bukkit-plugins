@@ -4,18 +4,20 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
-import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ZapSpell extends TargetedSpell {
+public class ZapSpell extends TargetedLocationSpell {
 	
 	private String strCantZap;
 	private HashSet<Byte> transparentBlockTypes;
@@ -65,41 +67,70 @@ public class ZapSpell extends TargetedSpell {
 			}
 			if (target != null) {
 				// check for disallowed block
-				if (disallowedBlockTypes.contains(target.getTypeId()) || (allowedBlockTypes.size() > 0 && !allowedBlockTypes.contains(target.getTypeId()))) {
+				if (!canZap(target)) {
 					return noTarget(player, strCantZap);
 				}
-				
-				// check for protection
-				if (checkPlugins) {
-					BlockBreakEvent event = new BlockBreakEvent(target, player);
-					MagicSpells.plugin.getServer().getPluginManager().callEvent(event);
-					if (event.isCancelled()) {
-						// a plugin cancelled the event
-						return noTarget(player, strCantZap);
-					}
+				// zap
+				boolean ok = zap(target, player);
+				if (!ok) {
+					return noTarget(player, strCantZap);
 				}
-				
-				// drop block
-				if (dropBlock) {
-					if (dropNormal) {
-						target.breakNaturally();
-					} else {
-						target.getWorld().dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1, target.getData()));
-					}
-				}
-				
-				// show animation
-				playSpellEffects(EffectPosition.CASTER, player);
-				playSpellEffects(EffectPosition.TARGET, target.getLocation(), target.getTypeId() + "");
-				playSpellEffectsTrail(player.getLocation(), target.getLocation(), null);
-				
-				// remove block
-				target.setType(Material.AIR);
-				
 			} else {
 				return noTarget(player, strCantZap);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private boolean zap(Block target, Player player) {
+		// check for protection
+		if (checkPlugins) {
+			BlockBreakEvent event = new BlockBreakEvent(target, player);
+			MagicSpells.plugin.getServer().getPluginManager().callEvent(event);
+			if (event.isCancelled()) {
+				// a plugin cancelled the event
+				return false;
+			}
+		}
+		
+		// drop block
+		if (dropBlock) {
+			if (dropNormal) {
+				target.breakNaturally();
+			} else {
+				target.getWorld().dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1, target.getData()));
+			}
+		}
+		
+		// show animation
+		playSpellEffects(EffectPosition.CASTER, player);
+		playSpellEffects(EffectPosition.TARGET, target.getLocation(), target.getTypeId() + "");
+		playSpellEffectsTrail(player.getLocation(), target.getLocation(), null);
+		
+		// remove block
+		target.setType(Material.AIR);
+		return true;
+	}
+
+	@Override
+	public boolean castAtLocation(Player caster, Location target, float power) {
+		Block block = target.getBlock();
+		if (canZap(block)) {
+			zap(block, caster);
+			return true;
+		} else {
+			Vector v = target.getDirection();
+			block = target.clone().add(v).getBlock();
+			if (canZap(block)) {
+				zap(block, caster);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private boolean canZap(Block target) {
+		return !(disallowedBlockTypes.contains(target.getTypeId()) || (allowedBlockTypes.size() > 0 && !allowedBlockTypes.contains(target.getTypeId())));
 	}
 }

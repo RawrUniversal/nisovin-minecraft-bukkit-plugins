@@ -243,8 +243,10 @@ public class ProjectileSpell extends InstantSpell {
 			if (aoeRadius == 0) {
 				for (TargetedSpell spell : spells) {
 					if (spell instanceof TargetedLocationSpell) {
-						((TargetedLocationSpell)spell).castAtLocation(info.player, projectile.getLocation(), info.power);
-						playSpellEffects(EffectPosition.TARGET, projectile.getLocation());
+						Location loc = projectile.getLocation();
+						Util.setLocationFacingFromVector(loc, projectile.getVelocity());
+						((TargetedLocationSpell)spell).castAtLocation(info.player, loc, info.power);
+						playSpellEffects(EffectPosition.TARGET, loc);
 					}
 				}
 				sendMessage(info.player, strHitCaster);

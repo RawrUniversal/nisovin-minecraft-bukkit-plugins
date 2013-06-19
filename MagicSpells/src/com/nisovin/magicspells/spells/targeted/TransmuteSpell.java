@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
@@ -32,6 +33,7 @@ public class TransmuteSpell extends TargetedLocationSpell {
 		for (int i = 0; i < blockTypes.length; i++) {
 			blockTypes[i] = list.get(i);
 		}
+		Arrays.sort(blockTypes);
 		
 		transmuteType = getConfigInt("transmute-type", Material.GOLD_BLOCK.getId());
 		transmuteData = (byte)getConfigInt("transmute-data", 0);
@@ -61,18 +63,10 @@ public class TransmuteSpell extends TargetedLocationSpell {
 			block.setTypeIdAndData(transmuteType, transmuteData, true);
 			return true;
 		} else {
-			boolean changed = false;
-			for (BlockFace face : checkDirs) {
-				Block b = block.getRelative(face);
-				if (canTransmute(b)) {
-					b.setTypeIdAndData(transmuteType, transmuteData, true);
-					changed = true;
-					if (!checkAll) {
-						return true;
-					}
-				}
-			}
-			if (changed) {
+			Vector v = target.getDirection();
+			block = target.clone().add(v).getBlock();
+			if (canTransmute(block)) {
+				block.setTypeIdAndData(transmuteType, transmuteData, true);
 				return true;
 			}
 		}
@@ -81,7 +75,7 @@ public class TransmuteSpell extends TargetedLocationSpell {
 	}
 	
 	private boolean canTransmute(Block block) {
-		return Arrays.binarySearch(blockTypes, block.getTypeId()) > 0;
+		return Arrays.binarySearch(blockTypes, block.getTypeId()) >= 0;
 	}
 
 }

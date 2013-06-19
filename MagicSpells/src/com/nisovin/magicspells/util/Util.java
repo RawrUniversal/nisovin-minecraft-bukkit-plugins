@@ -163,14 +163,16 @@ public class Util {
 	}
 	
 	public static void setFacing(Player player, Vector vector) {
-		double yaw = Math.toDegrees(Math.atan2(-vector.getX(), vector.getZ()));
-		double pitch = Math.toDegrees(-Math.asin(vector.getY()));
-				
 		Location loc = player.getLocation();
-		loc.setYaw((float)yaw);
-		loc.setPitch((float)pitch);
-		
+		setLocationFacingFromVector(loc, vector);
 		player.teleport(loc);
+	}
+	
+	public static void setLocationFacingFromVector(Location location, Vector vector) {
+		double yaw = Math.toDegrees(Math.atan2(-vector.getX(), vector.getZ()));
+		double pitch = Math.toDegrees(-Math.asin(vector.getY()));				
+		location.setYaw((float)yaw);
+		location.setPitch((float)pitch);
 	}
 	
 	public static boolean arrayContains(int[] array, int value) {
