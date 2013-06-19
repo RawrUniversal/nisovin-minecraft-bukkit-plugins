@@ -136,11 +136,11 @@ public class MagicSpells extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		plugin = this;		
 		load();
 	}
 	
 	void load() {
+		plugin = this;
 		PluginManager pm = plugin.getServer().getPluginManager();
 		
 		// create storage stuff
@@ -1024,6 +1024,8 @@ public class MagicSpells extends JavaPlugin {
 		spells = null;
 		spellNames.clear();
 		spellNames = null;
+		spellsOrdered.clear();
+		spellsOrdered = null;
 		spellbooks.clear();
 		spellbooks = null;
 		incantations.clear();
@@ -1042,6 +1044,21 @@ public class MagicSpells extends JavaPlugin {
 		}
 		expBarManager = null;
 		itemNameResolver = null;
+		losTransparentBlocks = null;
+		ignoreCastItemDurability = null;
+		entityNames = null;
+		profilingTotalTime = null;
+		profilingRuns = null;
+		strCastUsage = null;
+		strUnknownSpell = null;
+		strSpellChange = null;
+		strSpellChangeEmpty = null;
+		strOnCooldown = null;
+		strMissingReagents = null;
+		strCantCast = null;
+		strWrongWorld = null;
+		strCantBind = null;
+		strConsoleName = null;
 		
 		// remove star permissions (to allow new spells to be added to them)
 		getServer().getPluginManager().removePermission("magicspells.grant.*");
@@ -1054,6 +1071,8 @@ public class MagicSpells extends JavaPlugin {
 		
 		// cancel all tasks
 		Bukkit.getScheduler().cancelTasks(this);
+		
+		plugin = null;
 	}
 	
 	@Override

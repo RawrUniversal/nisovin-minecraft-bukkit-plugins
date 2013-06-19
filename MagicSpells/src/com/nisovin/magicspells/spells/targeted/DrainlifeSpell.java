@@ -139,12 +139,12 @@ public class DrainlifeSpell extends TargetedEntitySpell {
 			player.setHealth(h);
 		} else if (giveType.equals("mana")) {
 			MagicSpells.getManaHandler().addMana(player, give, ManaChangeReason.OTHER);
-		} else if (takeType.equals("hunger")) {
+		} else if (giveType.equals("hunger")) {
 			int food = player.getFoodLevel();
 			food += give;
 			if (food > 20) food = 20;
 			player.setFoodLevel(food);
-		} else if (takeType.equals("experience")) {
+		} else if (giveType.equals("experience")) {
 			ExperienceUtils.changeExp(player, give);
 		}
 	}
