@@ -12,7 +12,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import com.nisovin.magicspells.BuffManager;
 import com.nisovin.magicspells.MagicSpells;
@@ -36,6 +38,8 @@ public abstract class BuffSpell extends Spell {
 	protected boolean cancelOnGiveDamage;
 	protected boolean cancelOnTakeDamage;
 	protected boolean cancelOnDeath;
+	protected boolean cancelOnTeleport;
+	protected boolean cancelOnChangeWorld;
 	protected boolean cancelOnLogout;
 	protected String strFade;
 	private boolean castWithItem;
@@ -56,12 +60,20 @@ public abstract class BuffSpell extends Spell {
 		cancelOnGiveDamage = getConfigBoolean("cancel-on-give-damage", false);
 		cancelOnTakeDamage = getConfigBoolean("cancel-on-take-damage", false);
 		cancelOnDeath = getConfigBoolean("cancel-on-death", false);
+		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", false);
+		cancelOnChangeWorld = getConfigBoolean("cancel-on-change-world", false);
 		cancelOnLogout = getConfigBoolean("cancel-on-logout", false);
 		if (cancelOnGiveDamage || cancelOnTakeDamage) {
 			registerEvents(new DamageListener());
 		}
 		if (cancelOnDeath) {
 			registerEvents(new DeathListener());
+		}
+		if (cancelOnTeleport) {
+			registerEvents(new TeleportListener());
+		}
+		if (cancelOnChangeWorld) {
+			registerEvents(new ChangeWorldListener());
 		}
 		if (cancelOnLogout) {
 			registerEvents(new QuitListener());
@@ -241,6 +253,24 @@ public abstract class BuffSpell extends Spell {
 		public void onPlayerDeath(PlayerDeathEvent event) {
 			if (isActive(event.getEntity())) {
 				turnOff(event.getEntity());
+			}
+		}
+	}
+	
+	public class TeleportListener implements Listener {
+		@EventHandler(priority=EventPriority.LOWEST)
+		public void onTeleport(PlayerTeleportEvent event) {
+			if (isActive(event.getPlayer())) {
+				turnOff(event.getPlayer());
+			}
+		}
+	}
+	
+	public class ChangeWorldListener implements Listener {
+		@EventHandler(priority=EventPriority.LOWEST)
+		public void onChangeWorld(PlayerChangedWorldEvent event) {
+			if (isActive(event.getPlayer())) {
+				turnOff(event.getPlayer());
 			}
 		}
 	}
