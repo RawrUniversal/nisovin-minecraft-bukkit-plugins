@@ -116,13 +116,27 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		// general options
 		this.description = config.getString(section + "." + spellName + ".description", "");
-		String[] sItems = config.getString(section + "." + spellName + ".cast-item", "-5").trim().replace(" ", "").split(",");
-		this.castItems = new CastItem[sItems.length];
-		for (int i = 0; i < sItems.length; i++) {
-			ItemStack is = Util.getItemStackFromString(sItems[i]);
-			if (is != null) {
-				this.castItems[i] = new CastItem(is);
+		if (config.contains(section + "." + spellName + ".cast-item")) {
+			String[] sItems = config.getString(section + "." + spellName + ".cast-item", "-5").trim().replace(" ", "").split(",");
+			this.castItems = new CastItem[sItems.length];
+			for (int i = 0; i < sItems.length; i++) {
+				ItemStack is = Util.getItemStackFromString(sItems[i]);
+				if (is != null) {
+					this.castItems[i] = new CastItem(is);
+				}
 			}
+		} else if (config.contains(section + "." + spellName + ".cast-items")) {
+			List<String> sItems = config.getStringList(section + "." + spellName + ".cast-items", null);
+			if (sItems == null) sItems = new ArrayList<String>();
+			this.castItems = new CastItem[sItems.size()];
+			for (int i = 0; i < castItems.length; i++) {
+				ItemStack is = Util.getItemStackFromString(sItems.get(i));
+				if (is != null) {
+					this.castItems[i] = new CastItem(is);
+				}
+			}
+		} else {
+			this.castItems = new CastItem[0];
 		}
 		this.castWithLeftClick = config.getBoolean(section + "." + spellName + ".cast-with-left-click", MagicSpells.castWithLeftClick);
 		this.castWithRightClick = config.getBoolean(section + "." + spellName + ".cast-with-right-click", MagicSpells.castWithRightClick);
