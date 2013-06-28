@@ -12,9 +12,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class CombustSpell extends TargetedEntitySpell {
+public class CombustSpell extends TargetedSpell implements TargetedEntitySpell {
 	
 	private boolean targetPlayers;
 	private int fireTicks;

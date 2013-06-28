@@ -14,9 +14,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class TelekinesisSpell extends TargetedLocationSpell {
+public class TelekinesisSpell extends TargetedSpell implements TargetedLocationSpell {
 	
 	private boolean checkPlugins;
 	

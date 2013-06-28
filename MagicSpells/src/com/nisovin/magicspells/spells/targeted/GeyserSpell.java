@@ -16,10 +16,11 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellAnimation;
 
-public class GeyserSpell extends TargetedEntitySpell {
+public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 	
 	private int damage;
 	private double velocity;

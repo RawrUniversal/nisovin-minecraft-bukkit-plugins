@@ -16,10 +16,11 @@ import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
-public class DisarmSpell extends TargetedEntitySpell {
+public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private Set<Material> disarmable;
 	private int disarmDuration;

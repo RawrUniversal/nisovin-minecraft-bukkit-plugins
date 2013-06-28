@@ -16,7 +16,7 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ExternalCommandSpell extends TargetedEntitySpell {
+public class ExternalCommandSpell extends TargetedSpell implements TargetedEntitySpell {
 	
 	@SuppressWarnings("unused")
 	private static final String SPELL_NAME = "external";

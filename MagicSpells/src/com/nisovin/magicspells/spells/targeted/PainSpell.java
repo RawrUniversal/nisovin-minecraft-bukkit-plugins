@@ -8,9 +8,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class PainSpell extends TargetedEntitySpell {
+public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private int damage;
 	private boolean ignoreArmor;

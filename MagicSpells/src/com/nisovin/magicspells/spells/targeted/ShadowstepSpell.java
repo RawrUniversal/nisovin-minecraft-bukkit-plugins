@@ -8,10 +8,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ShadowstepSpell extends TargetedEntitySpell {
+public class ShadowstepSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private boolean targetPlayers;
 	private boolean obeyLos;

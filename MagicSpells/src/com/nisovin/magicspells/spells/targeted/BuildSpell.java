@@ -13,9 +13,10 @@ import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class BuildSpell extends TargetedLocationSpell {
+public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 	
 	private int slot;
 	private boolean consumeBlock;

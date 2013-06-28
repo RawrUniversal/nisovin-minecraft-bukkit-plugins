@@ -8,9 +8,10 @@ import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class HealSpell extends TargetedEntitySpell {
+public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	
 	private int healAmount;
 	private boolean cancelIfFull;

@@ -7,9 +7,10 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class PotionEffectSpell extends TargetedEntitySpell {
+public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@SuppressWarnings("unused")
 	private static final String SPELL_NAME = "potion";

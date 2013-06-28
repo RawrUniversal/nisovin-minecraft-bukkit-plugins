@@ -5,10 +5,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class GripSpell extends TargetedEntitySpell {
+public class GripSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	float locationOffset;
 	boolean targetPlayers;

@@ -13,9 +13,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class LightningSpell extends TargetedLocationSpell {
+public class LightningSpell extends TargetedSpell implements TargetedLocationSpell {
 	
 	private boolean requireEntityTarget;
 	private boolean obeyLos;

@@ -5,9 +5,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class MountSpell extends TargetedEntitySpell {
+public class MountSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	boolean reverse = false;
 	

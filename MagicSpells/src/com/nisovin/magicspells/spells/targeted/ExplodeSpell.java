@@ -15,9 +15,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ExplodeSpell extends TargetedLocationSpell {
+public class ExplodeSpell extends TargetedSpell implements TargetedLocationSpell {
 	
 	private int explosionSize;
 	private int backfireChance;

@@ -23,10 +23,11 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class PulserSpell extends TargetedLocationSpell {
+public class PulserSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private int totalPulses;
 	private int interval;

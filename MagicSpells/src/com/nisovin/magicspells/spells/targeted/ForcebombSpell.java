@@ -15,9 +15,10 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ForcebombSpell extends TargetedLocationSpell {
+public class ForcebombSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private int radiusSquared;
 	private boolean targetPlayers;

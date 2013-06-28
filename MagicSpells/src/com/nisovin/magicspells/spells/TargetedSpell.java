@@ -16,6 +16,8 @@ public abstract class TargetedSpell extends InstantSpell {
 	protected boolean alwaysActivate;
 	protected boolean playFizzleSound;
 	protected boolean targetSelf;
+	protected boolean obeyLos;
+	protected boolean targetPlayers;
 	protected String strCastTarget;
 	protected String strNoTarget;
 
@@ -27,6 +29,8 @@ public abstract class TargetedSpell extends InstantSpell {
 		alwaysActivate = getConfigBoolean("always-activate", false);
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
 		targetSelf = getConfigBoolean("target-self", false);
+		obeyLos = getConfigBoolean("obey-los", true);
+		targetPlayers = getConfigBoolean("target-players", false);
 		strCastTarget = getConfigString("str-cast-target", "");
 		strNoTarget = getConfigString("str-no-target", "");
 	}
@@ -85,6 +89,18 @@ public abstract class TargetedSpell extends InstantSpell {
 		} else {
 			return super.getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, checkLos, callSpellTargetEvent);
 		}
+	}
+
+	protected LivingEntity getTarget(Player player) {
+		return getTargetedEntity(player, minRange, range, targetPlayers, true, obeyLos, true);
+	}
+	
+	protected LivingEntity getTarget(Player player, boolean targetNonPlayers) {
+		return getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, obeyLos, true);
+	}
+	
+	protected Player getTargetPlayer(Player player) {
+		return getTargetedPlayer(player, minRange, range, obeyLos);
 	}
 	
 	/**

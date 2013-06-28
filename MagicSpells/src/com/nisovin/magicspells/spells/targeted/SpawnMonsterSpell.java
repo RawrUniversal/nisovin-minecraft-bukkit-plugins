@@ -22,11 +22,12 @@ import org.bukkit.material.MaterialData;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.Util;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class SpawnMonsterSpell extends TargetedLocationSpell {
+public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private String location;
 	private EntityType entityType;

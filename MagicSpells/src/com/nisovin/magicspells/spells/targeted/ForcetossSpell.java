@@ -8,9 +8,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ForcetossSpell extends TargetedEntitySpell {
+public class ForcetossSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private int damage;
 	private float hForce;

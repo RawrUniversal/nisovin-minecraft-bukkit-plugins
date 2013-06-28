@@ -14,10 +14,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class MaterializeSpell extends TargetedLocationSpell {
+public class MaterializeSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private int type;
 	private byte data;

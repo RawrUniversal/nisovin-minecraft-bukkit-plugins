@@ -7,9 +7,10 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class SwitchSpell extends TargetedEntitySpell {
+public class SwitchSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private int switchBack;
 	private boolean targetPlayers;

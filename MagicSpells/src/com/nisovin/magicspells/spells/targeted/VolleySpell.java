@@ -13,9 +13,10 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class VolleySpell extends TargetedLocationSpell {
+public class VolleySpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private int arrows;
 	private int speed;

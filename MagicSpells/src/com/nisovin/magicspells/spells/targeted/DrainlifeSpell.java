@@ -14,11 +14,12 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellAnimation;
 
-public class DrainlifeSpell extends TargetedEntitySpell {
+public class DrainlifeSpell extends TargetedSpell implements TargetedEntitySpell {
 	
 	private String takeType;
 	private int takeAmt;

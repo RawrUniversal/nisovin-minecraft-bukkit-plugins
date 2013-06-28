@@ -16,10 +16,11 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellAnimation;
 
-public class TreeSpell extends TargetedLocationSpell {
+public class TreeSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private TreeType treeType;
 	private int speed;

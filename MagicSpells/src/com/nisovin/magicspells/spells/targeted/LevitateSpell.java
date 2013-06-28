@@ -18,9 +18,10 @@ import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class LevitateSpell extends TargetedEntitySpell {
+public class LevitateSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private int tickRate;
 	private int duration;

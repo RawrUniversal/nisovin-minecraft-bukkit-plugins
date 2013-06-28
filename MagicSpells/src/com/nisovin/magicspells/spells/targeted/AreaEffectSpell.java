@@ -22,7 +22,7 @@ import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class AreaEffectSpell extends TargetedLocationSpell {
+public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private int radius;
 	private int verticalRadius;

@@ -13,9 +13,10 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class TransmuteSpell extends TargetedLocationSpell {
+public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	int[] blockTypes;
 	int transmuteType;

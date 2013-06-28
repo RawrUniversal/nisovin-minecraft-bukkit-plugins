@@ -6,9 +6,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class CrippleSpell extends TargetedEntitySpell {
+public class CrippleSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private int strength;
 	private int duration;

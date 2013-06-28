@@ -9,9 +9,10 @@ import org.bukkit.entity.Player;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class FarmSpell extends TargetedLocationSpell {
+public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private int radius;
 	private int growth;

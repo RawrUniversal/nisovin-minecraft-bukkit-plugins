@@ -15,9 +15,10 @@ import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class ZapSpell extends TargetedLocationSpell {
+public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 	
 	private String strCantZap;
 	private HashSet<Byte> transparentBlockTypes;

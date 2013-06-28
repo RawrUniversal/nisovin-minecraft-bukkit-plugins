@@ -13,9 +13,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class EntombSpell extends TargetedEntitySpell {
+public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private boolean targetPlayers;
 	private boolean obeyLos;
