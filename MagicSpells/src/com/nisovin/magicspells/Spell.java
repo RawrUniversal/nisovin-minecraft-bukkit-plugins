@@ -1461,6 +1461,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 	}
 	
+	public ValidTargetChecker getValidTargetChecker() {
+		return null;
+	}
+	
 	public interface ValidTargetChecker {
 		public boolean isValidTarget(LivingEntity entity);
 	}

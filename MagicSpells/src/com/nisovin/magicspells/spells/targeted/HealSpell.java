@@ -18,6 +18,7 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	private boolean obeyLos;
 	private boolean checkPlugins;
 	private String strMaxHealth;
+	private ValidTargetChecker checker;
 
 	public HealSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -27,17 +28,18 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 		obeyLos = getConfigBoolean("obey-los", true);
 		strMaxHealth = getConfigString("str-max-health", "%t is already at max health.");
 		checkPlugins = getConfigBoolean("check-plugins", true);
+		checker = new ValidTargetChecker() {				
+			@Override
+			public boolean isValidTarget(LivingEntity entity) {
+				return entity instanceof Player && entity.getHealth() < entity.getMaxHealth();
+			}
+		};
 	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Player target = (Player)getTargetedEntity(player, minRange, range, true, false, obeyLos, true, new ValidTargetChecker() {				
-				@Override
-				public boolean isValidTarget(LivingEntity entity) {
-					return entity instanceof Player && entity.getHealth() < entity.getMaxHealth();
-				}
-			});
+			Player target = (Player)getTargetedEntity(player, minRange, range, true, false, obeyLos, true, checker);
 			//Player target = getTargetedPlayer(player, minRange, range, obeyLos);
 			if (target == null) {
 				return noTarget(player);
@@ -79,7 +81,7 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (target instanceof Player) {
+		if (target instanceof Player && target.getHealth() < target.getMaxHealth()) {
 			return heal(caster, (Player)target, power);
 		} else {
 			return false;
@@ -89,6 +91,11 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public boolean isBeneficial() {
 		return true;
+	}
+	
+	@Override
+	public ValidTargetChecker getValidTargetChecker() {
+		return checker;
 	}
 
 }

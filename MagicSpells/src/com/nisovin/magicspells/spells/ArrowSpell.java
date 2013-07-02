@@ -66,6 +66,15 @@ public class ArrowSpell extends Spell {
 		}
 		handler.registerSpell(this);
 	}
+	
+	@Override
+	public void turnOff() {
+		super.turnOff();
+		if (handler != null) {
+			handler.turnOff();
+			handler = null;
+		}
+	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
@@ -165,6 +174,11 @@ public class ArrowSpell extends Spell {
 			}
 			arrow.remove();
 			arrow.removeMetadata("MSArrowSpell", MagicSpells.plugin);
+		}
+		
+		public void turnOff() {
+			unregisterEvents(this);
+			spells.clear();
 		}
 		
 	}
