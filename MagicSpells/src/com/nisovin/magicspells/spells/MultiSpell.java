@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -18,6 +20,7 @@ public final class MultiSpell extends InstantSpell {
 	private boolean castByCommand;
 	private boolean checkIndividualCooldowns;
 	private boolean castRandomSpellInstead;
+	private boolean fakeCastIndividualSpells;
 	
 	private List<String> spellList;
 	private ArrayList<Action> actions;
@@ -30,6 +33,7 @@ public final class MultiSpell extends InstantSpell {
 		castByCommand = getConfigBoolean("can-cast-by-command", true);
 		checkIndividualCooldowns = getConfigBoolean("check-individual-cooldowns", false);
 		castRandomSpellInstead = getConfigBoolean("cast-random-spell-instead", false);
+		fakeCastIndividualSpells = getConfigBoolean("fake-cast-individual-spells", false);
 
 		actions = new ArrayList<Action>();
 		spellList = getConfigStringList("spells", null);
@@ -83,7 +87,7 @@ public final class MultiSpell extends InstantSpell {
 					} else if (action.isSpell()) {
 						spell = action.getSpell();
 						if (delay == 0) {
-							spell.castSpell(player, SpellCastState.NORMAL, power, null);
+							castSpell(player, spell, power);
 						} else {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new DelayedSpell(spell, player, power), delay);
 						}
@@ -105,6 +109,22 @@ public final class MultiSpell extends InstantSpell {
 			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private void castSpell(Player player, Spell spell, float power) {
+		if (fakeCastIndividualSpells) {
+			SpellCastEvent event = new SpellCastEvent(spell, player, SpellCastState.NORMAL, power, null, cooldown, reagents.clone(), castTime);
+			Bukkit.getPluginManager().callEvent(event);
+			if (event.isCancelled()) {
+				return;
+			} else {
+				power = event.getPower();
+			}
+		}
+		PostCastAction act = spell.castSpell(player, SpellCastState.NORMAL, power, null);
+		if (fakeCastIndividualSpells) {
+			Bukkit.getPluginManager().callEvent(new SpellCastedEvent(spell, player, SpellCastState.NORMAL, power, null, cooldown, reagents.clone(), act));
+		}
 	}
 
 	@Override
@@ -161,7 +181,7 @@ public final class MultiSpell extends InstantSpell {
 		
 		@Override
 		public void run() {
-			spell.castSpell(player, SpellCastState.NORMAL, power, null);
+			castSpell(player, spell, power);
 		}
 	}
 

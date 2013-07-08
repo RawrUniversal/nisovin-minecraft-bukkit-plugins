@@ -177,15 +177,10 @@ public class MagicSpells extends JavaPlugin {
 					Class.forName("net.minecraft.server.v1_5_R3.MinecraftServer");
 					volatileCodeHandle = new VolatileCodeEnabled_1_5_R3();
 				} catch (ClassNotFoundException e_1_5_r3) {
-					try {
-						Class.forName("net.minecraft.server.v1_5_R2.MinecraftServer");
-						volatileCodeHandle = new VolatileCodeEnabled_1_5_R2();
-					} catch (ClassNotFoundException e_1_5_r2) {
-						error("This MagicSpells version is not fully compatible with this server version.");
-						error("Some features have been disabled.");
-						error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
-						volatileCodeHandle = new VolatileCodeDisabled();
-					}
+					error("This MagicSpells version is not fully compatible with this server version.");
+					error("Some features have been disabled.");
+					error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
+					volatileCodeHandle = new VolatileCodeDisabled();
 				}
 			}
 		} else {
