@@ -6,16 +6,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import net.minecraft.server.v1_5_R3.*;
+import net.minecraft.server.v1_6_R1.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_5_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_6_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_6_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -150,9 +151,9 @@ public class DisguiseManager implements Listener {
 		float yOffset = 0;
 		World world = ((CraftWorld)location.getWorld()).getHandle();
 		if (entityType == EntityType.PLAYER) {
-			entity = new EntityHuman(world) {				
+			entity = new EntityHuman(world, disguise.getNameplateText()) {				
 				@Override
-				public void sendMessage(String arg0) {
+				public void sendMessage(ChatMessage arg0) {
 				}
 				@Override
 				public ChunkCoordinates b() {
@@ -163,7 +164,6 @@ public class DisguiseManager implements Listener {
 					return false;
 				}
 			};
-			((EntityHuman)entity).name = disguise.getNameplateText();
 			yOffset = -1.5F;
 		} else if (entityType == EntityType.ZOMBIE) {
 			entity = new EntityZombie(world);
@@ -283,6 +283,15 @@ public class DisguiseManager implements Listener {
 		} else if (entityType == EntityType.GHAST) {
 			entity = new EntityGhast(world);
 			
+		} else if (entityType == EntityType.HORSE) {
+			entity = new EntityHorse(world);
+			((EntityAgeable)entity).setAge(flag ? -24000 : 0);
+			((EntityHorse)entity).getDataWatcher().watch(19, Byte.valueOf((byte)disguise.getVar1()));
+			((EntityHorse)entity).getDataWatcher().watch(20, Integer.valueOf(disguise.getVar2()));
+			if (disguise.getVar3() > 0) {
+				((EntityHorse)entity).getDataWatcher().watch(22, Integer.valueOf(disguise.getVar3()));
+			}
+			
 		} else if (entityType == EntityType.ENDER_DRAGON) {
 			entity = new EntityEnderDragon(world);
 						
@@ -293,16 +302,16 @@ public class DisguiseManager implements Listener {
 			
 		} else if (entityType == EntityType.DROPPED_ITEM) {
 			entity = new EntityItem(world);
-			((EntityItem)entity).setItemStack(new net.minecraft.server.v1_5_R3.ItemStack(disguise.getVar1(), 1, disguise.getVar2()));
+			((EntityItem)entity).setItemStack(new net.minecraft.server.v1_6_R1.ItemStack(disguise.getVar1(), 1, disguise.getVar2()));
 			
 		}
 		
 		if (entity != null) {
 			
 			String nameplateText = disguise.getNameplateText();
-			if (entity instanceof EntityLiving && nameplateText != null && !nameplateText.isEmpty()) {
-				((EntityLiving)entity).setCustomName(nameplateText);
-				((EntityLiving)entity).setCustomNameVisible(true);
+			if (entity instanceof EntityInsentient && nameplateText != null && !nameplateText.isEmpty()) {
+				((EntityInsentient)entity).setCustomName(nameplateText);
+				((EntityInsentient)entity).setCustomNameVisible(true);
 			}
 			
 			entity.setPositionRotation(location.getX(), location.getY() + yOffset, location.getZ(), location.getYaw(), location.getPitch());

@@ -1,7 +1,9 @@
 package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -19,9 +21,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class DisguiseSpell extends TargetedEntitySpell {
+public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell {
 	
 	protected static DisguiseManager manager;
 	
@@ -29,6 +32,7 @@ public class DisguiseSpell extends TargetedEntitySpell {
 	private boolean flag = false;
 	private int var1 = 0;
 	private int var2 = 0;
+	private int var3 = 0;
 	private boolean showPlayerName = false;
 	private String nameplateText = "";
 	private boolean preventPickups = false;
@@ -135,6 +139,46 @@ public class DisguiseSpell extends TargetedEntitySpell {
 				var1 = Integer.parseInt(data);
 			}
 			type = "fallingsand";
+		} else if (type.toLowerCase().contains("horse")) {
+			List<String> data = new ArrayList<String>(Arrays.asList(type.split(" ")));
+			var1 = 0;
+			var2 = 0;
+			if (data.get(0).equalsIgnoreCase("horse")) {
+				data.remove(0);
+			} else if (data.size() >= 2 && data.get(1).equalsIgnoreCase("horse")) {
+				String t = data.remove(0).toLowerCase();
+				if (t.equals("donkey")) {
+					var1 = 1;
+				} else if (t.equals("mule")) {
+					var1 = 2;
+				} else if (t.equals("skeleton") || t.equals("skeletal")) {
+					var1 = 4;
+				} else if (t.equals("zombie") || t.equals("undead")) {
+					var1 = 3;
+				} else {
+					var1 = 0;
+				}
+				data.remove(0);
+			}
+			while (data.size() > 0) {
+				String d = data.remove(0);
+				if (d.matches("^[0-9]+$")) {
+					var2 = Integer.parseInt(d);
+				} else if (d.equalsIgnoreCase("iron")) {
+					var3 = 1;
+				} else if (d.equalsIgnoreCase("gold")) {
+					var3 = 2;
+				} else if (d.equalsIgnoreCase("diamond")) {
+					var3 = 3;
+				}
+			}
+			type = "entityhorse";
+		} else if (type.equalsIgnoreCase("mule")) {
+			var1 = 2;
+			type = "entityhorse";
+		} else if (type.equalsIgnoreCase("donkey")) {
+			var1 = 1;
+			type = "entityhorse";
 		}
 		if (type.toLowerCase().matches("ozelot [0-3]")) {
 			var1 = Integer.parseInt(type.split(" ")[1]);
@@ -192,7 +236,7 @@ public class DisguiseSpell extends TargetedEntitySpell {
 	private void disguise(Player player) {
 		String nameplate = nameplateText;
 		if (showPlayerName) nameplate = player.getDisplayName();
-		Disguise disguise = new Disguise(player, entityType, nameplate, flag, var1, var2, duration, this);
+		Disguise disguise = new Disguise(player, entityType, nameplate, flag, var1, var2, var3, duration, this);
 		manager.addDisguise(player, disguise);
 		disguised.put(player.getName().toLowerCase(), disguise);
 	}
