@@ -50,6 +50,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String profilingKey;
 	protected String[] aliases;	
 	protected boolean alwaysGranted;
+	protected String permName;
 	protected List<String> incantations;
 	
 	protected String description;
@@ -112,6 +113,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			aliases = temp.toArray(aliases);
 		}
 		this.alwaysGranted = config.getBoolean(section + "." + spellName + ".always-granted", false);
+		this.permName = config.getString(section + "." + spellName + ".permission-name", spellName);
 		this.incantations = config.getStringList(section + "." + spellName + ".incantations", null);
 		
 		// general options
@@ -1172,6 +1174,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		} else {
 			return this.internalName;
 		}
+	}
+	
+	public String getPermissionName() {
+		return permName;
 	}
 	
 	public String getCantBindError() {

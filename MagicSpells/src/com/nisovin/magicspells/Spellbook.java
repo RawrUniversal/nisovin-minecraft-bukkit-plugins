@@ -149,15 +149,15 @@ public class Spellbook {
 				}
 			}
 		}
-		return player.hasPermission("magicspells.learn." + spell.getInternalName());
+		return player.hasPermission("magicspells.learn." + spell.getPermissionName());
 	}
 	
 	public boolean canCast(Spell spell) {
-		return player.hasPermission("magicspells.cast." + spell.getInternalName());
+		return player.hasPermission("magicspells.cast." + spell.getPermissionName());
 	}
 	
 	public boolean canTeach(Spell spell) {
-		return player.hasPermission("magicspells.teach." + spell.getInternalName());
+		return player.hasPermission("magicspells.teach." + spell.getPermissionName());
 	}
 	
 	public boolean hasAdvancedPerm(String spell) {
@@ -339,12 +339,12 @@ public class Spellbook {
 		boolean has = allSpells.contains(spell);
 		if (has) {
 			return true;
-		} else if (checkGranted && player.hasPermission("magicspells.grant." + spell.getInternalName())) {
+		} else if (checkGranted && player.hasPermission("magicspells.grant." + spell.getPermissionName())) {
 			MagicSpells.debug(2, "Adding granted spell for " + player.getName() + ": " + spell.getName());
 			addSpell(spell);
 			save();
 			return true;
-		} else if (player.hasPermission("magicspells.tempgrant." + spell.getInternalName())) {
+		} else if (player.hasPermission("magicspells.tempgrant." + spell.getPermissionName())) {
 			return true;
 		} else {
 			return false;

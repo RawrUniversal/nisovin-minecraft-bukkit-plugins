@@ -496,15 +496,16 @@ public class MagicSpells extends JavaPlugin {
 					spellsOrdered.add(spell);
 					
 					// add permissions
-					addPermission(pm, "grant." + spellName, PermissionDefault.FALSE);
-					addPermission(pm, "learn." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-					addPermission(pm, "cast." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-					addPermission(pm, "teach." + spellName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
-					addPermission(pm, "tempgrant." + spellName, PermissionDefault.FALSE);
-					permGrantChildren.put("magicspells.grant." + spellName, true);
-					permLearnChildren.put("magicspells.learn." + spellName, true);
-					permCastChildren.put("magicspells.cast." + spellName, true);
-					permTeachChildren.put("magicspells.teach." + spellName, true);
+					String permName = spell.getPermissionName();
+					addPermission(pm, "grant." + permName, PermissionDefault.FALSE);
+					addPermission(pm, "learn." + permName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
+					addPermission(pm, "cast." + permName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
+					addPermission(pm, "teach." + permName, defaultAllPermsFalse ? PermissionDefault.FALSE : PermissionDefault.TRUE);
+					addPermission(pm, "tempgrant." + permName, PermissionDefault.FALSE);
+					permGrantChildren.put("magicspells.grant." + permName, true);
+					permLearnChildren.put("magicspells.learn." + permName, true);
+					permCastChildren.put("magicspells.cast." + permName, true);
+					permTeachChildren.put("magicspells.teach." + permName, true);
 					
 					// done
 					debug(2, "Loaded spell: " + spellName);
