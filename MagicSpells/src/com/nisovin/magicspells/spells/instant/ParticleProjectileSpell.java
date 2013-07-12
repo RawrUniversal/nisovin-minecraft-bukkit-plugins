@@ -2,7 +2,9 @@ package com.nisovin.magicspells.spells.instant;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -11,6 +13,7 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
@@ -21,6 +24,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 
 	float projectileVelocity;
 	float projectileGravity;
+	float projectileSpread;
 	
 	int tickInterval;
 	float ticksPerSecond;
@@ -37,15 +41,21 @@ public class ParticleProjectileSpell extends InstantSpell {
 	boolean hitNonPlayers;
 	boolean hitGround;
 	boolean hitAir;
+	boolean stopOnHitEntity;
 	
 	String landSpellName;
 	TargetedSpell spell;
+	
+	ParticleProjectileSpell thisSpell;
+	Random rand = new Random();
 
 	public ParticleProjectileSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
+		thisSpell = this;
 		
 		projectileVelocity = getConfigFloat("projectile-velocity", 10F);
 		projectileGravity = getConfigFloat("projectile-gravity", 0.25F);
+		projectileSpread = getConfigFloat("projectile-spread", 0F);
 		tickInterval = getConfigInt("tick-interval", 2);
 		ticksPerSecond = 20F / (float)tickInterval;
 		particleName = getConfigString("particle-name", "reddust");
@@ -59,6 +69,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		hitNonPlayers = getConfigBoolean("hit-non-players", true);
 		hitGround = getConfigBoolean("hit-ground", true);
 		hitAir = getConfigBoolean("hit-air", false);
+		stopOnHitEntity = getConfigBoolean("stop-on-hit-entity", true);
 		landSpellName = getConfigString("spell", "explode");
 	}
 	
@@ -97,7 +108,11 @@ public class ParticleProjectileSpell extends InstantSpell {
 			this.power = power;
 			this.startLocation = caster.getEyeLocation();
 			this.currentLocation = startLocation.clone();
-			this.currentVelocity = caster.getLocation().getDirection().multiply(projectileVelocity / ticksPerSecond);
+			this.currentVelocity = caster.getLocation().getDirection();
+			if (projectileSpread > 0) {
+				this.currentVelocity.add(new Vector(rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread));
+			}
+			this.currentVelocity.multiply(projectileVelocity / ticksPerSecond);
 			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
 			if (hitPlayers || hitNonPlayers) {
 				this.inRange = currentLocation.getWorld().getLivingEntities();
@@ -137,18 +152,37 @@ public class ParticleProjectileSpell extends InstantSpell {
 					((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
 				}
 			} else if (inRange != null) {
+				LivingEntity toRemove = null;
 				for (LivingEntity e : inRange) {
 					if (e.getLocation().distanceSquared(currentLocation) < 2.2) {
-						stop();
 						if (spell != null) {
 							if (spell instanceof TargetedEntitySpell) {
+								ValidTargetChecker checker = spell.getValidTargetChecker();
+								if (checker != null && !checker.isValidTarget(e)) {
+									toRemove = e;
+									break;
+								}
+								SpellTargetEvent event = new SpellTargetEvent(thisSpell, caster, e);
+								Bukkit.getPluginManager().callEvent(event);
+								if (event.isCancelled()) {
+									toRemove = e;
+									break;
+								}
 								((TargetedEntitySpell)spell).castAtEntity(caster, e, power);
 							} else if (spell instanceof TargetedLocationSpell) {
 								((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
 							}
 						}
+						if (stopOnHitEntity) {
+							stop();
+						} else {
+							toRemove = e;
+						}
 						break;
 					}
+				}
+				if (toRemove != null) {
+					inRange.remove(toRemove);
 				}
 			}
 		}
@@ -158,8 +192,10 @@ public class ParticleProjectileSpell extends InstantSpell {
 			startLocation = null;
 			currentLocation = null;
 			currentVelocity = null;
-			inRange.clear();
-			inRange = null;
+			if (inRange != null) {
+				inRange.clear();
+				inRange = null;
+			}
 		}
 		
 	}
