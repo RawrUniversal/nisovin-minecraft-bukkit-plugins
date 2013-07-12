@@ -55,6 +55,7 @@ public class ProjectileSpell extends InstantSpell {
 	private boolean cancelDamage;
 	private boolean removeProjectile;
 	private int maxDistanceSquared;
+	private int effectInterval;
 	private List<String> spellNames;
 	private List<TargetedSpell> spells;
 	private int aoeRadius;
@@ -102,6 +103,7 @@ public class ProjectileSpell extends InstantSpell {
 		removeProjectile = getConfigBoolean("remove-projectile", true);
 		maxDistanceSquared = getConfigInt("max-distance", 0);
 		maxDistanceSquared = maxDistanceSquared * maxDistanceSquared;
+		effectInterval = getConfigInt("effect-interval", 0);
 		spellNames = getConfigStringList("spells", null);
 		aoeRadius = getConfigInt("aoe-radius", 0);
 		targetPlayers = getConfigBoolean("target-players", false);
@@ -166,7 +168,7 @@ public class ProjectileSpell extends InstantSpell {
 				if (applySpellPowerToVelocity) {
 					projectile.setVelocity(projectile.getVelocity().multiply(power));
 				}
-				projectiles.put(projectile, new ProjectileInfo(player, power));
+				projectiles.put(projectile, new ProjectileInfo(player, power, (effectInterval > 0 ? new RegularProjectileMonitor(projectile) : null)));
 				playSpellEffects(EffectPosition.CASTER, projectile);
 			} else if (projectileItem != null) {
 				Item item = player.getWorld().dropItem(player.getEyeLocation(), projectileItem.clone());
@@ -313,6 +315,10 @@ public class ProjectileSpell extends InstantSpell {
 			if (cancelDamage) {
 				event.setCancelled(true);
 			}
+			
+			if (info.monitor != null) {
+				info.monitor.stop();
+			}
 		}
 		
 		@EventHandler
@@ -332,6 +338,10 @@ public class ProjectileSpell extends InstantSpell {
 						projectiles.remove(projectile);
 					}
 				}, 0);
+				
+				if (info.monitor != null) {
+					info.monitor.stop();
+				}
 			}
 		}
 	}
@@ -405,7 +415,7 @@ public class ProjectileSpell extends InstantSpell {
 		Location start;
 		float power;
 		boolean done;
-		ItemProjectileMonitor monitor;
+		ProjectileMonitor monitor;
 		
 		public ProjectileInfo(Player player, float power) {
 			this.player = player;
@@ -415,13 +425,17 @@ public class ProjectileSpell extends InstantSpell {
 			this.monitor = null;
 		}
 		
-		public ProjectileInfo(Player player, float power, ItemProjectileMonitor monitor) {
+		public ProjectileInfo(Player player, float power, ProjectileMonitor monitor) {
 			this(player, power);
 			this.monitor = monitor;
 		}
 	}
 	
-	private class ItemProjectileMonitor implements Runnable {
+	private interface ProjectileMonitor {
+		public void stop();
+	}
+	
+	private class ItemProjectileMonitor implements Runnable, ProjectileMonitor {
 
 		Item item;
 		int taskId;
@@ -443,6 +457,9 @@ public class ProjectileSpell extends InstantSpell {
 					stop();
 				}
 			}
+			if (effectInterval > 0 && count % effectInterval == 0) {
+				playSpellEffects(EffectPosition.SPECIAL, item.getLocation());
+			}
 			if (++count > 300) {
 				stop();
 			}
@@ -451,6 +468,39 @@ public class ProjectileSpell extends InstantSpell {
 		public void stop() {
 			item.remove();
 			itemProjectiles.remove(item);
+			Bukkit.getScheduler().cancelTask(taskId);
+		}
+		
+	}
+	
+	private class RegularProjectileMonitor implements Runnable, ProjectileMonitor {
+		
+		Projectile projectile;
+		Location prevLoc;
+		int taskId;
+		int count = 0;
+		
+		public RegularProjectileMonitor(Projectile projectile) {
+			this.projectile = projectile;
+			this.prevLoc = projectile.getLocation();
+			this.taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, effectInterval, effectInterval);
+		}
+		
+		@Override
+		public void run() {
+			playSpellEffects(EffectPosition.SPECIAL, prevLoc);
+			prevLoc = projectile.getLocation();
+			
+			if (!projectile.isValid() || projectile.isOnGround()) {
+				stop();
+			}
+			
+			if (count++ > 100) {
+				stop();
+			}
+		}
+		
+		public void stop() {
 			Bukkit.getScheduler().cancelTask(taskId);
 		}
 		
