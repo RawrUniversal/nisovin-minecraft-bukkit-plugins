@@ -424,6 +424,15 @@ public class PassiveSpell extends Spell {
 		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onDeath(EntityDeathEvent event) {
 			Player killer = event.getEntity().getKiller();
+			if (killer == null) {
+				EntityDamageEvent ede = event.getEntity().getLastDamageCause();
+				if (ede != null && ede instanceof EntityDamageByEntityEvent) {
+					EntityDamageByEntityEvent edebe = (EntityDamageByEntityEvent)ede;
+					if (edebe.getDamager() instanceof Player) {
+						killer = (Player)edebe.getDamager();
+					}
+				}
+			}
 			if (killer != null && (types == null || Util.arrayContains(types, event.getEntity().getType())) && hasSpell(killer)) {
 				activate(killer);
 			}
