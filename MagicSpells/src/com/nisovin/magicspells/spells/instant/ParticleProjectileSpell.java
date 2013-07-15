@@ -33,6 +33,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 	int tickInterval;
 	float ticksPerSecond;
 	int specialEffectInterval;
+	int spellInterval;
 	
 	String particleName;
 	float particleSpeed;
@@ -47,7 +48,8 @@ public class ParticleProjectileSpell extends InstantSpell {
 	boolean hitPlayers;
 	boolean hitNonPlayers;
 	boolean hitGround;
-	boolean hitAir;
+	boolean hitAirAtEnd;
+	boolean hitAirDuring;
 	boolean stopOnHitEntity;
 	
 	String landSpellName;
@@ -66,6 +68,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		tickInterval = getConfigInt("tick-interval", 2);
 		ticksPerSecond = 20F / (float)tickInterval;
 		specialEffectInterval = getConfigInt("special-effect-interval", 1);
+		spellInterval = getConfigInt("spell-interval", 20);
 		particleName = getConfigString("particle-name", "reddust");
 		particleSpeed = getConfigFloat("particle-speed", 0.3F);
 		particleCount = getConfigInt("particle-count", 15);
@@ -78,7 +81,8 @@ public class ParticleProjectileSpell extends InstantSpell {
 		hitPlayers = getConfigBoolean("hit-players", false);
 		hitNonPlayers = getConfigBoolean("hit-non-players", true);
 		hitGround = getConfigBoolean("hit-ground", true);
-		hitAir = getConfigBoolean("hit-air", false);
+		hitAirAtEnd = getConfigBoolean("hit-air-at-end", false);
+		hitAirDuring = getConfigBoolean("hit-air-during", false);
 		stopOnHitEntity = getConfigBoolean("stop-on-hit-entity", true);
 		landSpellName = getConfigString("spell", "explode");
 	}
@@ -147,16 +151,30 @@ public class ParticleProjectileSpell extends InstantSpell {
 		
 		@Override
 		public void run() {
-			currentLocation.add(currentVelocity);
+			if (!caster.isValid()) {
+				stop();
+				return;
+			}
 			
+			// move projectile and apply gravity
+			currentLocation.add(currentVelocity);			
+			if (projectileGravity != 0) {
+				currentVelocity.setY(currentVelocity.getY() - (projectileGravity / ticksPerSecond));
+			}
+			
+			// show particle
 			MagicSpells.getVolatileCodeHandler().playParticleEffect(currentLocation, particleName, particleHorizontalSpread, particleVerticalSpread, particleSpeed, particleCount, renderDistance, 0F);
+			
+			// play effects
 			if (counter % specialEffectInterval == 0) {
 				playSpellEffects(EffectPosition.SPECIAL, currentLocation);
 			}
+			
 			counter++;
 			
-			if (projectileGravity != 0) {
-				currentVelocity.setY(currentVelocity.getY() - (projectileGravity / ticksPerSecond));
+			// cast spell mid air
+			if (hitAirDuring && counter % spellInterval == 0 && spell instanceof TargetedLocationSpell) {
+				((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
 			}
 			
 			if (currentLocation.getBlock().getType() != Material.AIR) {
@@ -167,7 +185,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 				}
 			} else if (currentLocation.distanceSquared(startLocation) >= maxDistanceSquared) {
 				stop();
-				if (hitAir && spell != null && spell instanceof TargetedLocationSpell) {
+				if (hitAirAtEnd && spell != null && spell instanceof TargetedLocationSpell) {
 					((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
 					playSpellEffects(EffectPosition.TARGET, currentLocation);
 				}
