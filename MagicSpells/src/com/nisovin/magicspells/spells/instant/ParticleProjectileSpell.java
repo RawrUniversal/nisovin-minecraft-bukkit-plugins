@@ -1,7 +1,9 @@
 package com.nisovin.magicspells.spells.instant;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -14,10 +16,12 @@ import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class ParticleProjectileSpell extends InstantSpell {
@@ -28,6 +32,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 	
 	int tickInterval;
 	float ticksPerSecond;
+	int specialEffectInterval;
 	
 	String particleName;
 	float particleSpeed;
@@ -36,6 +41,8 @@ public class ParticleProjectileSpell extends InstantSpell {
 	float particleVerticalSpread;
 	
 	int maxDistanceSquared;
+	float hitRadius;
+	int renderDistance;
 	
 	boolean hitPlayers;
 	boolean hitNonPlayers;
@@ -58,6 +65,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		projectileSpread = getConfigFloat("projectile-spread", 0F);
 		tickInterval = getConfigInt("tick-interval", 2);
 		ticksPerSecond = 20F / (float)tickInterval;
+		specialEffectInterval = getConfigInt("special-effect-interval", 1);
 		particleName = getConfigString("particle-name", "reddust");
 		particleSpeed = getConfigFloat("particle-speed", 0.3F);
 		particleCount = getConfigInt("particle-count", 15);
@@ -65,6 +73,8 @@ public class ParticleProjectileSpell extends InstantSpell {
 		particleVerticalSpread = getConfigFloat("particle-vertical-spread", 0.3F);
 		maxDistanceSquared = getConfigInt("max-distance", 15);
 		maxDistanceSquared *= maxDistanceSquared;
+		hitRadius = getConfigFloat("hit-radius", 1.5F);
+		renderDistance = getConfigInt("render-distance", 32);
 		hitPlayers = getConfigBoolean("hit-players", false);
 		hitNonPlayers = getConfigBoolean("hit-non-players", true);
 		hitGround = getConfigBoolean("hit-ground", true);
@@ -89,6 +99,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			new ProjectileTracker(player, power);
+			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -102,11 +113,16 @@ public class ParticleProjectileSpell extends InstantSpell {
 		Vector currentVelocity;
 		int taskId;
 		List<LivingEntity> inRange;
+		Map<LivingEntity, Long> immune;
+		
+		int counter = 0;
 		
 		public ProjectileTracker(Player caster, float power) {
 			this.caster = caster;
 			this.power = power;
-			this.startLocation = caster.getEyeLocation();
+			this.startLocation = caster.getLocation();
+			this.startLocation.setY(this.startLocation.getY() + 1);
+			this.startLocation.add(this.startLocation.getDirection());
 			this.currentLocation = startLocation.clone();
 			this.currentVelocity = caster.getLocation().getDirection();
 			if (projectileSpread > 0) {
@@ -117,25 +133,27 @@ public class ParticleProjectileSpell extends InstantSpell {
 			if (hitPlayers || hitNonPlayers) {
 				this.inRange = currentLocation.getWorld().getLivingEntities();
 				Iterator<LivingEntity> iter = inRange.iterator();
-				int maxDistanceSquaredTimesTwo = maxDistanceSquared * 2;
 				while (iter.hasNext()) {
 					LivingEntity e = iter.next();
 					if (!hitPlayers && e instanceof Player) {
 						iter.remove();
 					} else if (!hitNonPlayers && !(e instanceof Player)) {
 						iter.remove();
-					} else if (e.getLocation().distanceSquared(currentLocation) > maxDistanceSquaredTimesTwo) {
-						iter.remove();
 					}
 				}
 			}
+			this.immune = new HashMap<LivingEntity, Long>();
 		}
 		
 		@Override
 		public void run() {
 			currentLocation.add(currentVelocity);
 			
-			MagicSpells.getVolatileCodeHandler().playParticleEffect(currentLocation, particleName, particleHorizontalSpread, particleVerticalSpread, particleSpeed, particleCount, 32, 0F);
+			MagicSpells.getVolatileCodeHandler().playParticleEffect(currentLocation, particleName, particleHorizontalSpread, particleVerticalSpread, particleSpeed, particleCount, renderDistance, 0F);
+			if (counter % specialEffectInterval == 0) {
+				playSpellEffects(EffectPosition.SPECIAL, currentLocation);
+			}
+			counter++;
 			
 			if (projectileGravity != 0) {
 				currentVelocity.setY(currentVelocity.getY() - (projectileGravity / ticksPerSecond));
@@ -145,49 +163,61 @@ public class ParticleProjectileSpell extends InstantSpell {
 				stop();
 				if (hitGround && spell != null && spell instanceof TargetedLocationSpell) {
 					((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
+					playSpellEffects(EffectPosition.TARGET, currentLocation);
 				}
-			} else if (currentLocation.distanceSquared(startLocation) > maxDistanceSquared) {
+			} else if (currentLocation.distanceSquared(startLocation) >= maxDistanceSquared) {
 				stop();
 				if (hitAir && spell != null && spell instanceof TargetedLocationSpell) {
 					((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
+					playSpellEffects(EffectPosition.TARGET, currentLocation);
 				}
 			} else if (inRange != null) {
-				LivingEntity toRemove = null;
-				for (LivingEntity e : inRange) {
-					if (e.getLocation().distanceSquared(currentLocation) < 2.2) {
+				BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius);
+				for (int i = 0; i < inRange.size(); i++) {
+					LivingEntity e = inRange.get(i);
+					if (!e.isDead() && hitBox.contains(e.getLocation().add(0, 0.6, 0))) {
 						if (spell != null) {
 							if (spell instanceof TargetedEntitySpell) {
 								ValidTargetChecker checker = spell.getValidTargetChecker();
 								if (checker != null && !checker.isValidTarget(e)) {
-									toRemove = e;
+									inRange.remove(i);
 									break;
 								}
 								SpellTargetEvent event = new SpellTargetEvent(thisSpell, caster, e);
 								Bukkit.getPluginManager().callEvent(event);
 								if (event.isCancelled()) {
-									toRemove = e;
+									inRange.remove(i);
 									break;
 								}
 								((TargetedEntitySpell)spell).castAtEntity(caster, e, power);
+								playSpellEffects(EffectPosition.TARGET, e);
 							} else if (spell instanceof TargetedLocationSpell) {
 								((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
+								playSpellEffects(EffectPosition.TARGET, currentLocation);
 							}
 						}
 						if (stopOnHitEntity) {
 							stop();
 						} else {
-							toRemove = e;
+							inRange.remove(i);
+							immune.put(e, System.currentTimeMillis());
 						}
 						break;
 					}
 				}
-				if (toRemove != null) {
-					inRange.remove(toRemove);
+				Iterator<Map.Entry<LivingEntity, Long>> iter = immune.entrySet().iterator();
+				while (iter.hasNext()) {
+					Map.Entry<LivingEntity, Long> entry = iter.next();
+					if (entry.getValue().longValue() < System.currentTimeMillis() - 2000) {
+						iter.remove();
+						inRange.add(entry.getKey());
+					}
 				}
 			}
 		}
 		
 		public void stop() {
+			playSpellEffects(EffectPosition.DELAYED, currentLocation);
 			MagicSpells.cancelTask(taskId);
 			startLocation = null;
 			currentLocation = null;
