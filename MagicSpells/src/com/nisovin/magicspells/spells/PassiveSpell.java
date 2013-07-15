@@ -32,6 +32,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -161,6 +162,9 @@ public class PassiveSpell extends Spell {
 					trigCount++;
 				} else if (type.equalsIgnoreCase("stopsneak")) {
 					registerEvents(new StopSneakListener());
+					trigCount++;
+				} else if (type.equalsIgnoreCase("levelup")) {
+					registerEvents(new LevelUpListener());
 					trigCount++;
 				} else if (type.equalsIgnoreCase("hotbarselect")) {
 					registerEvents(new HotbarSelectListener(var, false));
@@ -774,6 +778,15 @@ public class PassiveSpell extends Spell {
 		@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 		public void onSneak(PlayerToggleSneakEvent event) {
 			if (!event.isSneaking() && hasSpell(event.getPlayer())) {
+				activate(event.getPlayer());
+			}
+		}
+	}
+	
+	public class LevelUpListener implements Listener {
+		@EventHandler
+		public void onLevelUp(PlayerLevelChangeEvent event) {
+			if (event.getNewLevel() == event.getOldLevel() + 1 && hasSpell(event.getPlayer())) {
 				activate(event.getPlayer());
 			}
 		}

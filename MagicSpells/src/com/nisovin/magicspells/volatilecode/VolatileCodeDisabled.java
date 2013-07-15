@@ -94,7 +94,6 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 
 	@Override
 	public ItemStack addFakeEnchantment(ItemStack item) {
-		item.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
 		return item;
 	}
 
