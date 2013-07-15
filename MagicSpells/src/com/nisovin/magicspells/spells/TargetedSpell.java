@@ -83,11 +83,11 @@ public abstract class TargetedSpell extends InstantSpell {
 	}
 	
 	@Override
-	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
+	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent, ValidTargetChecker checker) {
 		if (targetSelf) {
 			return player;
 		} else {
-			return super.getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, checkLos, callSpellTargetEvent);
+			return super.getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, checkLos, callSpellTargetEvent, checker);
 		}
 	}
 
