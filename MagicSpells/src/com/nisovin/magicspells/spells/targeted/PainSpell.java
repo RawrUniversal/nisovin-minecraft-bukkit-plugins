@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -52,9 +53,9 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 	private boolean causePain(Player player, LivingEntity target, float power) {
 		if (target.isDead()) return false;
 		int dam = Math.round(damage*power);
-		EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
 		if (target instanceof Player && checkPlugins) {
 			// handle the event myself so I can detect cancellation properly
+			EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			if (event.isCancelled()) {
 				return false;
@@ -66,7 +67,7 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 			int health = target.getHealth() - dam;
 			if (health < 0) health = 0;
 			if (health == 0) {
-				target.setLastDamageCause(event);
+				MagicSpells.getVolatileCodeHandler().setKiller(target, player);
 			}
 			target.setHealth(health);
 			target.playEffect(EntityEffect.HURT);

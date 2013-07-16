@@ -7,7 +7,6 @@ import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
@@ -147,5 +146,10 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	
 	@Override
 	public void playParticleEffect(Location location, String name, float spreadHoriz, float spreadVert, float speed, int count, int radius, float yOffset) {		
+	}
+	
+	@Override
+	public void setKiller(LivingEntity entity, Player killer) {
+		
 	}
 }

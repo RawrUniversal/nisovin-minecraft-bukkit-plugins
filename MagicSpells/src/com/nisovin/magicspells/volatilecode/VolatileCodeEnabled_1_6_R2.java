@@ -342,5 +342,10 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public void setKiller(LivingEntity entity, Player killer) {
+		((CraftLivingEntity)entity).getHandle().killer = ((CraftPlayer)killer).getHandle();
+	}
 
 }
