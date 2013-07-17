@@ -261,7 +261,9 @@ public abstract class BuffSpell extends Spell {
 		@EventHandler(priority=EventPriority.LOWEST)
 		public void onTeleport(PlayerTeleportEvent event) {
 			if (isActive(event.getPlayer())) {
-				turnOff(event.getPlayer());
+				if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName()) || event.getFrom().toVector().distanceSquared(event.getTo().toVector()) > 25) {
+					turnOff(event.getPlayer());
+				}
 			}
 		}
 	}

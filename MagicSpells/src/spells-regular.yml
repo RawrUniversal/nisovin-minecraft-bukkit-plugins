@@ -1382,7 +1382,8 @@ windwalk:
     cancel-on-land: false
     cancel-on-logout: true
     cancel-on-teleport: true
-    cancel-on-damage: false
+    cancel-on-give-damage: false
+    cancel-on-take-damage: false
     duration: 120
     cost:
         - mana 25

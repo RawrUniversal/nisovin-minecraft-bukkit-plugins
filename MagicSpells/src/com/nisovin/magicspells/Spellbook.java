@@ -537,7 +537,7 @@ public class Spellbook {
 			if (MagicSpells.separatePlayerSpellsPerWorld) {
 				File folder = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName());
 				if (!folder.exists()) {
-					folder.mkdir();
+					folder.mkdirs();
 				}
 				file = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName() + File.separator + playerName.toLowerCase() + ".txt");
 			} else {
