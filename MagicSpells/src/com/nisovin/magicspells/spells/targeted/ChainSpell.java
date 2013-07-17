@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -106,9 +107,16 @@ public class ChainSpell extends TargetedSpell implements TargetedEntitySpell {
 		}
 		
 		// cast spell at targets
+		playSpellEffects(EffectPosition.CASTER, player);
 		if (interval <= 0) {
 			for (int i = 0; i < targets.size(); i++) {
 				castSpellAt(player, targets.get(i), power);
+				if (i > 0) {
+					playSpellEffectsTrail(targets.get(i-1).getLocation(), targets.get(i).getLocation(), null);
+				} else if (i == 0) {
+					playSpellEffectsTrail(player.getLocation(), targets.get(i).getLocation(), null);
+				}
+				playSpellEffects(EffectPosition.TARGET, targets.get(i));
 			}
 		} else {
 			new ChainBouncer(player, targets, power);
@@ -153,8 +161,11 @@ public class ChainSpell extends TargetedSpell implements TargetedEntitySpell {
 		public void run() {
 			castSpellAt(caster, targets.get(current), power);
 			if (current > 0) {
-				playSpellEffectsTrail(targets.get(current-1).getLocation(), targets.get(current).getLocation(), null);
+				playSpellEffectsTrail(targets.get(current-1).getLocation().add(0, .5, 0), targets.get(current).getLocation().add(0, .5, 0), null);
+			} else if (current == 0) {
+				playSpellEffectsTrail(caster.getLocation().add(0, .5, 0), targets.get(current).getLocation().add(0, .5, 0), null);
 			}
+			playSpellEffects(EffectPosition.TARGET, targets.get(current));
 			current++;
 			if (current >= targets.size()) {
 				MagicSpells.cancelTask(taskId);
