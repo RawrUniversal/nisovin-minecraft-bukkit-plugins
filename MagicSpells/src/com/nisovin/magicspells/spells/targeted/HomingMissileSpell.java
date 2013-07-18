@@ -1,0 +1,181 @@
+package com.nisovin.magicspells.spells.targeted;
+
+import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
+import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.util.BoundingBox;
+import com.nisovin.magicspells.util.MagicConfig;
+
+public class HomingMissileSpell extends TargetedSpell implements TargetedEntitySpell {
+
+	float projectileVelocity;
+	float projectileInertia;
+	
+	int tickInterval;
+	float ticksPerSecond;
+	float velocityPerTick;
+	int specialEffectInterval;
+	
+	String particleName;
+	float particleSpeed;
+	int particleCount;
+	float particleHorizontalSpread;
+	float particleVerticalSpread;
+	
+	int maxDuration;
+	float hitRadius;
+	int renderDistance;
+	
+	boolean targetPlayers;
+	boolean targetNonPlayers;
+	
+	String hitSpellName;
+	TargetedSpell spell;
+	
+	HomingMissileSpell thisSpell;
+	
+	public HomingMissileSpell(MagicConfig config, String spellName) {
+		super(config, spellName);
+		thisSpell = this;
+		
+		projectileVelocity = getConfigFloat("projectile-velocity", 5F);
+		projectileInertia = getConfigFloat("projectile-inertia", 1.5F);
+		tickInterval = getConfigInt("tick-interval", 2);
+		ticksPerSecond = 20F / (float)tickInterval;
+		velocityPerTick = projectileVelocity / ticksPerSecond;
+		specialEffectInterval = getConfigInt("special-effect-interval", 1);
+		particleName = getConfigString("particle-name", "reddust");
+		particleSpeed = getConfigFloat("particle-speed", 0.3F);
+		particleCount = getConfigInt("particle-count", 15);
+		particleHorizontalSpread = getConfigFloat("particle-horizontal-spread", 0.3F);
+		particleVerticalSpread = getConfigFloat("particle-vertical-spread", 0.3F);
+		maxDuration = getConfigInt("max-duration", 20) * 1000;
+		hitRadius = getConfigFloat("hit-radius", 1.5F);
+		renderDistance = getConfigInt("render-distance", 32);
+		targetPlayers = getConfigBoolean("target-players", true);
+		targetNonPlayers = getConfigBoolean("target-non-players", false);
+		hitSpellName = getConfigString("spell", "explode");
+	}
+
+	@Override
+	public void initialize() {
+		super.initialize();
+		
+		Spell s = MagicSpells.getSpellByInternalName(hitSpellName);
+		if (s != null && s instanceof TargetedSpell) {
+			spell = (TargetedSpell)s;
+		} else {
+			MagicSpells.error("ParticleProjectileSpell " + internalName + " has an invalid spell defined!");
+		}
+	}
+
+	@Override
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+		if (state == SpellCastState.NORMAL) {
+			ValidTargetChecker checker = spell.getValidTargetChecker();
+			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, true, true, checker);
+			if (target == null) {
+				return noTarget(player);
+			}
+			new MissileTracker(player, target, power);
+			sendMessages(player, target);
+			return PostCastAction.NO_MESSAGES;
+		}
+		return PostCastAction.HANDLE_NORMALLY;
+	}
+
+	@Override
+	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+		new MissileTracker(caster, target, power);
+		return true;
+	}
+	
+	class MissileTracker implements Runnable {
+		
+		Player caster;
+		LivingEntity target;
+		float power;
+		long startTime;
+		Location currentLocation;
+		Vector currentVelocity;
+		int taskId;
+		
+		int counter = 0;
+		
+		public MissileTracker(Player caster, LivingEntity target, float power) {
+			this.caster = caster;
+			this.target = target;
+			this.power = power;
+			this.startTime = System.currentTimeMillis();
+			this.currentLocation = caster.getLocation().clone();
+			this.currentVelocity = currentLocation.getDirection();
+			this.currentVelocity.multiply(velocityPerTick);
+			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
+		}
+		
+		@Override
+		public void run() {
+			// check for valid and alive caster and target
+			if (!caster.isValid() || !target.isValid()) {
+				stop();
+				return;
+			}
+			
+			// check if target has left the world
+			if (!currentLocation.getWorld().equals(target.getWorld())) {
+				stop();
+				return;
+			}
+			
+			// check if duration is up
+			if (maxDuration > 0 && startTime + maxDuration < System.currentTimeMillis()) {
+				stop();
+				return;
+			}
+			
+			// move projectile and calculate new vector
+			currentLocation.add(currentVelocity);
+			currentVelocity.multiply(projectileInertia);
+			currentVelocity.add(target.getLocation().add(0, 0.6, 0).subtract(currentLocation).toVector().normalize());
+			currentVelocity.normalize().multiply(velocityPerTick);
+			
+			// show particle
+			MagicSpells.getVolatileCodeHandler().playParticleEffect(currentLocation, particleName, particleHorizontalSpread, particleVerticalSpread, particleSpeed, particleCount, renderDistance, 0F);
+			
+			// play effects
+			if (counter % specialEffectInterval == 0) {
+				playSpellEffects(EffectPosition.SPECIAL, currentLocation);
+			}
+			counter++;
+			
+			// check for hit
+			BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius);
+			if (hitBox.contains(target.getLocation().add(0, 0.6, 0))) {
+				if (spell instanceof TargetedEntitySpell) {
+					((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
+				} else if (spell instanceof TargetedLocationSpell) {
+					((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);
+				}
+				playSpellEffects(EffectPosition.TARGET, target);
+				stop();
+			}
+		}
+		
+		public void stop() {
+			playSpellEffects(EffectPosition.DELAYED, currentLocation);
+			MagicSpells.cancelTask(taskId);
+			currentLocation = null;
+			currentVelocity = null;
+		}
+		
+	}
+
+}
