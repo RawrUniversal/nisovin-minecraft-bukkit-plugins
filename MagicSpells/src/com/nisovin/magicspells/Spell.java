@@ -55,6 +55,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	protected String description;
 	protected CastItem[] castItems;
+	protected CastItem[] rightClickCastItems;
 	protected boolean castWithLeftClick;
 	protected boolean castWithRightClick;
 	protected boolean requireCastItemOnCommand;
@@ -139,6 +140,28 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			}
 		} else {
 			this.castItems = new CastItem[0];
+		}
+		if (config.contains(section + "." + spellName + ".right-click-cast-item")) {
+			String[] sItems = config.getString(section + "." + spellName + ".right-click-cast-item", "-5").trim().replace(" ", "").split(",");
+			this.rightClickCastItems = new CastItem[sItems.length];
+			for (int i = 0; i < sItems.length; i++) {
+				ItemStack is = Util.getItemStackFromString(sItems[i]);
+				if (is != null) {
+					this.rightClickCastItems[i] = new CastItem(is);
+				}
+			}
+		} else if (config.contains(section + "." + spellName + ".right-click-cast-items")) {
+			List<String> sItems = config.getStringList(section + "." + spellName + ".right-click-cast-items", null);
+			if (sItems == null) sItems = new ArrayList<String>();
+			this.rightClickCastItems = new CastItem[sItems.size()];
+			for (int i = 0; i < rightClickCastItems.length; i++) {
+				ItemStack is = Util.getItemStackFromString(sItems.get(i));
+				if (is != null) {
+					this.rightClickCastItems[i] = new CastItem(is);
+				}
+			}
+		} else {
+			this.rightClickCastItems = new CastItem[0];
 		}
 		this.castWithLeftClick = config.getBoolean(section + "." + spellName + ".cast-with-left-click", MagicSpells.castWithLeftClick);
 		this.castWithRightClick = config.getBoolean(section + "." + spellName + ".cast-with-right-click", MagicSpells.castWithRightClick);
@@ -1202,6 +1225,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	public CastItem[] getCastItems() {
 		return this.castItems;
+	}
+	
+	public CastItem[] getRightClickCastItems() {
+		return this.rightClickCastItems;
 	}
 	
 	public String getDescription() {

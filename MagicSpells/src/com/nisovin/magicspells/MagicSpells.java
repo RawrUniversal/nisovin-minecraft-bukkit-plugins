@@ -429,6 +429,10 @@ public class MagicSpells extends JavaPlugin {
 		if (incantations.size() > 0) {
 			registerEvents(new MagicChatListener(this));
 		}
+		RightClickListener rightClickListener = new RightClickListener(this);
+		if (rightClickListener.hasRightClickCastItems()) {
+			registerEvents(rightClickListener);
+		}
 		
 		// register commands
 		CastCommand exec = new CastCommand(this, config.getBoolean("general.enable-tab-completion", true));
