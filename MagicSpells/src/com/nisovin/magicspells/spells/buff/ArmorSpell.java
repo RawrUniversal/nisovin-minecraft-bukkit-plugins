@@ -31,6 +31,7 @@ import com.nisovin.magicspells.util.Util;
 public class ArmorSpell extends BuffSpell {
 
 	private boolean permanent;
+	private boolean replace;
 	
 	private ItemStack helmet;
 	private ItemStack chestplate;
@@ -46,6 +47,7 @@ public class ArmorSpell extends BuffSpell {
 		super(config, spellName);
 		
 		permanent = getConfigBoolean("permanent", false);
+		replace = getConfigBoolean("replace", false);
 		
 		strLoreText = ChatColor.translateAlternateColorCodes('&', getConfigString("str-lore-text", "Conjured"));
 		
@@ -126,7 +128,7 @@ public class ArmorSpell extends BuffSpell {
 		}
 		if (state == SpellCastState.NORMAL) {
 			PlayerInventory inv = player.getInventory();
-			if ((helmet != null && inv.getHelmet() != null) || (chestplate != null && inv.getChestplate() != null) || (leggings != null && inv.getLeggings() != null) || (boots != null && inv.getBoots() != null)) {
+			if (!replace && ((helmet != null && inv.getHelmet() != null) || (chestplate != null && inv.getChestplate() != null) || (leggings != null && inv.getLeggings() != null) || (boots != null && inv.getBoots() != null))) {
 				// error
 				sendMessage(player, strHasArmor);
 				return PostCastAction.ALREADY_HANDLED;
