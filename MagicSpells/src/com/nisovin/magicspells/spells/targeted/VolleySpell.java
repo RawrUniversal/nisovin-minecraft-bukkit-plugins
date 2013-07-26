@@ -8,15 +8,17 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class VolleySpell extends TargetedSpell implements TargetedLocationSpell {
+public class VolleySpell extends TargetedSpell implements TargetedLocationSpell, TargetedEntityFromLocationSpell {
 
 	private int arrows;
 	private int speed;
@@ -49,18 +51,18 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell 
 			if (target == null || target.getType() == Material.AIR) {
 				return noTarget(player);
 			} else {
-				volley(player, target.getLocation(), power);
+				volley(player, player.getLocation(), target.getLocation(), power);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	private void volley(Player player, Location target, float power) {
-		Location spawn = player.getLocation();
+	private void volley(Player player, Location from, Location target, float power) {
+		Location spawn = from.clone();
 		spawn.setY(spawn.getY()+3);
 		Vector v;
 		if (noTarget) {
-			v = player.getLocation().getDirection();
+			v = from.getDirection();
 		} else {
 			v = target.toVector().subtract(spawn.toVector()).normalize();
 		}
@@ -97,7 +99,17 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell 
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		if (!noTarget) {
-			volley(caster, target, power);
+			volley(caster, caster.getLocation(), target, power);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean castAtEntityFromLocation(Player caster, Location from, LivingEntity target, float power) {
+		if (!noTarget) {
+			volley(caster, from, target.getLocation(), power);
 			return true;
 		} else {
 			return false;

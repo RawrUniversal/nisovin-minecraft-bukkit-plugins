@@ -20,12 +20,16 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
+
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
+import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
-public class FireballSpell extends TargetedSpell {
+public class FireballSpell extends TargetedSpell implements TargetedEntityFromLocationSpell {
 	
 	private boolean requireEntityTarget;
 	private boolean obeyLos;
@@ -105,6 +109,22 @@ public class FireballSpell extends TargetedSpell {
 			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+
+	@Override
+	public boolean castAtEntityFromLocation(Player caster, Location from, LivingEntity target, float power) {
+		Vector facing = target.getLocation().toVector().subtract(from.toVector()).normalize();
+		Location loc = from.clone();
+		Util.setLocationFacingFromVector(loc, facing);
+		loc.add(facing.multiply(2));
+		
+		Fireball fireball = caster.getWorld().spawn(loc, Fireball.class);
+		fireball.setShooter(caster);
+		fireballs.put(fireball, power);
+		
+		playSpellEffects(EffectPosition.CASTER, caster);
+		
+		return true;
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)

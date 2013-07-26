@@ -1104,5 +1104,6 @@ public class MagicSpells extends JavaPlugin {
  *   - Start spell duration
  * - Move NoMagicZoneWorldGuard and NoMagicZoneResidence outside of the core plugin
  * - Remove default strings from all string configs (default should be empty)
+ * - Add ability to specify target types
  * 
  */
