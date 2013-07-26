@@ -96,7 +96,7 @@ public class VolatileCodeEnabled_1_6_R1 implements VolatileCodeHandle {
 	public void addPotionGraphicalEffect(LivingEntity entity, int color, int duration) {
 		final EntityLiving el = ((CraftLivingEntity)entity).getHandle();
 		final DataWatcher dw = el.getDataWatcher();
-		dw.watch(8, Integer.valueOf(color));
+		dw.watch(7, Integer.valueOf(color));
 		
 		if (duration > 0) {
 			MagicSpells.scheduleDelayedTask(new Runnable() {
@@ -105,7 +105,7 @@ public class VolatileCodeEnabled_1_6_R1 implements VolatileCodeHandle {
 					if (!el.effects.isEmpty()) {
 						c = net.minecraft.server.v1_6_R1.PotionBrewer.a(el.effects.values());
 					}
-					dw.watch(8, Integer.valueOf(c));
+					dw.watch(7, Integer.valueOf(c));
 				}
 			}, duration);
 		}
