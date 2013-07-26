@@ -1,6 +1,6 @@
 name: MagicSpells
 main: com.nisovin.magicspells.MagicSpells
-version: 2.16
+version: 2.16.1
 author: nisovin
 softdepend: [WorldGuard,Residence]
 commands:

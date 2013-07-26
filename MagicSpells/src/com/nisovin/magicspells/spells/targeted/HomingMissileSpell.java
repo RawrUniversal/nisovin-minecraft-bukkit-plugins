@@ -135,7 +135,6 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			this.currentLocation = startLocation.clone().add(0, yOffset, 0);
 			this.currentVelocity = target.getLocation().toVector().subtract(currentLocation.toVector()).normalize();
 			this.currentVelocity.multiply(velocityPerTick);
-			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
 		}
 		
 		@Override
@@ -191,6 +190,8 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 		public void stop() {
 			playSpellEffects(EffectPosition.DELAYED, currentLocation);
 			MagicSpells.cancelTask(taskId);
+			caster = null;
+			target = null;
 			currentLocation = null;
 			currentVelocity = null;
 		}

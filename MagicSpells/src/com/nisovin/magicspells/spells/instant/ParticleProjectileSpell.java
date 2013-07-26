@@ -47,6 +47,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 	
 	boolean hitPlayers;
 	boolean hitNonPlayers;
+	boolean hitSelf;
 	boolean hitGround;
 	boolean hitAirAtEnd;
 	boolean hitAirDuring;
@@ -80,6 +81,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		renderDistance = getConfigInt("render-distance", 32);
 		hitPlayers = getConfigBoolean("hit-players", false);
 		hitNonPlayers = getConfigBoolean("hit-non-players", true);
+		hitSelf = getConfigBoolean("hit-self", false);
 		hitGround = getConfigBoolean("hit-ground", true);
 		hitAirAtEnd = getConfigBoolean("hit-air-at-end", false);
 		hitAirDuring = getConfigBoolean("hit-air-during", false);
@@ -139,9 +141,13 @@ public class ParticleProjectileSpell extends InstantSpell {
 				Iterator<LivingEntity> iter = inRange.iterator();
 				while (iter.hasNext()) {
 					LivingEntity e = iter.next();
+					if (!hitSelf && e.equals(caster)) {
+						iter.remove();
+					}
 					if (!hitPlayers && e instanceof Player) {
 						iter.remove();
-					} else if (!hitNonPlayers && !(e instanceof Player)) {
+					}
+					if (!hitNonPlayers && !(e instanceof Player)) {
 						iter.remove();
 					}
 				}
@@ -178,17 +184,17 @@ public class ParticleProjectileSpell extends InstantSpell {
 			}
 			
 			if (currentLocation.getBlock().getType() != Material.AIR) {
-				stop();
 				if (hitGround && spell != null && spell instanceof TargetedLocationSpell) {
 					((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
 					playSpellEffects(EffectPosition.TARGET, currentLocation);
 				}
-			} else if (currentLocation.distanceSquared(startLocation) >= maxDistanceSquared) {
 				stop();
+			} else if (currentLocation.distanceSquared(startLocation) >= maxDistanceSquared) {
 				if (hitAirAtEnd && spell != null && spell instanceof TargetedLocationSpell) {
 					((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
 					playSpellEffects(EffectPosition.TARGET, currentLocation);
 				}
+				stop();
 			} else if (inRange != null) {
 				BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius);
 				for (int i = 0; i < inRange.size(); i++) {
@@ -237,6 +243,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		public void stop() {
 			playSpellEffects(EffectPosition.DELAYED, currentLocation);
 			MagicSpells.cancelTask(taskId);
+			caster = null;
 			startLocation = null;
 			currentLocation = null;
 			currentVelocity = null;
