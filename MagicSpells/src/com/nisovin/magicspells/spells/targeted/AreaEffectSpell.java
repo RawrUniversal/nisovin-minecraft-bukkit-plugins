@@ -16,6 +16,7 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
+import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -35,6 +36,7 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 	private int maxTargets;
 	private boolean beneficial;
 	private List<String> spellNames;
+	private boolean spellSourceInCenter;
 	private List<TargetedSpell> spells;
 	
 	public AreaEffectSpell(MagicConfig config, String spellName) {
@@ -51,6 +53,7 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 		targetInvisiblePlayers = getConfigBoolean("target-invisible-players", true);
 		maxTargets = getConfigInt("max-targets", 0);
 		beneficial = getConfigBoolean("beneficial", false);
+		spellSourceInCenter = getConfigBoolean("spell-source-in-center", false);
 		spellNames = getConfigStringList("spells", null);
 	}
 	
@@ -135,13 +138,19 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 						target = event.getTarget();
 					}
 					for (TargetedSpell spell : spells) {
-						if (spell instanceof TargetedEntitySpell) {
+						if (spellSourceInCenter && spell instanceof TargetedEntityFromLocationSpell) {
+							((TargetedEntityFromLocationSpell)spell).castAtEntityFromLocation(player, location, target, power);
+						} else if (spell instanceof TargetedEntitySpell) {
 							((TargetedEntitySpell)spell).castAtEntity(player, target, power);
-							playSpellEffects(player, target);
 						} else if (spell instanceof TargetedLocationSpell) {
 							((TargetedLocationSpell)spell).castAtLocation(player, target.getLocation(), power);
-							playSpellEffects(player, target);
 						}
+					}
+					playSpellEffects(EffectPosition.TARGET, target);
+					if (spellSourceInCenter) {
+						playSpellEffectsTrail(location, target.getLocation(), null);
+					} else {
+						playSpellEffectsTrail(player.getLocation(), target.getLocation(), null);
 					}
 					count++;
 					if (maxTargets > 0 && count >= maxTargets) {
@@ -150,7 +159,8 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 				}
 			}
 		}
-		
+
+		playSpellEffects(EffectPosition.CASTER, player);
 		playSpellEffects(EffectPosition.SPECIAL, location);
 		
 		return count > 0;
