@@ -8,13 +8,14 @@ import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
+import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class HomingMissileSpell extends TargetedSpell implements TargetedEntitySpell {
+public class HomingMissileSpell extends TargetedSpell implements TargetedEntitySpell, TargetedEntityFromLocationSpell {
 
 	float projectileVelocity;
 	float projectileInertia;
@@ -32,6 +33,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 	
 	int maxDuration;
 	float hitRadius;
+	float yOffset;
 	int renderDistance;
 	
 	boolean targetPlayers;
@@ -59,6 +61,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 		particleVerticalSpread = getConfigFloat("particle-vertical-spread", 0.3F);
 		maxDuration = getConfigInt("max-duration", 20) * 1000;
 		hitRadius = getConfigFloat("hit-radius", 1.5F);
+		yOffset = getConfigFloat("y-offset", 0.6F);
 		renderDistance = getConfigInt("render-distance", 32);
 		targetPlayers = getConfigBoolean("target-players", true);
 		targetNonPlayers = getConfigBoolean("target-non-players", false);
@@ -97,6 +100,12 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 		new MissileTracker(caster, target, power);
 		return true;
 	}
+
+	@Override
+	public boolean castAtEntityFromLocation(Player caster, Location from, LivingEntity target, float power) {
+		new MissileTracker(caster, from, target, power);
+		return true;
+	}
 	
 	class MissileTracker implements Runnable {
 		
@@ -115,8 +124,16 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			this.target = target;
 			this.power = power;
 			this.startTime = System.currentTimeMillis();
-			this.currentLocation = caster.getLocation().clone();
+			this.currentLocation = caster.getLocation().clone().add(0, yOffset, 0);
 			this.currentVelocity = currentLocation.getDirection();
+			this.currentVelocity.multiply(velocityPerTick);
+			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
+		}
+		
+		public MissileTracker(Player caster, Location startLocation, LivingEntity target, float power) {
+			this(caster, target, power);
+			this.currentLocation = startLocation.clone().add(0, yOffset, 0);
+			this.currentVelocity = target.getLocation().toVector().subtract(currentLocation.toVector()).normalize();
 			this.currentVelocity.multiply(velocityPerTick);
 			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
 		}
@@ -144,7 +161,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			// move projectile and calculate new vector
 			currentLocation.add(currentVelocity);
 			currentVelocity.multiply(projectileInertia);
-			currentVelocity.add(target.getLocation().add(0, 0.6, 0).subtract(currentLocation).toVector().normalize());
+			currentVelocity.add(target.getLocation().add(0, yOffset, 0).subtract(currentLocation).toVector().normalize());
 			currentVelocity.normalize().multiply(velocityPerTick);
 			
 			// show particle
@@ -157,15 +174,17 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			counter++;
 			
 			// check for hit
-			BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius);
-			if (hitBox.contains(target.getLocation().add(0, 0.6, 0))) {
-				if (spell instanceof TargetedEntitySpell) {
-					((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
-				} else if (spell instanceof TargetedLocationSpell) {
-					((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);
+			if (hitRadius > 0) {
+				BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius);
+				if (hitBox.contains(target.getLocation().add(0, yOffset, 0))) {
+					if (spell instanceof TargetedEntitySpell) {
+						((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
+					} else if (spell instanceof TargetedLocationSpell) {
+						((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);
+					}
+					playSpellEffects(EffectPosition.TARGET, target);
+					stop();
 				}
-				playSpellEffects(EffectPosition.TARGET, target);
-				stop();
 			}
 		}
 		

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,6 +13,7 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
+import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -110,7 +112,7 @@ public class ChainSpell extends TargetedSpell implements TargetedEntitySpell {
 		playSpellEffects(EffectPosition.CASTER, player);
 		if (interval <= 0) {
 			for (int i = 0; i < targets.size(); i++) {
-				castSpellAt(player, targets.get(i), power);
+				castSpellAt(player, i == 0 ? player.getLocation() : targets.get(i-1).getLocation(), targets.get(i), power);
 				if (i > 0) {
 					playSpellEffectsTrail(targets.get(i-1).getLocation(), targets.get(i).getLocation(), null);
 				} else if (i == 0) {
@@ -123,8 +125,10 @@ public class ChainSpell extends TargetedSpell implements TargetedEntitySpell {
 		}
 	}
 	
-	private boolean castSpellAt(Player caster, LivingEntity target, float power) {
-		if (spellToCast instanceof TargetedEntitySpell) {
+	private boolean castSpellAt(Player caster, Location from, LivingEntity target, float power) {
+		if (spellToCast instanceof TargetedEntityFromLocationSpell) {
+			return ((TargetedEntityFromLocationSpell)spellToCast).castAtEntityFromLocation(caster, from, target, power);
+		} else if (spellToCast instanceof TargetedEntitySpell) {
 			return ((TargetedEntitySpell)spellToCast).castAtEntity(caster, target, power);
 		} else if (spellToCast instanceof TargetedLocationSpell) {
 			return ((TargetedLocationSpell)spellToCast).castAtLocation(caster, target.getLocation(), power);
@@ -159,7 +163,7 @@ public class ChainSpell extends TargetedSpell implements TargetedEntitySpell {
 		}
 		
 		public void run() {
-			castSpellAt(caster, targets.get(current), power);
+			castSpellAt(caster, current == 0 ? caster.getLocation() : targets.get(current-1).getLocation(), targets.get(current), power);
 			if (current > 0) {
 				playSpellEffectsTrail(targets.get(current-1).getLocation().add(0, .5, 0), targets.get(current).getLocation().add(0, .5, 0), null);
 			} else if (current == 0) {
