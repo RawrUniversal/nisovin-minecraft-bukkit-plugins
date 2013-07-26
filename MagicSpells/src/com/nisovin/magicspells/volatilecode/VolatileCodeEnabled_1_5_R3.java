@@ -98,15 +98,17 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 		final DataWatcher dw = el.getDataWatcher();
 		dw.watch(8, Integer.valueOf(color));
 		
-		MagicSpells.scheduleDelayedTask(new Runnable() {
-			public void run() {
-				int c = 0;
-				if (!el.effects.isEmpty()) {
-					c = net.minecraft.server.v1_5_R3.PotionBrewer.a(el.effects.values());
+		if (duration > 0) {
+			MagicSpells.scheduleDelayedTask(new Runnable() {
+				public void run() {
+					int c = 0;
+					if (!el.effects.isEmpty()) {
+						c = net.minecraft.server.v1_5_R3.PotionBrewer.a(el.effects.values());
+					}
+					dw.watch(8, Integer.valueOf(c));
 				}
-				dw.watch(8, Integer.valueOf(c));
-			}
-		}, duration);
+			}, duration);
+		}
 	}
 
 	@Override

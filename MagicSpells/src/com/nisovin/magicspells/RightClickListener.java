@@ -35,12 +35,12 @@ public class RightClickListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onRightClick(PlayerInteractEvent event) {
+	public void onRightClick(final PlayerInteractEvent event) {
 	    if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 	    if (!event.hasItem()) return;	    
 
 	    CastItem castItem = new CastItem(event.getItem());
-	    Spell spell = (Spell)this.rightClickCastItems.get(castItem);
+	    final Spell spell = (Spell)this.rightClickCastItems.get(castItem);
 	    if (spell == null) return;
 
 	    Player player = event.getPlayer();
@@ -52,7 +52,11 @@ public class RightClickListener implements Listener {
 		}
 	    
 	    if (MagicSpells.getSpellbook(player).canCast(spell)) {
-	    	spell.cast(event.getPlayer());
+	    	MagicSpells.scheduleDelayedTask(new Runnable() {
+	    		public void run() {
+	    	    	spell.cast(event.getPlayer());
+	    		}
+	    	}, 0);
 	    	event.setCancelled(true);
 	    }
 	}
