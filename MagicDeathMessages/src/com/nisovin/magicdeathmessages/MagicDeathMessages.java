@@ -11,10 +11,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -39,7 +42,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 	Map<String, AttackData> poisonedBy = new HashMap<String, AttackData>();
 	Map<String, AttackData> witheredBy = new HashMap<String, AttackData>();
 	Map<String, AttackData> combustedBy = new HashMap<String, AttackData>();
-	Map<String, AttackData> targetedBy = new HashMap<String, AttackData>();
+	Map<String, AttackData> attackedBy = new HashMap<String, AttackData>();
 	
 	@Override
 	public void onEnable() {
@@ -101,21 +104,40 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onDamage(EntityDamageEvent event) {
+		if (event.getEntity() instanceof Player && event instanceof EntityDamageByEntityEvent && event.getCause() == DamageCause.ENTITY_ATTACK) {
+			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
+			Player attacker = null;
+			if (evt.getDamager() instanceof Player) {
+				attacker = (Player)evt.getDamager();
+			} else if (evt.getDamager() instanceof Projectile) {
+				LivingEntity shooter = ((Projectile)evt.getDamager()).getShooter();
+				if (shooter != null && shooter instanceof Player) {
+					attacker = (Player)shooter;
+				}
+			}
+			if (attacker != null) {
+				attackedBy.put(((Player)event.getEntity()).getName(), new AttackData(attacker));
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSpellTarget(SpellTargetEvent event) {
 		if (event.getTarget() instanceof Player) {
 			if (event.getSpell() instanceof PotionEffectSpell) {
 				PotionEffectSpell spell = (PotionEffectSpell)event.getSpell();
 				int type = spell.getType();
 				if (type == 19) {
-					poisonedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), spell.getDuration() * 1000 / 20));
+					poisonedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), (spell.getDuration() * 1000 / 20) + 1000));
 				} else if (type == 20) {
-					witheredBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), spell.getDuration() * 1000 / 20));
+					witheredBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), (spell.getDuration() * 1000 / 20) + 1000));
 					System.out.println("WITHER " + event.getCaster().getName() + " " + ((Player)event.getTarget()).getName());
 				}
 			} else if (event.getSpell() instanceof CombustSpell) {
-				combustedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), ((CombustSpell)event.getSpell()).getDuration() * 1000 / 20));
+				combustedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), (((CombustSpell)event.getSpell()).getDuration() * 1000 / 20) + 1000));
 			}
-			targetedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster()));
+			attackedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster()));
 		}
 	}
 	
@@ -135,7 +157,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 			data = combustedBy.get(player.getName());
 		}
 		if (data == null) {
-			data = targetedBy.get(player.getName());
+			data = attackedBy.get(player.getName());
 		}
 		if (data != null && data.isExpired()) {
 			data = null;
@@ -147,9 +169,6 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 		String killerDisplayName = null;
 		if (data != null) {
 			killer = Bukkit.getPlayerExact(data.attackerName);
-			if (killer == null) {
-				killer = player.getKiller();
-			}
 			if (killer == null) {
 				killerName = data.attackerName;
 				killerDisplayName = data.attackerName;
@@ -238,7 +257,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 		}
 		
 		public boolean isExpired() {
-			return time + duration + 2000 < System.currentTimeMillis();
+			return time + duration < System.currentTimeMillis();
 		}
 	}
 	
