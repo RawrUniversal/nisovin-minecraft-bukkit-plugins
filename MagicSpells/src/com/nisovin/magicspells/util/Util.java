@@ -240,6 +240,7 @@ public class Util {
 		String building = "";
 		
 		for (String word : words) {
+			if (word.length() == 0) continue;
 			if (max > 0 && list.size() == max - 1) {
 				if (!building.isEmpty()) building += " ";
 				building += word;

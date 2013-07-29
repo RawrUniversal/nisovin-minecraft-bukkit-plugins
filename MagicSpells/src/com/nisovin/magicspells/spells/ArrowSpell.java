@@ -132,8 +132,10 @@ public class ArrowSpell extends Spell {
 						public void run() {
 							Player shooter = (Player)arrow.getShooter();
 							if (!data.casted && !data.spell.onCooldown(shooter)) {
-								data.spell.spellOnHitGround.castAtLocation(shooter, arrow.getLocation(), 1.0F);
-								data.spell.setCooldown(shooter, data.spell.cooldown);
+								boolean success = data.spell.spellOnHitGround.castAtLocation(shooter, arrow.getLocation(), 1.0F);
+								if (success) {
+									data.spell.setCooldown(shooter, data.spell.cooldown);
+								}
 								data.casted = true;
 								arrow.removeMetadata("MSArrowSpell", MagicSpells.plugin);
 							}
