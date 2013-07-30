@@ -43,6 +43,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 	
 	int maxDistanceSquared;
 	float hitRadius;
+	float verticalHitRadius;
 	int renderDistance;
 	
 	boolean hitPlayers;
@@ -78,6 +79,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		maxDistanceSquared = getConfigInt("max-distance", 15);
 		maxDistanceSquared *= maxDistanceSquared;
 		hitRadius = getConfigFloat("hit-radius", 1.5F);
+		verticalHitRadius = getConfigFloat("vertical-hit-radius", hitRadius);
 		renderDistance = getConfigInt("render-distance", 32);
 		hitPlayers = getConfigBoolean("hit-players", false);
 		hitNonPlayers = getConfigBoolean("hit-non-players", true);
@@ -196,7 +198,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 				}
 				stop();
 			} else if (inRange != null) {
-				BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius);
+				BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius, verticalHitRadius);
 				for (int i = 0; i < inRange.size(); i++) {
 					LivingEntity e = inRange.get(i);
 					if (!e.isDead() && hitBox.contains(e.getLocation().add(0, 0.6, 0))) {
