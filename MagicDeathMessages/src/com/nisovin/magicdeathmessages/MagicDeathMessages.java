@@ -125,6 +125,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSpellTarget(SpellTargetEvent event) {
 		if (event.getTarget() instanceof Player) {
+			if (event.getSpell().isBeneficial()) return;
 			if (event.getSpell() instanceof PotionEffectSpell) {
 				PotionEffectSpell spell = (PotionEffectSpell)event.getSpell();
 				int type = spell.getType();
@@ -132,7 +133,6 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 					poisonedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), (spell.getDuration() * 1000 / 20) + 1000));
 				} else if (type == 20) {
 					witheredBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), (spell.getDuration() * 1000 / 20) + 1000));
-					System.out.println("WITHER " + event.getCaster().getName() + " " + ((Player)event.getTarget()).getName());
 				}
 			} else if (event.getSpell() instanceof CombustSpell) {
 				combustedBy.put(((Player)event.getTarget()).getName(), new AttackData(event.getCaster(), (((CombustSpell)event.getSpell()).getDuration() * 1000 / 20) + 1000));
