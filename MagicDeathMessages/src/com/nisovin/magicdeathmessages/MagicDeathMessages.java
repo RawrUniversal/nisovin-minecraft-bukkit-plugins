@@ -105,7 +105,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onDamage(EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player && event instanceof EntityDamageByEntityEvent && event.getCause() == DamageCause.ENTITY_ATTACK) {
+		if (event.getEntity() instanceof Player && event instanceof EntityDamageByEntityEvent && (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.ENTITY_EXPLOSION)) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 			Player attacker = null;
 			if (evt.getDamager() instanceof Player) {
