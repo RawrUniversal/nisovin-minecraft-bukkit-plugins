@@ -1,0 +1,17 @@
+cause-strings-weapons:
+    Mad Alchemist: "was alchemied to death by"
+
+cause-strings-killers:
+    entity_attack: "was slain by"
+    projectile: "was shot by"
+    fall: "was thrown to their doom by"
+    fire_tick: "was burned to death by"
+    wither: "was withered by"
+
+cause-strings-suicides:
+    entity_attack: "was killed"
+    projectile: "was shot"
+    fall: "fell to their doom"
+    fire: "burned to death"
+    fire_tick: "burned to death"
+    wither: "withered away"

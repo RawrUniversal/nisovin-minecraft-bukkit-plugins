@@ -1,0 +1,7 @@
+name: MagicDeathMessages
+version: 3
+main: com.nisovin.magicdeathmessages.MagicDeathMessages
+
+commands:
+    deathmsgreload:
+        description: Reloads the plugin
