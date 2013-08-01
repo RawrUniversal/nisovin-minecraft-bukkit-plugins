@@ -44,6 +44,7 @@ public abstract class Condition {
 		conditions.put("blocking", BlockingCondition.class);
 		conditions.put("riding", RidingCondition.class);
 		conditions.put("outside", OutsideCondition.class);
+		conditions.put("roof", RoofCondition.class);
 		conditions.put("biome", BiomeCondition.class);
 		conditions.put("wearing", WearingCondition.class);
 		conditions.put("holding", HoldingCondition.class);
@@ -54,6 +55,8 @@ public abstract class Condition {
 		conditions.put("foodbelow", FoodBelowCondition.class);
 		conditions.put("levelabove", LevelAboveCondition.class);
 		conditions.put("levelbelow", LevelBelowCondition.class);
+		conditions.put("potioneffect", PotionEffectCondition.class);
+		conditions.put("onfire", OnFireCondition.class);
 		conditions.put("buffactive", BuffActiveCondition.class);
 		conditions.put("world", InWorldCondition.class);
 		conditions.put("permission", PermissionCondition.class);
