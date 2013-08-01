@@ -23,6 +23,7 @@ import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class ParticleProjectileSpell extends InstantSpell {
 
@@ -117,6 +118,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		Player caster;
 		float power;
 		Location startLocation;
+		Location previousLocation;
 		Location currentLocation;
 		Vector currentVelocity;
 		int taskId;
@@ -131,6 +133,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 			this.startLocation = caster.getLocation();
 			this.startLocation.setY(this.startLocation.getY() + 1);
 			this.startLocation.add(this.startLocation.getDirection());
+			this.previousLocation = startLocation.clone();
 			this.currentLocation = startLocation.clone();
 			this.currentVelocity = caster.getLocation().getDirection();
 			if (projectileSpread > 0) {
@@ -165,7 +168,8 @@ public class ParticleProjectileSpell extends InstantSpell {
 			}
 			
 			// move projectile and apply gravity
-			currentLocation.add(currentVelocity);			
+			previousLocation = currentLocation.clone();
+			currentLocation.add(currentVelocity);
 			if (projectileGravity != 0) {
 				currentVelocity.setY(currentVelocity.getY() - (projectileGravity / ticksPerSecond));
 			}
@@ -187,7 +191,8 @@ public class ParticleProjectileSpell extends InstantSpell {
 			
 			if (currentLocation.getBlock().getType() != Material.AIR) {
 				if (hitGround && spell != null && spell instanceof TargetedLocationSpell) {
-					((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
+					Util.setLocationFacingFromVector(previousLocation, currentVelocity);
+					((TargetedLocationSpell)spell).castAtLocation(caster, previousLocation, power);
 					playSpellEffects(EffectPosition.TARGET, currentLocation);
 				}
 				stop();
@@ -247,6 +252,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 			MagicSpells.cancelTask(taskId);
 			caster = null;
 			startLocation = null;
+			previousLocation = null;
 			currentLocation = null;
 			currentVelocity = null;
 			if (inRange != null) {

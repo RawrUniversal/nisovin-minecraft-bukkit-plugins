@@ -104,8 +104,12 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 	
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
-		Block b = target.getBlock();
-		return materialize(caster, b, b.getRelative(BlockFace.DOWN));
+		Block block = target.getBlock();
+		Block against = target.clone().add(target.getDirection()).getBlock();
+		if (block.equals(against)) {
+			against = block.getRelative(BlockFace.DOWN);
+		}
+		return materialize(caster, block, against);
 	}
 
 }
