@@ -5,21 +5,27 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.command.ScrollSpell;
 import com.nisovin.magicspells.spells.command.TomeSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
-public class ConjureSpell extends InstantSpell {
+public class ConjureSpell extends InstantSpell implements TargetedLocationSpell {
 
+	Random rand = new Random();
+	
 	private boolean addToInventory;
 	private boolean addToEnderChest;
 	private boolean powerAffectsQuantity;
@@ -31,6 +37,7 @@ public class ConjureSpell extends InstantSpell {
 	private int[] itemMinQuantities;
 	private int[] itemMaxQuantities;
 	private int[] itemChances;
+	private float randomVelocity;
 	
 	public ConjureSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -42,6 +49,7 @@ public class ConjureSpell extends InstantSpell {
 		calculateDropsIndividually = getConfigBoolean("calculate-drops-individually", true);
 		autoEquip = getConfigBoolean("auto-equip", false);
 		itemList = getConfigStringList("items", null);
+		randomVelocity = getConfigFloat("random-velocity", 0);
 	}
 	
 	@Override
@@ -108,7 +116,6 @@ public class ConjureSpell extends InstantSpell {
 		if (state == SpellCastState.NORMAL) {
 			
 			// get items to drop
-			Random rand = new Random();
 			List<ItemStack> items = new ArrayList<ItemStack>();
 			if (calculateDropsIndividually) {
 				individual(items, rand, power);
@@ -198,6 +205,33 @@ public class ConjureSpell extends InstantSpell {
 			item.setAmount(quant);
 			items.add(item);
 		}
+	}
+
+	@Override
+	public boolean castAtLocation(Player caster, Location target, float power) {
+		List<ItemStack> items = new ArrayList<ItemStack>();
+		if (calculateDropsIndividually) {
+			individual(items, rand, power);
+		} else {
+			together(items, rand, power);
+		}
+		Location loc = target.clone();
+		if (loc.getBlock().getType() != Material.AIR) {
+			loc.add(0, 1, 0);
+		}
+		if (loc.getBlock().getType() != Material.AIR) {
+			loc.add(0, 1, 0);
+		}
+		for (ItemStack item : items) {
+			Item dropped = loc.getWorld().dropItem(loc, item);
+			dropped.setItemStack(item);
+			if (randomVelocity > 0) {
+				Vector v = new Vector(rand.nextDouble() - .5, rand.nextDouble() / 2, rand.nextDouble() - .5);
+				v.normalize().multiply(randomVelocity);
+				dropped.setVelocity(v);
+			}
+		}
+		return true;
 	}
 	
 
