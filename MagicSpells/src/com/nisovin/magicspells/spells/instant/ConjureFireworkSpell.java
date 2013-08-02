@@ -2,6 +2,7 @@ package com.nisovin.magicspells.spells.instant;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
@@ -30,7 +31,7 @@ public class ConjureFireworkSpell extends InstantSpell {
 		meta.setPower(getConfigInt("flight", 2));
 		String name = getConfigString("firework-name", "");
 		if (!name.isEmpty()) {
-			meta.setDisplayName(name);
+			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
 		}
 		
 		List<String> effects = getConfigStringList("effects", null);
