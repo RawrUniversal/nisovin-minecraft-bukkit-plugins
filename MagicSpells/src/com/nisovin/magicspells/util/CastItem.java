@@ -47,7 +47,7 @@ public class CastItem {
 			if (this.type > 0 && !MagicSpells.ignoreCastItemNames() && item.hasItemMeta()) {
 				ItemMeta meta = item.getItemMeta();
 				if (meta.hasDisplayName()) {
-					this.name = meta.getDisplayName();
+					this.name = ChatColor.stripColor(meta.getDisplayName());
 				}
 			}
 			if (this.type > 0 && !MagicSpells.ignoreCastItemEnchants()) {
@@ -62,7 +62,7 @@ public class CastItem {
 			String[] temp = s.split("\\|");
 			s = temp[0];
 			if (!MagicSpells.ignoreCastItemNames() && temp.length > 1) {
-				name = ChatColor.translateAlternateColorCodes('&', temp[1]);
+				name = ChatColor.stripColor(temp[1]);
 			}
 		}
 		if (s.contains(";")) {
@@ -109,7 +109,7 @@ public class CastItem {
 		if (i.hasItemMeta()) {
 			ItemMeta meta = i.getItemMeta();
 			if (meta.hasDisplayName()) {
-				n = meta.getDisplayName();
+				n = ChatColor.stripColor(meta.getDisplayName());
 			}
 		}
 		if (n == null && name == null) return true;

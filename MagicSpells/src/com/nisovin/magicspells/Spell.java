@@ -56,6 +56,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String description;
 	protected CastItem[] castItems;
 	protected CastItem[] rightClickCastItems;
+	protected CastItem[] consumeCastItems;
 	protected boolean castWithLeftClick;
 	protected boolean castWithRightClick;
 	protected boolean requireCastItemOnCommand;
@@ -162,6 +163,28 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			}
 		} else {
 			this.rightClickCastItems = new CastItem[0];
+		}
+		if (config.contains(section + "." + spellName + ".consume-cast-item")) {
+			String[] sItems = config.getString(section + "." + spellName + ".consume-cast-item", "-5").trim().replace(" ", "").split(",");
+			this.consumeCastItems = new CastItem[sItems.length];
+			for (int i = 0; i < sItems.length; i++) {
+				ItemStack is = Util.getItemStackFromString(sItems[i]);
+				if (is != null) {
+					this.rightClickCastItems[i] = new CastItem(is);
+				}
+			}
+		} else if (config.contains(section + "." + spellName + ".consume-cast-items")) {
+			List<String> sItems = config.getStringList(section + "." + spellName + ".consume-cast-items", null);
+			if (sItems == null) sItems = new ArrayList<String>();
+			this.consumeCastItems = new CastItem[sItems.size()];
+			for (int i = 0; i < consumeCastItems.length; i++) {
+				ItemStack is = Util.getItemStackFromString(sItems.get(i));
+				if (is != null) {
+					this.consumeCastItems[i] = new CastItem(is);
+				}
+			}
+		} else {
+			this.consumeCastItems = new CastItem[0];
 		}
 		this.castWithLeftClick = config.getBoolean(section + "." + spellName + ".cast-with-left-click", MagicSpells.castWithLeftClick);
 		this.castWithRightClick = config.getBoolean(section + "." + spellName + ".cast-with-right-click", MagicSpells.castWithRightClick);
@@ -408,7 +431,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		// get spell state
-		SpellCastState state = getCastState(player);		
+		SpellCastState state = getCastState(player);
 		MagicSpells.debug(2, "    Spell cast state: " + state);
 		
 		// call events
@@ -1229,6 +1252,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	public CastItem[] getRightClickCastItems() {
 		return this.rightClickCastItems;
+	}
+	
+	public CastItem[] getConsumeCastItems() {
+		return this.consumeCastItems;
 	}
 	
 	public String getDescription() {

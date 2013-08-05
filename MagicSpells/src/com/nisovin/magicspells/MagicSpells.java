@@ -433,6 +433,10 @@ public class MagicSpells extends JavaPlugin {
 		if (rightClickListener.hasRightClickCastItems()) {
 			registerEvents(rightClickListener);
 		}
+		ConsumeListener consumeListener = new ConsumeListener(this);
+		if (consumeListener.hasConsumeCastItems()) {
+			registerEvents(consumeListener);
+		}
 		
 		// register commands
 		CastCommand exec = new CastCommand(this, config.getBoolean("general.enable-tab-completion", true));
