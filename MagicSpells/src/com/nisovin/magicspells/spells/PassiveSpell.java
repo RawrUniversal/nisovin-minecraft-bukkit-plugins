@@ -337,18 +337,20 @@ public class PassiveSpell extends Spell {
 		}
 		
 		private boolean check(Entity attacker, DamageCause cause) {
-			if (itemIds != null && attacker != null) {
-				if (attacker instanceof Player) {
-					ItemStack inHand = ((Player)attacker).getItemInHand();
-					if (inHand != null && Util.arrayContains(itemIds, inHand.getTypeId())) {
+			if (itemIds != null) {
+				if (attacker != null) {
+					if (attacker instanceof Player) {
+						ItemStack inHand = ((Player)attacker).getItemInHand();
+						if (inHand != null && Util.arrayContains(itemIds, inHand.getTypeId())) {
+							return true;
+						} else if (inHand == null && Util.arrayContains(itemIds, 0)) {
+							return true;
+						}
+					} else if (attacker instanceof Skeleton && Util.arrayContains(itemIds, Material.BOW.getId())) {
 						return true;
-					} else if (inHand == null && Util.arrayContains(itemIds, 0)) {
+					} else if (attacker instanceof Zombie && Util.arrayContains(itemIds, 0)) {
 						return true;
 					}
-				} else if (attacker instanceof Skeleton && Util.arrayContains(itemIds, Material.BOW.getId())) {
-					return true;
-				} else if (attacker instanceof Zombie && Util.arrayContains(itemIds, 0)) {
-					return true;
 				}
 				return false;
 			} else if (damageCauses != null) {

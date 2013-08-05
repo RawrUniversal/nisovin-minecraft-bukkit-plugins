@@ -170,7 +170,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			for (int i = 0; i < sItems.length; i++) {
 				ItemStack is = Util.getItemStackFromString(sItems[i]);
 				if (is != null) {
-					this.rightClickCastItems[i] = new CastItem(is);
+					this.consumeCastItems[i] = new CastItem(is);
 				}
 			}
 		} else if (config.contains(section + "." + spellName + ".consume-cast-items")) {
