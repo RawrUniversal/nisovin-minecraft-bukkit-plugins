@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -41,6 +42,15 @@ public class HasItemCondition extends Condition {
 			return false;
 		} else {
 			return player.getInventory().contains(Material.getMaterial(id));
+		}
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		if (target instanceof Player) {
+			return check((Player)target);
+		} else {
+			return false;
 		}
 	}
 

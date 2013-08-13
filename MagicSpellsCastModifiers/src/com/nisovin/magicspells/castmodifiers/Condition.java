@@ -2,6 +2,7 @@ package com.nisovin.magicspells.castmodifiers;
 
 import java.util.HashMap;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.conditions.*;
@@ -11,6 +12,8 @@ public abstract class Condition {
 	public abstract boolean setVar(String var);
 
 	public abstract boolean check(Player player);
+	
+	public abstract boolean check(Player player, LivingEntity target);
 	
 	private static HashMap<String, Class<? extends Condition>> conditions = new HashMap<String, Class<? extends Condition>>();
 	
@@ -62,6 +65,7 @@ public abstract class Condition {
 		conditions.put("permission", PermissionCondition.class);
 		conditions.put("playeronline", PlayerOnlineCondition.class);
 		conditions.put("chance", ChanceCondition.class);
+		conditions.put("entitytype", EntityTypeCondition.class);
 	}
 	
 }

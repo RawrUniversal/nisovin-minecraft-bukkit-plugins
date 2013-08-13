@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
@@ -24,6 +25,11 @@ public class InBlockCondition extends Condition {
 	
 	@Override
 	public boolean check(Player player) {
+		return check(player, player);
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
 		int blockId = player.getLocation().getBlock().getTypeId();
 		for (int id : ids) {
 			if (blockId == id) {

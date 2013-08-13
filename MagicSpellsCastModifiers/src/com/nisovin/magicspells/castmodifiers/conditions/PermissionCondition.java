@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
@@ -17,6 +18,15 @@ public class PermissionCondition extends Condition {
 	@Override
 	public boolean check(Player player) {
 		return player.hasPermission(perm);
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		if (target instanceof Player) {
+			return check((Player)target);
+		} else {
+			return false;
+		}
 	}
 
 }

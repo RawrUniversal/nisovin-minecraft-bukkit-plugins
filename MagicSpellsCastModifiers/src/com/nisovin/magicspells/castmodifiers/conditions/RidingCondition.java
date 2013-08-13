@@ -2,6 +2,7 @@ package com.nisovin.magicspells.castmodifiers.conditions;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
@@ -21,9 +22,13 @@ public class RidingCondition extends Condition {
 
 	@Override
 	public boolean check(Player player) {
-		Entity vehicle = player.getVehicle();
-		if (vehicle == null) return false;
-		
+		return check(player, player);
+	}
+
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		Entity vehicle = target.getVehicle();
+		if (vehicle == null) return false;		
 		return entityType == null || vehicle.getType() == entityType;
 	}
 

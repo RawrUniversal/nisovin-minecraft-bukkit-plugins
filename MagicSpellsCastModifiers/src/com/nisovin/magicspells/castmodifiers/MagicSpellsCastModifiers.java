@@ -18,6 +18,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class MagicSpellsCastModifiers extends JavaPlugin implements Listener {
 	
 	HashMap<Spell, ModifierSet> modifiers = new HashMap<Spell, ModifierSet>();
+	HashMap<Spell, ModifierSet> targetModifiers = new HashMap<Spell, ModifierSet>();
 	ModifierSet manaModifiers;
 	
 	@Override
@@ -51,6 +52,14 @@ public class MagicSpellsCastModifiers extends JavaPlugin implements Listener {
 						modifiers.put(spell, new ModifierSet(list, magicConfig.getString("spells." + spellName + ".str-modifier-failed", null)));
 					}
 				}
+				if (magicConfig.contains("spells." + spellName + ".target-modifiers")) {
+					List<String> list = magicConfig.getStringList("spells." + spellName + ".target-modifiers", null);
+					Spell spell = MagicSpells.getSpellByInternalName(spellName);
+					if (list != null && list.size() > 0 && spell != null) {
+						MagicSpells.debug(2, "Adding target-modifiers to " + spell.getName() + " spell");
+						targetModifiers.put(spell, new ModifierSet(list, null));
+					}
+				}
 			}
 			// load mana modifiers
 			if (magicConfig.contains("general.mana.modifiers")) {
@@ -64,6 +73,9 @@ public class MagicSpellsCastModifiers extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(this, this);
 		if (modifiers.size() > 0) {
 			getServer().getPluginManager().registerEvents(new CastListener(this), this);
+		}
+		if (targetModifiers.size() > 0) {
+			getServer().getPluginManager().registerEvents(new TargetListener(this), this);
 		}
 		if (manaModifiers != null) {
 			getServer().getPluginManager().registerEvents(new ManaListener(this), this);

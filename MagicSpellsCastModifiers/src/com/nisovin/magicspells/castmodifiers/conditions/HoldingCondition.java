@@ -1,6 +1,8 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
@@ -39,6 +41,24 @@ public class HoldingCondition extends Condition {
 	@Override
 	public boolean check(Player player) {
 		ItemStack item = player.getItemInHand();
+		return check(item);
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		if (target instanceof Player) {
+			return check((Player)target);
+		} else {
+			EntityEquipment equip = target.getEquipment();
+			if (equip != null) {
+				return check(equip.getItemInHand());
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	private boolean check(ItemStack item) {
 		int thisid = item == null ? 0 : item.getTypeId();
 		short thisdata = item == null ? 0 : item.getDurability();
 		for (int i = 0; i < ids.length; i++) {

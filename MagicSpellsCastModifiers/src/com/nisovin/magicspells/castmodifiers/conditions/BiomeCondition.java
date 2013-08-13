@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
 import org.bukkit.block.Biome;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
@@ -24,7 +25,12 @@ public class BiomeCondition extends Condition {
 
 	@Override
 	public boolean check(Player player) {
-		Biome biome = player.getLocation().getBlock().getBiome();
+		return check(player, player);
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		Biome biome = target.getLocation().getBlock().getBiome();
 		for (Biome b : biomes) {
 			if (b == biome) {
 				return true;

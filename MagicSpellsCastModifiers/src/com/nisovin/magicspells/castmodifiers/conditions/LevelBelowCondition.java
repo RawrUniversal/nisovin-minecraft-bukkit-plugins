@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
@@ -21,6 +22,15 @@ public class LevelBelowCondition extends Condition {
 	@Override
 	public boolean check(Player player) {
 		return player.getLevel() < level;
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		if (target instanceof Player) {
+			return check((Player)target);
+		} else {
+			return false;
+		}
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
@@ -16,7 +17,12 @@ public class MoonPhaseCondition extends Condition {
 	
 	@Override
 	public boolean check(Player player) {
-		long time = player.getWorld().getFullTime();
+		return check(player, player);
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		long time = target.getWorld().getFullTime();
 		int phase = (int)((time / 24000) % 8);
 		if (phase == 0 && phaseName.equals("full")) {
 			return true;

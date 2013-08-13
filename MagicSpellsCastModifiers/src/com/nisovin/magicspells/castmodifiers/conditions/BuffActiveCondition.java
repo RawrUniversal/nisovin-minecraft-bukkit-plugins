@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -25,6 +26,15 @@ public class BuffActiveCondition extends Condition {
 	@Override
 	public boolean check(Player player) {
 		return buff.isActive(player);
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		if (target instanceof Player) {
+			return check((Player)target);
+		} else {
+			return false;
+		}
 	}
 
 }

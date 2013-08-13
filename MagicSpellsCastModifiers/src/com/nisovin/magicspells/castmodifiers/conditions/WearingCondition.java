@@ -1,6 +1,8 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -50,6 +52,30 @@ public class WearingCondition extends Condition {
 			return true;
 		} else {
 			return false;
+		}
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		if (target instanceof Player) {
+			return check((Player)target);
+		} else {
+			EntityEquipment equip = target.getEquipment();
+			if (equip != null) {
+				if (check(equip.getHelmet())) {
+					return true;
+				} else if (check(equip.getChestplate())) {
+					return true;
+				} else if (check(equip.getLeggings())) {
+					return true;
+				} else if (check(equip.getBoots())) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
 		}
 	}
 	

@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
@@ -37,6 +38,11 @@ public class TimeCondition extends Condition {
 				return false;
 			}
 		}
+	}
+	
+	@Override
+	public boolean check(Player player, LivingEntity target) {
+		return check(player);
 	}
 
 }

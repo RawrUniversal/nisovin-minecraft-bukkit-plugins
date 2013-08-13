@@ -6,6 +6,7 @@ import java.util.List;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.ManaChangeEvent;
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.events.SpellTargetEvent;
 
 public class ModifierSet {
 
@@ -37,6 +38,15 @@ public class ModifierSet {
 	}
 	
 	public void apply(ManaChangeEvent event) {
+		for (Modifier modifier : modifiers) {
+			boolean cont = modifier.apply(event);
+			if (!cont) {
+				break;
+			}
+		}
+	}
+	
+	public void apply(SpellTargetEvent event) {
 		for (Modifier modifier : modifiers) {
 			boolean cont = modifier.apply(event);
 			if (!cont) {
