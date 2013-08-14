@@ -5,10 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -19,8 +16,6 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class LightningSpell extends TargetedSpell implements TargetedLocationSpell {
 	
 	private boolean requireEntityTarget;
-	private boolean obeyLos;
-	private boolean targetPlayers;
 	private boolean checkPlugins;
 	private int additionalDamage;
 	private boolean noDamage;
@@ -29,18 +24,9 @@ public class LightningSpell extends TargetedSpell implements TargetedLocationSpe
 		super(config, spellName);
 		
 		requireEntityTarget = getConfigBoolean("require-entity-target", false);
-		obeyLos = getConfigBoolean("obey-los", true);
-		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 		additionalDamage = getConfigInt("additional-damage", 0);
 		noDamage = getConfigBoolean("no-damage", false);
-	}
-	
-	@Override
-	public void initialize() {
-		if (!targetPlayers) {
-			registerEvents(new PlayerDamageListener());
-		}
 	}
 
 	@Override
@@ -49,7 +35,7 @@ public class LightningSpell extends TargetedSpell implements TargetedLocationSpe
 			Block target = null;
 			LivingEntity entityTarget = null;
 			if (requireEntityTarget) {
-				entityTarget = getTargetedEntity(player, minRange, range, targetPlayers, obeyLos);
+				entityTarget = getTargetedEntity(player);
 				if (entityTarget != null && entityTarget instanceof Player && checkPlugins) {
 					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entityTarget, DamageCause.ENTITY_ATTACK, 1 + additionalDamage);
 					Bukkit.getServer().getPluginManager().callEvent(event);
@@ -99,14 +85,5 @@ public class LightningSpell extends TargetedSpell implements TargetedLocationSpe
 		lightning(target);
 		playSpellEffects(caster, target);
 		return true;
-	}
-	
-	public class PlayerDamageListener implements Listener {
-		@EventHandler(ignoreCancelled=true)
-		public void onDamage(EntityDamageEvent event) {
-			if (!targetPlayers && event.getCause() == DamageCause.LIGHTNING && event.getEntity() instanceof Player) {
-				event.setCancelled(true);
-			}
-		}
 	}
 }

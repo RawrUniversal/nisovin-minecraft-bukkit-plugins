@@ -32,8 +32,6 @@ import com.nisovin.magicspells.util.Util;
 public class FireballSpell extends TargetedSpell implements TargetedEntityFromLocationSpell {
 	
 	private boolean requireEntityTarget;
-	private boolean obeyLos;
-	private boolean targetPlayers;
 	private boolean checkPlugins;
 	private float damageMultiplier;
 	private float explosionSize;
@@ -50,8 +48,6 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 		super(config, spellName);
 		
 		requireEntityTarget = getConfigBoolean("require-entity-target", false);
-		obeyLos = getConfigBoolean("obey-los", true);
-		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 		damageMultiplier = getConfigFloat("damage-multiplier", 0);
 		explosionSize = getConfigFloat("explosion-size", 0);
@@ -71,7 +67,7 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 			// get a target if required
 			boolean selfTarget = false;
 			if (requireEntityTarget) {
-				LivingEntity entity = getTargetedEntity(player, minRange, range, targetPlayers, obeyLos);
+				LivingEntity entity = getTargetedEntity(player);
 				if (entity == null) {
 					return noTarget(player);
 				} else if (entity instanceof Player && checkPlugins) {
@@ -148,7 +144,7 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 						List<Entity> inRange = fireball.getNearbyEntities(noExplosionDamageRange, noExplosionDamageRange, noExplosionDamageRange);
 						for (Entity entity : inRange) {
 							if (entity instanceof LivingEntity) {
-								if (targetPlayers || !(entity instanceof Player)) {
+								if (validTargetList.canTarget((LivingEntity)entity)) {
 									((LivingEntity)entity).damage(Math.round(noExplosionDamage * power), fireball.getShooter());
 								}
 							}
@@ -191,7 +187,7 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 						event.setRadius(explosionSize);
 					}
 				}
-				if (noExplosion || (damageMultiplier == 0 && targetPlayers)) {
+				if (noExplosion) {
 					// remove immediately
 					fireballs.remove(fireball);
 				} else {
@@ -208,13 +204,13 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 
 	@EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if ((damageMultiplier > 0 || !targetPlayers) && event.getEntity() instanceof LivingEntity && event instanceof EntityDamageByEntityEvent && (event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.PROJECTILE)) {
+		if (event.getEntity() instanceof LivingEntity && event instanceof EntityDamageByEntityEvent && (event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.PROJECTILE)) {
 			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
 			if (evt.getDamager() instanceof Fireball || evt.getDamager() instanceof SmallFireball) {
 				Fireball fireball = (Fireball)evt.getDamager();
 				if (fireball.getShooter() instanceof Player && fireballs.containsKey(fireball)) {
 					float power = fireballs.get(fireball);
-					if (event.getEntity() instanceof Player && !targetPlayers) {
+					if (!validTargetList.canTarget((Player)fireball.getShooter(), (LivingEntity)event.getEntity())) {
 						event.setCancelled(true);
 					} else if (damageMultiplier > 0) {
 						event.setDamage(Math.round(event.getDamage() * damageMultiplier * power));

@@ -35,7 +35,7 @@ public class MountSpell extends TargetedSpell implements TargetedEntitySpell {
 					}
 				} else {
 					// join stack
-					LivingEntity target = getTargetedPlayer(player, minRange, range, true);
+					LivingEntity target = getTargetedPlayer(player);
 					if (target != null) {
 						while (target.getPassenger() != null && target.getPassenger() instanceof LivingEntity) {
 							target = (LivingEntity)target.getPassenger();
@@ -50,7 +50,7 @@ public class MountSpell extends TargetedSpell implements TargetedEntitySpell {
 				}
 			} else {
 				// reverse - casting player forces target to mount self
-				LivingEntity target = getTargetedPlayer(player, minRange, range, true);
+				LivingEntity target = getTargetedPlayer(player);
 				if (target != null) {
 					// clear out any previous passengers
 					if (player.getPassenger() != null) {

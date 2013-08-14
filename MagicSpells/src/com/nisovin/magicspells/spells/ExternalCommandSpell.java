@@ -15,12 +15,10 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.ValidTargetList;
 
 public class ExternalCommandSpell extends TargetedSpell implements TargetedEntitySpell {
 	
-	@SuppressWarnings("unused")
-	private static final String SPELL_NAME = "external";
-
 	private boolean castWithItem;
 	private boolean castByCommand;
 	private List<String> commandToExecute;
@@ -34,7 +32,6 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 	private boolean beneficial;
 	private boolean executeAsTargetInstead;
 	private boolean executeOnConsoleInstead;
-	private boolean obeyLos;
 	private String strCantUseCommand;
 	private String strNoTarget;
 	private String strBlockedOutput;
@@ -58,10 +55,13 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 		beneficial = getConfigBoolean("beneficial", false);
 		executeAsTargetInstead = getConfigBoolean("execute-as-target-instead", false);
 		executeOnConsoleInstead = getConfigBoolean("execute-on-console-instead", false);
-		obeyLos = getConfigBoolean("obey-los", true);
 		strCantUseCommand = getConfigString("str-cant-use-command", "&4You don't have permission to do that.");
 		strNoTarget = getConfigString("str-no-target", "No target found.");
 		strBlockedOutput = getConfigString("str-blocked-output", "");
+		
+		if (requirePlayerTarget) {
+			validTargetList = new ValidTargetList(true, false);
+		}
 		
 		if (blockChatOutput) {
 			convoPrompt = new StringPrompt() {	
@@ -82,7 +82,7 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 			// get target if necessary
 			Player target = null;
 			if (requirePlayerTarget) {
-				target = getTargetedPlayer(player, minRange, range, obeyLos);
+				target = getTargetedPlayer(player);
 				if (target == null) {
 					sendMessage(player, strNoTarget);
 					return PostCastAction.ALREADY_HANDLED;

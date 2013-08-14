@@ -12,23 +12,17 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class GripSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	float locationOffset;
-	boolean targetPlayers;
-	boolean targetNonPlayers;
-	boolean obeyLos;
 	
 	public GripSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		locationOffset = getConfigFloat("location-offset", 0);
-		targetPlayers = getConfigBoolean("target-players", true);
-		targetNonPlayers = getConfigBoolean("target-non-players", false);
-		obeyLos = getConfigBoolean("obey-los", true);
 	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, obeyLos, true);
+			LivingEntity target = getTargetedEntity(player);
 			if (target != null) {
 				grip(player, target);
 				sendMessages(player, target);
@@ -51,8 +45,12 @@ public class GripSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		grip(caster, target);
-		return true;
+		if (validTargetList.canTarget(caster, target)) {
+			grip(caster, target);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

@@ -10,6 +10,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.util.Util;
@@ -90,6 +91,14 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 						MagicSpells.mana.createManaBar(p);
 						MagicSpells.mana.addMana(p, MagicSpells.mana.getMaxMana(p), ManaChangeReason.OTHER);
 						sender.sendMessage(MagicSpells.textColor + p.getName() + "'s mana reset.");
+					}
+				} else if (sender.isOp() && args[0].equals("magicitem") && args.length > 1 && sender instanceof Player) {
+					ItemStack item = Util.getItemStackFromString(args[1]);
+					if (item != null) {
+						if (args.length > 2 && args[2].matches("^[0-9]+$")) {
+							item.setAmount(Integer.parseInt(args[2]));
+						}
+						((Player)sender).getInventory().addItem(item);
 					}
 				} else if (sender.isOp() && args[0].equals("profilereport")) {
 					sender.sendMessage(MagicSpells.textColor + "Creating profiling report");

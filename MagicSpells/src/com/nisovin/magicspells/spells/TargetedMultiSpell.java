@@ -18,8 +18,6 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 
 	private boolean checkIndividualCooldowns;
 	private boolean requireEntityTarget;
-	private boolean targetPlayers;
-	private boolean obeyLos;
 	
 	private List<String> spellList;
 	private ArrayList<Action> actions;
@@ -29,8 +27,6 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 		
 		checkIndividualCooldowns = getConfigBoolean("check-individual-cooldowns", false);
 		requireEntityTarget = getConfigBoolean("require-entity-target", false);
-		targetPlayers = getConfigBoolean("target-players", false);
-		obeyLos = getConfigBoolean("obey-los", true);
 
 		actions = new ArrayList<Action>();
 		spellList = getConfigStringList("spells", null);
@@ -82,7 +78,7 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 			Location locTarget = null;
 			LivingEntity entTarget = null;
 			if (requireEntityTarget) {
-				entTarget = getTargetedEntity(player, minRange, range, targetPlayers, obeyLos);
+				entTarget = getTargetedEntity(player);
 			} else {
 				Block b = null;
 				try {

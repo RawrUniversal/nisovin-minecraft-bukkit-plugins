@@ -13,22 +13,18 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class SwitchSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private int switchBack;
-	private boolean targetPlayers;
-	private boolean obeyLos;
 	
 	public SwitchSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		switchBack = getConfigInt("switch-back", 0);
-		targetPlayers = getConfigBoolean("target-players", false);
-		obeyLos = getConfigBoolean("obey-los", true);
 	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get target
-			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, obeyLos);
+			LivingEntity target = getTargetedEntity(player);
 			if (target == null) {
 				return noTarget(player);
 			}
@@ -66,7 +62,7 @@ public class SwitchSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (targetPlayers || !(target instanceof Player)) {
+		if (validTargetList.canTarget(caster, target)) {
 			switchPlaces(caster, target);
 			return true;
 		}

@@ -16,8 +16,6 @@ public class ForcetossSpell extends TargetedSpell implements TargetedEntitySpell
 	private int damage;
 	private float hForce;
 	private float vForce;
-	private boolean obeyLos;
-	private boolean targetPlayers;
 	private boolean checkPlugins;
 	
 	public ForcetossSpell(MagicConfig config, String spellName) {
@@ -26,8 +24,6 @@ public class ForcetossSpell extends TargetedSpell implements TargetedEntitySpell
 		damage = getConfigInt("damage", 0);
 		hForce = getConfigInt("horizontal-force", 20) / 10.0F;
 		vForce = getConfigInt("vertical-force", 10) / 10.0F;
-		obeyLos = getConfigBoolean("obey-los", true);
-		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 	}
 
@@ -35,7 +31,7 @@ public class ForcetossSpell extends TargetedSpell implements TargetedEntitySpell
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get target
-			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, obeyLos);
+			LivingEntity target = getTargetedEntity(player);
 			if (target == null) {
 				return noTarget(player);
 			}
@@ -75,7 +71,7 @@ public class ForcetossSpell extends TargetedSpell implements TargetedEntitySpell
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (target instanceof Player && !targetPlayers) {
+		if (!validTargetList.canTarget(caster, target)) {
 			return false;
 		} else {
 			toss(caster, target, power);

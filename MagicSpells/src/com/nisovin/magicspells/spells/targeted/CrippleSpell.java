@@ -13,22 +13,18 @@ public class CrippleSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private int strength;
 	private int duration;
-	private boolean targetPlayers;
-	private boolean obeyLos;
 	
 	public CrippleSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		strength = getConfigInt("effect-strength", 5);
 		duration = getConfigInt("effect-duration", 100);
-		targetPlayers = getConfigBoolean("target-players", false);
-		obeyLos = getConfigBoolean("obey-los", true);
 	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {		
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, obeyLos);
+			LivingEntity target = getTargetedEntity(player);
 			if (target == null) {
 				// fail
 				return noTarget(player);
@@ -44,7 +40,7 @@ public class CrippleSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (target instanceof Player && !targetPlayers) {
+		if (!validTargetList.canTarget(caster, target)) {
 			return false;
 		} else {
 			playSpellEffects(caster, target);

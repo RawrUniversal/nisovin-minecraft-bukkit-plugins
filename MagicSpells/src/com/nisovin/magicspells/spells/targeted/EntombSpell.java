@@ -18,8 +18,6 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 
-	private boolean targetPlayers;
-	private boolean obeyLos;
 	private int tombBlockType;
 	private int tombDuration;
 	private boolean closeTopAndBottom;
@@ -30,8 +28,6 @@ public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 	public EntombSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 
-		targetPlayers = getConfigBoolean("target-players", false);
-		obeyLos = getConfigBoolean("obey-los", true);
 		tombBlockType = getConfigInt("tomb-block-type", Material.GLASS.getId());
 		tombDuration = getConfigInt("tomb-duration", 20);
 		closeTopAndBottom = getConfigBoolean("close-top-and-bottom", true);
@@ -43,7 +39,7 @@ public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, obeyLos);
+			LivingEntity target = getTargetedEntity(player);
 			if (target != null) {
 				int x = target.getLocation().getBlockX();
 				int y = target.getLocation().getBlockY();
@@ -128,7 +124,7 @@ public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (target instanceof Player && !targetPlayers) {
+		if (!validTargetList.canTarget(caster, target)) {
 			return false;
 		} else {
 			createTomb(target, power);

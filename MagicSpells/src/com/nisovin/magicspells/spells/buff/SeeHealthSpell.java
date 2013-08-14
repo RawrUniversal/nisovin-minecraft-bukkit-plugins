@@ -26,10 +26,6 @@ public class SeeHealthSpell extends BuffSpell {
 
 	private String mode;
 	private int interval;
-	private int range;
-	private boolean targetPlayers;
-	private boolean targetNonPlayers;
-	private boolean obeyLos;
 	
 	private String symbol = "=";
 	private int barSize = 20;
@@ -43,10 +39,6 @@ public class SeeHealthSpell extends BuffSpell {
 		
 		mode = getConfigString("mode", "always");
 		interval = getConfigInt("update-interval", 5);
-		range = getConfigInt("range", 15);
-		targetPlayers = getConfigBoolean("target-players", true);
-		targetNonPlayers = getConfigBoolean("target-non-players", true);
-		obeyLos = getConfigBoolean("obey-los", true);
 		
 		if (!mode.equals("attack") && !mode.equals("always")) {
 			mode = "attack";
@@ -209,7 +201,7 @@ public class SeeHealthSpell extends BuffSpell {
 		@Override
 		public void run() {
 			for (Player player : bars.keySet()) {
-				LivingEntity target = getTargetedEntity(player, 2, range, targetPlayers, targetNonPlayers, obeyLos, false);
+				LivingEntity target = getTargetedEntity(player);
 				if (target != null) {
 					showHealthBar(player, target);
 				} else {

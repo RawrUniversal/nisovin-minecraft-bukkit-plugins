@@ -59,7 +59,7 @@ public class ChainSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, true, true, checker);
+			LivingEntity target = getTargetedEntity(player, checker);
 			if (target == null) {
 				return noTarget(player);
 			}

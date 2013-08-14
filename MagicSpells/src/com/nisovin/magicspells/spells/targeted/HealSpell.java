@@ -15,7 +15,6 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	
 	private int healAmount;
 	private boolean cancelIfFull;
-	private boolean obeyLos;
 	private boolean checkPlugins;
 	private String strMaxHealth;
 	private ValidTargetChecker checker;
@@ -25,13 +24,12 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 		
 		healAmount = getConfigInt("heal-amount", 10);
 		cancelIfFull = getConfigBoolean("cancel-if-full", true);
-		obeyLos = getConfigBoolean("obey-los", true);
 		strMaxHealth = getConfigString("str-max-health", "%t is already at max health.");
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		checker = new ValidTargetChecker() {				
+		checker = new ValidTargetChecker() {
 			@Override
 			public boolean isValidTarget(LivingEntity entity) {
-				return entity instanceof Player && entity.getHealth() < entity.getMaxHealth();
+				return entity.getHealth() < entity.getMaxHealth();
 			}
 		};
 	}
@@ -39,12 +37,11 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Player target = (Player)getTargetedEntity(player, minRange, range, true, false, obeyLos, true, checker);
-			//Player target = getTargetedPlayer(player, minRange, range, obeyLos);
+			LivingEntity target = getTargetedEntity(player, checker);
 			if (target == null) {
 				return noTarget(player);
 			} else if (cancelIfFull && target.getHealth() == target.getMaxHealth()) {
-				return noTarget(player, formatMessage(strMaxHealth, "%t", target.getName()));
+				return noTarget(player, formatMessage(strMaxHealth, "%t", getTargetName(target)));
 			} else {
 				boolean healed = heal(player, target, power);
 				if (!healed) {
@@ -57,7 +54,7 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	private boolean heal(Player player, Player target, float power) {
+	private boolean heal(Player player, LivingEntity target, float power) {
 		int health = target.getHealth();
 		int amt = Math.round(healAmount*power);
 		if (checkPlugins) {
@@ -81,7 +78,7 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (target instanceof Player && target.getHealth() < target.getMaxHealth()) {
+		if (validTargetList.canTarget(caster, target) && target.getHealth() < target.getMaxHealth()) {
 			return heal(caster, (Player)target, power);
 		} else {
 			return false;

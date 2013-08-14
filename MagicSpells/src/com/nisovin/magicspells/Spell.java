@@ -40,6 +40,7 @@ import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
 import com.nisovin.magicspells.util.Util;
+import com.nisovin.magicspells.util.ValidTargetList;
 
 public abstract class Spell implements Comparable<Spell>, Listener {
 
@@ -66,6 +67,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected int broadcastRange;
 	protected int experience;
 	protected HashMap<Integer, List<String>> effects;
+	
+	protected int minRange;
+	protected int range;
+	protected boolean obeyLos;
+	protected ValidTargetList validTargetList;
 
 	protected int castTime;
 	protected boolean interruptOnMove;
@@ -223,6 +229,19 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.interruptOnDamage = config.getBoolean(section + "." + spellName + ".interrupt-on-damage", false);
 		this.interruptOnCast = config.getBoolean(section + "." + spellName + ".interrupt-on-cast", true);
 		this.spellNameOnInterrupt = config.getString(section + "." + spellName + ".spell-on-interrupt", null);
+		
+		// targeting
+		this.minRange = config.getInt(section + "." + spellName + ".min-range", 0);
+		this.range = config.getInt(section + "." + spellName + ".range", 20);
+		this.obeyLos = config.getBoolean(section + "." + spellName + ".obey-los", true);
+		if (config.contains(section + "." + spellName + ".can-target")) {
+			String list = config.getString(section + "." + spellName + ".can-target", "");
+			validTargetList = new ValidTargetList(this, list);
+		} else {
+			boolean targetPlayers = config.getBoolean(section + "." + spellName + ".target-players", true);
+			boolean targetNonPlayers = config.getBoolean(section + "." + spellName + ".target-non-players", true);
+			validTargetList = new ValidTargetList(targetPlayers, targetNonPlayers);
+		}
 		
 		// graphical effects
 		List<String> effectsList = config.getStringList(section + "." + spellName + ".effects", null);
@@ -906,52 +925,41 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	/**
-	 * Gets the living entity a player is currently looking at
-	 * @param player player to get target for
-	 * @param range the maximum range to check
-	 * @param targetPlayers whether to allow players as targets
-	 * @param checkLos whether to obey line-of-sight restrictions
-	 * @return the targeted LivingEntity, or null if none was found
-	 */
-	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean checkLos) {
-		return getTargetedEntity(player, minRange, range, targetPlayers, true, checkLos, true);
-	}
-	
-	/**
 	 * Gets the player a player is currently looking at, ignoring other living entities
 	 * @param player the player to get the target for
 	 * @param range the maximum range to check
 	 * @param checkLos whether to obey line-of-sight restrictions
 	 * @return the targeted Player, or null if none was found
 	 */
-	protected Player getTargetedPlayer(Player player, int minRange, int range, boolean checkLos) {
-		LivingEntity entity = getTargetedEntity(player, minRange, range, true, false, checkLos, true);
-		if (entity instanceof Player) {
+	protected Player getTargetedPlayer(Player player) {
+		LivingEntity entity = getTargetedEntity(player, true, null);
+		if (entity != null && entity instanceof Player) {
 			return (Player)entity;
 		} else {
 			return null;
 		}
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent) {
-		return getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, checkLos, callSpellTargetEvent, null);
+	protected LivingEntity getTargetedEntity(Player player) {
+		return getTargetedEntity(player, false, null);
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, int minRange, int range, boolean targetPlayers, boolean targetNonPlayers, boolean checkLos, boolean callSpellTargetEvent, ValidTargetChecker checker) {
-		// check if pvp is disabled
-		if (MagicSpells.checkWorldPvpFlag && targetPlayers && !isBeneficial() && !player.getWorld().getPVP()) {
-			targetPlayers = false;
-		}
-		
-		// get nearby living entities, filtered by player targeting options
+	protected LivingEntity getTargetedEntity(Player player, ValidTargetChecker checker) {
+		return getTargetedEntity(player, false, checker);
+	}
+	
+	protected LivingEntity getTargetedEntity(Player player, boolean forceTargetPlayers, ValidTargetChecker checker) {
+		// get nearby entities
 		List<Entity> ne = player.getNearbyEntities(range, range, range);
-		ArrayList<LivingEntity> entities = new ArrayList<LivingEntity>(); 
-		for (Entity e : ne) {
-			if (e instanceof LivingEntity) {
-				if ((targetPlayers || !(e instanceof Player)) && (targetNonPlayers || e instanceof Player)) {
-					entities.add((LivingEntity)e);
-				}
-			}
+		
+		// get valid targets
+		List<LivingEntity> entities;
+		if (MagicSpells.checkWorldPvpFlag && validTargetList.canTargetPlayers() && !isBeneficial() && !player.getWorld().getPVP()) {
+			entities = validTargetList.filterTargetList(player, ne, false);
+		} else if (forceTargetPlayers) {
+			entities = validTargetList.filterTargetList(player, ne, true);
+		} else {
+			entities = validTargetList.filterTargetList(player, ne);
 		}
 		
 		// find target
@@ -976,7 +984,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			bx = b.getX();
 			by = b.getY();
 			bz = b.getZ();
-			if (checkLos && !MagicSpells.getTransparentBlocks().contains((byte)b.getTypeId())) {
+			if (obeyLos && !MagicSpells.getTransparentBlocks().contains((byte)b.getTypeId())) {
 				// line of sight is broken, stop without target
 				break;
 			} else {
@@ -1003,7 +1011,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 						}
 						
 						// call event listeners
-						if (target != null && callSpellTargetEvent) {
+						if (target != null) {
 							SpellTargetEvent event = new SpellTargetEvent(this, player, target);
 							Bukkit.getServer().getPluginManager().callEvent(event);
 							if (event.isCancelled()) {

@@ -28,8 +28,6 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 	private int geyserHeight;
 	private Material geyserType;
 	private boolean ignoreArmor;
-	private boolean obeyLos;
-	private boolean targetPlayers;
 	private boolean checkPlugins;
 
 	public GeyserSpell(MagicConfig config, String spellName) {
@@ -46,15 +44,13 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 			geyserType = Material.STATIONARY_WATER;
 		}
 		ignoreArmor = getConfigBoolean("ignore-armor", false);
-		obeyLos = getConfigBoolean("obey-los", true);
-		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, obeyLos);
+			LivingEntity target = getTargetedEntity(player);
 			if (target == null) {
 				// fail -- no target
 				return noTarget(player);
@@ -116,7 +112,7 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (target instanceof Player && !targetPlayers) {
+		if (!validTargetList.canTarget(caster, target)) {
 			return false;
 		} else {
 			geyser(target, power);

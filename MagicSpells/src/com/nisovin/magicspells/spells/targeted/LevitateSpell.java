@@ -25,8 +25,6 @@ public class LevitateSpell extends TargetedSpell implements TargetedEntitySpell 
 
 	private int tickRate;
 	private int duration;
-	private boolean targetPlayers;
-	private boolean obeyLos;
 	private boolean cancelOnItemSwitch;
 	private boolean cancelOnSpellCast;
 	private boolean cancelOnTakeDamage;
@@ -38,8 +36,6 @@ public class LevitateSpell extends TargetedSpell implements TargetedEntitySpell 
 		
 		tickRate = getConfigInt("tick-rate", 5);
 		duration = getConfigInt("duration", 10);
-		targetPlayers = getConfigBoolean("target-players", false);
-		obeyLos = getConfigBoolean("obey-los", true);
 		cancelOnItemSwitch = getConfigBoolean("cancel-on-item-switch", true);
 		cancelOnSpellCast = getConfigBoolean("cancel-on-spell-cast", false);
 		cancelOnTakeDamage = getConfigBoolean("cancel-on-take-damage", true);
@@ -67,7 +63,7 @@ public class LevitateSpell extends TargetedSpell implements TargetedEntitySpell 
 			levitating.remove(player).stop();
 			return PostCastAction.ALREADY_HANDLED;
 		} else if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, obeyLos);
+			LivingEntity target = getTargetedEntity(player);
 			if (target == null) {
 				return noTarget(player);
 			}

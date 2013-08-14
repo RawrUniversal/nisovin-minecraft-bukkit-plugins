@@ -26,7 +26,6 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 	private int disarmDuration;
 	private boolean dontDrop;
 	private boolean preventTheft;
-	private boolean obeyLos;	
 	private String strInvalidItem;
 	
 	private HashMap<Item, Player> disarmedItems;
@@ -48,7 +47,6 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 		disarmDuration = getConfigInt("disarm-duration", 100);
 		dontDrop = getConfigBoolean("dont-drop", false);
 		preventTheft = getConfigBoolean("prevent-theft", true);
-		obeyLos = getConfigBoolean("obey-los", true);
 		strInvalidItem = getConfigString("str-invalid-item", "Your target could not be disarmed.");
 		
 		if (dontDrop) preventTheft = false;
@@ -61,7 +59,7 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get target
-			Player target = getTargetedPlayer(player, minRange, range, obeyLos);
+			Player target = getTargetedPlayer(player);
 			if (target == null) {
 				// fail
 				return noTarget(player);

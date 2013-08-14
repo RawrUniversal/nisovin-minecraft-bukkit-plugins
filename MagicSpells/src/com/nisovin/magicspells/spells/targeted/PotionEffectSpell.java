@@ -11,18 +11,12 @@ import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySpell {
-
-	@SuppressWarnings("unused")
-	private static final String SPELL_NAME = "potion";
 	
 	private int type;
 	private int duration;
 	private int amplifier;
 	private boolean ambient;
 	private boolean targeted;
-	private boolean targetPlayers;
-	private boolean targetNonPlayers;
-	private boolean obeyLos;
 	private boolean beneficial;
 	
 	public PotionEffectSpell(MagicConfig config, String spellName) {
@@ -33,9 +27,6 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 		amplifier = getConfigInt("strength", 0);
 		ambient = getConfigBoolean("ambient", false);
 		targeted = getConfigBoolean("targeted", false);
-		targetPlayers = getConfigBoolean("target-players", false);
-		targetNonPlayers = getConfigBoolean("target-non-players", true);
-		obeyLos = getConfigBoolean("obey-los", true);
 		beneficial = getConfigBoolean("beneficial", false);
 	}
 	
@@ -52,7 +43,7 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target;
 			if (targeted) {
-				target = getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, obeyLos, true);
+				target = getTargetedEntity(player);
 			} else {
 				target = player;
 			}
@@ -75,9 +66,7 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (target instanceof Player && !targetPlayers) {
-			return false;
-		} else if (!(target instanceof Player) && !targetNonPlayers) {
+		if (!validTargetList.canTarget(caster, target)) {
 			return false;
 		} else {
 			PotionEffect effect = new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier, ambient);

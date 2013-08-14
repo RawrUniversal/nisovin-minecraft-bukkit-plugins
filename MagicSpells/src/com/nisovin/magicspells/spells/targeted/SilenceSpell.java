@@ -21,6 +21,7 @@ import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.ValidTargetList;
 
 public class SilenceSpell extends TargetedSpell implements TargetedEntitySpell {
 
@@ -28,7 +29,6 @@ public class SilenceSpell extends TargetedSpell implements TargetedEntitySpell {
 	private boolean preventChat;
 	private boolean preventCommands;
 	private int duration;
-	private boolean obeyLos;
 	private List<String> allowedSpellNames;
 	private Set<Spell> allowedSpells;
 	private String strSilenced;
@@ -42,7 +42,6 @@ public class SilenceSpell extends TargetedSpell implements TargetedEntitySpell {
 		preventChat = getConfigBoolean("prevent-chat", false);
 		preventCommands = getConfigBoolean("prevent-commands", false);
 		duration = getConfigInt("duration", 200);
-		obeyLos = getConfigBoolean("obey-los", true);
 		allowedSpellNames = getConfigStringList("allowed-spells", null);
 		strSilenced = getConfigString("str-silenced", "You are silenced!");
 		
@@ -51,6 +50,8 @@ public class SilenceSpell extends TargetedSpell implements TargetedEntitySpell {
 		} else {
 			silenced = new HashMap<String, Unsilencer>();
 		}
+		
+		validTargetList = new ValidTargetList(true, false);
 	}
 	
 	@Override
@@ -85,7 +86,7 @@ public class SilenceSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Player target = getTargetedPlayer(player, minRange, range, obeyLos);
+			Player target = getTargetedPlayer(player);
 			if (target == null) {
 				return noTarget(player);
 			}

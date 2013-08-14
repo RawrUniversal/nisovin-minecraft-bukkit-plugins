@@ -36,9 +36,6 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 	float yOffset;
 	int renderDistance;
 	
-	boolean targetPlayers;
-	boolean targetNonPlayers;
-	
 	String hitSpellName;
 	TargetedSpell spell;
 	
@@ -63,8 +60,6 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 		hitRadius = getConfigFloat("hit-radius", 1.5F);
 		yOffset = getConfigFloat("y-offset", 0.6F);
 		renderDistance = getConfigInt("render-distance", 32);
-		targetPlayers = getConfigBoolean("target-players", true);
-		targetNonPlayers = getConfigBoolean("target-non-players", false);
 		hitSpellName = getConfigString("spell", "explode");
 	}
 
@@ -84,7 +79,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			ValidTargetChecker checker = spell != null ? spell.getValidTargetChecker() : null;
-			LivingEntity target = getTargetedEntity(player, minRange, range, targetPlayers, targetNonPlayers, true, true, checker);
+			LivingEntity target = getTargetedEntity(player, checker);
 			if (target == null) {
 				return noTarget(player);
 			}
@@ -97,14 +92,22 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		new MissileTracker(caster, target, power);
-		return true;
+		if (validTargetList.canTarget(caster, target)) {
+			new MissileTracker(caster, target, power);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean castAtEntityFromLocation(Player caster, Location from, LivingEntity target, float power) {
-		new MissileTracker(caster, from, target, power);
-		return true;
+		if (validTargetList.canTarget(caster, target)) {
+			new MissileTracker(caster, from, target, power);
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	class MissileTracker implements Runnable {

@@ -21,7 +21,6 @@ public class CombustSpell extends TargetedSpell implements TargetedEntitySpell {
 	private int fireTicks;
 	private int fireTickDamage;
 	private boolean preventImmunity;
-	private boolean obeyLos;
 	private boolean checkPlugins;
 	
 	private HashMap<Integer, CombustData> combusting = new HashMap<Integer, CombustData>();
@@ -33,7 +32,6 @@ public class CombustSpell extends TargetedSpell implements TargetedEntitySpell {
 		fireTicks = getConfigInt("fire-ticks", 100);
 		fireTickDamage = getConfigInt("fire-tick-damage", 1);
 		preventImmunity = getConfigBoolean("prevent-immunity", true);
-		obeyLos = getConfigBoolean("obey-los", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 	}
 	
@@ -44,7 +42,7 @@ public class CombustSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, minRange, range>0?range:100, targetPlayers, obeyLos);
+			LivingEntity target = getTargetedEntity(player);
 			if (target == null) {
 				return noTarget(player);
 			} else {
