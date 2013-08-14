@@ -29,10 +29,6 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 	private int verticalRadius;
 	private boolean pointBlank;
 	private boolean failIfNoTargets;
-	private boolean targetCaster;
-	private boolean targetPlayers;
-	private boolean targetNonPlayers;
-	private boolean targetInvisiblePlayers;
 	private int maxTargets;
 	private boolean beneficial;
 	private List<String> spellNames;
@@ -47,10 +43,6 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 		verticalRadius = getConfigInt("vertical-radius", 5);
 		pointBlank = getConfigBoolean("point-blank", true);
 		failIfNoTargets = getConfigBoolean("fail-if-no-targets", true);
-		targetCaster = getConfigBoolean("target-caster", false);
-		targetPlayers = getConfigBoolean("target-players", false);
-		targetNonPlayers = getConfigBoolean("target-non-players", true);
-		targetInvisiblePlayers = getConfigBoolean("target-invisible-players", true);
 		maxTargets = getConfigInt("max-targets", 0);
 		beneficial = getConfigBoolean("beneficial", false);
 		spellSourceInCenter = getConfigBoolean("spell-source-in-center", false);
@@ -126,10 +118,9 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 		List<Entity> entities = new ArrayList<Entity>(location.getWorld().getEntitiesByClasses(LivingEntity.class));
 		Collections.shuffle(entities);
 		for (Entity e : entities) {
-			if (box.contains(e)) {
-				boolean isPlayer = (e instanceof Player);
-				if (!((LivingEntity)e).isDead() && !(isPlayer && !targetCaster && ((Player)e).getName().equals(player.getName())) && (targetPlayers || !isPlayer) && (targetNonPlayers || isPlayer) && (targetInvisiblePlayers || !isPlayer || player.canSee((Player)e))) {
-					LivingEntity target = (LivingEntity)e;
+			if (e instanceof LivingEntity && box.contains(e)) {
+				LivingEntity target = (LivingEntity)e;
+				if (!target.isDead() && validTargetList.canTarget(player, target)) {
 					SpellTargetEvent event = new SpellTargetEvent(this, player, target);
 					Bukkit.getPluginManager().callEvent(event);
 					if (event.isCancelled()) {

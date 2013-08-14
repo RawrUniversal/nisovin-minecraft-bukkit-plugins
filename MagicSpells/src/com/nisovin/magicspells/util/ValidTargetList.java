@@ -26,19 +26,23 @@ public class ValidTargetList {
 		}
 		typeMap.put("zombiepig", EntityType.PIG_ZOMBIE);
 		typeMap.put("mooshroom", EntityType.MUSHROOM_COW);
+		typeMap.put("dog", EntityType.WOLF);
 		typeMap.put("cat", EntityType.OCELOT);
 		typeMap.put("ocelot", EntityType.OCELOT);
 		typeMap.put("golem", EntityType.IRON_GOLEM);
 		typeMap.put("irongolem", EntityType.IRON_GOLEM);
 		typeMap.put("snowgolem", EntityType.SNOWMAN);
+		typeMap.put("dragon", EntityType.ENDER_DRAGON);
 		for (String s : typeMap.keySet()) {
 			typeMap.put(s + "s", typeMap.get(s));
 		}
 		typeMap.put("endermen", EntityType.ENDERMAN);
+		typeMap.put("wolves", EntityType.WOLF);
 	}
 	
 	boolean targetSelf = false;
 	boolean targetPlayers = false;
+	boolean targetInvisibles = false;
 	boolean targetNonPlayers = false;
 	boolean targetMonsters = false;
 	boolean targetAnimals = false;
@@ -52,6 +56,8 @@ public class ValidTargetList {
 					targetSelf = true;
 				} else if (s.equalsIgnoreCase("players") || s.equalsIgnoreCase("player")) {
 					targetPlayers = true;
+				} else if (s.equalsIgnoreCase("invisible") || s.equalsIgnoreCase("invisibles")) {
+					targetInvisibles = true;
 				} else if (s.equalsIgnoreCase("nonplayers") || s.equalsIgnoreCase("nonplayer")) {
 					targetNonPlayers = true;
 				} else if (s.equalsIgnoreCase("monsters") || s.equalsIgnoreCase("monster")) {
@@ -82,6 +88,8 @@ public class ValidTargetList {
 	public boolean canTarget(Player caster, LivingEntity target, boolean targetPlayers) {
 		if (targetSelf && target.equals(caster)) {
 			return true;
+		} else if (!targetInvisibles && target instanceof Player && !caster.canSee((Player)target)) {
+			return false;
 		} else if (targetPlayers && target instanceof Player) {
 			return true;
 		} else if (targetNonPlayers && !(target instanceof Player)) {
