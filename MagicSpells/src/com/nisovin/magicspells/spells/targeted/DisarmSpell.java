@@ -12,6 +12,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -28,7 +29,7 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 	private boolean preventTheft;
 	private String strInvalidItem;
 	
-	private HashMap<Item, Player> disarmedItems;
+	private HashMap<Item, String> disarmedItems;
 	
 	public DisarmSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -51,7 +52,7 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 		
 		if (dontDrop) preventTheft = false;
 		if (preventTheft) {
-			disarmedItems = new HashMap<Item, Player>();
+			disarmedItems = new HashMap<Item, String>();
 		}
 	}
 
@@ -59,7 +60,7 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get target
-			Player target = getTargetedPlayer(player);
+			LivingEntity target = getTargetedEntity(player);
 			if (target == null) {
 				// fail
 				return noTarget(player);
@@ -79,24 +80,25 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	private boolean disarm(final Player target) {
-		final ItemStack inHand = target.getItemInHand();
+	private boolean disarm(final LivingEntity target) {
+		final ItemStack inHand = getItemInHand(target);
 		if (disarmable == null || disarmable.contains(inHand.getType())) {
 			if (dontDrop) {
 				// hide item
-				target.setItemInHand(null);
+				setItemInHand(target, null);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						// give the item back
-						if (target.getItemInHand() == null || target.getItemInHand().getType() == Material.AIR) {
+						ItemStack inHand2 = getItemInHand(target);
+						if (inHand2 == null || inHand2.getType() == Material.AIR) {
 							// put back in hand
-							target.setItemInHand(inHand);
-						} else {
+							setItemInHand(target, inHand);
+						} else if (target instanceof Player) {
 							// hand is full
-							int slot = target.getInventory().firstEmpty();
+							int slot = ((Player)target).getInventory().firstEmpty();
 							if (slot >= 0) {
 								// put in first available slot
-								target.getInventory().setItem(slot, inHand);
+								((Player)target).getInventory().setItem(slot, inHand);
 							} else {
 								// no slots available, drop at feet
 								Item item = target.getWorld().dropItem(target.getLocation(), inHand);
@@ -107,16 +109,39 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 				}, disarmDuration);
 			} else {
 				// drop item
-				target.setItemInHand(null);
+				setItemInHand(target, null);
 				Item item = target.getWorld().dropItemNaturally(target.getLocation(), inHand.clone());
 				item.setPickupDelay(disarmDuration);
-				if (preventTheft) {
-					disarmedItems.put(item, target);
+				if (preventTheft && target instanceof Player) {
+					disarmedItems.put(item, ((Player)target).getName());
 				}
 			}
 			return true;
 		} else {
 			return false;
+		}
+	}
+	
+	private ItemStack getItemInHand(LivingEntity entity) {
+		if (entity instanceof Player) {
+			return ((Player)entity).getItemInHand();
+		} else {
+			EntityEquipment equip = entity.getEquipment();
+			if (equip != null) {
+				return equip.getItemInHand();
+			}
+		}
+		return null;
+	}
+	
+	private void setItemInHand(LivingEntity entity, ItemStack item) {
+		if (entity instanceof Player) {
+			((Player)entity).setItemInHand(item);
+		} else {
+			EntityEquipment equip = entity.getEquipment();
+			if (equip != null) {
+				equip.setItemInHand(item);
+			}
 		}
 	}
 
@@ -139,7 +164,7 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 		
 		Item item = event.getItem();
 		if (disarmedItems.containsKey(item)) {
-			if (disarmedItems.get(item).equals(event.getPlayer())) {
+			if (disarmedItems.get(item).equals(event.getPlayer().getName())) {
 				disarmedItems.remove(item);
 			} else {
 				event.setCancelled(true);
