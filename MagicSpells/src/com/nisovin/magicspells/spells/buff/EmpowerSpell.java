@@ -14,30 +14,21 @@ public class EmpowerSpell extends BuffSpell {
 
 	private float extraPower;
 	
-	private HashMap<Player,Float> empowered;
+	private HashMap<Player, Float> empowered;
 	
 	public EmpowerSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		extraPower = getConfigFloat("power-multiplier", 1.5F);
 		
-		empowered = new HashMap<Player,Float>();
+		empowered = new HashMap<Player, Float>();
 	}
 
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (empowered.containsKey(player)) {
-			turnOff(player);
-			if (toggle) {
-				return PostCastAction.ALREADY_HANDLED;
-			}
-		}
-		if (state == SpellCastState.NORMAL) {
-			float p = power * extraPower;
-			empowered.put(player, p);
-			startSpellDuration(player);
-		}
-		return PostCastAction.HANDLE_NORMALLY;
+	public boolean castBuff(Player player, float power, String[] args) {
+		float p = power * extraPower;
+		empowered.put(player, p);
+		return true;
 	}
 
 	@EventHandler(priority=EventPriority.HIGHEST)

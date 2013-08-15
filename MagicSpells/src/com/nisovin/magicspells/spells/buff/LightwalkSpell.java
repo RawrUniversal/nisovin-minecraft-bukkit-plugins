@@ -16,27 +16,18 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class LightwalkSpell extends BuffSpell {
 	
-	private HashMap<String,Block> lightwalkers;
+	private HashMap<String, Block> lightwalkers;
 
 	public LightwalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 				
-		lightwalkers = new HashMap<String,Block>();
+		lightwalkers = new HashMap<String, Block>();
 	}
 
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (lightwalkers.containsKey(player.getName())) {
-			turnOff(player);
-			if (toggle) {
-				return PostCastAction.ALREADY_HANDLED;
-			}
-		}
-		if (state == SpellCastState.NORMAL) {
-			lightwalkers.put(player.getName(), null);
-			startSpellDuration(player);
-		}
-		return PostCastAction.HANDLE_NORMALLY;
+	public boolean castBuff(Player player, float power, String[] args) {
+		lightwalkers.put(player.getName(), null);
+		return true;
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)

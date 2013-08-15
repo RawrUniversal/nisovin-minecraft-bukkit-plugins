@@ -29,7 +29,7 @@ public class ReachSpell extends BuffSpell {
 	private List<Integer> disallowedBreakBlocks;
 	private List<Integer> disallowedPlaceBlocks;
 	
-	private HashSet<Player> reaching;
+	private HashSet<String> reaching;
 	
 	public ReachSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -40,24 +40,18 @@ public class ReachSpell extends BuffSpell {
 		disallowedBreakBlocks = getConfigIntList("disallowed-break-blocks", null);
 		disallowedPlaceBlocks = getConfigIntList("disallowed-place-blocks", null);
 		
-		reaching = new HashSet<Player>();
+		reaching = new HashSet<String>();
 	}
 
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (reaching.contains(player)) {
-			turnOff(player);
-			return PostCastAction.ALREADY_HANDLED;
-		} else if (state == SpellCastState.NORMAL) {
-			reaching.add(player);
-			startSpellDuration(player);
-		}
-		return PostCastAction.HANDLE_NORMALLY;
+	public boolean castBuff(Player player, float power, String[] args) {
+		reaching.add(player.getName());
+		return true;
 	}
 
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (reaching.contains(event.getPlayer())) {
+		if (isActive(event.getPlayer())) {
 			Player player = event.getPlayer();
 			
 			// check expired
@@ -140,9 +134,9 @@ public class ReachSpell extends BuffSpell {
 
 	@Override
 	public void turnOff(Player player) {
-		if (reaching.contains(player)) {
+		if (reaching.contains(player.getName())) {
 			super.turnOff(player);
-			reaching.remove(player);
+			reaching.remove(player.getName());
 			sendMessage(player, strFade);
 		}
 	}

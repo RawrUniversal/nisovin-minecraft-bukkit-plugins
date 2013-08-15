@@ -52,19 +52,10 @@ public class CarpetSpell extends BuffSpell {
 	}
 	
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (windwalkers.containsKey(player.getName())) {
-			turnOff(player);
-			if (toggle) {
-				return PostCastAction.ALREADY_HANDLED;
-			}
-		}
-		if (state == SpellCastState.NORMAL) {
-			windwalkers.put(player.getName(), new BlockPlatform(platformBlock, Material.AIR.getId(), player.getLocation().getBlock().getRelative(0,-1,0), size, true, "square"));
-			startSpellDuration(player);
-			registerListener();
-		}
-		return PostCastAction.HANDLE_NORMALLY;
+	public boolean castBuff(Player player, float power, String[] args) {
+		windwalkers.put(player.getName(), new BlockPlatform(platformBlock, Material.AIR.getId(), player.getLocation().getBlock().getRelative(0,-1,0), size, true, "square"));
+		registerListener();
+		return true;
 	}
 	
 	private void registerListener() {

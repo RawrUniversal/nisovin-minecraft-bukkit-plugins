@@ -27,18 +27,9 @@ public class SpellHasteSpell extends BuffSpell {
     }
     
     @Override
-    public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {            
-        if (isActive(player)){
-            turnOff(player);
-            if (toggle) {
-            	return PostCastAction.ALREADY_HANDLED;
-            }
-        }
-        if (state == SpellCastState.NORMAL) {
-            spellTimersModified.put(player.getName(), power);
-            startSpellDuration(player);
-        }
-        return PostCastAction.HANDLE_NORMALLY;
+    public boolean castBuff(Player player, float power, String[] args) {    
+        spellTimersModified.put(player.getName(), power);
+        return true;
     }
     
     @EventHandler (priority=EventPriority.MONITOR)

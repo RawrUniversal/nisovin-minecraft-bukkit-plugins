@@ -68,51 +68,40 @@ public class MinionSpell extends BuffSpell {
 	}
 	
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (minions.containsKey(player.getName())) {
-			LivingEntity minion = minions.get(player.getName());
-			if (!minion.isDead()) { // don't toggle off if the minion is dead
-				turnOff(player);
-				if (toggle) {
-					return PostCastAction.ALREADY_HANDLED;
-				}
-			}
-		} 
-		if (state == SpellCastState.NORMAL) {
-			EntityType creatureType = null;
-			int num = random.nextInt(100);
-			int n = 0;
-			for (int i = 0; i < creatureTypes.length; i++) {
-				if (num < chances[i] + n) {
-					creatureType = creatureTypes[i];
-					break;
-				} else {
-					n += chances[i];
-				}
-			}
-			if (creatureType != null) {
-				// get spawn location
-				Location loc = null;
-				loc = player.getLocation();
-				loc.setX(loc.getX()-1);
-				
-				// spawn creature
-				LivingEntity minion = (LivingEntity)player.getWorld().spawnEntity(loc, creatureType);
-				if (minion instanceof Creature) {
-					minions.put(player.getName(), minion);
-					targets.put(player.getName(), null);
-					startSpellDuration(player);
-				} else {
-					minion.remove();
-					MagicSpells.error("Cannot summon a non-creature with the minion spell!");
-					return PostCastAction.ALREADY_HANDLED;
-				}
+	public boolean castBuff(Player player, float power, String[] args) {
+		EntityType creatureType = null;
+		int num = random.nextInt(100);
+		int n = 0;
+		for (int i = 0; i < creatureTypes.length; i++) {
+			if (num < chances[i] + n) {
+				creatureType = creatureTypes[i];
+				break;
 			} else {
-				// fail -- no creature found
-				return PostCastAction.ALREADY_HANDLED;
+				n += chances[i];
 			}
 		}
-		return PostCastAction.HANDLE_NORMALLY;
+		if (creatureType != null) {
+			// get spawn location
+			Location loc = null;
+			loc = player.getLocation();
+			loc.setX(loc.getX()-1);
+			
+			// spawn creature
+			LivingEntity minion = (LivingEntity)player.getWorld().spawnEntity(loc, creatureType);
+			if (minion instanceof Creature) {
+				minions.put(player.getName(), minion);
+				targets.put(player.getName(), null);
+				startSpellDuration(player);
+			} else {
+				minion.remove();
+				MagicSpells.error("Cannot summon a non-creature with the minion spell!");
+				return false;
+			}
+		} else {
+			// fail -- no creature found
+			return false;
+		}
+		return true;
 	}
 	
 	@EventHandler

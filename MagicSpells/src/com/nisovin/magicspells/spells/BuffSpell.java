@@ -100,6 +100,37 @@ public abstract class BuffSpell extends Spell {
 		return castByCommand;
 	}
 	
+	@Override
+	public final PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
+		if (isActive(player)) {
+			if (toggle) {
+				turnOff(player);
+				return PostCastAction.ALREADY_HANDLED;
+			} else {
+				if (state == SpellCastState.NORMAL) {
+					boolean ok = recastBuff(player, power, args);
+					if (ok) {
+						startSpellDuration(player);
+					}
+				}
+				return PostCastAction.HANDLE_NORMALLY;
+			}
+		}
+		if (state == SpellCastState.NORMAL) {
+			boolean ok = castBuff(player, power, args);
+			if (ok) {
+				startSpellDuration(player);
+			}
+		}
+		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	public abstract boolean castBuff(Player player, float power, String[] args);
+	
+	public boolean recastBuff(Player player, float power, String[] args) {
+		return true;
+	}
+	
 	/**
 	 * Begins counting the spell duration for a player
 	 * @param player the player to begin counting duration

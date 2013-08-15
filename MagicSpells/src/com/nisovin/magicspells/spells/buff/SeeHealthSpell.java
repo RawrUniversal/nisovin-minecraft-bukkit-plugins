@@ -31,7 +31,7 @@ public class SeeHealthSpell extends BuffSpell {
 	private int barSize = 20;
 	private boolean colorBlind = false;
 	
-	private HashMap<Player, Integer> bars;
+	private HashMap<String, Integer> bars;
 	private Updater updater;
 	
 	public SeeHealthSpell(MagicConfig config, String spellName) {
@@ -44,7 +44,7 @@ public class SeeHealthSpell extends BuffSpell {
 			mode = "attack";
 		}
 		
-		bars = new HashMap<Player, Integer>();
+		bars = new HashMap<String, Integer>();
 	}
 	
 	@Override
@@ -57,26 +57,17 @@ public class SeeHealthSpell extends BuffSpell {
 	}
 
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (bars.containsKey(player) && toggle) {
-			turnOff(player);
-			return PostCastAction.ALREADY_HANDLED;
+	public boolean castBuff(Player player, float power, String[] args) {
+		bars.put(player.getName(), player.getInventory().getHeldItemSlot());
+		if (updater == null && mode.equals("always")) {
+			updater = new Updater();
 		}
-		if (state == SpellCastState.NORMAL) {
-			if (!bars.containsKey(player)) {
-				bars.put(player, player.getInventory().getHeldItemSlot());
-				if (updater == null && mode.equals("always")) {
-					updater = new Updater();
-				}
-			}
-			startSpellDuration(player);
-		}
-		return PostCastAction.HANDLE_NORMALLY;
+		return true;
 	}
 
 	@Override
 	public boolean isActive(Player player) {
-		return bars.containsKey(player);
+		return bars.containsKey(player.getName());
 	}
 	
 	private void showHealthBar(Player player, LivingEntity entity) {
@@ -143,7 +134,7 @@ public class SeeHealthSpell extends BuffSpell {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void turnOff(Player player) {
-		Integer i = bars.remove(player);
+		Integer i = bars.remove(player.getName());
 		if (i != null) {
 			super.turnOff(player);
 			player.updateInventory();
@@ -159,8 +150,9 @@ public class SeeHealthSpell extends BuffSpell {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void turnOff() {
-		for (Player player : bars.keySet()) {
-			if (player.isValid()) {
+		for (String playerName : bars.keySet()) {
+			Player player = Bukkit.getPlayerExact(playerName);
+			if (player != null && player.isValid()) {
 				player.updateInventory();
 			}
 		}
@@ -200,12 +192,15 @@ public class SeeHealthSpell extends BuffSpell {
 		
 		@Override
 		public void run() {
-			for (Player player : bars.keySet()) {
-				LivingEntity target = getTargetedEntity(player);
-				if (target != null) {
-					showHealthBar(player, target);
-				} else {
-					//resetHealthBar(player);
+			for (String playerName : bars.keySet()) {
+				Player player = Bukkit.getPlayerExact(playerName);
+				if (player != null && player.isValid()) {
+					LivingEntity target = getTargetedEntity(player);
+					if (target != null) {
+						showHealthBar(player, target);
+					} else {
+						//resetHealthBar(player);
+					}
 				}
 			}
 		}

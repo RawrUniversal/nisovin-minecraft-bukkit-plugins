@@ -22,7 +22,7 @@ public class FlamewalkSpell extends BuffSpell {
 	private boolean targetPlayers;
 	private boolean checkPlugins;
 	
-	private HashMap<String,Float> flamewalkers;
+	private HashMap<String, Float> flamewalkers;
 	private Burner burner;
 	
 	public FlamewalkSpell(MagicConfig config, String spellName) {
@@ -34,25 +34,16 @@ public class FlamewalkSpell extends BuffSpell {
 		targetPlayers = getConfigBoolean("target-players", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 		
-		flamewalkers = new HashMap<String,Float>();
+		flamewalkers = new HashMap<String, Float>();
 	}
 
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (flamewalkers.containsKey(player.getName())) {
-			turnOff(player);
-			if (toggle) {
-				return PostCastAction.ALREADY_HANDLED;
-			}
+	public boolean castBuff(Player player, float power, String[] args) {
+		flamewalkers.put(player.getName(), power);
+		if (burner == null) {
+			burner = new Burner();
 		}
-		if (state == SpellCastState.NORMAL) {
-			flamewalkers.put(player.getName(),power);
-			if (burner == null) {
-				burner = new Burner();
-			}
-			startSpellDuration(player);
-		}
-		return PostCastAction.HANDLE_NORMALLY;
+		return true;
 	}	
 	
 	@Override

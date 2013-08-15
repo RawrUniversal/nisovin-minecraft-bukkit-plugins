@@ -28,7 +28,7 @@ public class StonevisionSpell extends BuffSpell {
 	private int[] transparentTypes;
 	private boolean unobfuscate;
 	
-	private HashMap<String,TransparentBlockSet> seers;
+	private HashMap<String, TransparentBlockSet> seers;
 
 	public StonevisionSpell(MagicConfig config, String spellName) {
 		super(config, spellName);		
@@ -53,18 +53,9 @@ public class StonevisionSpell extends BuffSpell {
 	}
 
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (seers.containsKey(player.getName())) {
-			turnOff(player);
-			if (toggle) {
-				return PostCastAction.ALREADY_HANDLED;
-			}
-		}
-		if (state == SpellCastState.NORMAL) {
-			seers.put(player.getName(), new TransparentBlockSet(player, range, transparentType, transparentTypes));
-			startSpellDuration(player);
-		}
-		return PostCastAction.HANDLE_NORMALLY;
+	public boolean castBuff(Player player, float power, String[] args) {
+		seers.put(player.getName(), new TransparentBlockSet(player, range, transparentType, transparentTypes));
+		return true;
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)

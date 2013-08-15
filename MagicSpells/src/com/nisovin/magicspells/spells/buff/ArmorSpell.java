@@ -119,29 +119,20 @@ public class ArmorSpell extends BuffSpell {
 	}
 
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (armored.contains(player)) {
-			turnOff(player);
-			if (toggle) {
-				return PostCastAction.ALREADY_HANDLED;
-			}
+	public boolean castBuff(Player player, float power, String[] args) {
+		PlayerInventory inv = player.getInventory();
+		if (!replace && ((helmet != null && inv.getHelmet() != null) || (chestplate != null && inv.getChestplate() != null) || (leggings != null && inv.getLeggings() != null) || (boots != null && inv.getBoots() != null))) {
+			// error
+			sendMessage(player, strHasArmor);
+			return false;
 		}
-		if (state == SpellCastState.NORMAL) {
-			PlayerInventory inv = player.getInventory();
-			if (!replace && ((helmet != null && inv.getHelmet() != null) || (chestplate != null && inv.getChestplate() != null) || (leggings != null && inv.getLeggings() != null) || (boots != null && inv.getBoots() != null))) {
-				// error
-				sendMessage(player, strHasArmor);
-				return PostCastAction.ALREADY_HANDLED;
-			}
-			
-			setArmor(inv);
-			
-			if (!permanent) {
-				armored.add(player.getName());
-				startSpellDuration(player);
-			}
+		
+		setArmor(inv);
+		
+		if (!permanent) {
+			armored.add(player.getName());
 		}
-		return PostCastAction.HANDLE_NORMALLY;
+		return true;
 	}
 	
 	private void setArmor(PlayerInventory inv) {

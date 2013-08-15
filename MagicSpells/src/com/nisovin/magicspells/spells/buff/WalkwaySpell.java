@@ -26,7 +26,7 @@ public class WalkwaySpell extends BuffSpell {
 	private int size;
 	private boolean cancelOnTeleport;
 	
-	private HashMap<Player,Platform> platforms;
+	private HashMap<String, Platform> platforms;
 	private WalkwayListener listener;
 	
 	public WalkwaySpell(MagicConfig config, String spellName) {
@@ -36,7 +36,7 @@ public class WalkwaySpell extends BuffSpell {
 		size = getConfigInt("size", 6);
 		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
 		
-		platforms = new HashMap<Player,Platform>();
+		platforms = new HashMap<String, Platform>();
 		
 	}
 
@@ -48,19 +48,10 @@ public class WalkwaySpell extends BuffSpell {
 	}
 	
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
-		if (platforms.containsKey(player)) {
-			turnOff(player);
-			if (toggle) {
-				return PostCastAction.ALREADY_HANDLED;
-			}
-		}
-		if (state == SpellCastState.NORMAL) {
-			platforms.put(player, new Platform(player, material, size));
-			startSpellDuration(player);
-			registerListener();
-		}
-		return PostCastAction.HANDLE_NORMALLY;
+	public boolean castBuff(Player player, float power, String[] args) {
+		platforms.put(player.getName(), new Platform(player, material, size));
+		registerListener();
+		return true;
 	}
 	
 	private void registerListener() {
@@ -121,11 +112,11 @@ public class WalkwaySpell extends BuffSpell {
 	
 	@Override
 	public void turnOff(Player player) {
-		Platform platform = platforms.get(player);
+		Platform platform = platforms.get(player.getName());
 		if (platform != null) {
 			super.turnOff(player);
 			platform.remove();
-			platforms.remove(player);
+			platforms.remove(player.getName());
 			sendMessage(player, strFade);
 			unregisterListener();
 		}
@@ -319,7 +310,7 @@ public class WalkwaySpell extends BuffSpell {
 
 	@Override
 	public boolean isActive(Player player) {
-		return platforms.containsKey(player);
+		return platforms.containsKey(player.getName());
 	}
 
 }
