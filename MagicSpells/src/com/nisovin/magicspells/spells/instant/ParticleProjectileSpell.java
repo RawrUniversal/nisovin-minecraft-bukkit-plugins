@@ -8,7 +8,6 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -21,6 +20,7 @@ import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
@@ -189,7 +189,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 				((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
 			}
 			
-			if (currentLocation.getBlock().getType() != Material.AIR) {
+			if (!BlockUtils.isPathable(currentLocation.getBlock())) {
 				if (hitGround && spell != null && spell instanceof TargetedLocationSpell) {
 					Util.setLocationFacingFromVector(previousLocation, currentVelocity);
 					((TargetedLocationSpell)spell).castAtLocation(caster, previousLocation, power);
