@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -21,8 +22,11 @@ public class ValidTargetList {
 
 	static Map<String, EntityType> typeMap = new HashMap<String, EntityType>();
 	static {
+		//typeMap = new HashMap<String, EntityType>();
 		for (EntityType type : EntityType.values()) {
-			typeMap.put(type.getName().toLowerCase(), type);
+			if (type != null && type.getName() != null) {
+				typeMap.put(type.getName().toLowerCase(), type);
+			}
 		}
 		typeMap.put("zombiepig", EntityType.PIG_ZOMBIE);
 		typeMap.put("mooshroom", EntityType.MUSHROOM_COW);
@@ -33,9 +37,11 @@ public class ValidTargetList {
 		typeMap.put("irongolem", EntityType.IRON_GOLEM);
 		typeMap.put("snowgolem", EntityType.SNOWMAN);
 		typeMap.put("dragon", EntityType.ENDER_DRAGON);
+		Map<String, EntityType> toAdd = new HashMap<String, EntityType>();
 		for (String s : typeMap.keySet()) {
-			typeMap.put(s + "s", typeMap.get(s));
+			toAdd.put(s + "s", typeMap.get(s));
 		}
+		typeMap.putAll(toAdd);
 		typeMap.put("endermen", EntityType.ENDERMAN);
 		typeMap.put("wolves", EntityType.WOLF);
 	}
@@ -86,8 +92,12 @@ public class ValidTargetList {
 	}
 	
 	public boolean canTarget(Player caster, LivingEntity target, boolean targetPlayers) {
-		if (targetSelf && target.equals(caster)) {
+		if (target instanceof Player && ((Player)target).getGameMode() == GameMode.CREATIVE) {
+			return false;
+		} else if (targetSelf && target.equals(caster)) {
 			return true;
+		} else if (!targetSelf && target.equals(caster)) {
+			return false;
 		} else if (!targetInvisibles && target instanceof Player && !caster.canSee((Player)target)) {
 			return false;
 		} else if (targetPlayers && target instanceof Player) {
@@ -106,7 +116,9 @@ public class ValidTargetList {
 	}
 	
 	public boolean canTarget(LivingEntity target) {
-		if (targetPlayers && target instanceof Player) {
+		if (target instanceof Player && ((Player)target).getGameMode() == GameMode.CREATIVE) {
+			return false;
+		} else if (targetPlayers && target instanceof Player) {
 			return true;
 		} else if (targetNonPlayers && !(target instanceof Player)) {
 			return true;

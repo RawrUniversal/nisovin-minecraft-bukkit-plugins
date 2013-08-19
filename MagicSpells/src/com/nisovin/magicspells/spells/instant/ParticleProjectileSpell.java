@@ -27,6 +27,8 @@ import com.nisovin.magicspells.util.Util;
 
 public class ParticleProjectileSpell extends InstantSpell {
 
+	// TODO: add hug-surface option
+	
 	float projectileVelocity;
 	float projectileGravity;
 	float projectileSpread;
@@ -54,6 +56,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 	boolean hitAirAtEnd;
 	boolean hitAirDuring;
 	boolean stopOnHitEntity;
+	boolean stopOnHitGround;
 	
 	String landSpellName;
 	TargetedSpell spell;
@@ -89,6 +92,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		hitAirAtEnd = getConfigBoolean("hit-air-at-end", false);
 		hitAirDuring = getConfigBoolean("hit-air-during", false);
 		stopOnHitEntity = getConfigBoolean("stop-on-hit-entity", true);
+		stopOnHitGround = getConfigBoolean("stop-on-hit-ground", true);
 		landSpellName = getConfigString("spell", "explode");
 	}
 	
@@ -189,7 +193,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 				((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
 			}
 			
-			if (!BlockUtils.isPathable(currentLocation.getBlock())) {
+			if (stopOnHitGround && !BlockUtils.isPathable(currentLocation.getBlock())) {
 				if (hitGround && spell != null && spell instanceof TargetedLocationSpell) {
 					Util.setLocationFacingFromVector(previousLocation, currentVelocity);
 					((TargetedLocationSpell)spell).castAtLocation(caster, previousLocation, power);

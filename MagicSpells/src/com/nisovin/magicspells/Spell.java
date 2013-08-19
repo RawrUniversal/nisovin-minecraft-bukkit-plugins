@@ -940,6 +940,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 	}
 	
+	protected Player getTargetPlayer(Player player) {
+		return getTargetedPlayer(player);
+	}
+	
 	protected LivingEntity getTargetedEntity(Player player) {
 		return getTargetedEntity(player, false, null);
 	}
