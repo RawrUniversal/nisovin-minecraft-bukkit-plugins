@@ -8,6 +8,8 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -49,6 +51,9 @@ public class ParticleProjectileSpell extends InstantSpell {
 	float verticalHitRadius;
 	int renderDistance;
 	
+	boolean hugSurface;
+	float heightFromSurface;
+	
 	boolean hitPlayers;
 	boolean hitNonPlayers;
 	boolean hitSelf;
@@ -71,20 +76,31 @@ public class ParticleProjectileSpell extends InstantSpell {
 		projectileVelocity = getConfigFloat("projectile-velocity", 10F);
 		projectileGravity = getConfigFloat("projectile-gravity", 0.25F);
 		projectileSpread = getConfigFloat("projectile-spread", 0F);
+		
 		tickInterval = getConfigInt("tick-interval", 2);
 		ticksPerSecond = 20F / (float)tickInterval;
 		specialEffectInterval = getConfigInt("special-effect-interval", 1);
 		spellInterval = getConfigInt("spell-interval", 20);
+		
 		particleName = getConfigString("particle-name", "reddust");
 		particleSpeed = getConfigFloat("particle-speed", 0.3F);
 		particleCount = getConfigInt("particle-count", 15);
 		particleHorizontalSpread = getConfigFloat("particle-horizontal-spread", 0.3F);
 		particleVerticalSpread = getConfigFloat("particle-vertical-spread", 0.3F);
+		
 		maxDistanceSquared = getConfigInt("max-distance", 15);
 		maxDistanceSquared *= maxDistanceSquared;
 		hitRadius = getConfigFloat("hit-radius", 1.5F);
 		verticalHitRadius = getConfigFloat("vertical-hit-radius", hitRadius);
 		renderDistance = getConfigInt("render-distance", 32);
+		
+		hugSurface = getConfigBoolean("hug-surface", false);
+		if (hugSurface) {
+			heightFromSurface = getConfigFloat("height-from-surface", .6F);
+		} else {
+			heightFromSurface = 0;
+		}
+		
 		hitPlayers = getConfigBoolean("hit-players", false);
 		hitNonPlayers = getConfigBoolean("hit-non-players", true);
 		hitSelf = getConfigBoolean("hit-self", false);
@@ -93,6 +109,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		hitAirDuring = getConfigBoolean("hit-air-during", false);
 		stopOnHitEntity = getConfigBoolean("stop-on-hit-entity", true);
 		stopOnHitGround = getConfigBoolean("stop-on-hit-ground", true);
+		
 		landSpellName = getConfigString("spell", "explode");
 	}
 	
@@ -125,6 +142,8 @@ public class ParticleProjectileSpell extends InstantSpell {
 		Location previousLocation;
 		Location currentLocation;
 		Vector currentVelocity;
+		int currentX;
+		int currentZ;
 		int taskId;
 		List<LivingEntity> inRange;
 		Map<LivingEntity, Long> immune;
@@ -142,6 +161,10 @@ public class ParticleProjectileSpell extends InstantSpell {
 			this.currentVelocity = caster.getLocation().getDirection();
 			if (projectileSpread > 0) {
 				this.currentVelocity.add(new Vector(rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread));
+			}
+			if (hugSurface) {
+				this.currentLocation.setY((int)this.currentLocation.getY() + heightFromSurface);
+				this.currentVelocity.setY(0);
 			}
 			this.currentVelocity.multiply(projectileVelocity / ticksPerSecond);
 			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
@@ -174,7 +197,46 @@ public class ParticleProjectileSpell extends InstantSpell {
 			// move projectile and apply gravity
 			previousLocation = currentLocation.clone();
 			currentLocation.add(currentVelocity);
-			if (projectileGravity != 0) {
+			if (hugSurface) {
+				if (currentLocation.getBlockX() != currentX || currentLocation.getBlockZ() != currentZ) {
+					Block b = currentLocation.subtract(0, heightFromSurface, 0).getBlock();
+					if (BlockUtils.isPathable(b)) {
+						int attempts = 0;
+						boolean ok = false;
+						while (attempts++ < 10) {
+							b = b.getRelative(BlockFace.DOWN);
+							if (BlockUtils.isPathable(b)) {
+								currentLocation.add(0, -1, 0);
+							} else {
+								ok = true;
+								break;
+							}
+						}
+						if (!ok) {
+							stop();
+							return;
+						}
+					} else {
+						int attempts = 0;
+						boolean ok = false;
+						while (attempts++ < 10) {
+							b = b.getRelative(BlockFace.UP);
+							currentLocation.add(0, 1, 0);
+							if (BlockUtils.isPathable(b)) {
+								ok = true;
+								break;
+							}
+						}
+						if (!ok) {
+							stop();
+							return;
+						}
+					}
+					currentLocation.setY((int)currentLocation.getY() + heightFromSurface);
+					currentX = currentLocation.getBlockX();
+					currentZ = currentLocation.getBlockZ();
+				}
+			} else if (projectileGravity != 0) {
 				currentVelocity.setY(currentVelocity.getY() - (projectileGravity / ticksPerSecond));
 			}
 			
