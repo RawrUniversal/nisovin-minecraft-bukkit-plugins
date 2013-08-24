@@ -47,6 +47,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 	float particleVerticalSpread;
 	
 	int maxDistanceSquared;
+	int maxDuration;
 	float hitRadius;
 	float verticalHitRadius;
 	int renderDistance;
@@ -90,6 +91,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		
 		maxDistanceSquared = getConfigInt("max-distance", 15);
 		maxDistanceSquared *= maxDistanceSquared;
+		maxDuration = getConfigInt("max-duration", 0) * 1000;
 		hitRadius = getConfigFloat("hit-radius", 1.5F);
 		verticalHitRadius = getConfigFloat("vertical-hit-radius", hitRadius);
 		renderDistance = getConfigInt("render-distance", 32);
@@ -138,6 +140,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		
 		Player caster;
 		float power;
+		long startTime;
 		Location startLocation;
 		Location previousLocation;
 		Location currentLocation;
@@ -153,6 +156,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		public ProjectileTracker(Player caster, float power) {
 			this.caster = caster;
 			this.power = power;
+			this.startTime = System.currentTimeMillis();
 			this.startLocation = caster.getLocation();
 			this.startLocation.setY(this.startLocation.getY() + 1);
 			this.startLocation.add(this.startLocation.getDirection());
@@ -190,6 +194,12 @@ public class ParticleProjectileSpell extends InstantSpell {
 		@Override
 		public void run() {
 			if (!caster.isValid()) {
+				stop();
+				return;
+			}
+			
+			// check if duration is up
+			if (maxDuration > 0 && startTime + maxDuration < System.currentTimeMillis()) {
 				stop();
 				return;
 			}
