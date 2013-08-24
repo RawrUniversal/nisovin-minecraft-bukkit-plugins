@@ -35,6 +35,7 @@ public abstract class BuffSpell extends Spell {
 	protected int useCostInterval;
 	protected int numUses;
 	protected int duration;
+	protected boolean powerAffectsDuration;
 	protected boolean cancelOnGiveDamage;
 	protected boolean cancelOnTakeDamage;
 	protected boolean cancelOnDeath;
@@ -46,7 +47,7 @@ public abstract class BuffSpell extends Spell {
 	private boolean castByCommand;
 	
 	private HashMap<String,Integer> useCounter;
-	private HashMap<String,Long> durationStartTime;
+	private HashMap<String,Long> durationEndTime;
 	
 	public BuffSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -56,7 +57,7 @@ public abstract class BuffSpell extends Spell {
 		useCostInterval = getConfigInt("use-cost-interval", 0);
 		numUses = getConfigInt("num-uses", 0);
 		duration = getConfigInt("duration", 0);
-		
+		powerAffectsDuration = getConfigBoolean("power-affects-duration", true);
 		cancelOnGiveDamage = getConfigBoolean("cancel-on-give-damage", false);
 		cancelOnTakeDamage = getConfigBoolean("cancel-on-take-damage", false);
 		cancelOnDeath = getConfigBoolean("cancel-on-death", false);
@@ -85,7 +86,7 @@ public abstract class BuffSpell extends Spell {
 			useCounter = new HashMap<String,Integer>();
 		}
 		if (duration > 0) {
-			durationStartTime = new HashMap<String,Long>();
+			durationEndTime = new HashMap<String,Long>();
 		}
 				
 		castWithItem = getConfigBoolean("can-cast-with-item", true);
@@ -110,7 +111,7 @@ public abstract class BuffSpell extends Spell {
 				if (state == SpellCastState.NORMAL) {
 					boolean ok = recastBuff(player, power, args);
 					if (ok) {
-						startSpellDuration(player);
+						startSpellDuration(player, power);
 					}
 				}
 				return PostCastAction.HANDLE_NORMALLY;
@@ -119,7 +120,7 @@ public abstract class BuffSpell extends Spell {
 		if (state == SpellCastState.NORMAL) {
 			boolean ok = castBuff(player, power, args);
 			if (ok) {
-				startSpellDuration(player);
+				startSpellDuration(player, power);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -135,9 +136,11 @@ public abstract class BuffSpell extends Spell {
 	 * Begins counting the spell duration for a player
 	 * @param player the player to begin counting duration
 	 */
-	protected void startSpellDuration(Player player) {
-		if (duration > 0 && durationStartTime != null) {
-			durationStartTime.put(player.getName(), System.currentTimeMillis());
+	protected void startSpellDuration(Player player, float power) {
+		if (duration > 0 && durationEndTime != null) {
+			float dur = duration;
+			if (powerAffectsDuration) dur *= power;
+			durationEndTime.put(player.getName(), System.currentTimeMillis() + Math.round(dur * 1000));
 			final String name = player.getName();
 			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 				public void run() {
@@ -146,7 +149,7 @@ public abstract class BuffSpell extends Spell {
 						turnOff(p);
 					}
 				}
-			}, duration * 20 + 20); // overestimate ticks, since the duration is real-time ms based
+			}, Math.round(dur * 20) + 20); // overestimate ticks, since the duration is real-time ms based
 		}
 		BuffManager buffman = MagicSpells.getBuffManager();
 		if (buffman != null) buffman.addBuff(player, this);
@@ -159,13 +162,13 @@ public abstract class BuffSpell extends Spell {
 	 * @return true if the spell has expired, false otherwise
 	 */
 	protected boolean isExpired(Player player) {
-		if (duration <= 0 || durationStartTime == null) {
+		if (duration <= 0 || durationEndTime == null) {
 			return false;
 		} else {
-			Long startTime = durationStartTime.get(player.getName());
-			if (startTime == null) {
+			Long endTime = durationEndTime.get(player.getName());
+			if (endTime == null) {
 				return false;
-			} else if (startTime + duration*1000 > System.currentTimeMillis()) {
+			} else if (endTime > System.currentTimeMillis()) {
 				return false;
 			} else {
 				return true;
@@ -245,7 +248,7 @@ public abstract class BuffSpell extends Spell {
 	 */
 	public void turnOff(Player player) {
 		if (useCounter != null) useCounter.remove(player.getName());
-		if (durationStartTime != null) durationStartTime.remove(player.getName());
+		if (durationEndTime != null) durationEndTime.remove(player.getName());
 		BuffManager buffman = MagicSpells.getBuffManager();
 		if (buffman != null) buffman.removeBuff(player, this);
 		playSpellEffects(EffectPosition.DISABLED, player);
