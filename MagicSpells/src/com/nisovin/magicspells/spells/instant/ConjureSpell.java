@@ -36,7 +36,7 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 	private ItemStack[] itemTypes;
 	private int[] itemMinQuantities;
 	private int[] itemMaxQuantities;
-	private int[] itemChances;
+	private double[] itemChances;
 	private float randomVelocity;
 	
 	public ConjureSpell(MagicConfig config, String spellName) {
@@ -60,7 +60,7 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 			itemTypes = new ItemStack[itemList.size()];
 			itemMinQuantities = new int[itemList.size()];
 			itemMaxQuantities = new int[itemList.size()];
-			itemChances = new int[itemList.size()];
+			itemChances = new double[itemList.size()];
 			
 			for (int i = 0; i < itemList.size(); i++) {
 				try {
@@ -96,7 +96,7 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 					}
 					
 					if (data.length > 2) {
-						itemChances[i] = Integer.parseInt(data[2].replace("%", ""));
+						itemChances[i] = Double.parseDouble(data[2].replace("%", ""));
 					} else {
 						itemChances[i] = 100;
 					}
@@ -171,8 +171,8 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 	
 	private void individual(List<ItemStack> items, Random rand, float power) {
 		for (int i = 0; i < itemTypes.length; i++) {
-			int r = rand.nextInt(100);
-			if (powerAffectsChance) r = Math.round(r / power);
+			double r = rand.nextDouble() * 100;
+			if (powerAffectsChance) r = r / power;
 			if (itemTypes[i] != null && r < itemChances[i]) {
 				addItem(i, items, rand, power);
 			}
@@ -180,8 +180,8 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 	}
 	
 	private void together(List<ItemStack> items, Random rand, float power) {
-		int r = rand.nextInt(100);
-		int m = 0;
+		double r = rand.nextDouble() * 100;
+		double m = 0;
 		for (int i = 0; i < itemTypes.length; i++) {
 			if (itemTypes[i] != null && r < itemChances[i] + m) {
 				addItem(i, items, rand, power);
