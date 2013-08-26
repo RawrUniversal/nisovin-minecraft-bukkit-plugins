@@ -42,6 +42,7 @@ public class ThrowBlockSpell extends InstantSpell {
 	boolean preventBlocks;
 	boolean callTargetEvent;
 	boolean checkPlugins;
+	boolean ensureSpellCast;
 	String spellOnLand;
 	TargetedLocationSpell spell;
 	
@@ -66,6 +67,7 @@ public class ThrowBlockSpell extends InstantSpell {
 		preventBlocks = getConfigBoolean("prevent-blocks", false);
 		callTargetEvent = getConfigBoolean("call-target-event", true);
 		checkPlugins = getConfigBoolean("check-plugins", false);
+		ensureSpellCast = getConfigBoolean("ensure-spell-cast", true);
 		spellOnLand = getConfigString("spell-on-land", null);
 	}	
 	
@@ -106,10 +108,16 @@ public class ThrowBlockSpell extends InstantSpell {
 			if (fallDamage > 0) {
 				MagicSpells.getVolatileCodeHandler().setFallingBlockHurtEntities(block, fallDamage, fallDamageMax);
 			}
-			if (fallingBlocks != null) {
-				fallingBlocks.put(block, new FallingBlockInfo(player, power));
-				if (cleanTask < 0) {
-					startTask();
+			if (fallingBlocks != null || ensureSpellCast) {
+				FallingBlockInfo info = new FallingBlockInfo(player, power);
+				if (fallingBlocks != null) {
+					fallingBlocks.put(block, info);
+					if (cleanTask < 0) {
+						startTask();
+					}
+				}
+				if (ensureSpellCast) {
+					new ThrowBlockMonitor(block, info);
 				}
 			}
 			playSpellEffects(EffectPosition.CASTER, player);
@@ -139,9 +147,35 @@ public class ThrowBlockSpell extends InstantSpell {
 					startTask();
 				}
 			}
-		}, 100);
+		}, 500);
 	}
 
+	class ThrowBlockMonitor implements Runnable {
+		FallingBlock block;
+		FallingBlockInfo info;
+		int task;
+		int counter = 0;
+		
+		public ThrowBlockMonitor(FallingBlock block, FallingBlockInfo info) {
+			this.block = block;
+			this.info = info;
+			this.task = MagicSpells.scheduleRepeatingTask(this, 1, 1);
+		}
+		
+		@Override
+		public void run() {
+			if (block.isDead()) {
+				if (!info.spellActivated && spell != null) {
+					spell.castAtLocation(info.player, block.getLocation().add(.5, .5, .5), info.power);
+				}
+				info.spellActivated = true;
+				MagicSpells.cancelTask(task);
+			}
+			if (counter++ > 1500) {
+				MagicSpells.cancelTask(task);
+			}
+		}
+	}
 
 	class ThrowBlockListener implements Listener {
 		
