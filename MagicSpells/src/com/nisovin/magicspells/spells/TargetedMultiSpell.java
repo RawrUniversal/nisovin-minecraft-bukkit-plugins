@@ -2,6 +2,7 @@ package com.nisovin.magicspells.spells;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,15 +19,18 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 
 	private boolean checkIndividualCooldowns;
 	private boolean requireEntityTarget;
+	private boolean castRandomSpellInstead;
 	
 	private List<String> spellList;
 	private ArrayList<Action> actions;
+	private Random random = new Random();
 	
 	public TargetedMultiSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		checkIndividualCooldowns = getConfigBoolean("check-individual-cooldowns", false);
 		requireEntityTarget = getConfigBoolean("require-entity-target", false);
+		castRandomSpellInstead = getConfigBoolean("cast-random-spell-instead", false);
 
 		actions = new ArrayList<Action>();
 		spellList = getConfigStringList("spells", null);
@@ -122,32 +126,42 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 	}
 	
 	boolean runSpells(Player player, LivingEntity entTarget, Location locTarget, float power) {
-		boolean somethingWasDone = false;
-		int delay = 0;
-		TargetedSpell spell;
-		List<DelayedSpell> delayedSpells = new ArrayList<DelayedSpell>();
-		for (Action action : actions) {
-			if (action.isDelay()) {
-				delay += action.getDelay();
-			} else if (action.isSpell()) {
-				spell = action.getSpell();
-				if (delay == 0) {
-					boolean ok = castTargetedSpell(spell, player, entTarget, locTarget, power);
-					if (ok) {
-						somethingWasDone = true;
+		if (!castRandomSpellInstead) {
+			boolean somethingWasDone = false;
+			int delay = 0;
+			TargetedSpell spell;
+			List<DelayedSpell> delayedSpells = new ArrayList<DelayedSpell>();
+			for (Action action : actions) {
+				if (action.isDelay()) {
+					delay += action.getDelay();
+				} else if (action.isSpell()) {
+					spell = action.getSpell();
+					if (delay == 0) {
+						boolean ok = castTargetedSpell(spell, player, entTarget, locTarget, power);
+						if (ok) {
+							somethingWasDone = true;
+						} else {
+							// spell failed - exit loop
+							break;
+						}
 					} else {
-						// spell failed - exit loop
-						break;
+						DelayedSpell ds = new DelayedSpell(spell, player, entTarget, locTarget, power, delayedSpells);
+						delayedSpells.add(ds);
+						Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, ds, delay);
+						somethingWasDone = true;
 					}
-				} else {
-					DelayedSpell ds = new DelayedSpell(spell, player, entTarget, locTarget, power, delayedSpells);
-					delayedSpells.add(ds);
-					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, ds, delay);
-					somethingWasDone = true;
 				}
 			}
+			return somethingWasDone;
+		} else {
+			Action action = actions.get(random.nextInt(actions.size()));
+			if (action.isSpell()) {
+				action.getSpell().castSpell(player, SpellCastState.NORMAL, power, null);
+				return true;
+			} else {
+				return false;
+			}
 		}
-		return somethingWasDone;
 	}
 	
 	private boolean castTargetedSpell(TargetedSpell spell, Player caster, LivingEntity entTarget, Location locTarget, float power) {
