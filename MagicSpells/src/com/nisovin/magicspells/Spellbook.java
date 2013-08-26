@@ -53,8 +53,8 @@ public class Spellbook {
 		// load spells from file
 		loadFromFile(playerWorld);
 		
-		// give all spells to ops
-		if (player.isOp() && MagicSpells.opsHaveAllSpells) {
+		// give all spells to ops, or if ignoring grant perms
+		if (MagicSpells.ignoreGrantPerms || (player.isOp() && MagicSpells.opsHaveAllSpells)) {
 			MagicSpells.debug(2, "  Op, granting all spells...");
 			for (Spell spell : MagicSpells.spellsOrdered) {
 				if (!allSpells.contains(spell)) {
@@ -129,7 +129,7 @@ public class Spellbook {
 		for (Spell spell : MagicSpells.spellsOrdered) {
 			MagicSpells.debug(3, "    Checking spell " + spell.getInternalName() + "...");
 			if (!hasSpell(spell, false)) {
-				if (spell.isAlwaysGranted() || player.hasPermission("magicspells.grant." + spell.getPermissionName())) {
+				if (MagicSpells.ignoreGrantPerms || spell.isAlwaysGranted() || player.hasPermission("magicspells.grant." + spell.getPermissionName())) {
 					addSpell(spell);
 					added = true;
 				}
@@ -153,7 +153,7 @@ public class Spellbook {
 	}
 	
 	public boolean canCast(Spell spell) {
-		return player.hasPermission("magicspells.cast." + spell.getPermissionName());
+		return MagicSpells.ignoreCastPerms || player.hasPermission("magicspells.cast." + spell.getPermissionName());
 	}
 	
 	public boolean canTeach(Spell spell) {
@@ -336,6 +336,7 @@ public class Spellbook {
 	}
 	
 	public boolean hasSpell(Spell spell, boolean checkGranted) {
+		if (MagicSpells.ignoreGrantPerms) return true;
 		boolean has = allSpells.contains(spell);
 		if (has) {
 			return true;
