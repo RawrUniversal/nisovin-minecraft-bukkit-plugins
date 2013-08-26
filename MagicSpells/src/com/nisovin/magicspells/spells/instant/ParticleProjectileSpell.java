@@ -29,11 +29,10 @@ import com.nisovin.magicspells.util.Util;
 
 public class ParticleProjectileSpell extends InstantSpell {
 
-	// TODO: add hug-surface option
-	
 	float projectileVelocity;
 	float projectileGravity;
 	float projectileSpread;
+	boolean powerAffectsVelocity;
 	
 	int tickInterval;
 	float ticksPerSecond;
@@ -77,6 +76,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		projectileVelocity = getConfigFloat("projectile-velocity", 10F);
 		projectileGravity = getConfigFloat("projectile-gravity", 0.25F);
 		projectileSpread = getConfigFloat("projectile-spread", 0F);
+		powerAffectsVelocity = getConfigBoolean("power-affects-velocity", true);
 		
 		tickInterval = getConfigInt("tick-interval", 2);
 		ticksPerSecond = 20F / (float)tickInterval;
@@ -165,6 +165,9 @@ public class ParticleProjectileSpell extends InstantSpell {
 			this.currentVelocity = caster.getLocation().getDirection();
 			if (projectileSpread > 0) {
 				this.currentVelocity.add(new Vector(rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread));
+			}
+			if (powerAffectsVelocity) {
+				this.currentVelocity.multiply(power);
 			}
 			if (hugSurface) {
 				this.currentLocation.setY((int)this.currentLocation.getY() + heightFromSurface);
