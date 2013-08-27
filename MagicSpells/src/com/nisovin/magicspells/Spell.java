@@ -431,10 +431,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 
 	public final SpellCastResult cast(Player player) {
-		return cast(player, null);
+		return cast(player, 1.0F, null);
+	}
+
+	public final SpellCastResult cast(Player player, String[] args) {
+		return cast(player, 1.0F, args);
 	}
 	
-	public final SpellCastResult cast(Player player, String[] args) {
+	public final SpellCastResult cast(Player player, float power, String[] args) {
 		MagicSpells.debug(1, "Player " + player.getName() + " is trying to cast " + internalName);
 		if (MagicSpells.metricsEnabled) {
 			MagicSpells.metricSpellCasts++;
@@ -454,7 +458,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		MagicSpells.debug(2, "    Spell cast state: " + state);
 		
 		// call events
-		float power = 1.0F;
 		float cooldown = this.cooldown;
 		int castTime = this.castTime;
 		SpellReagents reagents = this.reagents.clone();
