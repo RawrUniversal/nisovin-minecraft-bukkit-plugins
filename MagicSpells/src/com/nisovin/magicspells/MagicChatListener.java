@@ -18,25 +18,24 @@ public class MagicChatListener implements Listener {
 	public void onPlayerChat(final AsyncPlayerChatEvent event) {
 		MagicSpells.scheduleDelayedTask(new Runnable() {
 			public void run() {
-				Spell spell = MagicSpells.incantations.get(event.getMessage().toLowerCase());
-				if (spell != null) {
-					Player player = event.getPlayer();
-					Spellbook spellbook = MagicSpells.getSpellbook(player);
-					if (spellbook.hasSpell(spell)) {
-						spell.cast(player);
-					}
-				}
+				handleIncantation(event.getPlayer(), event.getMessage());
 			}
 		}, 0);
 	}
 	
 	@EventHandler(ignoreCancelled=true)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().contains(" ")) {
-			String[] split = event.getMessage().split(" ");
+		boolean casted = handleIncantation(event.getPlayer(), event.getMessage());
+		if (casted) {
+			event.setCancelled(true);
+		}
+	}
+	
+	boolean handleIncantation(Player player, String message) {
+		if (message.contains(" ")) {
+			String[] split = message.split(" ");
 			Spell spell = MagicSpells.incantations.get(split[0].toLowerCase() + " *");
 			if (spell != null) {
-				Player player = event.getPlayer();
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spellbook.hasSpell(spell)) {
 					String[] args = new String[split.length - 1];
@@ -44,20 +43,20 @@ public class MagicChatListener implements Listener {
 						args[i] = split[i+1];
 					}
 					spell.cast(player, args);
-					event.setCancelled(true);
+					return true;
 				}
-				return;
+				return false;
 			}
 		}
-		Spell spell = MagicSpells.incantations.get(event.getMessage().toLowerCase());
+		Spell spell = MagicSpells.incantations.get(message.toLowerCase());
 		if (spell != null) {
-			Player player = event.getPlayer();
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			if (spellbook.hasSpell(spell)) {
 				spell.cast(player);
-				event.setCancelled(true);
+				return true;
 			}
 		}
+		return false;
 	}
 	
 }
