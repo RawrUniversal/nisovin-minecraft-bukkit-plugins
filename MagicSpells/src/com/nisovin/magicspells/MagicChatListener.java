@@ -32,6 +32,23 @@ public class MagicChatListener implements Listener {
 	
 	@EventHandler(ignoreCancelled=true)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+		if (event.getMessage().contains(" ")) {
+			String[] split = event.getMessage().split(" ");
+			Spell spell = MagicSpells.incantations.get(split[0].toLowerCase() + " *");
+			if (spell != null) {
+				Player player = event.getPlayer();
+				Spellbook spellbook = MagicSpells.getSpellbook(player);
+				if (spellbook.hasSpell(spell)) {
+					String[] args = new String[split.length - 1];
+					for (int i = 0; i < args.length; i++) {
+						args[i] = split[i+1];
+					}
+					spell.cast(player, args);
+					event.setCancelled(true);
+				}
+				return;
+			}
+		}
 		Spell spell = MagicSpells.incantations.get(event.getMessage().toLowerCase());
 		if (spell != null) {
 			Player player = event.getPlayer();
