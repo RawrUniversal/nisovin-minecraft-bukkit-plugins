@@ -1,5 +1,6 @@
 package com.nisovin.magicspells;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -99,6 +100,18 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 							item.setAmount(Integer.parseInt(args[2]));
 						}
 						((Player)sender).getInventory().addItem(item);
+					}
+				} else if (sender.isOp() && args[0].equals("download") && args.length == 3) {
+					File file = new File(plugin.getDataFolder(), "spells-" + args[1] + ".yml");
+					if (file.exists()) {
+						sender.sendMessage(MagicSpells.textColor + "ERROR: The file spells-" + args[1] + ".yml already exists!");
+					} else {
+						boolean downloaded = Util.downloadFile(args[2], file);
+						if (downloaded) {
+							sender.sendMessage(MagicSpells.textColor + "SUCCESS! You will need to do a /cast reload to load the new spells.");
+						} else {
+							sender.sendMessage(MagicSpells.textColor + "ERROR: The file could not be downloaded.");
+						}
 					}
 				} else if (sender.isOp() && args[0].equals("profilereport")) {
 					sender.sendMessage(MagicSpells.textColor + "Creating profiling report");
