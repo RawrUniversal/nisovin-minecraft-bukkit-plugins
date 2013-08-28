@@ -441,6 +441,7 @@ public class MagicSpells extends JavaPlugin {
 		if (consumeListener.hasConsumeCastItems()) {
 			registerEvents(consumeListener);
 		}
+		new DanceCastListener(config.getString("general.dance-cast-item", "2256"));
 		
 		// register commands
 		CastCommand exec = new CastCommand(this, config.getBoolean("general.enable-tab-completion", true));

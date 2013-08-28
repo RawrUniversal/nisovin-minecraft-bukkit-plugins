@@ -60,6 +60,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected CastItem[] consumeCastItems;
 	protected boolean castWithLeftClick;
 	protected boolean castWithRightClick;
+	protected String danceCastSequence;
 	protected boolean requireCastItemOnCommand;
 	protected boolean bindable;
 	protected HashSet<CastItem> bindableItems;
@@ -194,6 +195,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		this.castWithLeftClick = config.getBoolean(section + "." + spellName + ".cast-with-left-click", MagicSpells.castWithLeftClick);
 		this.castWithRightClick = config.getBoolean(section + "." + spellName + ".cast-with-right-click", MagicSpells.castWithRightClick);
+		this.danceCastSequence = config.getString(section + "." + spellName + ".dance-cast-sequence", null);
 		this.requireCastItemOnCommand = config.getBoolean(section + "." + spellName + ".require-cast-item-on-command", false);
 		this.bindable = config.getBoolean(section + "." + spellName + ".bindable", true);
 		List<String> bindables = config.getStringList(section + "." + spellName + ".bindable-items", null);
@@ -1271,6 +1273,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	public CastItem[] getConsumeCastItems() {
 		return this.consumeCastItems;
+	}
+	
+	public String getDanceCastSequence() {
+		return this.danceCastSequence;
 	}
 	
 	public String getDescription() {

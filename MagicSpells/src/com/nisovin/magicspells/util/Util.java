@@ -1,5 +1,10 @@
 package com.nisovin.magicspells.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -169,10 +174,14 @@ public class Util {
 	}
 	
 	public static void setLocationFacingFromVector(Location location, Vector vector) {
-		double yaw = Math.toDegrees(Math.atan2(-vector.getX(), vector.getZ()));
+		double yaw = getYawOfVector(vector);
 		double pitch = Math.toDegrees(-Math.asin(vector.getY()));				
 		location.setYaw((float)yaw);
 		location.setPitch((float)pitch);
+	}
+	
+	public static double getYawOfVector(Vector vector) {
+		return Math.toDegrees(Math.atan2(-vector.getX(), vector.getZ()));
 	}
 	
 	public static boolean arrayContains(int[] array, int value) {
@@ -401,6 +410,21 @@ public class Util {
 		double z = (v.getX() * sin) + (v.getZ() * cos);
 		v.setX(x);
 		v.setZ(z);
+	}
+	
+	public static boolean downloadFile(String url, File file) {
+		try {
+			URL website = new URL(url);
+		    ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+		    FileOutputStream fos = new FileOutputStream(file);
+		    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+		    fos.close();
+		    rbc.close();
+		    return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 }
