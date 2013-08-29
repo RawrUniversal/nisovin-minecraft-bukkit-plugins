@@ -108,7 +108,10 @@ public class MagicSpells extends JavaPlugin {
 	static String strWrongWorld;
 	static String strCantBind;
 	static String strConsoleName;
-	
+	static String strDanceStart;
+	static String strDanceComplete;
+	static String strDanceFail;
+		
 	// metrics vars
 	static boolean metricsEnabled;
 	static int metricSpellCasts;
@@ -263,6 +266,9 @@ public class MagicSpells extends JavaPlugin {
 		strCantBind = config.getString("general.str-cant-bind", "You cannot bind that spell to that item.");
 		strWrongWorld = config.getString("general.str-wrong-world", "You cannot cast that spell here.");
 		strConsoleName = config.getString("general.console-name", "Admin");
+		strDanceStart = config.getString("general.str-dance-start", "You begin to cast a spell.");
+		strDanceComplete = config.getString("general.str-dance-complete", "");
+		strDanceFail = config.getString("general.str-dance-fail", "Your dancing has no effect.");
 		
 		enableManaBars = config.getBoolean("mana.enable-mana-system", false);
 		manaPotionCooldown = config.getInt("mana.mana-potion-cooldown", 30);

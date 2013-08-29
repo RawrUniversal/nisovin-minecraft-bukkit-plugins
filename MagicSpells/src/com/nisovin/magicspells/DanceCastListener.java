@@ -34,7 +34,7 @@ public class DanceCastListener implements Listener {
 				spells.put(seq, spell);
 				if (seq.contains("J")) enableDoubleJump = true;
 				if (seq.contains("F") || seq.contains("B") || seq.contains("L") || seq.contains("R")) enableMovement = true;
-				System.out.println("Dance cast registered: " + spell.getInternalName() + " - " + seq);
+				MagicSpells.debug("Dance cast registered: " + spell.getInternalName() + " - " + seq);
 			}
 		}
 		
@@ -60,12 +60,13 @@ public class DanceCastListener implements Listener {
 					player.setAllowFlight(false);
 				}
 				castSequence = processMovement(player, castSequence);
+				MagicSpells.debug("Player " + player.getName() + " performed dance sequence " + castSequence);
 				Spell spell = spells.get(castSequence);
 				if (spell != null) {
-					player.sendMessage("Cast complete!");
+					MagicSpells.sendMessage(player, MagicSpells.strDanceComplete);
 					spell.cast(player);
 				} else {
-					player.sendMessage("No spell " + castSequence);
+					MagicSpells.sendMessage(player, MagicSpells.strDanceFail);
 				}
 				playerLocations.remove(playerName);
 			} else {
@@ -77,7 +78,7 @@ public class DanceCastListener implements Listener {
 						player.setAllowFlight(true);
 						player.setFlying(false);
 					}
-					player.sendMessage("You begin casting...");
+					MagicSpells.sendMessage(player, MagicSpells.strDanceStart);
 				}
 			}
 		} else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
