@@ -233,20 +233,28 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 			delayedSpells = null;
 		}
 		
+		public void cancelAll() {
+			for (DelayedSpell ds : delayedSpells) {
+				if (ds != this) {
+					ds.cancel();
+				}
+			}
+			delayedSpells.clear();
+			cancel();
+		}
+		
 		@Override
 		public void run() {
 			if (!cancelled) {
-				boolean ok = castTargetedSpell(spell, player, entTarget, locTarget, power);
-				if (ok) {
-					delayedSpells.remove(this);
-				} else {
-					for (DelayedSpell ds : delayedSpells) {
-						if (ds != this) {
-							ds.cancel();
-						}
+				if (player.isValid()) {
+					boolean ok = castTargetedSpell(spell, player, entTarget, locTarget, power);
+					if (ok) {
+						delayedSpells.remove(this);
+					} else {
+						cancelAll();
 					}
-					delayedSpells.clear();
-					cancel();
+				} else {
+					cancelAll();
 				}
 			}
 			delayedSpells = null;

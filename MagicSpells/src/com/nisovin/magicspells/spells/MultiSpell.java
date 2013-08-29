@@ -181,7 +181,9 @@ public final class MultiSpell extends InstantSpell {
 		
 		@Override
 		public void run() {
-			castSpell(player, spell, power);
+			if (player.isValid()) {
+				castSpell(player, spell, power);
+			}
 		}
 	}
 
