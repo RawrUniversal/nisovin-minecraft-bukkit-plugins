@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -297,14 +298,28 @@ public class MagicSpells extends JavaPlugin {
 			Set<String> predefinedItems = config.getKeys("general.predefined-items");
 			if (predefinedItems != null) {
 				for (String key : predefinedItems) {
-					String s = config.getString("general.predefined-items." + key, null);
-					if (s != null) {
-						ItemStack is = Util.getItemStackFromString(s);
-						if (is != null) {
-							Util.predefinedItems.put(key, is);
-						} else {
-							MagicSpells.error("Invalid predefined item: " + s);
+					if (config.isString("general.predefined-items." + key)) {
+						String s = config.getString("general.predefined-items." + key, null);
+						if (s != null) {
+							ItemStack is = Util.getItemStackFromString(s);
+							if (is != null) {
+								Util.predefinedItems.put(key, is);
+							} else {
+								MagicSpells.error("Invalid predefined item: " + key + ": " + s);
+							}
 						}
+					} else if (config.isSection("general.predefined-items." + key)) {
+						ConfigurationSection s = config.getSection("general.predefined-items." + key);
+						if (s != null) {
+							ItemStack is = Util.getItemStackFromConfig(s);
+							if (is != null) {
+								Util.predefinedItems.put(key, is);
+							} else {
+								MagicSpells.error("Invalid predefined item: " + key + ": (section)");
+							}
+						}
+					} else {
+						MagicSpells.error("Invalid predefined item: " + key);
 					}
 				}
 			}

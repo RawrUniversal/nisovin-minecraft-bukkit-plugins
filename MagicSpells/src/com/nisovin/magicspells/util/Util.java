@@ -15,12 +15,19 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.Repairable;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -108,6 +115,133 @@ public class Util {
 					item = MagicSpells.getVolatileCodeHandler().addFakeEnchantment(item);
 				}
 			}
+			return item;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static ItemStack getItemStackFromConfig(ConfigurationSection config) {
+		try {
+			if (!config.contains("type")) return null;
+			
+			// basic item
+			ItemTypeAndData itemTypeAndData = MagicSpells.getItemNameResolver().resolve(config.getString("type"));
+			if (itemTypeAndData == null) return null;
+			ItemStack item = new ItemStack(itemTypeAndData.id, 1, itemTypeAndData.data);
+			ItemMeta meta = item.getItemMeta();
+			
+			// name and lore
+			if (config.contains("name") && config.isString("name")) {
+				meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString("name")));
+			}
+			if (config.contains("lore") && config.isList("lore")) {
+				List<String> lore = config.getStringList("lore");
+				for (int i = 0; i < lore.size(); i++) {
+					lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+				}
+				meta.setLore(lore);
+			}
+			
+			// enchants
+			if (config.contains("enchants") && config.isList("enchants")) {
+				List<String> enchants = config.getStringList("enchants");
+				for (String enchant : enchants) {
+					String[] data = enchant.split(" ");
+					Enchantment e = null;
+					try {
+						int id = Integer.parseInt(data[0]);
+						e = Enchantment.getById(id);
+					} catch (NumberFormatException ex) {
+						e = Enchantment.getByName(data[0].toUpperCase());
+					}
+					if (e != null) {
+						int level = 0;
+						if (data.length > 1) {
+							try {
+								level = Integer.parseInt(data[1]);
+							} catch (NumberFormatException ex) {						
+							}
+						}
+						meta.addEnchant(e, level, true);
+					}
+				}
+			}
+			
+			// armor color
+			if (config.contains("color") && config.isString("color") && meta instanceof LeatherArmorMeta) {
+				try {
+					int color = Integer.parseInt(config.getString("color").replace("#", ""), 16);
+					((LeatherArmorMeta)meta).setColor(Color.fromRGB(color));
+				} catch (NumberFormatException e) {				
+				}
+			}
+			
+			// potion effects
+			if (config.contains("potioneffects") && config.isList("potioneffects") && meta instanceof PotionMeta) {
+				((PotionMeta)meta).clearCustomEffects();
+				List<String> potionEffects = config.getStringList("potioneffects");
+				for (String potionEffect : potionEffects) {
+					String[] data = potionEffect.split(" ");
+					PotionEffectType t = null;
+					try {
+						int id = Integer.parseInt(data[0]);
+						t = PotionEffectType.getById(id);
+					} catch (NumberFormatException e) {
+						t = PotionEffectType.getByName(data[0].toUpperCase());
+					}
+					if (t != null) {
+						int level = 0;
+						if (data.length > 1) {
+							try {
+								level = Integer.parseInt(data[1]);
+							} catch (NumberFormatException ex) {						
+							}
+						}
+						int duration = 600;
+						if (data.length > 2) {
+							try {
+								duration = Integer.parseInt(data[2]);
+							} catch (NumberFormatException ex) {						
+							}
+						}
+						boolean ambient = false;
+						if (data.length > 3 && (data[3].equalsIgnoreCase("true") || data[3].equalsIgnoreCase("yes") || data[3].equalsIgnoreCase("ambient"))) {
+							ambient = true;
+						}
+						((PotionMeta)meta).addCustomEffect(new PotionEffect(t, duration, level, ambient), true);
+					}
+				}
+			}
+			
+			// skull owner
+			if (config.contains("skullowner") && config.isString("skullowner") && meta instanceof SkullMeta) {
+				((SkullMeta)meta).setOwner(config.getString("skullowner"));
+			}
+			
+			// repair cost
+			if (config.contains("repaircost") && config.isInt("repaircost") && meta instanceof Repairable) {
+				((Repairable)meta).setRepairCost(config.getInt("repaircost"));
+			}
+			
+			// written book
+			if (meta instanceof BookMeta) {
+				if (config.contains("title") && config.isString("title")) {
+					((BookMeta)meta).setTitle(ChatColor.translateAlternateColorCodes('&', config.getString("title")));
+				}
+				if (config.contains("author") && config.isString("author")) {
+					((BookMeta)meta).setAuthor(ChatColor.translateAlternateColorCodes('&', config.getString("author")));
+				}
+				if (config.contains("pages") && config.isList("pages")) {
+					List<String> pages = config.getStringList("pages");
+					for (int i = 0; i < pages.size(); i++) {
+						pages.set(i, ChatColor.translateAlternateColorCodes('&', pages.get(i)));
+					}
+					((BookMeta)meta).setPages(pages);
+				}
+			}
+			
+			item.setItemMeta(meta);
 			return item;
 		} catch (Exception e) {
 			return null;

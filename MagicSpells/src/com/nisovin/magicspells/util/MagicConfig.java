@@ -91,7 +91,17 @@ public class MagicConfig {
 					spellConfig.load(spellConfigFile);
 					Set<String> keys = spellConfig.getKeys(true);
 					for (String key : keys) {
-						mainConfig.set("spells." + key, spellConfig.get(key));
+						if (key.equals("predefined-items")) {
+							ConfigurationSection sec = mainConfig.getConfigurationSection("general.predefined-items");
+							if (sec == null) {
+								sec = mainConfig.createSection("general.predefined-items");
+							}
+							for (String itemKey : spellConfig.getConfigurationSection("predefined-items").getKeys(false)) {
+								sec.set(itemKey, spellConfig.get("predefined-items." + itemKey));
+							}
+						} else {
+							mainConfig.set("spells." + key, spellConfig.get(key));
+						}
 					}
 				} catch (Exception e) {
 					MagicSpells.error("Error loading config file " + spellConfigFile.getName());
@@ -160,6 +170,14 @@ public class MagicConfig {
 		return mainConfig.getBoolean(path, def);
 	}
 	
+	public boolean isString(String path) {
+		if (mainConfig.contains(path)) {
+			return mainConfig.isString(path);
+		} else {
+			return false;
+		}
+	}
+	
 	public String getString(String path, String def) {
 		if (mainConfig.contains(path)) {
 			return mainConfig.get(path).toString();
@@ -203,6 +221,14 @@ public class MagicConfig {
 			return mainConfig.getConfigurationSection(path).getKeys(false);
 		} else {
 			return null;
+		}
+	}
+	
+	public boolean isSection(String path) {
+		if (mainConfig.contains(path)) {
+			return mainConfig.isConfigurationSection(path);
+		} else {
+			return false;
 		}
 	}
 	
