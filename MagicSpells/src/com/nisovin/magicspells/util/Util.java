@@ -135,12 +135,18 @@ public class Util {
 			if (config.contains("name") && config.isString("name")) {
 				meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', config.getString("name")));
 			}
-			if (config.contains("lore") && config.isList("lore")) {
-				List<String> lore = config.getStringList("lore");
-				for (int i = 0; i < lore.size(); i++) {
-					lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+			if (config.contains("lore")) {
+				if (config.isList("lore")) {
+					List<String> lore = config.getStringList("lore");
+					for (int i = 0; i < lore.size(); i++) {
+						lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+					}
+					meta.setLore(lore);
+				} else if (config.isString("lore")) {
+					List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.translateAlternateColorCodes('&', config.getString("lore")));
+					meta.setLore(lore);
 				}
-				meta.setLore(lore);
 			}
 			
 			// enchants
