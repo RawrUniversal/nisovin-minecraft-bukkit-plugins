@@ -26,6 +26,7 @@ import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.SpellReagents;
 
 public class ArrowSpell extends Spell {
 
@@ -115,10 +116,11 @@ public class ArrowSpell extends Spell {
 				Spellbook spellbook = MagicSpells.getSpellbook(shooter);
 				ArrowSpell spell = spells.get(bowName);
 				if (spell != null && spellbook.hasSpell(spell) && spellbook.canCast(spell)) {
+					SpellReagents reagents = spell.reagents.clone();
 					SpellCastEvent castEvent = new SpellCastEvent(spell, shooter, SpellCastState.NORMAL, 1.0F, null, cooldown, reagents, castTime);
 					Bukkit.getPluginManager().callEvent(castEvent);
 					if (!castEvent.isCancelled()) {
-						event.getProjectile().setMetadata("MSArrowSpell", new FixedMetadataValue(MagicSpells.plugin, new ArrowSpellData(spell, castEvent.getPower())));
+						event.getProjectile().setMetadata("MSArrowSpell", new FixedMetadataValue(MagicSpells.plugin, new ArrowSpellData(spell, castEvent.getPower(), castEvent.getReagents())));
 					} else {
 						event.setCancelled(true);
 						event.getProjectile().remove();
@@ -139,10 +141,11 @@ public class ArrowSpell extends Spell {
 					MagicSpells.scheduleDelayedTask(new Runnable() {
 						public void run() {
 							Player shooter = (Player)arrow.getShooter();
-							if (!data.casted && !data.spell.onCooldown(shooter)) {
+							if (!data.casted && !data.spell.onCooldown(shooter) && data.spell.hasReagents(shooter, data.reagents)) {
 								boolean success = data.spell.spellOnHitGround.castAtLocation(shooter, arrow.getLocation(), data.power);
 								if (success) {
 									data.spell.setCooldown(shooter, data.spell.cooldown);
+									data.spell.removeReagents(shooter, data.reagents);
 								}
 								data.casted = true;
 								arrow.removeMetadata("MSArrowSpell", MagicSpells.plugin);
@@ -197,9 +200,11 @@ public class ArrowSpell extends Spell {
 		ArrowSpell spell;
 		boolean casted = false;
 		float power = 1.0F;
-		public ArrowSpellData(ArrowSpell spell, float power) {
+		SpellReagents reagents;
+		public ArrowSpellData(ArrowSpell spell, float power, SpellReagents reagents) {
 			this.spell = spell;
 			this.power = power;
+			this.reagents = reagents;
 		}
 	}
 
