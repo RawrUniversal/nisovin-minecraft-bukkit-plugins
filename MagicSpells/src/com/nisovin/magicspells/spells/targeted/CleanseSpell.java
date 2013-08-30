@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -21,6 +24,7 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 	boolean beneficial;
 	
 	List<PotionEffectType> potionEffectTypes;
+	List<BuffSpell> buffSpells;
 	boolean fire;
 	
 	private ValidTargetChecker checker;
@@ -33,6 +37,7 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 		beneficial = getConfigBoolean("beneficial", true);
 		
 		potionEffectTypes = new ArrayList<PotionEffectType>();
+		buffSpells = new ArrayList<BuffSpell>();
 		fire = false;
 		List<String> toCleanse = getConfigStringList("remove", Arrays.asList(new String[] { "fire", "17", "19", "20" }));
 		for (String s : toCleanse) {
@@ -43,6 +48,11 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 				PotionEffectType type = PotionEffectType.getById(t);
 				if (type != null) {
 					potionEffectTypes.add(type);
+				}
+			} else if (s.startsWith("buff:")) {
+				Spell spell = MagicSpells.getSpellByInternalName(s.replace("buff:", ""));
+				if (spell != null && spell instanceof BuffSpell) {
+					buffSpells.add((BuffSpell)spell);
 				}
 			} else {
 				PotionEffectType type = PotionEffectType.getByName(s.toUpperCase());
@@ -61,6 +71,13 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 				for (PotionEffectType type : potionEffectTypes) {
 					if (entity.hasPotionEffect(type)) {
 						return true;
+					}
+				}
+				if (entity instanceof Player) {
+					for (BuffSpell spell : buffSpells) {
+						if (spell.isActive((Player)entity)) {
+							return true;
+						}
 					}
 				}
 				return false;
@@ -91,6 +108,11 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 		for (PotionEffectType type : potionEffectTypes) {
 			target.addPotionEffect(new PotionEffect(type, 0, 0, true), true);
 			target.removePotionEffect(type);
+		}
+		if (target instanceof Player) {
+			for (BuffSpell spell : buffSpells) {
+				spell.turnOff((Player)target);
+			}
 		}
 	}
 
