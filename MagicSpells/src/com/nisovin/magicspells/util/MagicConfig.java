@@ -89,7 +89,7 @@ public class MagicConfig {
 				YamlConfiguration spellConfig = new YamlConfiguration();
 				try {
 					spellConfig.load(spellConfigFile);
-					Set<String> keys = spellConfig.getKeys(true);
+					Set<String> keys = spellConfig.getKeys(false);
 					for (String key : keys) {
 						if (key.equals("predefined-items")) {
 							ConfigurationSection sec = mainConfig.getConfigurationSection("general.predefined-items");
