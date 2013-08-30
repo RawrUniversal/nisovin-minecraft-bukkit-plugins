@@ -60,7 +60,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 		hitRadius = getConfigFloat("hit-radius", 1.5F);
 		yOffset = getConfigFloat("y-offset", 0.6F);
 		renderDistance = getConfigInt("render-distance", 32);
-		hitSpellName = getConfigString("spell", "explode");
+		hitSpellName = getConfigString("spell", "");
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			counter++;
 			
 			// check for hit
-			if (hitRadius > 0) {
+			if (hitRadius > 0 && spell != null) {
 				BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius);
 				if (hitBox.contains(target.getLocation().add(0, yOffset, 0))) {
 					if (spell instanceof TargetedEntitySpell) {

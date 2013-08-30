@@ -18,6 +18,7 @@ public class RepairSpell extends InstantSpell {
 	private int repairAmt;
 	private String[] toRepair;
 	private List<Integer> ignoreItems;
+	private List<Integer> allowedItems;
 	private String strNothingToRepair;
 	
 	public RepairSpell(MagicConfig config, String spellName) {
@@ -29,7 +30,7 @@ public class RepairSpell extends InstantSpell {
 			toRepairList = new ArrayList<String>();
 		}
 		if (toRepairList.size() == 0) {
-			toRepairList.add("held");			
+			toRepairList.add("held");
 		}
 		Iterator<String> iter = toRepairList.iterator();
 		while (iter.hasNext()) {
@@ -42,6 +43,9 @@ public class RepairSpell extends InstantSpell {
 		toRepair = new String[toRepairList.size()];
 		toRepair = toRepairList.toArray(toRepair);
 		ignoreItems = getConfigIntList("ignore-items", new ArrayList<Integer>());
+		if (ignoreItems.size() == 0) ignoreItems = null;
+		allowedItems = getConfigIntList("allowed-items", new ArrayList<Integer>());
+		if (allowedItems.size() == 0) allowedItems = null;
 		
 		strNothingToRepair = getConfigString("str-nothing-to-repair", "Nothing to repair.");
 	}
@@ -125,7 +129,8 @@ public class RepairSpell extends InstantSpell {
 	}
 	
 	private boolean isRepairable(Material material) {
-		if (ignoreItems.contains(material.getId())) return false;
+		if (ignoreItems != null && ignoreItems.contains(material.getId())) return false;
+		if (allowedItems != null && !allowedItems.contains(material.getId())) return false;
 		String s = material.name();
 		return 
 				material == Material.BOW ||

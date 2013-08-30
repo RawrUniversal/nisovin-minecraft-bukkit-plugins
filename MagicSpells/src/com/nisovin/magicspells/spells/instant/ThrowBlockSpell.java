@@ -43,6 +43,7 @@ public class ThrowBlockSpell extends InstantSpell {
 	boolean callTargetEvent;
 	boolean checkPlugins;
 	boolean ensureSpellCast;
+	boolean stickyBlocks;
 	String spellOnLand;
 	TargetedLocationSpell spell;
 	
@@ -68,6 +69,7 @@ public class ThrowBlockSpell extends InstantSpell {
 		callTargetEvent = getConfigBoolean("call-target-event", true);
 		checkPlugins = getConfigBoolean("check-plugins", false);
 		ensureSpellCast = getConfigBoolean("ensure-spell-cast", true);
+		stickyBlocks = getConfigBoolean("sticky-blocks", false);
 		spellOnLand = getConfigString("spell-on-land", null);
 	}	
 	
@@ -108,7 +110,7 @@ public class ThrowBlockSpell extends InstantSpell {
 			if (fallDamage > 0) {
 				MagicSpells.getVolatileCodeHandler().setFallingBlockHurtEntities(block, fallDamage, fallDamageMax);
 			}
-			if (fallingBlocks != null || ensureSpellCast) {
+			if (fallingBlocks != null || ensureSpellCast || stickyBlocks) {
 				FallingBlockInfo info = new FallingBlockInfo(player, power);
 				if (fallingBlocks != null) {
 					fallingBlocks.put(block, info);
@@ -116,7 +118,7 @@ public class ThrowBlockSpell extends InstantSpell {
 						startTask();
 					}
 				}
-				if (ensureSpellCast) {
+				if (ensureSpellCast || stickyBlocks) {
 					new ThrowBlockMonitor(block, info);
 				}
 			}
@@ -164,9 +166,24 @@ public class ThrowBlockSpell extends InstantSpell {
 		
 		@Override
 		public void run() {
-			if (block.isDead()) {
+			if (stickyBlocks && !block.isDead()) {
+				if (block.getVelocity().lengthSquared() < .01) {
+					if (!preventBlocks) {
+						Block b = block.getLocation().getBlock();
+						if (b.getType() == Material.AIR) {
+							b.setTypeIdAndData(block.getBlockId(), block.getBlockData(), true);
+						}
+					}
+					if (!info.spellActivated && spell != null) {
+						spell.castAtLocation(info.player, block.getLocation(), info.power);
+						info.spellActivated = true;
+					}
+					block.remove();
+				}
+			}
+			if (ensureSpellCast && block.isDead()) {
 				if (!info.spellActivated && spell != null) {
-					spell.castAtLocation(info.player, block.getLocation().add(.5, .5, .5), info.power);
+					spell.castAtLocation(info.player, block.getLocation(), info.power);
 				}
 				info.spellActivated = true;
 				MagicSpells.cancelTask(task);
