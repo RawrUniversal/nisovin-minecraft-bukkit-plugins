@@ -253,16 +253,20 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			for (String eff : effectsList) {
 				String[] data = eff.split(" ", 2);
 				int pos = -1;
-				if (data[0].equals("0") || data[0].equalsIgnoreCase("start") || data[0].equalsIgnoreCase("startcast")) {
+				if (data[0].equalsIgnoreCase("start") || data[0].equalsIgnoreCase("startcast")) {
 					pos = 0;
-				} else if (data[0].equals("1") || data[0].equalsIgnoreCase("pos1") || data[0].equalsIgnoreCase("position1") || data[0].equalsIgnoreCase("caster") || data[0].equalsIgnoreCase("actor")) {
+				} else if (data[0].equalsIgnoreCase("pos1") || data[0].equalsIgnoreCase("position1") || data[0].equalsIgnoreCase("caster") || data[0].equalsIgnoreCase("actor")) {
 					pos = 1;
-				} else if (data[0].equals("2") || data[0].equalsIgnoreCase("pos2") || data[0].equalsIgnoreCase("position2") || data[0].equalsIgnoreCase("target")) {
+				} else if (data[0].equalsIgnoreCase("pos2") || data[0].equalsIgnoreCase("position2") || data[0].equalsIgnoreCase("target")) {
 					pos = 2;
-				} else if (data[0].equals("3") || data[0].equalsIgnoreCase("line") || data[0].equalsIgnoreCase("trail")) {
+				} else if (data[0].equalsIgnoreCase("line") || data[0].equalsIgnoreCase("trail")) {
 					pos = 3;
-				} else if (data[0].equals("4") || data[0].equalsIgnoreCase("delayed") || data[0].equalsIgnoreCase("disabled") || data[0].equalsIgnoreCase("special")) {
+				} else if (data[0].equalsIgnoreCase("disabled")) {
 					pos = 4;
+				} else if (data[0].equalsIgnoreCase("delayed")) {
+					pos = 5;
+				} else if (data[0].equalsIgnoreCase("special")) {
+					pos = 6;
 				}
 				if (pos >= 0) {
 					e = effects.get(pos);

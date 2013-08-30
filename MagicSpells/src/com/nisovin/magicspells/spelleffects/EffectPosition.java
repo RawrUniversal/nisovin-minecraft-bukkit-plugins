@@ -7,8 +7,8 @@ public enum EffectPosition {
 	TARGET(2),
 	TRAIL(3),
 	DISABLED(4),
-	DELAYED(4),
-	SPECIAL(4);
+	DELAYED(5),
+	SPECIAL(6);
 	
 	private int id;
 	private EffectPosition(int num) {
