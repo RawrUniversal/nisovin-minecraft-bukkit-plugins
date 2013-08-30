@@ -182,7 +182,7 @@ public class ThrowBlockSpell extends InstantSpell {
 				}
 			}
 			if (ensureSpellCast && block.isDead()) {
-				if (!info.spellActivated && spell != null) {
+				if (!info.spellActivated && spell != null) { 
 					spell.castAtLocation(info.player, block.getLocation(), info.power);
 				}
 				info.spellActivated = true;
