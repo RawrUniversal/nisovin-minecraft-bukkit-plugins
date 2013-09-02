@@ -110,25 +110,6 @@ public abstract class SpellEffect {
 		public boolean isActive(Entity entity);
 	}
 	
-	private static HashMap<String, Class<? extends SpellEffect>> effects = new HashMap<String, Class<? extends SpellEffect>>();
-	
-	/**
-	 * Gets the GraphicalEffect by the provided name.
-	 * @param name the name of the effect
-	 * @return
-	 */
-	public static SpellEffect getNewEffectByName(String name) {
-		Class<? extends SpellEffect> clazz = effects.get(name);
-		if (clazz != null) {
-			try {
-				return clazz.newInstance();
-			} catch (Exception e) {
-				return null;
-			}
-		}
-		return null;
-	}
-	
 	class OrbitTracker implements Runnable {
 		
 		Entity entity;
@@ -141,7 +122,6 @@ public abstract class SpellEffect {
 		public OrbitTracker(Entity entity, SpellEffectActiveChecker checker) {
 			this.entity = entity;
 			this.checker = checker;
-			//this.startTime = System.currentTimeMillis();
 			this.currentPosition = entity.getLocation().getDirection().setY(0);
 			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
 		}
@@ -185,6 +165,25 @@ public abstract class SpellEffect {
 			currentPosition = null;
 		}
 		
+	}
+	
+	private static HashMap<String, Class<? extends SpellEffect>> effects = new HashMap<String, Class<? extends SpellEffect>>();
+	
+	/**
+	 * Gets the GraphicalEffect by the provided name.
+	 * @param name the name of the effect
+	 * @return
+	 */
+	public static SpellEffect createNewEffectByName(String name) {
+		Class<? extends SpellEffect> clazz = effects.get(name);
+		if (clazz != null) {
+			try {
+				return clazz.newInstance();
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		return null;
 	}
 	
 	/**

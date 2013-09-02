@@ -258,7 +258,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 							String[] data = eff.split(" ", 3);
 							EffectPosition pos = getPositionFromString(data[0]);
 							if (pos != null) {
-								SpellEffect effect = SpellEffect.getNewEffectByName(data[1]);
+								SpellEffect effect = SpellEffect.createNewEffectByName(data[1]);
 								if (effect != null) {
 									effect.loadFromString(data.length > 2 ? data[2] : null);
 									List<SpellEffect> e = effects.get(pos);
@@ -277,7 +277,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					ConfigurationSection effConf = config.getSection(section + "." + spellName + ".effects." + key);
 					EffectPosition pos = getPositionFromString(effConf.getString("position", ""));
 					if (pos != null) {
-						SpellEffect effect = SpellEffect.getNewEffectByName(effConf.getString("name", ""));
+						SpellEffect effect = SpellEffect.createNewEffectByName(effConf.getString("name", ""));
 						if (effect != null) {
 							effect.loadFromConfiguration(effConf);
 							List<SpellEffect> e = effects.get(pos);

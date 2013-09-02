@@ -13,6 +13,7 @@ class ParticlesEffect extends SpellEffect {
 	float speed = 0.2F;
 	int count = 5;
 	float yOffset = 1F;
+	int renderDistance = 32;
 
 	@Override
 	public void loadFromString(String string) {
@@ -48,11 +49,12 @@ class ParticlesEffect extends SpellEffect {
 		speed = (float)config.getDouble("speed", speed);
 		count = config.getInt("count", count);
 		yOffset = (float)config.getDouble("y-offset", yOffset);
+		renderDistance = config.getInt("render-distance", renderDistance);
 	}
 
 	@Override
 	public void playEffect(Location location) {
-		MagicSpells.getVolatileCodeHandler().playParticleEffect(location, name, horizSpread, vertSpread, speed, count, 32, yOffset);
+		MagicSpells.getVolatileCodeHandler().playParticleEffect(location, name, horizSpread, vertSpread, speed, count, renderDistance, yOffset);
 	}
 	
 }

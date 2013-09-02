@@ -244,6 +244,7 @@ public class PortalSpell extends InstantSpell {
 			if (taskId2 > 0) {
 				MagicSpells.cancelTask(taskId2);
 			}
+			spell = null;
 			caster = null;
 			loc1 = null;
 			loc2 = null;
