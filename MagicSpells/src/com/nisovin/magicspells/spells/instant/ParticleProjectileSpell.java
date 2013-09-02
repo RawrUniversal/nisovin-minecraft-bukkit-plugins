@@ -182,12 +182,15 @@ public class ParticleProjectileSpell extends InstantSpell {
 					LivingEntity e = iter.next();
 					if (!hitSelf && e.equals(caster)) {
 						iter.remove();
+						continue;
 					}
 					if (!hitPlayers && e instanceof Player) {
 						iter.remove();
+						continue;
 					}
 					if (!hitNonPlayers && !(e instanceof Player)) {
 						iter.remove();
+						continue;
 					}
 				}
 			}

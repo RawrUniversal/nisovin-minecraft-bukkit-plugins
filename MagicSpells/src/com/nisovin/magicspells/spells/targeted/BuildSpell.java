@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spells.targeted;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,6 +23,7 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 	private boolean consumeBlock;
 	private int[] allowedTypes;
 	private boolean checkPlugins;
+	private boolean playBreakEffect;
 	private String strInvalidBlock;
 	private String strCantBuild;
 	
@@ -36,6 +38,7 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 			allowedTypes[i] = Integer.parseInt(allowed[i]);
 		}
 		checkPlugins = getConfigBoolean("check-plugins", true);
+		playBreakEffect = getConfigBoolean("play-break-effect", true);
 		strInvalidBlock = getConfigString("str-invalid-block", "You can't build that block.");
 		strCantBuild = getConfigString("str-cant-build", "You can't build there.");
 	}
@@ -81,9 +84,12 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 				return false;
 			}
 		}
+		if (playBreakEffect) {
+			block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
+		}
 		playSpellEffects(EffectPosition.CASTER, player);
-		playSpellEffects(EffectPosition.TARGET, block.getLocation(), item.getTypeId()+"");
-		playSpellEffectsTrail(player.getLocation(), block.getLocation(), null);
+		playSpellEffects(EffectPosition.TARGET, block.getLocation());
+		playSpellEffectsTrail(player.getLocation(), block.getLocation());
 		if (consumeBlock) {
 			int amt = item.getAmount()-1;
 			if (amt > 0) {

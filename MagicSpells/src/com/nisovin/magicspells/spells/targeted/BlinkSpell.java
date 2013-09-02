@@ -88,7 +88,7 @@ public class BlinkSpell extends TargetedSpell implements TargetedLocationSpell {
 					playSpellEffects(EffectPosition.CASTER, origLoc);
 					teleport(player, loc, smokes);
 					playSpellEffects(EffectPosition.TARGET, loc);
-					playSpellEffectsTrail(origLoc, loc, null);
+					playSpellEffectsTrail(origLoc, loc);
 				} else {
 					return noTarget(player, strCantBlink);
 				}

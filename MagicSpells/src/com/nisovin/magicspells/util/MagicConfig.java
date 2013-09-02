@@ -186,6 +186,14 @@ public class MagicConfig {
 		}
 	}
 	
+	public boolean isList(String path) {
+		if (mainConfig.contains(path)) {
+			return mainConfig.isList(path);
+		} else {
+			return false;
+		}
+	}
+	
 	public List<Integer> getIntList(String path, List<Integer> def) {
 		if (mainConfig.contains(path)) {
 			List<Integer> l = mainConfig.getIntegerList(path);
@@ -209,6 +217,16 @@ public class MagicConfig {
 	public List<String> getStringList(String path, List<String> def) {
 		if (mainConfig.contains(path)) {
 			List<String> l = mainConfig.getStringList(path);
+			if (l != null) {
+				return l;
+			}
+		}
+		return def;
+	}
+	
+	public List<?> getList(String path, List<?> def) {
+		if (mainConfig.contains(path)) {
+			List<?> l = mainConfig.getList(path);
 			if (l != null) {
 				return l;
 			}

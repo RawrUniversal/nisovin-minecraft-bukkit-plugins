@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spells;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -20,10 +21,13 @@ import com.nisovin.magicspells.BuffManager;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
+import com.nisovin.magicspells.spelleffects.SpellEffect;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellReagents;
 
 public abstract class BuffSpell extends Spell {
+	
+	private BuffSpell thisSpell;
 	
 	protected boolean toggle;
 	protected int healthCost = 0;
@@ -51,6 +55,7 @@ public abstract class BuffSpell extends Spell {
 	
 	public BuffSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
+		thisSpell = this;
 		
 		toggle = getConfigBoolean("toggle", true);
 		reagents = getConfigReagents("use-cost");
@@ -150,6 +155,13 @@ public abstract class BuffSpell extends Spell {
 					}
 				}
 			}, Math.round(dur * 20) + 20); // overestimate ticks, since the duration is real-time ms based
+			
+			playSpellEffectsBuff(player, new SpellEffect.SpellEffectActiveChecker() {							
+				@Override
+				public boolean isActive(Entity entity) {
+					return thisSpell.isActive((Player)entity);
+				}
+			});
 		}
 		BuffManager buffman = MagicSpells.getBuffManager();
 		if (buffman != null) buffman.addBuff(player, this);

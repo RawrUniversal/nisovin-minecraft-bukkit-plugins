@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -27,6 +28,7 @@ public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 	private boolean dropBlock;
 	private boolean dropNormal;
 	private boolean checkPlugins;
+	private boolean playBreakEffect;
 	
 	public ZapSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -54,6 +56,7 @@ public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 		dropBlock = getConfigBoolean("drop-block", false);
 		dropNormal = getConfigBoolean("drop-normal", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
+		playBreakEffect = getConfigBoolean("play-break-effect", true);
 	}
 
 	@Override
@@ -104,9 +107,12 @@ public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 		}
 		
 		// show animation
+		if (playBreakEffect) {
+			target.getWorld().playEffect(target.getLocation(), Effect.STEP_SOUND, target.getTypeId());
+		}
 		playSpellEffects(EffectPosition.CASTER, player);
-		playSpellEffects(EffectPosition.TARGET, target.getLocation(), target.getTypeId() + "");
-		playSpellEffectsTrail(player.getLocation(), target.getLocation(), null);
+		playSpellEffects(EffectPosition.TARGET, target.getLocation());
+		playSpellEffectsTrail(player.getLocation(), target.getLocation());
 		
 		// remove block
 		target.setType(Material.AIR);

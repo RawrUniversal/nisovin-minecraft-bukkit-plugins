@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spells.targeted;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -26,6 +27,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 	private boolean falling;
 	private boolean applyPhysics;
 	private boolean checkPlugins;
+	private boolean playBreakEffect;
 	private String strFailed;
 	
 	public MaterializeSpell(MagicConfig config, String spellName) {
@@ -41,6 +43,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		falling = getConfigBoolean("falling", false);
 		applyPhysics = getConfigBoolean("apply-physics", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
+		playBreakEffect = getConfigBoolean("play-break-effect", true);
 		strFailed = getConfigString("str-failed", "");
 	}
 
@@ -85,15 +88,21 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		}
 		
 		playSpellEffects(EffectPosition.CASTER, player);
-		playSpellEffects(EffectPosition.TARGET, block.getLocation(), type + "");
-		playSpellEffectsTrail(player.getLocation(), block.getLocation(), null);
+		playSpellEffects(EffectPosition.TARGET, block.getLocation());
+		playSpellEffectsTrail(player.getLocation(), block.getLocation());
+		if (playBreakEffect) {
+			block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
+		}
 		
 		if (resetDelay > 0 && !falling) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 				public void run() {
 					if (block.getTypeId() == type && block.getData() == data) {
 						block.setType(Material.AIR);
-						playSpellEffects(EffectPosition.DELAYED, block.getLocation(), type + "");
+						playSpellEffects(EffectPosition.DELAYED, block.getLocation());
+						if (playBreakEffect) {
+							block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
+						}
 					}
 				}
 			}, resetDelay);

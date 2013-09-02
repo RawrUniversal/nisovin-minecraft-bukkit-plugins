@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -18,16 +19,16 @@ import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.SpellAnimation;
 
 class NovaEffect extends SpellEffect {
+	
+	int type = Material.FIRE.getId();
+	byte data = 0;
+	int radius = 3;
+	int tickInterval = 5;
 
 	@Override
-	public void playEffect(Location location, String param) {
-		// get values
-		int type = Material.FIRE.getId();
-		byte data = 0;
-		int radius = 3;
-		int tickInterval = 5;
-		if (param != null && !param.isEmpty()) {
-			String[] params = param.split(" ");
+	public void loadFromString(String string) {
+		if (string != null && !string.isEmpty()) {
+			String[] params = string.split(" ");
 			if (params.length >= 1) {
 				try {
 					type = Integer.parseInt(params[0]);
@@ -53,7 +54,18 @@ class NovaEffect extends SpellEffect {
 				}
 			}
 		}
-		
+	}
+
+	@Override
+	public void loadFromConfig(ConfigurationSection config) {
+		type = config.getInt("type", type);
+		data = (byte)config.getInt("data", data);
+		radius = config.getInt("radius", radius);
+		tickInterval = config.getInt("expand-interval", tickInterval);
+	}
+
+	@Override
+	public void playEffect(Location location) {
 		// get nearby players
 		Item item = location.getWorld().dropItem(location, new ItemStack(1, 0));
 		List<Entity> nearbyEntities = item.getNearbyEntities(20, 20, 20);

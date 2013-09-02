@@ -5,20 +5,12 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 
-public class ParticleLineEffect extends SpellEffect {
+public class ParticleLineEffect extends ParticlesEffect {
 	
 	@Override
-	public void playEffect(Location location1, Location location2, String param) {
-		float distanceBetween = 1F;
-		String name = "explode";
-		float horizSpread = 0.2F;
-		float vertSpread = 0.2F;
-		float speed = 0.2F;
-		int count = 5;
-		float yOffset = 1.9F;
-						
-		if (param != null && !param.isEmpty()) {
-			String[] data = param.split(" ");
+	public void loadFromString(String string) {
+		if (string != null && !string.isEmpty()) {
+			String[] data = string.split(" ");
 			
 			if (data.length >= 1) {
 				distanceBetween = Float.parseFloat(data[0]);
@@ -42,6 +34,10 @@ public class ParticleLineEffect extends SpellEffect {
 				yOffset = Float.parseFloat(data[6]);
 			}
 		}
+	}
+	
+	@Override
+	public void playEffect(Location location1, Location location2) {
 		
 		int c = (int)Math.ceil(location1.distance(location2) / distanceBetween) - 1;
 		if (c <= 0) return;

@@ -11,6 +11,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -67,7 +68,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected ItemStack spellIcon;
 	protected int broadcastRange;
 	protected int experience;
-	protected HashMap<Integer, List<String>> effects;
+	protected HashMap<EffectPosition, List<SpellEffect>> effects;
 	
 	protected int minRange;
 	protected int range;
@@ -246,35 +247,47 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		// graphical effects
-		List<String> effectsList = config.getStringList(section + "." + spellName + ".effects", null);
-		if (effectsList != null) {
-			this.effects = new HashMap<Integer, List<String>>();
-			List<String> e;
-			for (String eff : effectsList) {
-				String[] data = eff.split(" ", 2);
-				int pos = -1;
-				if (data[0].equalsIgnoreCase("start") || data[0].equalsIgnoreCase("startcast")) {
-					pos = 0;
-				} else if (data[0].equalsIgnoreCase("pos1") || data[0].equalsIgnoreCase("position1") || data[0].equalsIgnoreCase("caster") || data[0].equalsIgnoreCase("actor")) {
-					pos = 1;
-				} else if (data[0].equalsIgnoreCase("pos2") || data[0].equalsIgnoreCase("position2") || data[0].equalsIgnoreCase("target")) {
-					pos = 2;
-				} else if (data[0].equalsIgnoreCase("line") || data[0].equalsIgnoreCase("trail")) {
-					pos = 3;
-				} else if (data[0].equalsIgnoreCase("disabled")) {
-					pos = 4;
-				} else if (data[0].equalsIgnoreCase("delayed")) {
-					pos = 5;
-				} else if (data[0].equalsIgnoreCase("special")) {
-					pos = 6;
-				}
-				if (pos >= 0) {
-					e = effects.get(pos);
-					if (e == null) {
-						e = new ArrayList<String>();
-						effects.put(pos, e);
+		if (config.contains(section + "." + spellName + ".effects")) {
+			this.effects = new HashMap<EffectPosition, List<SpellEffect>>();
+			if (config.isList(section + "." + spellName + ".effects")) {
+				List<String> effectsList = config.getStringList(section + "." + spellName + ".effects", null);
+				if (effectsList != null) {
+					for (Object obj : effectsList) {
+						if (obj instanceof String) {
+							String eff = (String)obj;
+							String[] data = eff.split(" ", 3);
+							EffectPosition pos = getPositionFromString(data[0]);
+							if (pos != null) {
+								SpellEffect effect = SpellEffect.getNewEffectByName(data[1]);
+								if (effect != null) {
+									effect.loadFromString(data.length > 2 ? data[2] : null);
+									List<SpellEffect> e = effects.get(pos);
+									if (e == null) {
+										e = new ArrayList<SpellEffect>();
+										effects.put(pos, e);
+									}
+									e.add(effect);
+								}
+							}
+						}
 					}
-					e.add(data[1]);
+				}
+			} else if (config.isSection(section + "." + spellName + ".effects")) {
+				for (String key : config.getKeys(section + "." + spellName + ".effects")) {
+					ConfigurationSection effConf = config.getSection(section + "." + spellName + ".effects." + key);
+					EffectPosition pos = getPositionFromString(effConf.getString("position", ""));
+					if (pos != null) {
+						SpellEffect effect = SpellEffect.getNewEffectByName(effConf.getString("name", ""));
+						if (effect != null) {
+							effect.loadFromConfiguration(effConf);
+							List<SpellEffect> e = effects.get(pos);
+							if (e == null) {
+								e = new ArrayList<SpellEffect>();
+								effects.put(pos, e);
+							}
+							e.add(effect);
+						}
+					}
 				}
 			}
 		}
@@ -307,6 +320,29 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
 		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
 		
+	}
+	
+	private EffectPosition getPositionFromString(String spos) {
+		if (spos.equalsIgnoreCase("start") || spos.equalsIgnoreCase("startcast")) {
+			return EffectPosition.START_CAST;
+		} else if (spos.equalsIgnoreCase("pos1") || spos.equalsIgnoreCase("position1") || spos.equalsIgnoreCase("caster") || spos.equalsIgnoreCase("actor")) {
+			return EffectPosition.CASTER;
+		} else if (spos.equalsIgnoreCase("pos2") || spos.equalsIgnoreCase("position2") || spos.equalsIgnoreCase("target")) {
+			return EffectPosition.TARGET;
+		} else if (spos.equalsIgnoreCase("line") || spos.equalsIgnoreCase("trail")) {
+			return EffectPosition.TRAIL;
+		} else if (spos.equalsIgnoreCase("disabled")) {
+			return EffectPosition.DISABLED;
+		} else if (spos.equalsIgnoreCase("delayed")) {
+			return EffectPosition.DELAYED;
+		} else if (spos.equalsIgnoreCase("special")) {
+			return EffectPosition.SPECIAL;
+		} else if (spos.equalsIgnoreCase("buff") || spos.equalsIgnoreCase("active")) {
+			return EffectPosition.BUFF;
+		} else if (spos.equalsIgnoreCase("orbit")) {
+			return EffectPosition.ORBIT;
+		}
+		return null;
 	}
 	
 	protected SpellReagents getConfigReagents(String option) {
@@ -1055,93 +1091,72 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected void playSpellEffects(Entity pos1, Entity pos2) {
 		playSpellEffects(EffectPosition.CASTER, pos1);
 		playSpellEffects(EffectPosition.TARGET, pos2);
-		playSpellEffectsTrail(pos1.getLocation(), pos2.getLocation(), null);
+		playSpellEffectsTrail(pos1.getLocation(), pos2.getLocation());
 	}
 	
 	protected void playSpellEffects(Entity pos1, Location pos2) {
 		playSpellEffects(EffectPosition.CASTER, pos1);
 		playSpellEffects(EffectPosition.TARGET, pos2);
-		playSpellEffectsTrail(pos1.getLocation(), pos2, null);
+		playSpellEffectsTrail(pos1.getLocation(), pos2);
 	}
 	
 	protected void playSpellEffects(Location pos1, Entity pos2) {
 		playSpellEffects(EffectPosition.CASTER, pos1);
 		playSpellEffects(EffectPosition.TARGET, pos2);
-		playSpellEffectsTrail(pos1, pos2.getLocation(), null);
+		playSpellEffectsTrail(pos1, pos2.getLocation());
 	}
 	
 	protected void playSpellEffects(Location pos1, Location pos2) {
 		playSpellEffects(EffectPosition.CASTER, pos1);
 		playSpellEffects(EffectPosition.TARGET, pos2);
-		playSpellEffectsTrail(pos1, pos2, null);
+		playSpellEffectsTrail(pos1, pos2);
 	}
 	
 	protected void playSpellEffects(EffectPosition pos, Entity entity) {
-		playSpellEffects(pos, entity, null);
-	}
-	
-	protected void playSpellEffects(EffectPosition pos, Entity entity, String param) {
 		if (effects != null) {
-			List<String> effectsList = effects.get(pos.getId());
+			List<SpellEffect> effectsList = effects.get(pos);
 			if (effectsList != null) {
-				for (String eff : effectsList) {
-					SpellEffect effect = null;
-					if (eff.contains(" ")) {
-						String[] data = eff.split(" ", 2);
-						effect = SpellEffect.getEffectByName(data[0]);
-						param = data[1];
-					} else {
-						effect = SpellEffect.getEffectByName(eff);
-					}
-					if (effect != null) {
-						effect.playEffect(entity, param);
-					}
+				for (SpellEffect effect : effectsList) {
+					effect.playEffect(entity);
 				}
 			}
 		}
 	}
 	
 	protected void playSpellEffects(EffectPosition pos, Location location) {
-		playSpellEffects(pos, location, null);
-	}
-	
-	protected void playSpellEffects(EffectPosition pos, Location location, String param) {
 		if (effects != null) {
-			List<String> effectsList = effects.get(pos.getId());
+			List<SpellEffect> effectsList = effects.get(pos);
 			if (effectsList != null) {
-				for (String eff : effectsList) {
-					SpellEffect effect = null;
-					if (eff.contains(" ")) {
-						String[] data = eff.split(" ", 2);
-						effect = SpellEffect.getEffectByName(data[0]);
-						param = data[1];
-					} else {
-						effect = SpellEffect.getEffectByName(eff);
-					}
-					if (effect != null) {
-						effect.playEffect(location, param);
-					}
+				for (SpellEffect effect : effectsList) {
+					effect.playEffect(location);
 				}
 			}
 		}
 	}
 	
-	protected void playSpellEffectsTrail(Location loc1, Location loc2, String param) {
+	protected void playSpellEffectsTrail(Location loc1, Location loc2) {
 		if (effects != null) {
-			List<String> effectsList = effects.get(EffectPosition.TRAIL.getId());
+			List<SpellEffect> effectsList = effects.get(EffectPosition.TRAIL);
 			if (effectsList != null) {
-				for (String eff : effectsList) {
-					SpellEffect effect = null;
-					if (eff.contains(" ")) {
-						String[] data = eff.split(" ", 2);
-						effect = SpellEffect.getEffectByName(data[0]);
-						param = data[1];
-					} else {
-						effect = SpellEffect.getEffectByName(eff);
-					}
-					if (effect != null) {
-						effect.playEffect(loc1, loc2, param);
-					}
+				for (SpellEffect effect : effectsList) {
+					effect.playEffect(loc1, loc2);
+				}
+			}
+		}
+	}
+	
+	protected void playSpellEffectsBuff(Entity entity, SpellEffect.SpellEffectActiveChecker checker) {
+		if (effects != null) {
+			List<SpellEffect> effectsList = effects.get(EffectPosition.BUFF);
+			if (effectsList != null) {
+				for (SpellEffect effect : effectsList) {
+					effect.playEffectWhileActiveOnEntity(entity, checker);
+				}
+			}
+			effectsList = effects.get(EffectPosition.ORBIT);
+			if (effectsList != null) {
+				for (SpellEffect effect : effectsList) {
+					effect.playEffectWhileActiveOrbit(entity, checker);
 				}
 			}
 		}

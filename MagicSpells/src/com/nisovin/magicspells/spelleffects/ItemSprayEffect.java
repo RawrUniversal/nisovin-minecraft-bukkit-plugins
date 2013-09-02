@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spelleffects;
 import java.util.Random;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -11,15 +12,16 @@ import com.nisovin.magicspells.MagicSpells;
 
 class ItemSprayEffect extends SpellEffect {
 
+	int type = 331;
+	short dura = 0;
+	int num = 15;
+	int duration = 6;
+	float force = 1.0F;
+
 	@Override
-	public void playEffect(Location location, String param) {
-		int type = 331;
-		short dura = 0;
-		int num = 15;
-		int duration = 6;
-		float force = 1.0F;
-		if (param != null) {
-			String[] data = param.split(" ");
+	public void loadFromString(String string) {
+		if (string != null) {
+			String[] data = string.split(" ");
 			if (data.length >= 1) {
 				if (data[0].contains(":")) {
 					try {
@@ -54,7 +56,19 @@ class ItemSprayEffect extends SpellEffect {
 				}
 			}
 		}
-		
+	}
+
+	@Override
+	public void loadFromConfig(ConfigurationSection config) {
+		type = config.getInt("type", type);
+		dura = (short)config.getInt("data", dura);
+		num = config.getInt("quantity", num);
+		duration = config.getInt("duration", duration);
+		force = (float)config.getDouble("force", force);
+	}
+	
+	@Override
+	public void playEffect(Location location) {		
 		// spawn items
 		Random rand = new Random();
 		Location loc = location.clone().add(0, 1, 0);

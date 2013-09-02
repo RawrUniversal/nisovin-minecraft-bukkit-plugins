@@ -139,9 +139,9 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 					}
 					playSpellEffects(EffectPosition.TARGET, target);
 					if (spellSourceInCenter) {
-						playSpellEffectsTrail(location, target.getLocation(), null);
+						playSpellEffectsTrail(location, target.getLocation());
 					} else {
-						playSpellEffectsTrail(player.getLocation(), target.getLocation(), null);
+						playSpellEffectsTrail(player.getLocation(), target.getLocation());
 					}
 					count++;
 					if (maxTargets > 0 && count >= maxTargets) {
