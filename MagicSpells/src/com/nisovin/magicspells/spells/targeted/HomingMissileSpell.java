@@ -131,6 +131,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			this.currentVelocity = currentLocation.getDirection();
 			this.currentVelocity.multiply(velocityPerTick);
 			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
+			playSpellEffects(EffectPosition.CASTER, caster);
 		}
 		
 		public MissileTracker(Player caster, Location startLocation, LivingEntity target, float power) {

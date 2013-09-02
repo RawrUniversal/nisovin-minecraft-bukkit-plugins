@@ -6,6 +6,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public abstract class TargetedSpell extends InstantSpell {
@@ -13,6 +14,8 @@ public abstract class TargetedSpell extends InstantSpell {
 	protected boolean alwaysActivate;
 	protected boolean playFizzleSound;
 	protected boolean targetSelf;
+	protected String spellNameOnFail;
+	protected Spell spellOnFail;
 	protected String strCastTarget;
 	protected String strNoTarget;
 
@@ -22,8 +25,21 @@ public abstract class TargetedSpell extends InstantSpell {
 		alwaysActivate = getConfigBoolean("always-activate", false);
 		playFizzleSound = getConfigBoolean("play-fizzle-sound", false);
 		targetSelf = getConfigBoolean("target-self", false);
+		spellNameOnFail = getConfigString("spell-on-fail", null);
 		strCastTarget = getConfigString("str-cast-target", "");
 		strNoTarget = getConfigString("str-no-target", "");
+	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+		
+		if (spellNameOnFail != null && !spellNameOnFail.isEmpty()) {
+			spellOnFail = MagicSpells.getSpellByInternalName(spellNameOnFail);
+			if (spellOnFail == null) {
+				MagicSpells.error("Invalid spell-on-fail for spell " + internalName);
+			}
+		}
 	}
 
 	protected void sendMessageToTarget(Player caster, Player target) {
@@ -105,6 +121,9 @@ public abstract class TargetedSpell extends InstantSpell {
 	protected PostCastAction noTarget(Player player, String message) {
 		fizzle(player);
 		sendMessage(player, message);
+		if (spellOnFail != null) {
+			spellOnFail.castSpell(player, SpellCastState.NORMAL, 1.0F, null);
+		}
 		return alwaysActivate ? PostCastAction.NO_MESSAGES : PostCastAction.ALREADY_HANDLED;		
 	}
 	
