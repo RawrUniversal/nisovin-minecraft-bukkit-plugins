@@ -97,17 +97,23 @@ public class Util {
 			} else {
 				return null;
 			}
-			ItemMeta meta = item.getItemMeta();
-			if (name != null) {
-				meta.setDisplayName(name);
+			if (name != null || lore != null || color >= 0) {
+				try {
+					ItemMeta meta = item.getItemMeta();
+					if (name != null) {
+						meta.setDisplayName(name);
+					}
+					if (lore != null) {
+						meta.setLore(Arrays.asList(lore));
+					}
+					if (color >= 0 && meta instanceof LeatherArmorMeta) {
+						((LeatherArmorMeta)meta).setColor(Color.fromRGB(color));
+					}
+					item.setItemMeta(meta);
+				} catch (Exception e) {
+					MagicSpells.error("Failed to process item meta for item: " + s);
+				}
 			}
-			if (lore != null) {
-				meta.setLore(Arrays.asList(lore));
-			}
-			if (color >= 0 && meta instanceof LeatherArmorMeta) {
-				((LeatherArmorMeta)meta).setColor(Color.fromRGB(color));
-			}
-			item.setItemMeta(meta);
 			if (enchants != null) {
 				if (enchants.size() > 0) {
 					item.addUnsafeEnchantments(enchants);
