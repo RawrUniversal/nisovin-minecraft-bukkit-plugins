@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.FallingBlock;
@@ -27,7 +28,7 @@ import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
-public class ThrowBlockSpell extends InstantSpell {
+public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpell {
 
 	int blockType;
 	byte blockData;
@@ -104,6 +105,7 @@ public class ThrowBlockSpell extends InstantSpell {
 			if (applySpellPowerToVelocity) {
 				v.multiply(power);
 			}
+			spawnFallingBlock(player, power, player.getEyeLocation().add(v), v);
 			FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation().add(v), blockType, blockData);
 			block.setVelocity(v);
 			block.setDropItem(dropItem);
@@ -125,6 +127,27 @@ public class ThrowBlockSpell extends InstantSpell {
 			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+	
+	private void spawnFallingBlock(Player player, float power, Location location, Vector velocity) {
+		FallingBlock block = location.getWorld().spawnFallingBlock(location, blockType, blockData);
+		block.setVelocity(velocity);
+		block.setDropItem(dropItem);
+		if (fallDamage > 0) {
+			MagicSpells.getVolatileCodeHandler().setFallingBlockHurtEntities(block, fallDamage, fallDamageMax);
+		}
+		if (fallingBlocks != null || ensureSpellCast || stickyBlocks) {
+			FallingBlockInfo info = new FallingBlockInfo(player, power);
+			if (fallingBlocks != null) {
+				fallingBlocks.put(block, info);
+				if (cleanTask < 0) {
+					startTask();
+				}
+			}
+			if (ensureSpellCast || stickyBlocks) {
+				new ThrowBlockMonitor(block, info);
+			}
+		}
 	}
 	
 	private void startTask() {
@@ -270,6 +293,12 @@ public class ThrowBlockSpell extends InstantSpell {
 			this.power = power;
 			this.spellActivated = false;
 		}
+	}
+
+	@Override
+	public boolean castAtLocation(Player caster, Location target, float power) {
+		spawnFallingBlock(caster, power, target, target.getDirection().multiply(velocity).add(new Vector(0, verticalAdjustment, 0)));
+		return true;
 	}
 
 }
