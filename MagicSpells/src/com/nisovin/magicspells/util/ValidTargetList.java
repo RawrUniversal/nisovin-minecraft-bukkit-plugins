@@ -37,6 +37,7 @@ public class ValidTargetList {
 		typeMap.put("irongolem", EntityType.IRON_GOLEM);
 		typeMap.put("snowgolem", EntityType.SNOWMAN);
 		typeMap.put("dragon", EntityType.ENDER_DRAGON);
+		typeMap.put("magmacube", EntityType.MAGMA_CUBE);
 		Map<String, EntityType> toAdd = new HashMap<String, EntityType>();
 		for (String s : typeMap.keySet()) {
 			toAdd.put(s + "s", typeMap.get(s));

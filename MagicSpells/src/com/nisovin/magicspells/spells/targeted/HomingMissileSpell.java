@@ -50,7 +50,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 		tickInterval = getConfigInt("tick-interval", 2);
 		ticksPerSecond = 20F / (float)tickInterval;
 		velocityPerTick = projectileVelocity / ticksPerSecond;
-		specialEffectInterval = getConfigInt("special-effect-interval", 1);
+		specialEffectInterval = getConfigInt("special-effect-interval", 0);
 		particleName = getConfigString("particle-name", "reddust");
 		particleSpeed = getConfigFloat("particle-speed", 0.3F);
 		particleCount = getConfigInt("particle-count", 15);
@@ -171,7 +171,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			MagicSpells.getVolatileCodeHandler().playParticleEffect(currentLocation, particleName, particleHorizontalSpread, particleVerticalSpread, particleSpeed, particleCount, renderDistance, 0F);
 			
 			// play effects
-			if (counter % specialEffectInterval == 0) {
+			if (specialEffectInterval > 0 && counter % specialEffectInterval == 0) {
 				playSpellEffects(EffectPosition.SPECIAL, currentLocation);
 			}
 			counter++;

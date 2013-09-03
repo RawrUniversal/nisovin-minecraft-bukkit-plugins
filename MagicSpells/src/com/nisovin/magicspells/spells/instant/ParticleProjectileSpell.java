@@ -80,7 +80,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		
 		tickInterval = getConfigInt("tick-interval", 2);
 		ticksPerSecond = 20F / (float)tickInterval;
-		specialEffectInterval = getConfigInt("special-effect-interval", 1);
+		specialEffectInterval = getConfigInt("special-effect-interval", 0);
 		spellInterval = getConfigInt("spell-interval", 20);
 		
 		particleName = getConfigString("particle-name", "reddust");
@@ -260,7 +260,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 			MagicSpells.getVolatileCodeHandler().playParticleEffect(currentLocation, particleName, particleHorizontalSpread, particleVerticalSpread, particleSpeed, particleCount, renderDistance, 0F);
 			
 			// play effects
-			if (counter % specialEffectInterval == 0) {
+			if (specialEffectInterval > 0 && counter % specialEffectInterval == 0) {
 				playSpellEffects(EffectPosition.SPECIAL, currentLocation);
 			}
 			

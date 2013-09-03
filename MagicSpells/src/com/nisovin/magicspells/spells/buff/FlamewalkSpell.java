@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -89,6 +90,7 @@ public class FlamewalkSpell extends BuffSpell {
 						turnOff(player);
 						continue;
 					}
+					playSpellEffects(EffectPosition.DELAYED, player);
 					List<Entity> entities = player.getNearbyEntities(range, range, range);
 					for (Entity entity : entities) {
 						if (entity instanceof Player) {
@@ -100,15 +102,15 @@ public class FlamewalkSpell extends BuffSpell {
 										continue;
 									}
 								}
-								entity.setFireTicks(Math.round(fireTicks*power));
-								addUse(player);
-								chargeUseCost(player);
 							}
-						} else if (entity instanceof LivingEntity) {
-							entity.setFireTicks(Math.round(fireTicks*power));
-							addUse(player);
-							chargeUseCost(player);
+						} else if (!(entity instanceof LivingEntity)) {
+							continue;
 						}
+						entity.setFireTicks(Math.round(fireTicks*power));
+						playSpellEffects(EffectPosition.TARGET, entity);
+						playSpellEffectsTrail(player.getLocation(), entity.getLocation());
+						addUse(player);
+						chargeUseCost(player);
 					}
 				}
 			}
