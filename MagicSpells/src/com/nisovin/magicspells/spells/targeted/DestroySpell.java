@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +34,7 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 	boolean preventLandingBlocks;
 	int fallingBlockDamage;
 	int[] blockTypesToThrow;
-	int[] blockTypesToRemove; // TODO: add these options
+	int[] blockTypesToRemove;
 	
 	Set<FallingBlock> fallingBlocks;
 	
@@ -70,8 +71,22 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 		preventLandingBlocks = config.getBoolean("prevent-landing-blocks", false);
 		fallingBlockDamage = getConfigInt("falling-block-damage", 0);
 		
-		blockTypesToThrow = new int [] { 1, 2, 3, 4, 5, 12, 13, 17, 18, 98 };
-		blockTypesToRemove = new int [] { 31, 32, 37, 38, 50 };
+		List<Integer> toThrow = getConfigIntList("block-types-to-throw", null);
+		if (toThrow != null && toThrow.size() > 0) {
+			blockTypesToThrow = new int[toThrow.size()];
+			for (int i = 0; i < toThrow.size(); i++) {
+				blockTypesToThrow[i] = toThrow.get(i).intValue();
+			}
+			Arrays.sort(blockTypesToThrow);
+		}
+		List<Integer> toRemove = getConfigIntList("block-types-to-remove", null);
+		if (toRemove != null && toRemove.size() > 0) {
+			blockTypesToRemove = new int[toRemove.size()];
+			for (int i = 0; i < toRemove.size(); i++) {
+				blockTypesToRemove[i] = toRemove.get(i).intValue();
+			}
+			Arrays.sort(blockTypesToRemove);
+		}
 		
 		if (preventLandingBlocks) {
 			registerEvents(new FallingBlockListener());
@@ -113,13 +128,23 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 			for (int x = centerX - horizRadius; x <= centerX + horizRadius; x++) {
 				for (int z = centerZ - horizRadius; z <= centerZ + horizRadius; z++) {
 					Block b = target.getWorld().getBlockAt(x, y, z);
-					if (b.getType() != Material.BEDROCK && b.getType() != Material.AIR) { 
-						if (b.getType().isSolid()) {
-						//if (Util.arrayContains(blockTypesToThrow, b.getTypeId())) {
-							blocksToThrow.add(b);
+					if (b.getType() != Material.BEDROCK && b.getType() != Material.AIR) {
+						if (blockTypesToThrow != null) {
+							if (Arrays.binarySearch(blockTypesToThrow, b.getTypeId()) >= 0) {
+								blocksToThrow.add(b);
+							} else if (blockTypesToRemove != null) {
+								if (Arrays.binarySearch(blockTypesToRemove, b.getTypeId()) >= 0) {
+									blocksToRemove.add(b);
+								}
+							} else if (!b.getType().isSolid()) {
+								blocksToRemove.add(b);
+							}
 						} else {
-						//} else if (Util.arrayContains(blockTypesToRemove, b.getTypeId())) {
-							blocksToRemove.add(b);
+							if (b.getType().isSolid()) {
+								blocksToThrow.add(b);
+							} else {
+								blocksToRemove.add(b);
+							}
 						}
 					}
 				}
