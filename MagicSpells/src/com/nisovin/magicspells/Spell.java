@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BlockIterator;
 
+import com.nisovin.magicspells.castmodifiers.ModifierSet;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
@@ -88,6 +89,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected HashMap<Spell, Float> sharedCooldowns;
 	protected boolean ignoreGlobalCooldown;
 
+	protected ModifierSet modifiers;
+	protected ModifierSet targetModifiers;
+	
 	protected List<String> prerequisites;
 	protected List<String> replaces;
 	protected List<String> worldRestrictions;
@@ -103,6 +107,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String strWrongCastItem;
 	protected String strCastStart;
 	protected String strInterrupted;
+	protected String strModifierFailed;
 	
 	private HashMap<String, Long> nextCast;
 	
@@ -302,6 +307,16 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.ignoreGlobalCooldown = config.getBoolean(section + "." + spellName + ".ignore-global-cooldown", false);
 		this.nextCast = new HashMap<String, Long>();
 
+		// modifiers
+		if (config.contains(section + "." + spellName + ".modifiers")) {
+			MagicSpells.debug(2, "Adding modifiers to " + spellName + " spell");
+			this.modifiers = new ModifierSet(config.getStringList(section + "." + spellName + ".modifiers", null));
+		}
+		if (config.contains(section + "." + spellName + ".target-modifiers")) {
+			MagicSpells.debug(2, "Adding target modifiers to " + spellName + " spell");
+			this.targetModifiers = new ModifierSet(config.getStringList(section + "." + spellName + ".target-modifiers", null));
+		}
+		
 		// hierarchy options
 		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
 		this.replaces = config.getStringList(section + "." + spellName + ".replaces", null);
@@ -319,6 +334,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strWrongCastItem = config.getString(section + "." + spellName + ".str-wrong-cast-item", strCantCast);
 		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
 		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
+		this.strModifierFailed = config.getString(section + "." + spellName + ".str-modifier-failed", null);
 		
 	}
 	
@@ -1316,6 +1332,18 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	public boolean isBeneficial() {
 		return false;
+	}
+	
+	public ModifierSet getModifiers() {
+		return modifiers;
+	}
+	
+	public ModifierSet getTargetModifiers() {
+		return targetModifiers;
+	}
+	
+	public String getStrModifierFailed() {
+		return strModifierFailed;
 	}
 	
 	Map<String, Long> getCooldowns() {

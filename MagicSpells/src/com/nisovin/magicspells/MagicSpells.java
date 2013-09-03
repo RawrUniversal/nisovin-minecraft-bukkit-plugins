@@ -37,6 +37,7 @@ import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.nisovin.magicspells.castmodifiers.ModifierSet;
 import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
 import com.nisovin.magicspells.events.MagicSpellsLoadingEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent;
@@ -457,9 +458,8 @@ public class MagicSpells extends JavaPlugin {
 		if (consumeListener.hasConsumeCastItems()) {
 			registerEvents(consumeListener);
 		}
-		if (config.getBoolean("general.enable-dance-casting", false)) {
-			new DanceCastListener(config.getString("general.dance-cast-item", "2256"));
-		}
+		new DanceCastListener(config.getString("general.dance-cast-item", "2256"));
+		ModifierSet.initializeModifierListeners();
 		
 		// register commands
 		CastCommand exec = new CastCommand(this, config.getBoolean("general.enable-tab-completion", true));
@@ -821,7 +821,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 	}
 	
-	static void registerEvents(final Listener listener) {
+	public static void registerEvents(final Listener listener) {
 		Method[] methods;
         try {
             methods = listener.getClass().getDeclaredMethods();

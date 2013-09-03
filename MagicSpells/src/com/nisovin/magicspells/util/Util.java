@@ -117,6 +117,7 @@ public class Util {
 			}
 			return item;
 		} catch (Exception e) {
+			MagicSpells.handleException(e);
 			return null;
 		}
 	}
