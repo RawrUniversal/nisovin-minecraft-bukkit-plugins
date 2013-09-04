@@ -43,6 +43,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 	Map<String, AttackData> witheredBy = new HashMap<String, AttackData>();
 	Map<String, AttackData> combustedBy = new HashMap<String, AttackData>();
 	Map<String, AttackData> attackedBy = new HashMap<String, AttackData>();
+	Map<String, EntityDamageEvent> lastDamage = new HashMap<String, EntityDamageEvent>();
 	
 	@Override
 	public void onEnable() {
@@ -105,19 +106,22 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onDamage(EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player && event instanceof EntityDamageByEntityEvent && (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.ENTITY_EXPLOSION)) {
-			EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
-			Player attacker = null;
-			if (evt.getDamager() instanceof Player) {
-				attacker = (Player)evt.getDamager();
-			} else if (evt.getDamager() instanceof Projectile) {
-				LivingEntity shooter = ((Projectile)evt.getDamager()).getShooter();
-				if (shooter != null && shooter instanceof Player) {
-					attacker = (Player)shooter;
+		if (event.getEntity() instanceof Player) {
+			lastDamage.put(((Player)event.getEntity()).getName(), event);
+			if (event instanceof EntityDamageByEntityEvent && (event.getCause() == DamageCause.ENTITY_ATTACK || event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.ENTITY_EXPLOSION)) {
+				EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent)event;
+				Player attacker = null;
+				if (evt.getDamager() instanceof Player) {
+					attacker = (Player)evt.getDamager();
+				} else if (evt.getDamager() instanceof Projectile) {
+					LivingEntity shooter = ((Projectile)evt.getDamager()).getShooter();
+					if (shooter != null && shooter instanceof Player) {
+						attacker = (Player)shooter;
+					}
 				}
-			}
-			if (attacker != null) {
-				attackedBy.put(((Player)event.getEntity()).getName(), new AttackData(attacker));
+				if (attacker != null) {
+					attackedBy.put(((Player)event.getEntity()).getName(), new AttackData(attacker));
+				}
 			}
 		}
 	}
@@ -144,7 +148,8 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
-		EntityDamageEvent dam = player.getLastDamageCause();
+		EntityDamageEvent dam = lastDamage.get(player.getName());
+		if (dam.isCancelled()) dam = null;
 		DamageCause damageCause = dam != null ? dam.getCause() : DamageCause.CUSTOM;
 		
 		// get attacker data
@@ -239,6 +244,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 		witheredBy.remove(player.getName());
 		combustedBy.remove(player.getName());
 		attackedBy.remove(player.getName());
+		lastDamage.remove(player.getName());
 	}
 	
 	class AttackData {
