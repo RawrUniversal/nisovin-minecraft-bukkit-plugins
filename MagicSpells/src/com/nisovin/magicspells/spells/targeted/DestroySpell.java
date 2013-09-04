@@ -152,7 +152,7 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 		}
 		
 		for (Block b : blocksToRemove) {
-			b.setTypeIdAndData(0, (byte)0, false);
+			b.setType(Material.AIR);
 		}
 		for (Block b : blocksToThrow) {
 			Location l = new Location(target.getWorld(), b.getX() + 0.5, b.getY() + 0.5, b.getZ() + 0.5);
@@ -197,7 +197,7 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 			if (preventLandingBlocks) {
 				fallingBlocks.add(fb);
 			}
-			b.setTypeIdAndData(0, (byte)0, false);
+			b.setType(Material.AIR);
 		}
 		
 	}
