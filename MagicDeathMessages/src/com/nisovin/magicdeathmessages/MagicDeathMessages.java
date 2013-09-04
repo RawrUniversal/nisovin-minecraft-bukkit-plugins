@@ -233,6 +233,12 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 			message = player.getDisplayName() + ChatColor.WHITE + " " + cause + ChatColor.WHITE + ".";
 		}
 		event.setDeathMessage(message);
+		
+		// clear data
+		poisonedBy.remove(player.getName());
+		witheredBy.remove(player.getName());
+		combustedBy.remove(player.getName());
+		attackedBy.remove(player.getName());
 	}
 	
 	class AttackData {
