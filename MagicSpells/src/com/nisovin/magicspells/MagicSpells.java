@@ -1120,17 +1120,10 @@ public class MagicSpells extends JavaPlugin {
 }
 
 /*
- * TODO for version 3.0:
+ * TODO:
  * 
  * - Use MagicPlayer (Caster/PlayerCaster) across the entire plugin
  * - Allow spells to be cast by something other than players, like blocks and other entities
- * - Create a method for task scheduling and use it across the entire plugin
- * - Make BuffSpell handle more stuff automatically
- *   - Implement castSpell
- *   - Handle toggling
- *   - Start spell duration
  * - Move NoMagicZoneWorldGuard and NoMagicZoneResidence outside of the core plugin
- * - Remove default strings from all string configs (default should be empty)
- * - Add ability to specify target types
  * 
  */

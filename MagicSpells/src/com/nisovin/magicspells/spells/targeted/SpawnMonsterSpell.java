@@ -34,7 +34,17 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 	private boolean allowSpawnInMidair;
 	private boolean baby;
 	private boolean tamed;
+	
 	private ItemStack holding;
+	private ItemStack helmet;
+	private ItemStack chestplate;
+	private ItemStack leggings;
+	private ItemStack boots;
+	private float holdingDropChance;
+	private float helmetDropChance;
+	private float chestplateDropChance;
+	private float leggingsDropChance;
+	private float bootsDropChance;
 	private int duration;
 	private String nameplateText;
 	private boolean useCasterName;
@@ -53,11 +63,32 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 		if (holding != null && holding.getTypeId() > 0) {
 			holding.setAmount(1);
 		}
+		helmet = Util.getItemStackFromString(getConfigString("helmet", "0"));
+		if (helmet != null && helmet.getTypeId() > 0) {
+			helmet.setAmount(1);
+		}
+		chestplate = Util.getItemStackFromString(getConfigString("chestplate", "0"));
+		if (chestplate != null && chestplate.getTypeId() > 0) {
+			chestplate.setAmount(1);
+		}
+		leggings = Util.getItemStackFromString(getConfigString("leggings", "0"));
+		if (leggings != null && leggings.getTypeId() > 0) {
+			leggings.setAmount(1);
+		}
+		boots = Util.getItemStackFromString(getConfigString("boots", "0"));
+		if (boots != null && boots.getTypeId() > 0) {
+			boots.setAmount(1);
+		}
+		holdingDropChance = getConfigFloat("holding-drop-chance", 0) / 100F;
+		helmetDropChance = getConfigFloat("helmet-drop-chance", 0) / 100F;
+		chestplateDropChance = getConfigFloat("chestplate-drop-chance", 0) / 100F;
+		leggingsDropChance = getConfigFloat("leggings-drop-chance", 0) / 100F;
+		bootsDropChance = getConfigFloat("boots-drop-chance", 0) / 100F;
 		duration = getConfigInt("duration", 0);
 		nameplateText = getConfigString("nameplate-text", "");
 		useCasterName = getConfigBoolean("use-caster-name", false);
 		
-		if (entityType == null) {
+		if (entityType == null || !entityType.isAlive()) {
 			MagicSpells.error("SpawnMonster spell '" + spellName + "' has an invalid entity-type!");
 		}
 		
@@ -151,8 +182,19 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 				} else if (entity instanceof Skeleton || entity instanceof Zombie) {
 					EntityEquipment equip = ((LivingEntity)entity).getEquipment();
 					equip.setItemInHand(holding.clone());
+					equip.setItemInHandDropChance(holdingDropChance);
 				}
 			}
+			// set armor
+			EntityEquipment equip = ((LivingEntity)entity).getEquipment();
+			equip.setHelmet(helmet);
+			equip.setChestplate(chestplate);
+			equip.setLeggings(leggings);
+			equip.setBoots(boots);
+			equip.setHelmetDropChance(helmetDropChance);
+			equip.setChestplateDropChance(chestplateDropChance);
+			equip.setLeggingsDropChance(leggingsDropChance);
+			equip.setBootsDropChance(bootsDropChance);
 			// set nameplate text
 			if (entity instanceof LivingEntity) {
 				if (useCasterName) {
