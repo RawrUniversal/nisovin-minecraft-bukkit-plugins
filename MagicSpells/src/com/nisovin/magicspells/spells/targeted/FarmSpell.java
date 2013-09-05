@@ -18,6 +18,7 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private int radius;
 	private int growth;
+	private int newCropType;
 	private boolean targeted;
 	
 	public FarmSpell(MagicConfig config, String spellName) {
@@ -25,6 +26,7 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 		
 		radius = getConfigInt("radius", 3);
 		growth = getConfigInt("growth", 1);
+		newCropType = getConfigInt("new-crop-type", Material.CROPS.getId());
 		targeted = getConfigBoolean("targeted", false);
 	}
 
@@ -77,10 +79,10 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 				}
 				b = b.getRelative(BlockFace.UP);
 				if (b.getType() == Material.AIR) {
-					b.setType(Material.CROPS);
+					b.setTypeId(newCropType);
 					if (growth > 1) b.setData((byte) (growth-1));
 					count++;
-				} else if (b.getType() == Material.CROPS && b.getData() < 7) {
+				} else if ((b.getType() == Material.CROPS || b.getType() == Material.CARROT || b.getType() == Material.POTATO) && b.getData() < 7) {
 					byte newData = (byte) (b.getData() + growth);
 					if (newData > 7) newData = 7;
 					b.setData(newData);
