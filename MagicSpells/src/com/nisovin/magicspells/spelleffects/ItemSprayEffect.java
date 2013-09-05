@@ -15,7 +15,7 @@ class ItemSprayEffect extends SpellEffect {
 	int type = 331;
 	short dura = 0;
 	int num = 15;
-	int duration = 6;
+	int duration = 10;
 	float force = 1.0F;
 
 	@Override

@@ -1,7 +1,5 @@
 package com.nisovin.magicspells.spelleffects;
 
-import java.util.List;
-
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -56,24 +54,24 @@ public class FireworksEffect extends SpellEffect {
 		type = config.getInt("type", type);
 		flightDuration = config.getInt("flight", flightDuration);
 		
-		List<String> c = config.getStringList("colors");
-		if (c != null && c.size() > 0) {
-			colors = new int[c.size()];
+		String[] c = config.getString("colors", "FF0000").replace(" ", "").split(",");
+		if (c != null && c.length > 0) {
+			colors = new int[c.length];
 			for (int i = 0; i < colors.length; i++) {
 				try {
-					colors[i] = Integer.parseInt(c.get(i), 16);
+					colors[i] = Integer.parseInt(c[i], 16);
 				} catch (NumberFormatException e) {
 					colors[i] = 0;
 				}
 			}
 		}
 		
-		List<String> fc = config.getStringList("fade-colors");
-		if (fc != null && fc.size() > 0) {
-			fadeColors = new int[fc.size()];
+		String[] fc = config.getString("fade-colors", "").replace(" ", "").split(",");
+		if (fc != null && fc.length > 0) {
+			fadeColors = new int[fc.length];
 			for (int i = 0; i < fadeColors.length; i++) {
 				try {
-					fadeColors[i] = Integer.parseInt(fc.get(i), 16);
+					fadeColors[i] = Integer.parseInt(fc[i], 16);
 				} catch (NumberFormatException e) {
 					fadeColors[i] = 0;
 				}

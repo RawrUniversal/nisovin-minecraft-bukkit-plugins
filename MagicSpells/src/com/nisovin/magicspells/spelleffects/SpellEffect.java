@@ -175,7 +175,7 @@ public abstract class SpellEffect {
 	 * @return
 	 */
 	public static SpellEffect createNewEffectByName(String name) {
-		Class<? extends SpellEffect> clazz = effects.get(name);
+		Class<? extends SpellEffect> clazz = effects.get(name.toLowerCase());
 		if (clazz != null) {
 			try {
 				return clazz.newInstance();
@@ -193,7 +193,7 @@ public abstract class SpellEffect {
 	 * @param effect the effect to add
 	 */
 	public static void addEffect(String name, Class<? extends SpellEffect> effect) {
-		effects.put(name, effect);
+		effects.put(name.toLowerCase(), effect);
 	}
 	
 	static {

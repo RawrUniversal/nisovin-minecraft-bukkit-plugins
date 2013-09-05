@@ -282,7 +282,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					ConfigurationSection effConf = config.getSection(section + "." + spellName + ".effects." + key);
 					EffectPosition pos = getPositionFromString(effConf.getString("position", ""));
 					if (pos != null) {
-						SpellEffect effect = SpellEffect.createNewEffectByName(effConf.getString("name", ""));
+						SpellEffect effect = SpellEffect.createNewEffectByName(effConf.getString("effect", ""));
 						if (effect != null) {
 							effect.loadFromConfiguration(effConf);
 							List<SpellEffect> e = effects.get(pos);
