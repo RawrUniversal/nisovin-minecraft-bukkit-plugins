@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -125,6 +126,35 @@ public final class MultiSpell extends InstantSpell {
 		if (fakeCastIndividualSpells) {
 			Bukkit.getPluginManager().callEvent(new SpellCastedEvent(spell, player, SpellCastState.NORMAL, power, null, cooldown, reagents.clone(), act));
 		}
+	}
+	
+	@Override
+	public boolean castFromConsole(final CommandSender sender, final String[] args) {
+		if (!castRandomSpellInstead) {
+			int delay = 0;
+			for (Action action : actions) {
+				if (action.isSpell()) {
+					if (delay == 0) {
+						action.getSpell().castFromConsole(sender, args);
+					} else {
+						final Spell spell = action.getSpell();
+						MagicSpells.scheduleDelayedTask(new Runnable() {
+							public void run() {
+								spell.castFromConsole(sender, args);
+							}
+						}, delay);
+					}
+				} else if (action.isDelay()) {
+					delay += action.getDelay();
+				}
+			}
+		} else {
+			Action action = actions.get(random.nextInt(actions.size()));
+			if (action.isSpell()) {
+				action.getSpell().castFromConsole(sender, args);
+			}
+		}
+		return true;
 	}
 
 	@Override
