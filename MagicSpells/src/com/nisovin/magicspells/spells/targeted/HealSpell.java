@@ -68,10 +68,12 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 		health += amt;
 		if (health > target.getMaxHealth()) health = target.getMaxHealth();
 		target.setHealth(health);
-		
-		playSpellEffects(EffectPosition.CASTER, player);
+
 		playSpellEffects(EffectPosition.TARGET, target);
-		playSpellEffectsTrail(player.getLocation(), target.getLocation());
+		if (player != null) {
+			playSpellEffects(EffectPosition.CASTER, player);
+			playSpellEffectsTrail(player.getLocation(), target.getLocation());			
+		}
 		
 		return true;
 	}
@@ -79,7 +81,16 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
 		if (validTargetList.canTarget(caster, target) && target.getHealth() < target.getMaxHealth()) {
-			return heal(caster, (Player)target, power);
+			return heal(caster, target, power);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (validTargetList.canTarget(target) && target.getHealth() < target.getMaxHealth()) {
+			return heal(null, target, power);
 		} else {
 			return false;
 		}

@@ -74,4 +74,9 @@ public class ShadowstepSpell extends TargetedSpell implements TargetedEntitySpel
 		}
 	}
 
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
+	}
+
 }

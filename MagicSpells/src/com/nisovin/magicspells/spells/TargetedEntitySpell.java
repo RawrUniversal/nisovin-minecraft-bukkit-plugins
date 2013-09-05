@@ -7,4 +7,6 @@ public interface TargetedEntitySpell {
 	
 	public boolean castAtEntity(Player caster, LivingEntity target, float power);
 	
+	public boolean castAtEntity(LivingEntity target, float power);
+	
 }

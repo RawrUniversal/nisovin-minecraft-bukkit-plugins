@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -117,6 +118,17 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 		} else {
 			geyser(target, power);
 			playSpellEffects(caster, target);
+			return true;
+		}
+	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (!validTargetList.canTarget(target)) {
+			return false;
+		} else {
+			geyser(target, power);
+			playSpellEffects(EffectPosition.TARGET, target);
 			return true;
 		}
 	}

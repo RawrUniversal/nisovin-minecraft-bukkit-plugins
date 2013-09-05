@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -116,6 +117,17 @@ public class SilenceSpell extends TargetedSpell implements TargetedEntitySpell {
 		if (target instanceof Player) {
 			silence((Player)target, power);
 			playSpellEffects(caster, target);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (target instanceof Player) {
+			silence((Player)target, power);
+			playSpellEffects(EffectPosition.TARGET, target);
 			return true;
 		} else {
 			return false;

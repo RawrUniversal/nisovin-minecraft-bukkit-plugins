@@ -88,6 +88,11 @@ public class LevitateSpell extends TargetedSpell implements TargetedEntitySpell 
 		levitate(caster, target, power);
 		return true;
 	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
+	}
 	
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		if (levitating.containsKey(event.getEntity())) {

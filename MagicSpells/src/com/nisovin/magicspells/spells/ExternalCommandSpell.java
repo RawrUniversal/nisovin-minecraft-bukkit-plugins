@@ -190,6 +190,11 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 			return false;
 		}
 	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
+	}
 	
 	@Override
 	public boolean castFromConsole(CommandSender sender, String[] args) {

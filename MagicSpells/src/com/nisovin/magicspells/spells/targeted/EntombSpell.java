@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -129,6 +130,17 @@ public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 		} else {
 			createTomb(target, power);
 			playSpellEffects(caster, target);
+			return true;
+		}
+	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (!validTargetList.canTarget(target)) {
+			return false;
+		} else {
+			createTomb(target, power);
+			playSpellEffects(EffectPosition.TARGET, target);
 			return true;
 		}
 	}

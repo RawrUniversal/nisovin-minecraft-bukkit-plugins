@@ -152,6 +152,8 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 						} else {
 							if (spell instanceof TargetedEntityFromLocationSpell) {
 								((TargetedEntityFromLocationSpell)spell).castAtEntityFromLocation(location, target, power);
+							} else if (spell instanceof TargetedEntitySpell) {
+								((TargetedEntitySpell)spell).castAtEntity(target, power);
 							} else if (spell instanceof TargetedLocationSpell) {
 								((TargetedLocationSpell)spell).castAtLocation(target.getLocation(), power);
 							}

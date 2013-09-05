@@ -79,6 +79,11 @@ public class MountSpell extends TargetedSpell implements TargetedEntitySpell {
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
 		return false;
 	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
+	}
 	
 	@Override
 	public boolean isBeneficial() {

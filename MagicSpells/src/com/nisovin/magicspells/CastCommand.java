@@ -186,7 +186,7 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 						boolean casted = false;
 						if (sender instanceof BlockCommandSender) {
 							if (spell instanceof TargetedLocationSpell) {
-								((TargetedLocationSpell)spell).castAtLocation(((BlockCommandSender)sender).getBlock().getLocation(), 1.0F);
+								((TargetedLocationSpell)spell).castAtLocation(((BlockCommandSender)sender).getBlock().getLocation().add(.5, .5, .5), 1.0F);
 								casted = true;
 							}
 						}

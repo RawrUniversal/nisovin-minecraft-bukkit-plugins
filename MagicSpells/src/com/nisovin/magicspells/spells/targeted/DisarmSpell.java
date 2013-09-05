@@ -16,6 +16,7 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -147,15 +148,22 @@ public class DisarmSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (target instanceof Player) {
-			boolean disarmed =  disarm((Player)target);
-			if (disarmed) {
-				playSpellEffects(caster, target);
-			}
-			return disarmed;
-		} else {
-			return false;
+		if (!validTargetList.canTarget(caster, target)) return false;
+		boolean disarmed =  disarm(target);
+		if (disarmed) {
+			playSpellEffects(caster, target);
 		}
+		return disarmed;
+	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (!validTargetList.canTarget(target)) return false;
+		boolean disarmed =  disarm(target);
+		if (disarmed) {
+			playSpellEffects(EffectPosition.TARGET, target);
+		}
+		return disarmed;
 	}
 	
 	@EventHandler

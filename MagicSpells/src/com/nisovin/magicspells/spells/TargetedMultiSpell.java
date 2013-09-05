@@ -129,6 +129,11 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
 		return runSpells(caster, target, null, power);
 	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
+	}
 	
 	boolean runSpells(Player player, LivingEntity entTarget, Location locTarget, float power) {
 		if (!castRandomSpellInstead) {

@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -49,7 +50,7 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 	private boolean causePain(Player player, LivingEntity target, float power) {
 		if (target.isDead()) return false;
 		int dam = Math.round(damage*power);
-		if (target instanceof Player && checkPlugins) {
+		if (target instanceof Player && checkPlugins && player != null) {
 			// handle the event myself so I can detect cancellation properly
 			EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
 			Bukkit.getServer().getPluginManager().callEvent(event);
@@ -62,7 +63,7 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 		if (ignoreArmor) {
 			int health = target.getHealth() - dam;
 			if (health < 0) health = 0;
-			if (health == 0) {
+			if (health == 0 && player != null) {
 				MagicSpells.getVolatileCodeHandler().setKiller(target, player);
 			}
 			target.setHealth(health);
@@ -70,7 +71,11 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 		} else {
 			target.damage(dam, player);
 		}
-		playSpellEffects(player, target);
+		if (player != null) {
+			playSpellEffects(player, target);
+		} else {
+			playSpellEffects(EffectPosition.TARGET, target);
+		}
 		return true;
 	}
 
@@ -80,6 +85,15 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 			return false;
 		} else {
 			return causePain(caster, target, power);
+		}
+	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (!validTargetList.canTarget(target)) {
+			return false;
+		} else {
+			return causePain(null, target, power);
 		}
 	}
 

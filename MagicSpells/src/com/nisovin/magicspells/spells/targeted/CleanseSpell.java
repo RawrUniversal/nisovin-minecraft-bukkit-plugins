@@ -121,6 +121,12 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 		cleanse(target);
 		return true;
 	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		cleanse(target);
+		return true;
+	}
 	
 	@Override
 	public boolean isBeneficial() {

@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spelleffects.SpellEffect;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -70,7 +71,11 @@ public class StunSpell extends TargetedSpell implements TargetedEntitySpell {
 			listener = new StunListener();
 			registerEvents(listener);
 		}
-		playSpellEffects(caster, target);
+		if (caster != null) {
+			playSpellEffects(caster, target);
+		} else {
+			playSpellEffects(EffectPosition.TARGET, target);
+		}
 		playSpellEffectsBuff(target, new SpellEffect.SpellEffectActiveChecker() {
 			@Override
 			public boolean isActive(Entity entity) {
@@ -85,7 +90,11 @@ public class StunSpell extends TargetedSpell implements TargetedEntitySpell {
 		if (taskId < 0) {
 			taskId = MagicSpells.scheduleRepeatingTask(new StunMonitor(), 5, 5);
 		}
-		playSpellEffects(caster, target);
+		if (caster != null) {
+			playSpellEffects(caster, target);
+		} else {
+			playSpellEffects(EffectPosition.TARGET, target);
+		}
 		playSpellEffectsBuff(target, new SpellEffect.SpellEffectActiveChecker() {
 			@Override
 			public boolean isActive(Entity entity) {
@@ -96,10 +105,22 @@ public class StunSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+		if (!validTargetList.canTarget(caster, target)) return false;
 		if (target instanceof Player) {
 			stunPlayer(caster, (Player)target, Math.round(duration * power));
 		} else {
 			stunEntity(caster, target, Math.round(duration * power));
+		}
+		return true;
+	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (!validTargetList.canTarget(target)) return false;
+		if (target instanceof Player) {
+			stunPlayer(null, (Player)target, Math.round(duration * power));
+		} else {
+			stunEntity(null, target, Math.round(duration * power));
 		}
 		return true;
 	}

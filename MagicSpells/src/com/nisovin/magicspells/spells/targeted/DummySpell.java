@@ -38,6 +38,12 @@ public class DummySpell extends TargetedSpell implements TargetedEntitySpell, Ta
 	}
 
 	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		playSpellEffects(EffectPosition.TARGET, target);
+		return true;
+	}
+
+	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		playSpellEffects(caster, target);
 		return true;

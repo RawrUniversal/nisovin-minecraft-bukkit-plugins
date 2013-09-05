@@ -69,4 +69,9 @@ public class SwitchSpell extends TargetedSpell implements TargetedEntitySpell {
 		return false;
 	}
 
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
+	}
+
 }

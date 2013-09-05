@@ -78,7 +78,10 @@ public class ForcetossSpell extends TargetedSpell implements TargetedEntitySpell
 			return true;
 		}
 	}
-	
-	
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
+	}
 
 }

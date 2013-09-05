@@ -80,6 +80,11 @@ public class OrbitSpell extends TargetedSpell implements TargetedEntitySpell {
 		playSpellEffects(caster, target);
 		return true;
 	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
+	}
 	
 	class ParticleTracker implements Runnable {
 		

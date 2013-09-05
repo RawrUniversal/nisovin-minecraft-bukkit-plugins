@@ -101,6 +101,16 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 	}
 
 	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (validTargetList.canTarget(target)) {
+			new MissileTracker(null, target, power);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
 	public boolean castAtEntityFromLocation(Player caster, Location from, LivingEntity target, float power) {
 		if (validTargetList.canTarget(caster, target)) {
 			new MissileTracker(caster, from, target, power);

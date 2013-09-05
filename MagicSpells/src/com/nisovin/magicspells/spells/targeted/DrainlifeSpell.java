@@ -154,6 +154,11 @@ public class DrainlifeSpell extends TargetedSpell implements TargetedEntitySpell
 			return drain(caster, target, power);
 		}
 	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
+	}
 	
 	private class DrainlifeAnim extends SpellAnimation {
 		

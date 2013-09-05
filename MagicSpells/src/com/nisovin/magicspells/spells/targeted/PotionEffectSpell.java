@@ -80,6 +80,18 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 			return true;
 		}
 	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (!validTargetList.canTarget(target)) {
+			return false;
+		} else {
+			PotionEffect effect = new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier, ambient);
+			target.addPotionEffect(effect);
+			playSpellEffects(EffectPosition.TARGET, target);
+			return true;
+		}			
+	}
 	
 	@Override
 	public boolean isBeneficial() {
