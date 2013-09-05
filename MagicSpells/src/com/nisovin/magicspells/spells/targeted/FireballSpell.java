@@ -114,13 +114,24 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 		Util.setLocationFacingFromVector(loc, facing);
 		loc.add(facing.multiply(2));
 		
-		Fireball fireball = caster.getWorld().spawn(loc, Fireball.class);
-		fireball.setShooter(caster);
+		Fireball fireball = from.getWorld().spawn(loc, Fireball.class);
+		if (caster != null) {
+			fireball.setShooter(caster);
+		}
 		fireballs.put(fireball, power);
 		
-		playSpellEffects(EffectPosition.CASTER, caster);
+		if (caster != null) {
+			playSpellEffects(EffectPosition.CASTER, caster);
+		} else {
+			playSpellEffects(EffectPosition.CASTER, from);
+		}
 		
 		return true;
+	}
+
+	@Override
+	public boolean castAtEntityFromLocation(Location from, LivingEntity target, float power) {
+		return castAtEntityFromLocation(null, from, target, power);
 	}
 	
 	@EventHandler(priority=EventPriority.HIGH)

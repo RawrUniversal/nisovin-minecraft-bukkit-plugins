@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -94,6 +95,13 @@ public class LightningSpell extends TargetedSpell implements TargetedLocationSpe
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		lightning(target);
 		playSpellEffects(caster, target);
+		return true;
+	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		lightning(target);
+		playSpellEffects(EffectPosition.CASTER, target);
 		return true;
 	}
 }

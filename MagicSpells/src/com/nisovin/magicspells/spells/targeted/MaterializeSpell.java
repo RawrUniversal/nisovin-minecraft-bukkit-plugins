@@ -83,7 +83,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 	private boolean materialize(Player player, final Block block, Block against) {
 		BlockState blockState = block.getState();
 		
-		if (checkPlugins) {
+		if (checkPlugins && player != null) {
 			block.setTypeIdAndData(type, data, false);
 			BlockPlaceEvent event = new BlockPlaceEvent(block, blockState, against, player.getItemInHand(), player, true);
 			Bukkit.getPluginManager().callEvent(event);
@@ -98,9 +98,11 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 			block.getWorld().spawnFallingBlock(block.getLocation().add(.5, 0, .5), type, data);
 		}
 		
-		playSpellEffects(EffectPosition.CASTER, player);
-		playSpellEffects(EffectPosition.TARGET, block.getLocation());
-		playSpellEffectsTrail(player.getLocation(), block.getLocation());
+		if (player != null) {
+			playSpellEffects(EffectPosition.CASTER, player);
+			playSpellEffects(EffectPosition.TARGET, block.getLocation());
+			playSpellEffectsTrail(player.getLocation(), block.getLocation());
+		}
 		if (playBreakEffect) {
 			block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
 		}
@@ -130,6 +132,20 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 			against = block.getRelative(BlockFace.DOWN);
 		}
 		return materialize(caster, block, against);
+	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		Block block = target.getBlock();
+		if (block.getType() == Material.AIR) {
+			return materialize(null, block, block);
+		} else {
+			Block block2 = block.getRelative(BlockFace.UP);
+			if (block2.getType() == Material.AIR) {
+				return materialize(null, block2, block);
+			}
+		}
+		return false;
 	}
 
 }

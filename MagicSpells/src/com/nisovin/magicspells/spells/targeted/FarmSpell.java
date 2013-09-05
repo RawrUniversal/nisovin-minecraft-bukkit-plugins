@@ -101,4 +101,9 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 		return farm(target.subtract(0, 1, 0).getBlock(), Math.round(radius * power));
 	}
 
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return farm(target.getBlock(), Math.round(radius * power));
+	}
+
 }

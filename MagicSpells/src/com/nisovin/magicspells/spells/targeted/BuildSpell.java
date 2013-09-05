@@ -116,6 +116,11 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 		// build
 		return build(caster, block, block, item);
 	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return false;
+	}
 	
 	private boolean isAllowed(Material mat) {
 		for (int i = 0; i < allowedTypes.length; i++) {

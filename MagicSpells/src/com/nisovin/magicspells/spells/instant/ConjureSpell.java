@@ -209,6 +209,11 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
+		return castAtLocation(target, power);
+	}
+	
+	@Override
+	public boolean castAtLocation(Location target, float power) {
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		if (calculateDropsIndividually) {
 			individual(items, rand, power);

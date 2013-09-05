@@ -102,4 +102,9 @@ public class TelekinesisSpell extends TargetedSpell implements TargetedLocationS
 		}
 		return activated;
 	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return false;
+	}
 }

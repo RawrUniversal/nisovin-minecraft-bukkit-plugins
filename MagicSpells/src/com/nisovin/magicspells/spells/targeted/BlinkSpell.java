@@ -128,4 +128,9 @@ public class BlinkSpell extends TargetedSpell implements TargetedLocationSpell {
 		return true;
 	}
 
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return false;
+	}
+
 }

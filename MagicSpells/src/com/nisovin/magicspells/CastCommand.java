@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.mana.ManaChangeReason;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.Util;
 
 public class CastCommand implements CommandExecutor, TabCompleter {
@@ -38,22 +42,50 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 						sender.sendMessage(MagicSpells.textColor + MagicSpells.strCastUsage);
 					}
 				} else if (sender.isOp() && args[0].equals("forcecast") && args.length >= 3) {
-					Player target = Bukkit.getPlayer(args[1]);
-					if (target == null) {
-						sender.sendMessage(MagicSpells.textColor + "No matching player found");
-						return true;
+					if (args[1].matches("^[A-Za-z0-9_]+$")) {
+						// force casting player
+						Player target = Bukkit.getPlayer(args[1]);
+						if (target == null) {
+							sender.sendMessage(MagicSpells.textColor + "No matching player found");
+							return true;
+						}
+						Spell spell = MagicSpells.getSpellByInGameName(args[2]);
+						if (spell == null) {
+							sender.sendMessage(MagicSpells.textColor + "No such spell");
+							return true;
+						}
+						String[] spellArgs = null;
+						if (args.length > 3) {
+							spellArgs = Arrays.copyOfRange(args, 3, args.length);
+						}
+						spell.cast(target, spellArgs);
+						sender.sendMessage(MagicSpells.textColor + "Player " + target.getName() + " forced to cast " + spell.getName());
+					} else if (args[1].matches("^[^,]+,-?[0-9]+,-?[0-9]+,-?[0-9]+$")) {
+						// force casting location
+						String[] locData = args[1].split(",");
+						World world = Bukkit.getWorld(locData[0]);
+						if (world == null) {
+							sender.sendMessage(MagicSpells.textColor + "No such world");
+							return true;
+						}
+						Location loc = new Location(world, Integer.parseInt(locData[1]), Integer.parseInt(locData[2]), Integer.parseInt(locData[3]));
+						Spell spell = MagicSpells.getSpellByInGameName(args[2]);
+						if (spell == null) {
+							sender.sendMessage(MagicSpells.textColor + "No such spell");
+							return true;
+						} else if (!(spell instanceof TargetedLocationSpell)) {
+							sender.sendMessage(MagicSpells.textColor + "That spell cannot be cast at a location");
+							return true;
+						}
+						boolean success = ((TargetedLocationSpell)spell).castAtLocation(loc, 1.0F);
+						if (success) {
+							sender.sendMessage(MagicSpells.textColor + "Spell " + spell.getName() + " casted at location " + args[1]);
+						} else {
+							sender.sendMessage(MagicSpells.textColor + "Spell " + spell.getName() + " failed to cast, may not be able to be cast at location");
+						}
+					} else {
+						sender.sendMessage(MagicSpells.textColor + "Invalid forcecast target, must be playername or world,x,y,z");
 					}
-					Spell spell = MagicSpells.getSpellByInGameName(args[2]);
-					if (spell == null) {
-						sender.sendMessage(MagicSpells.textColor + "No such spell");
-						return true;
-					}
-					String[] spellArgs = null;
-					if (args.length > 3) {
-						spellArgs = Arrays.copyOfRange(args, 3, args.length);
-					}
-					spell.cast(target, spellArgs);
-					sender.sendMessage(MagicSpells.textColor + "Player " + target.getName() + " forced to cast " + spell.getName());
 				} else if (sender.isOp() && args[0].equals("reload")) {
 					if (args.length == 1) {
 						plugin.unload();
@@ -151,9 +183,18 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 								spellArgs[i-1] = args[i];
 							}
 						}
-						boolean ok = spell.castFromConsole(sender, spellArgs);
-						if (!ok) {
-							sender.sendMessage("Cannot cast that spell from console.");
+						boolean casted = false;
+						if (sender instanceof BlockCommandSender) {
+							if (spell instanceof TargetedLocationSpell) {
+								((TargetedLocationSpell)spell).castAtLocation(((BlockCommandSender)sender).getBlock().getLocation(), 1.0F);
+								casted = true;
+							}
+						}
+						if (!casted) {
+							boolean ok = spell.castFromConsole(sender, spellArgs);
+							if (!ok) {
+								sender.sendMessage("Cannot cast that spell from console.");
+							}
 						}
 					}
 				}

@@ -147,6 +147,11 @@ public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 		
 		return false;
 	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return false;
+	}
 	
 	private boolean canZap(Block target) {
 		return !(disallowedBlockTypes.contains(target.getTypeId()) || (allowedBlockTypes.size() > 0 && !allowedBlockTypes.contains(target.getTypeId())));

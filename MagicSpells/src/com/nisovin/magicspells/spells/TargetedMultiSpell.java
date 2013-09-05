@@ -119,6 +119,11 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		return runSpells(caster, null, target, power);
 	}
+	
+	@Override
+	public boolean castAtLocation(Location location, float power) {
+		return false;
+	}
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {

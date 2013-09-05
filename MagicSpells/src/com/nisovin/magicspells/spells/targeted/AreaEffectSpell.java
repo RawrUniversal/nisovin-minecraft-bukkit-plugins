@@ -130,27 +130,37 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 		for (Entity e : entities) {
 			if (e instanceof LivingEntity && box.contains(e)) {
 				LivingEntity target = (LivingEntity)e;
-				if (!target.isDead() && validTargetList.canTarget(player, target)) {
-					SpellTargetEvent event = new SpellTargetEvent(this, player, target);
-					Bukkit.getPluginManager().callEvent(event);
-					if (event.isCancelled()) {
-						continue;
-					} else {
-						target = event.getTarget();
+				if (!target.isDead() && ((player == null && validTargetList.canTarget(target)) || validTargetList.canTarget(player, target))) {
+					if (player != null) {
+						SpellTargetEvent event = new SpellTargetEvent(this, player, target);
+						Bukkit.getPluginManager().callEvent(event);
+						if (event.isCancelled()) {
+							continue;
+						} else {
+							target = event.getTarget();
+						}
 					}
 					for (TargetedSpell spell : spells) {
-						if (spellSourceInCenter && spell instanceof TargetedEntityFromLocationSpell) {
-							((TargetedEntityFromLocationSpell)spell).castAtEntityFromLocation(player, location, target, power);
-						} else if (spell instanceof TargetedEntitySpell) {
-							((TargetedEntitySpell)spell).castAtEntity(player, target, power);
-						} else if (spell instanceof TargetedLocationSpell) {
-							((TargetedLocationSpell)spell).castAtLocation(player, target.getLocation(), power);
+						if (player != null) {
+							if (spellSourceInCenter && spell instanceof TargetedEntityFromLocationSpell) {
+								((TargetedEntityFromLocationSpell)spell).castAtEntityFromLocation(player, location, target, power);
+							} else if (spell instanceof TargetedEntitySpell) {
+								((TargetedEntitySpell)spell).castAtEntity(player, target, power);
+							} else if (spell instanceof TargetedLocationSpell) {
+								((TargetedLocationSpell)spell).castAtLocation(player, target.getLocation(), power);
+							}
+						} else {
+							if (spell instanceof TargetedEntityFromLocationSpell) {
+								((TargetedEntityFromLocationSpell)spell).castAtEntityFromLocation(location, target, power);
+							} else if (spell instanceof TargetedLocationSpell) {
+								((TargetedLocationSpell)spell).castAtLocation(target.getLocation(), power);
+							}
 						}
 					}
 					playSpellEffects(EffectPosition.TARGET, target);
 					if (spellSourceInCenter) {
 						playSpellEffectsTrail(location, target.getLocation());
-					} else {
+					} else if (player != null) {
 						playSpellEffectsTrail(player.getLocation(), target.getLocation());
 					}
 					count++;
@@ -170,6 +180,11 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		return doAoe(caster, target, power);
+	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return doAoe(null, target, power);
 	}
 
 	@Override

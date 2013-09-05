@@ -301,4 +301,9 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 		return true;
 	}
 
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return false;
+	}
+
 }

@@ -109,6 +109,16 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			return false;
 		}
 	}
+
+	@Override
+	public boolean castAtEntityFromLocation(Location from, LivingEntity target, float power) {
+		if (validTargetList.canTarget(target)) {
+			new MissileTracker(null, from, target, power);
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	class MissileTracker implements Runnable {
 		
@@ -144,7 +154,7 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 		@Override
 		public void run() {
 			// check for valid and alive caster and target
-			if (!caster.isValid() || !target.isValid()) {
+			if ((caster != null && !caster.isValid()) || !target.isValid()) {
 				stop();
 				return;
 			}
@@ -180,10 +190,14 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			if (hitRadius > 0 && spell != null) {
 				BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius);
 				if (hitBox.contains(target.getLocation().add(0, yOffset, 0))) {
-					if (spell instanceof TargetedEntitySpell) {
+					if (spell instanceof TargetedEntitySpell && caster != null) {
 						((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
 					} else if (spell instanceof TargetedLocationSpell) {
-						((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);
+						if (caster != null) {
+							((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);
+						} else {
+							((TargetedLocationSpell)spell).castAtLocation(target.getLocation(), power);
+						}
 					}
 					playSpellEffects(EffectPosition.TARGET, target);
 					stop();

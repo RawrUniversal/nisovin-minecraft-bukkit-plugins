@@ -118,7 +118,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 				return noTarget(player);
 			}
 			
-			spawnMob(player, loc);
+			spawnMob(player, player.getLocation(), loc);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -157,7 +157,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 		return null;
 	}
 	
-	private void spawnMob(Player player, Location loc) {
+	private void spawnMob(Player player, Location source, Location loc) {
 		if (entityType != null) {
 			// spawn it
 			loc.setYaw((float) (Math.random() * 360));
@@ -171,7 +171,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 				}
 			}
 			// set as tamed
-			if (tamed && entity instanceof Tameable) {
+			if (tamed && entity instanceof Tameable && player != null) {
 				((Tameable)entity).setTamed(true);
 				((Tameable)entity).setOwner(player);
 			}
@@ -197,7 +197,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 			equip.setBootsDropChance(bootsDropChance);
 			// set nameplate text
 			if (entity instanceof LivingEntity) {
-				if (useCasterName) {
+				if (useCasterName && player != null) {
 					((LivingEntity)entity).setCustomName(player.getDisplayName());
 					((LivingEntity)entity).setCustomNameVisible(true);
 				} else if (nameplateText != null && !nameplateText.isEmpty()) {
@@ -206,7 +206,11 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 				}
 			}
 			// play effects
-			playSpellEffects(player, entity);
+			if (player != null) {
+				playSpellEffects(player, entity);
+			} else {
+				playSpellEffects(source, entity);
+			}
 			// schedule removal
 			if (duration > 0) {
 				MagicSpells.scheduleDelayedTask(new Runnable() {
@@ -221,15 +225,28 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		if (location.equalsIgnoreCase("target")) {
-			spawnMob(caster, target);
+			spawnMob(caster, caster.getLocation(), target);
 		} else if (location.equalsIgnoreCase("caster")) {
-			spawnMob(caster, caster.getLocation());
+			spawnMob(caster, caster.getLocation(), caster.getLocation());
 		} else if (location.equalsIgnoreCase("random")) {
 			Location loc = getRandomLocationFrom(target);
-			System.out.println(target);
-			System.out.println(loc);
 			if (loc != null) {
-				spawnMob(caster, loc);
+				spawnMob(caster, caster.getLocation(), loc);
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		if (location.equalsIgnoreCase("target")) {
+			spawnMob(null, target, target);
+		} else if (location.equalsIgnoreCase("caster")) {
+			spawnMob(null, target, target);
+		} else if (location.equalsIgnoreCase("random")) {
+			Location loc = getRandomLocationFrom(target);
+			if (loc != null) {
+				spawnMob(null, target, loc);
 			}
 		}
 		return true;

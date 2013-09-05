@@ -72,7 +72,7 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 			
 			int arrows = Math.round(this.arrows*power);
 			for (int i = 0; i < arrows; i++) {
-				Arrow a = player.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
+				Arrow a = from.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
 				a.setVelocity(a.getVelocity());
 				a.setShooter(player);
 				if (removeDelay > 0) arrowList.add(a);
@@ -107,6 +107,11 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 	}
 
 	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return false;
+	}
+
+	@Override
 	public boolean castAtEntityFromLocation(Player caster, Location from, LivingEntity target, float power) {
 		if (!noTarget) {
 			volley(caster, from, target.getLocation(), power);
@@ -114,6 +119,11 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public boolean castAtEntityFromLocation(Location from, LivingEntity target, float power) {
+		return false;
 	}
 	
 	private class ArrowShooter implements Runnable {

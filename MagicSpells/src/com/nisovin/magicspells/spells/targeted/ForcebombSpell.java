@@ -65,14 +65,20 @@ public class ForcebombSpell extends TargetedSpell implements TargetedLocationSpe
 		knockback(caster, target, power);
 		return true;
 	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		knockback(null, target, power);
+		return true;
+	}
 	
 	public void knockback(Player player, Location location, float power) {
 	    Vector t = location.toVector();
 		Collection<Entity> entities = location.getWorld().getEntitiesByClasses(LivingEntity.class);
 		Vector e, v;
 		for (Entity entity : entities) {
-			if (entity instanceof LivingEntity && validTargetList.canTarget(player, (LivingEntity)entity) && entity.getLocation().distanceSquared(location) <= radiusSquared) {
-				if (callTargetEvents) {
+			if (entity instanceof LivingEntity && (player == null || validTargetList.canTarget(player, (LivingEntity)entity)) && entity.getLocation().distanceSquared(location) <= radiusSquared) {
+				if (callTargetEvents && player != null) {
 					SpellTargetEvent event = new SpellTargetEvent(this, player, (LivingEntity)entity);
 					Bukkit.getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
@@ -93,7 +99,11 @@ public class ForcebombSpell extends TargetedSpell implements TargetedLocationSpe
 				playSpellEffects(EffectPosition.TARGET, entity);
 			}
 	    }
-		playSpellEffects(EffectPosition.CASTER, player);
+		if (player != null) {
+			playSpellEffects(EffectPosition.CASTER, player);
+		} else {
+			playSpellEffects(EffectPosition.CASTER, location);
+		}
 	}
 
 }

@@ -152,6 +152,11 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 		}
 	}
 
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return castAtLocation(null, target, power);
+	}
+
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		Pulser pulser = pulsers.get(event.getBlock());
@@ -240,7 +245,15 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 		}
 
 		public boolean pulse() {
-			if (caster.isValid() && caster.isOnline()
+			if (caster == null) {
+				if (block.getTypeId() == typeId
+					&& block.getChunk().isLoaded()) {
+					return activate();
+				} else {
+					stop();
+					return true;
+				}
+			} else if (caster.isValid() && caster.isOnline()
 					&& block.getTypeId() == typeId
 					&& block.getChunk().isLoaded()) {
 				if (maxDistanceSquared > 0
@@ -248,24 +261,32 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 					stop();
 					return true;
 				} else {
-					boolean activated = false;
-					for (TargetedLocationSpell spell : spells) {
-						activated = spell.castAtLocation(caster, location, power) || activated;
-					}
-					playSpellEffects(EffectPosition.DELAYED, location);
-					if (totalPulses > 0 && (activated || !onlyCountOnSuccess)) {
-						pulseCount += 1;
-						if (pulseCount >= totalPulses) {
-							stop();
-							return true;
-						}
-					}
-					return false;
+					return activate();
 				}
 			} else {
 				stop();
 				return true;
 			}
+		}
+		
+		private boolean activate() {
+			boolean activated = false;
+			for (TargetedLocationSpell spell : spells) {
+				if (caster != null) {
+					activated = spell.castAtLocation(caster, location, power) || activated;
+				} else {
+					activated = spell.castAtLocation(location, power) || activated;
+				}
+			}
+			playSpellEffects(EffectPosition.DELAYED, location);
+			if (totalPulses > 0 && (activated || !onlyCountOnSuccess)) {
+				pulseCount += 1;
+				if (pulseCount >= totalPulses) {
+					stop();
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public void stop() {

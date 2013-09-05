@@ -7,4 +7,6 @@ public interface TargetedLocationSpell {
 	
 	public boolean castAtLocation(Player caster, Location target, float power);
 
+	public boolean castAtLocation(Location target, float power);
+	
 }

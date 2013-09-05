@@ -100,6 +100,11 @@ public class TreeSpell extends TargetedSpell implements TargetedLocationSpell {
 		}
 		return ret;
 	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		return false;
+	}
 	
 	private class GrowAnimation extends SpellAnimation {
 		
