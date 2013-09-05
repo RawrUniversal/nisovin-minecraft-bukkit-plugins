@@ -2,6 +2,7 @@ package com.nisovin.magicspells.spells.targeted;
 
 import java.util.HashSet;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -78,6 +80,15 @@ public class BlinkSpell extends TargetedSpell implements TargetedLocationSpell {
 				} else if (prev != null && BlockUtils.isPathable(prev) && BlockUtils.isPathable(prev.getRelative(0,1,0))) {
 					// no space on top, put adjacent instead
 					loc = prev.getLocation();
+				}
+				if (loc != null) {
+					SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, loc);
+					Bukkit.getPluginManager().callEvent(event);
+					if (event.isCancelled()) {
+						loc = null;
+					} else {
+						loc = event.getTargetLocation();
+					}
 				}
 				if (loc != null) {
 					loc.setX(loc.getX()+.5);

@@ -9,6 +9,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -56,6 +57,15 @@ public class LightningSpell extends TargetedSpell implements TargetedLocationSpe
 					target = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
 				} catch (IllegalStateException e) {	
 					target = null;
+				}
+				if (target != null) {
+					SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, target.getLocation());
+					Bukkit.getPluginManager().callEvent(event);
+					if (event.isCancelled()) {
+						target = null;
+					} else {
+						target = event.getTargetLocation().getBlock();
+					}
 				}
 			}
 			if (target != null) {

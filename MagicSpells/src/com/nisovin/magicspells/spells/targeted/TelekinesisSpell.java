@@ -13,6 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -47,6 +48,15 @@ public class TelekinesisSpell extends TargetedSpell implements TargetedLocationS
 				// fail
 				return noTarget(player);
 			} else {
+				// run target event
+				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, target.getLocation());
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					return noTarget(player);
+				} else {
+					target = event.getTargetLocation().getBlock();
+				}
+				// run effect
 				boolean activated = activate(player, target);
 				if (!activated) {
 					return noTarget(player);

@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -36,6 +37,11 @@ public class InBlockCondition extends Condition {
 				return true;
 			}
 		}
+		return false;
+	}
+	
+	@Override
+	public boolean check(Player player, Location location) {
 		return false;
 	}
 

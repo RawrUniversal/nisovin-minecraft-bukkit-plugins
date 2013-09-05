@@ -2,6 +2,7 @@ package com.nisovin.magicspells.castmodifiers.conditions;
 
 import java.util.Random;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -37,6 +38,11 @@ public class ChanceCondition extends Condition {
 
 	@Override
 	public boolean check(Player player, LivingEntity target) {
+		return check(player);
+	}
+	
+	@Override
+	public boolean check(Player player, Location location) {
 		return check(player);
 	}
 

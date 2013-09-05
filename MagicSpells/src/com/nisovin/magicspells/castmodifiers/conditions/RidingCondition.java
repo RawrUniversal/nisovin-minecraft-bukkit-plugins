@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -30,6 +31,11 @@ public class RidingCondition extends Condition {
 		Entity vehicle = target.getVehicle();
 		if (vehicle == null) return false;		
 		return entityType == null || vehicle.getType() == entityType;
+	}
+	
+	@Override
+	public boolean check(Player player, Location location) {
+		return false;
 	}
 
 }

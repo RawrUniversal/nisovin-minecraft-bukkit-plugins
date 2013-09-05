@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
@@ -77,6 +78,11 @@ public class WearingCondition extends Condition {
 				return false;
 			}
 		}
+	}
+	
+	@Override
+	public boolean check(Player player, Location location) {
+		return false;
 	}
 	
 	private boolean check(ItemStack item) {

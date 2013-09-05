@@ -13,6 +13,7 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -41,6 +42,15 @@ public class ForcebombSpell extends TargetedSpell implements TargetedLocationSpe
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block block = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+			if (block != null && block.getType() != Material.AIR) {
+				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, block.getLocation());
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					block = null;
+				} else {
+					block = event.getTargetLocation().getBlock();
+				}
+			}
 			if (block != null && block.getType() != Material.AIR) {
 				knockback(player, block.getLocation(), power);
 			} else {

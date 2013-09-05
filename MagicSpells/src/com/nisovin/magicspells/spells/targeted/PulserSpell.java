@@ -21,6 +21,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -84,8 +85,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 	}
 
 	@Override
-	public PostCastAction castSpell(Player player, SpellCastState state,
-			float power, String[] args) {
+	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			if (capPerPlayer > 0) {
 				int count = 0;
@@ -109,6 +109,15 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 					&& target.getType() != Material.SNOW
 					&& target.getType() != Material.LONG_GRASS) {
 				return noTarget(player);
+			}
+			if (target != null) {
+				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, target.getLocation());
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					return noTarget(player);
+				} else {
+					target = event.getTargetLocation().getBlock();
+				}
 			}
 			createPulser(player, target, power);
 		}

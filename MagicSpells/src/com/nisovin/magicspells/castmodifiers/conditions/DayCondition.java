@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -14,13 +15,18 @@ public class DayCondition extends Condition {
 	
 	@Override
 	public boolean check(Player player) {
-		long time = player.getWorld().getTime();
-		return !(time > 13000 && time < 23000);
+		return check(player, player.getLocation());
 	}
 	
 	@Override
 	public boolean check(Player player, LivingEntity target) {
 		return check(player);
+	}
+	
+	@Override
+	public boolean check(Player player, Location location) {
+		long time = location.getWorld().getTime();
+		return !(time > 13000 && time < 23000);
 	}
 
 }

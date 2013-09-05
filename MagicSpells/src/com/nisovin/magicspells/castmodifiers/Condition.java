@@ -2,6 +2,7 @@ package com.nisovin.magicspells.castmodifiers;
 
 import java.util.HashMap;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -14,6 +15,8 @@ public abstract class Condition {
 	public abstract boolean check(Player player);
 	
 	public abstract boolean check(Player player, LivingEntity target);
+	
+	public abstract boolean check(Player player, Location location);
 	
 	private static HashMap<String, Class<? extends Condition>> conditions = new HashMap<String, Class<? extends Condition>>();
 	

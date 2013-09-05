@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -28,6 +29,12 @@ public class DistanceMoreThan extends Condition {
 	@Override
 	public boolean check(Player player, LivingEntity target) {
 		return player.getLocation().distanceSquared(target.getLocation()) > distanceSq;
+	}
+
+	
+	@Override
+	public boolean check(Player player, Location location) {
+		return player.getLocation().distanceSquared(location) > distanceSq;
 	}
 
 }

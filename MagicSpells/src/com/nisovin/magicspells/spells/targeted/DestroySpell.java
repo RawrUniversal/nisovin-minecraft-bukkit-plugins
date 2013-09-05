@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,6 +19,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -109,6 +111,15 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			Block b = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+			if (b != null && b.getType() != Material.AIR) {
+				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, b.getLocation());
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					b = null;
+				} else {
+					b = event.getTargetLocation().getBlock();
+				}
+			}
 			if (b != null && b.getType() != Material.AIR) {
 				doIt(player.getLocation(), b.getLocation().add(.5, .5, .5));
 			}

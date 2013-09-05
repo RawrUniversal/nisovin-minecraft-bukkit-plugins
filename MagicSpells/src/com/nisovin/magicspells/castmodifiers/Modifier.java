@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import com.nisovin.magicspells.events.ManaChangeEvent;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.util.Util;
 
 public class Modifier {
@@ -108,6 +109,23 @@ public class Modifier {
 	public boolean apply(SpellTargetEvent event) {
 		Player player = event.getCaster();
 		boolean check = condition.check(player, event.getTarget());
+		if (check == false && type == ModifierType.REQUIRED) {
+			event.setCancelled(true);
+			return false;
+		} else if (check == true && type == ModifierType.DENIED) {
+			event.setCancelled(true);
+			return false;
+		} else if (check == true && type == ModifierType.STOP) {
+			return false;
+		} else if (check == false && type == ModifierType.CONTINUE) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean apply(SpellTargetLocationEvent event) {
+		Player player = event.getCaster();
+		boolean check = condition.check(player, event.getTargetLocation());
 		if (check == false && type == ModifierType.REQUIRED) {
 			event.setCancelled(true);
 			return false;

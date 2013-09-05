@@ -2,6 +2,7 @@ package com.nisovin.magicspells.castmodifiers.conditions;
 
 import java.util.Set;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -55,6 +56,11 @@ public class EntityTypeCondition extends Condition {
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public boolean check(Player player, Location location) {
+		return false;
 	}
 
 }

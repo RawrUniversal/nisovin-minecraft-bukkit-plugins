@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -57,7 +58,17 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 				lastTwo = null;
 			}
 			if (lastTwo != null && lastTwo.size() == 2 && lastTwo.get(1).getType() != Material.AIR && lastTwo.get(0).getType() == Material.AIR) {
-				boolean done = materialize(player, lastTwo.get(0), lastTwo.get(1));
+				Block block = lastTwo.get(0);
+				Block against = lastTwo.get(1);
+				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, block.getLocation());
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					return noTarget(player, strFailed);
+				} else {
+					block = event.getTargetLocation().getBlock();
+				}
+				
+				boolean done = materialize(player, block, against);
 				if (!done) {
 					return noTarget(player, strFailed);
 				}

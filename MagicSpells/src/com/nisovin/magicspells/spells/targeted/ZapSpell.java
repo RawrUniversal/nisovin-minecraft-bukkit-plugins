@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -68,6 +70,15 @@ public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 				target = player.getTargetBlock(transparentBlockTypes, range>0?range:100);
 			} catch (IllegalStateException e) {
 				target = null;
+			}
+			if (target != null) {
+				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, target.getLocation());
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					target = null;
+				} else {
+					target = event.getTargetLocation().getBlock();
+				}
 			}
 			if (target != null) {
 				// check for disallowed block

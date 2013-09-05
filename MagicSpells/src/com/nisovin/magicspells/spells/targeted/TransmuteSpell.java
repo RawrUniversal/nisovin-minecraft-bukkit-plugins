@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -46,6 +48,14 @@ public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpe
 			Block block = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
 			if (block == null) {
 				return noTarget(player);
+			} else {
+				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, block.getLocation());
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					return noTarget(player);
+				} else {
+					block = event.getTargetLocation().getBlock();
+				}
 			}
 			
 			if (!canTransmute(block)) {

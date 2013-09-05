@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -28,7 +29,10 @@ public class PotionEffectCondition extends Condition {
 	public boolean check(Player player, LivingEntity target) {
 		return target.hasPotionEffect(effectType);
 	}
-
 	
+	@Override
+	public boolean check(Player player, Location location) {
+		return false;
+	}	
 	
 }

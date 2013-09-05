@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -14,12 +15,17 @@ public class StormCondition extends Condition {
 
 	@Override
 	public boolean check(Player player) {
-		return player.getWorld().hasStorm() || player.getWorld().isThundering();
+		return check(player, player.getLocation());
 	}
 	
 	@Override
 	public boolean check(Player player, LivingEntity target) {
-		return check(player);
+		return check(player, target.getLocation());
+	}
+	
+	@Override
+	public boolean check(Player player, Location location) {
+		return location.getWorld().hasStorm() || location.getWorld().isThundering();
 	}
 
 }

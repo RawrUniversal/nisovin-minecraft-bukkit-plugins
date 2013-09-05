@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.spells.targeted;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -7,6 +8,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -34,6 +36,15 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 				block = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
 			} else {
 				block = player.getLocation().subtract(0, 1, 0).getBlock();
+			}
+			if (block != null) {
+				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, block.getLocation());
+				Bukkit.getPluginManager().callEvent(event);
+				if (event.isCancelled()) {
+					block = null;
+				} else {
+					block = event.getTargetLocation().getBlock();
+				}
 			}
 			if (block != null) {
 				boolean farmed = farm(block, Math.round(radius * power));

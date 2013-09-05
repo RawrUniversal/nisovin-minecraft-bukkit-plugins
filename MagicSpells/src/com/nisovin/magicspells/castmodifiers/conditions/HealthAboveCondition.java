@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -27,6 +28,11 @@ public class HealthAboveCondition extends Condition {
 	@Override
 	public boolean check(Player player, LivingEntity target) {
 		return target.getHealth() > health;
+	}
+	
+	@Override
+	public boolean check(Player player, Location location) {
+		return false;
 	}
 
 }
