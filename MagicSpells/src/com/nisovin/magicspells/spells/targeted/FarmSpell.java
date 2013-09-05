@@ -79,9 +79,11 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 				}
 				b = b.getRelative(BlockFace.UP);
 				if (b.getType() == Material.AIR) {
-					b.setTypeId(newCropType);
-					if (growth > 1) b.setData((byte) (growth-1));
-					count++;
+					if (newCropType > 0) {
+						b.setTypeId(newCropType);
+						if (growth > 1) b.setData((byte) (growth-1));
+						count++;
+					}
 				} else if ((b.getType() == Material.CROPS || b.getType() == Material.CARROT || b.getType() == Material.POTATO) && b.getData() < 7) {
 					byte newData = (byte) (b.getData() + growth);
 					if (newData > 7) newData = 7;
