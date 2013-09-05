@@ -49,6 +49,7 @@ import com.nisovin.magicspells.util.ItemNameResolver;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MagicItemNameResolver;
 import com.nisovin.magicspells.util.Metrics;
+import com.nisovin.magicspells.util.MoneyHandler;
 import com.nisovin.magicspells.util.Util;
 import com.nisovin.magicspells.util.Metrics.Graph;
 import com.nisovin.magicspells.volatilecode.*;
@@ -136,6 +137,7 @@ public class MagicSpells extends JavaPlugin {
 	static BuffManager buffManager;
 	static ExperienceBarManager expBarManager;
 	static ItemNameResolver itemNameResolver;
+	static MoneyHandler moneyHandler;
 	
 	// profiling
 	static HashMap<String, Long> profilingTotalTime;
@@ -276,6 +278,9 @@ public class MagicSpells extends JavaPlugin {
 		buffManager = new BuffManager(config.getInt("general.buff-check-interval", 0));
 		expBarManager = new ExperienceBarManager();
 		itemNameResolver = new MagicItemNameResolver();
+		if (getServer().getPluginManager().isPluginEnabled("Vault")) {
+			moneyHandler = new MoneyHandler();
+		}
 		
 		// call loading event
 		pm.callEvent(new MagicSpellsLoadingEvent(this));
@@ -773,6 +778,10 @@ public class MagicSpells extends JavaPlugin {
 		itemNameResolver = resolver;
 	}
 	
+	public static MoneyHandler getMoneyHandler() {
+		return moneyHandler;
+	}
+	
 	/**
 	 * Formats a string by performing the specified replacements.
 	 * @param message the string to format
@@ -1081,6 +1090,7 @@ public class MagicSpells extends JavaPlugin {
 		}
 		expBarManager = null;
 		itemNameResolver = null;
+		moneyHandler = null;
 		losTransparentBlocks = null;
 		ignoreCastItemDurability = null;
 		entityNames = null;
