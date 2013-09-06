@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -13,6 +14,8 @@ public class HoldingCondition extends Condition {
 	int[] ids;
 	short[] datas;
 	boolean[] checkData;
+	String[] names;
+	boolean[] checkName;
 	
 	@Override
 	public boolean setVar(String var) {
@@ -21,7 +24,19 @@ public class HoldingCondition extends Condition {
 			ids = new int[vardata.length];
 			datas = new short[vardata.length];
 			checkData = new boolean[vardata.length];
+			names = new String[vardata.length];
+			checkName = new boolean[vardata.length];
 			for (int i = 0; i < vardata.length; i++) {
+				if (vardata[i].contains("|")) {
+					String[] subvardata = vardata[i].split("\\|");
+					vardata[i] = subvardata[0];
+					names[i] = ChatColor.translateAlternateColorCodes('&', subvardata[1]);
+					if (names[i].isEmpty()) names[i] = null;
+					checkName[i] = true;
+				} else {
+					names[i] = null;
+					checkName[i] = false;
+				}
 				if (vardata[i].contains(":")) {
 					String[] subvardata = vardata[i].split(":");
 					ids[i] = Integer.parseInt(subvardata[0]);
@@ -65,14 +80,27 @@ public class HoldingCondition extends Condition {
 	}
 	
 	private boolean check(ItemStack item) {
+		if (item == null) return false;
 		int thisid = item == null ? 0 : item.getTypeId();
 		short thisdata = item == null ? 0 : item.getDurability();
+		String thisname = null;
+		try {
+			if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+				thisname = item.getItemMeta().getDisplayName();
+			}
+		} catch (Exception e) {}
 		for (int i = 0; i < ids.length; i++) {
-			if (ids[i] == thisid && (!checkData[i] || datas[i] == thisdata)) {
+			if (ids[i] == thisid && (!checkData[i] || datas[i] == thisdata) && (!checkName[i] || strEquals(names[i], thisname))) {
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	private boolean strEquals(String s1, String s2) {
+		if (s1 == s2) return true;
+		if (s1 == null || s2 == null) return false;
+		return s1.equals(s2);
 	}
 
 }

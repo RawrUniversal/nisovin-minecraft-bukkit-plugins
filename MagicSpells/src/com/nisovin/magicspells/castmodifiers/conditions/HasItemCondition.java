@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -13,10 +14,22 @@ public class HasItemCondition extends Condition {
 	int id;
 	short data;
 	boolean checkData;
+	String name;
+	boolean checkName;
 	
 	@Override
 	public boolean setVar(String var) {
 		try {
+			if (var.contains("|")) {
+				String[] subvardata = var.split("\\|");
+				var = subvardata[0];
+				name = ChatColor.translateAlternateColorCodes('&', subvardata[1]);
+				if (name.isEmpty()) name = null;
+				checkName = true;
+			} else {
+				name = null;
+				checkName = false;
+			}
 			if (var.contains(":")) {
 				String[] vardata = var.split(":");
 				id = Integer.parseInt(vardata[0]);
@@ -34,9 +47,15 @@ public class HasItemCondition extends Condition {
 
 	@Override
 	public boolean check(Player player) {
-		if (checkData) {
+		if (checkData || checkName) {
 			for (ItemStack item : player.getInventory().getContents()) {
-				if (item != null && item.getTypeId() == id && item.getDurability() == data) {
+				String thisname = null;
+				try {
+					if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+						thisname = item.getItemMeta().getDisplayName();
+					}
+				} catch (Exception e) {}
+				if (item != null && item.getTypeId() == id && (!checkData || item.getDurability() == data) && (!checkName || strEquals(thisname, name))) {
 					return true;
 				}
 			}
@@ -44,6 +63,12 @@ public class HasItemCondition extends Condition {
 		} else {
 			return player.getInventory().contains(Material.getMaterial(id));
 		}
+	}
+	
+	private boolean strEquals(String s1, String s2) {
+		if (s1 == s2) return true;
+		if (s1 == null || s2 == null) return false;
+		return s1.equals(s2);
 	}
 	
 	@Override
