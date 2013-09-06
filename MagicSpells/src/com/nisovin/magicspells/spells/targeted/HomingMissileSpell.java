@@ -143,22 +143,30 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 		int counter = 0;
 		
 		public MissileTracker(Player caster, LivingEntity target, float power) {
-			this.caster = caster;
-			this.target = target;
-			this.power = power;
-			this.startTime = System.currentTimeMillis();
 			this.currentLocation = caster.getLocation().clone().add(0, yOffset, 0);
 			this.currentVelocity = currentLocation.getDirection();
-			this.currentVelocity.multiply(velocityPerTick);
-			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
+			init(caster, target, power);
 			playSpellEffects(EffectPosition.CASTER, caster);
 		}
 		
 		public MissileTracker(Player caster, Location startLocation, LivingEntity target, float power) {
-			this(caster, target, power);
 			this.currentLocation = startLocation.clone().add(0, yOffset, 0);
 			this.currentVelocity = target.getLocation().toVector().subtract(currentLocation.toVector()).normalize();
+			init(caster, target, power);
+			if (caster != null) {
+				playSpellEffects(EffectPosition.CASTER, caster);
+			} else {
+				playSpellEffects(EffectPosition.CASTER, startLocation);
+			}
+		}
+		
+		private void init(Player caster, LivingEntity target, float power) {
 			this.currentVelocity.multiply(velocityPerTick);
+			this.caster = caster;
+			this.target = target;
+			this.power = power;
+			this.startTime = System.currentTimeMillis();
+			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);
 		}
 		
 		@Override
@@ -200,8 +208,12 @@ public class HomingMissileSpell extends TargetedSpell implements TargetedEntityS
 			if (hitRadius > 0 && spell != null) {
 				BoundingBox hitBox = new BoundingBox(currentLocation, hitRadius);
 				if (hitBox.contains(target.getLocation().add(0, yOffset, 0))) {
-					if (spell instanceof TargetedEntitySpell && caster != null) {
-						((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
+					if (spell instanceof TargetedEntitySpell) {
+						if (caster != null) {
+							((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
+						} else {
+							((TargetedEntitySpell)spell).castAtEntity(target, power);
+						}
 					} else if (spell instanceof TargetedLocationSpell) {
 						if (caster != null) {
 							((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);

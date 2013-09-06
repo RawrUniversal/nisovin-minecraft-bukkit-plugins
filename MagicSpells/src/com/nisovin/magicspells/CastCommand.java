@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.nisovin.magicspells.mana.ManaChangeReason;
+import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.Util;
 
@@ -193,7 +194,21 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 						if (!casted) {
 							boolean ok = spell.castFromConsole(sender, spellArgs);
 							if (!ok) {
-								sender.sendMessage("Cannot cast that spell from console.");
+								if (spell instanceof TargetedEntitySpell && spellArgs != null && spellArgs.length == 1) {
+									Player target = Bukkit.getPlayer(spellArgs[0]);
+									if (target != null) {
+										ok = ((TargetedEntitySpell)spell).castAtEntity(target, 1.0F);
+										if (ok) {
+											sender.sendMessage("Spell casted!");
+										} else {
+											sender.sendMessage("Spell failed, probably can't be cast from console.");
+										}
+									} else {
+										sender.sendMessage("Invalid target.");
+									}
+								} else {
+									sender.sendMessage("Cannot cast that spell from console.");
+								}
 							}
 						}
 					}
