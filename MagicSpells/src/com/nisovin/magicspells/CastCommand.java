@@ -43,50 +43,22 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 						sender.sendMessage(MagicSpells.textColor + MagicSpells.strCastUsage);
 					}
 				} else if (sender.isOp() && args[0].equals("forcecast") && args.length >= 3) {
-					if (args[1].matches("^[A-Za-z0-9_]+$")) {
-						// force casting player
-						Player target = Bukkit.getPlayer(args[1]);
-						if (target == null) {
-							sender.sendMessage(MagicSpells.textColor + "No matching player found");
-							return true;
-						}
-						Spell spell = MagicSpells.getSpellByInGameName(args[2]);
-						if (spell == null) {
-							sender.sendMessage(MagicSpells.textColor + "No such spell");
-							return true;
-						}
-						String[] spellArgs = null;
-						if (args.length > 3) {
-							spellArgs = Arrays.copyOfRange(args, 3, args.length);
-						}
-						spell.cast(target, spellArgs);
-						sender.sendMessage(MagicSpells.textColor + "Player " + target.getName() + " forced to cast " + spell.getName());
-					} else if (args[1].matches("^[^,]+,-?[0-9]+,-?[0-9]+,-?[0-9]+$")) {
-						// force casting location
-						String[] locData = args[1].split(",");
-						World world = Bukkit.getWorld(locData[0]);
-						if (world == null) {
-							sender.sendMessage(MagicSpells.textColor + "No such world");
-							return true;
-						}
-						Location loc = new Location(world, Integer.parseInt(locData[1]), Integer.parseInt(locData[2]), Integer.parseInt(locData[3]));
-						Spell spell = MagicSpells.getSpellByInGameName(args[2]);
-						if (spell == null) {
-							sender.sendMessage(MagicSpells.textColor + "No such spell");
-							return true;
-						} else if (!(spell instanceof TargetedLocationSpell)) {
-							sender.sendMessage(MagicSpells.textColor + "That spell cannot be cast at a location");
-							return true;
-						}
-						boolean success = ((TargetedLocationSpell)spell).castAtLocation(loc, 1.0F);
-						if (success) {
-							sender.sendMessage(MagicSpells.textColor + "Spell " + spell.getName() + " casted at location " + args[1]);
-						} else {
-							sender.sendMessage(MagicSpells.textColor + "Spell " + spell.getName() + " failed to cast, may not be able to be cast at location");
-						}
-					} else {
-						sender.sendMessage(MagicSpells.textColor + "Invalid forcecast target, must be playername or world,x,y,z");
+					Player target = Bukkit.getPlayer(args[1]);
+					if (target == null) {
+						sender.sendMessage(MagicSpells.textColor + "No matching player found");
+						return true;
 					}
+					Spell spell = MagicSpells.getSpellByInGameName(args[2]);
+					if (spell == null) {
+						sender.sendMessage(MagicSpells.textColor + "No such spell");
+						return true;
+					}
+					String[] spellArgs = null;
+					if (args.length > 3) {
+						spellArgs = Arrays.copyOfRange(args, 3, args.length);
+					}
+					spell.cast(target, spellArgs);
+					sender.sendMessage(MagicSpells.textColor + "Player " + target.getName() + " forced to cast " + spell.getName());
 				} else if (sender.isOp() && args[0].equals("reload")) {
 					if (args.length == 1) {
 						plugin.unload();
@@ -187,17 +159,30 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 						boolean casted = false;
 						if (sender instanceof BlockCommandSender) {
 							if (spell instanceof TargetedLocationSpell) {
-								((TargetedLocationSpell)spell).castAtLocation(((BlockCommandSender)sender).getBlock().getLocation().add(.5, .5, .5), 1.0F);
+								Location loc = ((BlockCommandSender)sender).getBlock().getLocation().add(.5, .5, .5);
+								if (spellArgs != null && spellArgs.length == 3) {
+									try {
+										int x = Integer.parseInt(spellArgs[0]);
+										int y = Integer.parseInt(spellArgs[1]);
+										int z = Integer.parseInt(spellArgs[2]);
+										loc.add(x, y, z);
+									} catch (NumberFormatException e) {}
+								}
+								((TargetedLocationSpell)spell).castAtLocation(loc, 1.0F);
 								casted = true;
 							}
 						}
 						if (!casted) {
 							boolean ok = spell.castFromConsole(sender, spellArgs);
 							if (!ok) {
-								if (spell instanceof TargetedEntitySpell && spellArgs != null && spellArgs.length == 1) {
+								if ((spell instanceof TargetedEntitySpell || spell instanceof TargetedLocationSpell) && spellArgs != null && spellArgs.length == 1 && spellArgs[0].matches("^[A-Za-z0-9_]+$")) {
 									Player target = Bukkit.getPlayer(spellArgs[0]);
 									if (target != null) {
-										ok = ((TargetedEntitySpell)spell).castAtEntity(target, 1.0F);
+										if (spell instanceof TargetedEntitySpell) {
+											ok = ((TargetedEntitySpell)spell).castAtEntity(target, 1.0F);
+										} else if (spell instanceof TargetedLocationSpell) {
+											ok = ((TargetedLocationSpell)spell).castAtLocation(target.getLocation(), 1.0F);
+										}
 										if (ok) {
 											sender.sendMessage("Spell casted!");
 										} else {
@@ -205,6 +190,20 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 										}
 									} else {
 										sender.sendMessage("Invalid target.");
+									}
+								} else if (spell instanceof TargetedLocationSpell && spellArgs != null && spellArgs.length == 1 && spellArgs[0].matches("^[^,]+,-?[0-9]+,-?[0-9]+,-?[0-9]+$")) {
+									String[] locData = spellArgs[0].split(",");
+									World world = Bukkit.getWorld(locData[0]);
+									if (world != null) {
+										Location loc = new Location(world, Integer.parseInt(locData[1]), Integer.parseInt(locData[2]), Integer.parseInt(locData[3]));
+										ok = ((TargetedLocationSpell)spell).castAtLocation(loc, 1.0F);
+										if (ok) {
+											sender.sendMessage("Spell casted!");
+										} else {
+											sender.sendMessage("Spell failed, probably can't be cast from console.");
+										}
+									} else {
+										sender.sendMessage("No such world.");
 									}
 								} else {
 									sender.sendMessage("Cannot cast that spell from console.");
