@@ -19,22 +19,22 @@ class MagicPlayerListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {		
 		// set up spell book
 		Spellbook spellbook = new Spellbook(event.getPlayer(), plugin);
-		MagicSpells.spellbooks.put(event.getPlayer().getName(), spellbook);
+		plugin.spellbooks.put(event.getPlayer().getName(), spellbook);
 		
 		// set up mana bar
-		if (MagicSpells.mana != null) {
-			MagicSpells.mana.createManaBar(event.getPlayer());
+		if (plugin.mana != null) {
+			plugin.mana.createManaBar(event.getPlayer());
 		}
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		MagicSpells.spellbooks.remove(event.getPlayer().getName());
+		plugin.spellbooks.remove(event.getPlayer().getName());
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerChangeWorld(PlayerChangedWorldEvent event) {
-		if (MagicSpells.separatePlayerSpellsPerWorld) {
+		if (plugin.separatePlayerSpellsPerWorld) {
 			MagicSpells.debug(2, "Player '" + event.getPlayer().getName() + "' changed from world '" + event.getFrom().getName() + "' to '" + event.getPlayer().getWorld().getName() + "', reloading spells");
 			MagicSpells.getSpellbook(event.getPlayer()).reload();
 		}

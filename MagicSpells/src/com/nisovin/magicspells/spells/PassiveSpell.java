@@ -282,7 +282,7 @@ public class PassiveSpell extends Spell {
 				MagicSpells.sendMessage(caster, formatMessage(strOnCooldown, "%c", Math.round(getCooldown(caster))+""));
 			} else if (state == SpellCastState.MISSING_REAGENTS) {
 				MagicSpells.sendMessage(caster, strMissingReagents);
-				if (MagicSpells.showStrCostOnMissingReagents && strCost != null && !strCost.isEmpty()) {
+				if (MagicSpells.showStrCostOnMissingReagents() && strCost != null && !strCost.isEmpty()) {
 					MagicSpells.sendMessage(caster, "    (" + strCost + ")");
 				}
 			}

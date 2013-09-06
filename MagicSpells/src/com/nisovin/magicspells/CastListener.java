@@ -58,14 +58,14 @@ public class CastListener implements Listener {
 			noCast.add(event.getPlayer());
 		} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			// left click - cast
-			if (!MagicSpells.castOnAnimate) {
+			if (!plugin.castOnAnimate) {
 				castSpell(event.getPlayer());
 			}
 		} else if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			// right click -- cycle spell and/or process mana pots
 			ItemStack inHand = player.getItemInHand();
 			
-			if ((inHand != null && inHand.getType() != Material.AIR) || MagicSpells.allowCastWithFist) {
+			if ((inHand != null && inHand.getType() != Material.AIR) || plugin.allowCastWithFist) {
 			
 				// cycle spell
 				Spell spell = null;
@@ -76,10 +76,10 @@ public class CastListener implements Listener {
 				}
 				if (spell != null) {
 					// send message
-					MagicSpells.sendMessage(player, MagicSpells.strSpellChange, "%s", spell.getName());
+					MagicSpells.sendMessage(player, plugin.strSpellChange, "%s", spell.getName());
 					// show spell icon
-					if (MagicSpells.spellIconSlot >= 0) {
-						showIcon(player, MagicSpells.spellIconSlot, spell.getSpellIcon());
+					if (plugin.spellIconSlot >= 0) {
+						showIcon(player, plugin.spellIconSlot, spell.getSpellIcon());
 					}
 					// use cool new text thingy
 					boolean yay = false;
@@ -97,10 +97,10 @@ public class CastListener implements Listener {
 				}
 				
 				// check for mana pots
-				if (MagicSpells.enableManaBars && MagicSpells.manaPotions != null) {
+				if (plugin.enableManaBars && plugin.manaPotions != null) {
 					// find mana potion TODO: fix this, it's not good
 					int restoreAmt = 0;
-					for (Map.Entry<ItemStack, Integer> entry : MagicSpells.manaPotions.entrySet()) {
+					for (Map.Entry<ItemStack, Integer> entry : plugin.manaPotions.entrySet()) {
 						if (inHand.isSimilar(entry.getKey())) {
 							restoreAmt = entry.getValue();
 							break;
@@ -108,19 +108,19 @@ public class CastListener implements Listener {
 					}
 					if (restoreAmt > 0) {
 						// check cooldown
-						if (MagicSpells.manaPotionCooldown > 0) {
-							Long c = MagicSpells.manaPotionCooldowns.get(player);
+						if (plugin.manaPotionCooldown > 0) {
+							Long c = plugin.manaPotionCooldowns.get(player);
 							if (c != null && c > System.currentTimeMillis()) {
-								MagicSpells.sendMessage(player, MagicSpells.strManaPotionOnCooldown.replace("%c", ""+(int)((c-System.currentTimeMillis())/1000)));
+								MagicSpells.sendMessage(player, plugin.strManaPotionOnCooldown.replace("%c", ""+(int)((c-System.currentTimeMillis())/1000)));
 								return;
 							}
 						}
 						// add mana
-						boolean added = MagicSpells.mana.addMana(player, restoreAmt, ManaChangeReason.POTION);
+						boolean added = plugin.mana.addMana(player, restoreAmt, ManaChangeReason.POTION);
 						if (added) {
 							// set cooldown
-							if (MagicSpells.manaPotionCooldown > 0) {
-								MagicSpells.manaPotionCooldowns.put(player, System.currentTimeMillis() + MagicSpells.manaPotionCooldown*1000);
+							if (plugin.manaPotionCooldown > 0) {
+								plugin.manaPotionCooldowns.put(player, System.currentTimeMillis() + plugin.manaPotionCooldown*1000);
 							}
 							// remove item
 							if (inHand.getAmount() == 1) {
@@ -140,17 +140,17 @@ public class CastListener implements Listener {
 	
 	@EventHandler
 	public void onItemHeldChange(final PlayerItemHeldEvent event) {
-		if (MagicSpells.spellIconSlot >= 0 && MagicSpells.spellIconSlot <= 8) {
+		if (plugin.spellIconSlot >= 0 && plugin.spellIconSlot <= 8) {
 			Player player = event.getPlayer();
-			if (event.getNewSlot() == MagicSpells.spellIconSlot) {
-				showIcon(player, MagicSpells.spellIconSlot, null);
+			if (event.getNewSlot() == plugin.spellIconSlot) {
+				showIcon(player, plugin.spellIconSlot, null);
 			} else {
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				Spell spell = spellbook.getActiveSpell(player.getInventory().getItem(event.getNewSlot()));
 				if (spell != null) {
-					showIcon(player, MagicSpells.spellIconSlot, spell.getSpellIcon());
+					showIcon(player, plugin.spellIconSlot, spell.getSpellIcon());
 				} else {
-					showIcon(player, MagicSpells.spellIconSlot, null);
+					showIcon(player, plugin.spellIconSlot, null);
 				}
 			}
 		}
@@ -158,7 +158,7 @@ public class CastListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerAnimation(PlayerAnimationEvent event) {		
-		if (!MagicSpells.castOnAnimate) return;
+		if (!plugin.castOnAnimate) return;
 		
 		Player p = event.getPlayer();
 		if (noCast.contains(p)) {
@@ -173,14 +173,14 @@ public class CastListener implements Listener {
 	
 	private void castSpell(Player player) {
 		ItemStack inHand = player.getItemInHand();
-		if (!MagicSpells.allowCastWithFist && (inHand == null || inHand.getType() == Material.AIR)) return;
+		if (!plugin.allowCastWithFist && (inHand == null || inHand.getType() == Material.AIR)) return;
 		
 		Spell spell = MagicSpells.getSpellbook(player).getActiveSpell(inHand);
 		if (spell != null && spell.canCastWithItem()) {
 			// first check global cooldown
-			if (MagicSpells.globalCooldown > 0 && !spell.ignoreGlobalCooldown) {
+			if (plugin.globalCooldown > 0 && !spell.ignoreGlobalCooldown) {
 				Long lastCastTime = lastCast.get(player);
-				if (lastCastTime != null && lastCastTime + MagicSpells.globalCooldown > System.currentTimeMillis()) {
+				if (lastCastTime != null && lastCastTime + plugin.globalCooldown > System.currentTimeMillis()) {
 					return;
 				} else {
 					lastCast.put(player, System.currentTimeMillis());
@@ -192,7 +192,7 @@ public class CastListener implements Listener {
 	}
 	
 	private void showIcon(Player player, int slot, ItemStack icon) {
-		if (icon == null) icon = player.getInventory().getItem(MagicSpells.spellIconSlot);
+		if (icon == null) icon = player.getInventory().getItem(plugin.spellIconSlot);
 		MagicSpells.getVolatileCodeHandler().sendFakeSlotUpdate(player, slot, icon);
 	}
 

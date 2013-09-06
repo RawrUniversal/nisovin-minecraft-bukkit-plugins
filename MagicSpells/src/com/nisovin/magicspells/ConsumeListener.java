@@ -14,11 +14,14 @@ import com.nisovin.magicspells.util.CastItem;
 
 public class ConsumeListener implements Listener {
 
+	MagicSpells plugin;
+	
 	Map<CastItem, Spell> consumeCastItems = new HashMap<CastItem, Spell>();
 	HashMap<String, Long> lastCast = new HashMap<String, Long>();
 	
 	public ConsumeListener(MagicSpells plugin) {
-		for (Spell spell : MagicSpells.spells.values()) {
+		this.plugin = plugin;
+		for (Spell spell : plugin.spells.values()) {
 			CastItem[] items = spell.getConsumeCastItems();
 			if (items.length > 0) {
 				for (CastItem item : items) {
@@ -43,7 +46,7 @@ public class ConsumeListener implements Listener {
 
 	    Player player = event.getPlayer();
 		Long lastCastTime = lastCast.get(player.getName());
-		if (lastCastTime != null && lastCastTime + MagicSpells.globalCooldown > System.currentTimeMillis()) {
+		if (lastCastTime != null && lastCastTime + plugin.globalCooldown > System.currentTimeMillis()) {
 			return;
 		} else {
 			lastCast.put(player.getName(), System.currentTimeMillis());

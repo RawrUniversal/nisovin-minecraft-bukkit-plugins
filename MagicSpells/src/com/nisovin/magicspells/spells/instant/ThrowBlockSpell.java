@@ -198,15 +198,23 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 						}
 					}
 					if (!info.spellActivated && spell != null) {
-						spell.castAtLocation(info.player, block.getLocation(), info.power);
+						if (info.player != null) {
+							spell.castAtLocation(info.player, block.getLocation(), info.power);
+						} else {
+							spell.castAtLocation(block.getLocation(), info.power);
+						}
 						info.spellActivated = true;
 					}
 					block.remove();
 				}
 			}
 			if (ensureSpellCast && block.isDead()) {
-				if (!info.spellActivated && spell != null) { 
-					spell.castAtLocation(info.player, block.getLocation(), info.power);
+				if (!info.spellActivated && spell != null) {
+					if (info.player != null) {
+						spell.castAtLocation(info.player, block.getLocation(), info.power);
+					} else {
+						spell.castAtLocation(block.getLocation(), info.power);
+					}
 				}
 				info.spellActivated = true;
 				MagicSpells.cancelTask(task);
@@ -235,7 +243,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 			}
 			if (info != null && event.getEntity() instanceof LivingEntity) {
 				int damage = Math.round(event.getDamage() * info.power);
-				if (callTargetEvent) {
+				if (callTargetEvent && info.player != null) {
 					SpellTargetEvent evt = new SpellTargetEvent(thisSpell, info.player, (LivingEntity)event.getEntity());
 					Bukkit.getPluginManager().callEvent(evt);
 					if (evt.isCancelled()) {
@@ -243,7 +251,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 						return;
 					}
 				}
-				if (checkPlugins) {
+				if (checkPlugins && info.player != null) {
 					EntityDamageByEntityEvent evt = new EntityDamageByEntityEvent(info.player, event.getEntity(), DamageCause.ENTITY_ATTACK, damage);
 					Bukkit.getPluginManager().callEvent(evt);
 					if (evt.isCancelled()) {
@@ -253,7 +261,11 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 				}
 				event.setDamage(damage);
 				if (spell != null && !info.spellActivated) {
-					spell.castAtLocation(info.player, event.getEntity().getLocation(), info.power);
+					if (info.player != null) {
+						spell.castAtLocation(info.player, event.getEntity().getLocation(), info.power);
+					} else {
+						spell.castAtLocation(event.getEntity().getLocation(), info.power);
+					}
 					info.spellActivated = true;
 				}
 			}
@@ -269,7 +281,11 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 					event.setCancelled(true);
 				}
 				if (spell != null && !info.spellActivated) {
-					spell.castAtLocation(info.player, event.getBlock().getLocation().add(.5, .5, .5), info.power);
+					if (info.player != null) {
+						spell.castAtLocation(info.player, event.getBlock().getLocation().add(.5, .5, .5), info.power);
+					} else {
+						spell.castAtLocation(event.getBlock().getLocation().add(.5, .5, .5), info.power);
+					}
 					info.spellActivated = true;
 				}
 			}
@@ -303,7 +319,8 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 
 	@Override
 	public boolean castAtLocation(Location target, float power) {
-		return false;
+		spawnFallingBlock(null, power, target, new Vector(0, velocity + verticalAdjustment, 0));
+		return true;
 	}
 
 }

@@ -59,89 +59,89 @@ public class MagicSpells extends JavaPlugin {
 
 	public static MagicSpells plugin;
 
-	static VolatileCodeHandle volatileCodeHandle;
+	VolatileCodeHandle volatileCodeHandle;
 	
-	static boolean debug;
-	static int debugLevel;
-	static boolean enableErrorLogging;
-	static boolean enableProfiling;
-	static ChatColor textColor;
-	static int broadcastRange;
+	boolean debug;
+	int debugLevel;
+	boolean enableErrorLogging;
+	boolean enableProfiling;
+	ChatColor textColor;
+	int broadcastRange;
 	
-	static boolean opsHaveAllSpells;
-	static boolean defaultAllPermsFalse;
-	static boolean ignoreGrantPerms;
-	static boolean ignoreCastPerms;
+	boolean opsHaveAllSpells;
+	boolean defaultAllPermsFalse;
+	boolean ignoreGrantPerms;
+	boolean ignoreCastPerms;
 	
-	static boolean separatePlayerSpellsPerWorld;
-	static boolean allowCycleToNoSpell;
-	static boolean alwaysShowMessageOnCycle;
-	static boolean onlyCycleToCastableSpells;
-	static int spellIconSlot;
-	static boolean allowCastWithFist;
-	static boolean castWithLeftClick;
-	static boolean castWithRightClick;
-	static boolean ignoreDefaultBindings;
-	public static boolean showStrCostOnMissingReagents;
-	static HashSet<Byte> losTransparentBlocks;
-	static List<Integer> ignoreCastItemDurability;
-	static HashMap<EntityType, String> entityNames;
-	static int globalCooldown;
-	static boolean castOnAnimate;
-	static boolean useExpBarAsCastTimeBar;
-	static boolean cooldownsPersistThroughReload;
-	static boolean ignoreCastItemEnchants;
-	static boolean ignoreCastItemNames;
-	static boolean checkWorldPvpFlag;
+	boolean separatePlayerSpellsPerWorld;
+	boolean allowCycleToNoSpell;
+	boolean alwaysShowMessageOnCycle;
+	boolean onlyCycleToCastableSpells;
+	int spellIconSlot;
+	boolean allowCastWithFist;
+	boolean castWithLeftClick;
+	boolean castWithRightClick;
+	boolean ignoreDefaultBindings;
+	boolean showStrCostOnMissingReagents;
+	HashSet<Byte> losTransparentBlocks;
+	List<Integer> ignoreCastItemDurability;
+	HashMap<EntityType, String> entityNames;
+	int globalCooldown;
+	boolean castOnAnimate;
+	boolean useExpBarAsCastTimeBar;
+	boolean cooldownsPersistThroughReload;
+	boolean ignoreCastItemEnchants;
+	boolean ignoreCastItemNames;
+	boolean checkWorldPvpFlag;
 	
-	static boolean enableManaBars;
-	static int manaPotionCooldown;
-	static String strManaPotionOnCooldown;
-	static HashMap<ItemStack, Integer> manaPotions;
+	boolean enableManaBars;
+	int manaPotionCooldown;
+	String strManaPotionOnCooldown;
+	HashMap<ItemStack, Integer> manaPotions;
 	
 	// strings
-	static String strCastUsage;
-	static String strUnknownSpell;
-	static String strSpellChange;
-	static String strSpellChangeEmpty;
-	static String strOnCooldown;
-	static String strMissingReagents;
-	static String strCantCast;
-	static String strWrongWorld;
-	static String strCantBind;
-	static String strConsoleName;
-	static String strDanceStart;
-	static String strDanceComplete;
-	static String strDanceFail;
+	String strCastUsage;
+	String strUnknownSpell;
+	String strSpellChange;
+	String strSpellChangeEmpty;
+	String strOnCooldown;
+	String strMissingReagents;
+	String strCantCast;
+	String strWrongWorld;
+	String strCantBind;
+	String strConsoleName;
+	String strDanceStart;
+	String strDanceComplete;
+	String strDanceFail;
 		
 	// metrics vars
-	static boolean metricsEnabled;
-	static int metricSpellCasts;
-	static int metricSpellCastsExternal;
-	static int metricSpellCastsTargeted;
-	static int metricSpellCastsInstant;
-	static int metricSpellCastsBuff;
-	static int metricErrors;
+	boolean metricsEnabled;
+	int metricSpellCasts;
+	int metricSpellCastsExternal;
+	int metricSpellCastsTargeted;
+	int metricSpellCastsInstant;
+	int metricSpellCastsBuff;
+	int metricErrors;
 	
 	// spell containers
-	static HashMap<String, Spell> spells; // map internal names to spells
-	static HashMap<String, Spell> spellNames; // map configured names to spells
-	static ArrayList<Spell> spellsOrdered; // spells in loaded order
-	static HashMap<String, Spellbook> spellbooks; // player spellbooks
-	static HashMap<String, Spell> incantations; // map incantation strings to spells
+	HashMap<String, Spell> spells; // map internal names to spells
+	HashMap<String, Spell> spellNames; // map configured names to spells
+	ArrayList<Spell> spellsOrdered; // spells in loaded order
+	HashMap<String, Spellbook> spellbooks; // player spellbooks
+	HashMap<String, Spell> incantations; // map incantation strings to spells
 		
 	// container vars
-	static ManaHandler mana;
-	static HashMap<Player, Long> manaPotionCooldowns;
-	static NoMagicZoneManager noMagicZones;
-	static BuffManager buffManager;
-	static ExperienceBarManager expBarManager;
-	static ItemNameResolver itemNameResolver;
-	static MoneyHandler moneyHandler;
+	ManaHandler mana;
+	HashMap<Player, Long> manaPotionCooldowns;
+	NoMagicZoneManager noMagicZones;
+	BuffManager buffManager;
+	ExperienceBarManager expBarManager;
+	ItemNameResolver itemNameResolver;
+	MoneyHandler moneyHandler;
 	
 	// profiling
-	static HashMap<String, Long> profilingTotalTime;
-	static HashMap<String, Integer> profilingRuns;
+	HashMap<String, Long> profilingTotalTime;
+	HashMap<String, Integer> profilingRuns;
 	
 	@Override
 	public void onEnable() {
@@ -463,7 +463,7 @@ public class MagicSpells extends JavaPlugin {
 		if (consumeListener.hasConsumeCastItems()) {
 			registerEvents(consumeListener);
 		}
-		new DanceCastListener(config.getString("general.dance-cast-item", "2256"));
+		new DanceCastListener(this, config.getString("general.dance-cast-item", "2256"));
 		ModifierSet.initializeModifierListeners();
 		
 		// register commands
@@ -655,8 +655,12 @@ public class MagicSpells extends JavaPlugin {
 		return plugin;
 	}
 	
+	/**
+	 * Gets all the spells currently loaded
+	 * @return a Collection of Spell objects
+	 */
 	public static Collection<Spell> spells() {
-		return spells.values();
+		return plugin.spells.values();
 	}
 	
 	/**
@@ -665,7 +669,7 @@ public class MagicSpells extends JavaPlugin {
 	 * @return the Spell found, or null if no spell with that name was found
 	 */
 	public static Spell getSpellByInternalName(String spellName) {
-		return spells.get(spellName.toLowerCase());
+		return plugin.spells.get(spellName.toLowerCase());
 	}
 	
 	/**
@@ -674,7 +678,7 @@ public class MagicSpells extends JavaPlugin {
 	 * @return the Spell found, or null if no spell with that name was found
 	 */
 	public static Spell getSpellByInGameName(String spellName) {
-		return spellNames.get(spellName.toLowerCase());
+		return plugin.spellNames.get(spellName.toLowerCase());
 	}
 	
 	/**
@@ -684,16 +688,16 @@ public class MagicSpells extends JavaPlugin {
 	 * @return the player's spellbook
 	 */
 	public static Spellbook getSpellbook(Player player) {
-		Spellbook spellbook = spellbooks.get(player.getName());
+		Spellbook spellbook = plugin.spellbooks.get(player.getName());
 		if (spellbook == null) {
 			spellbook = new Spellbook(player, plugin);
-			spellbooks.put(player.getName(), spellbook);
+			plugin.spellbooks.put(player.getName(), spellbook);
 		}
 		return spellbook;
 	}
 	
 	public static ChatColor getTextColor() {
-		return textColor;
+		return plugin.textColor;
 	}
 	
 	/**
@@ -701,7 +705,7 @@ public class MagicSpells extends JavaPlugin {
 	 * @return list of block types
 	 */
 	public static HashSet<Byte> getTransparentBlocks() {
-		return losTransparentBlocks;
+		return plugin.losTransparentBlocks;
 	}
 	
 	/**
@@ -709,7 +713,7 @@ public class MagicSpells extends JavaPlugin {
 	 * @return the map
 	 */
 	public static HashMap<EntityType, String> getEntityNames() {
-		return entityNames;
+		return plugin.entityNames;
 	}
 	
 	/**
@@ -718,7 +722,7 @@ public class MagicSpells extends JavaPlugin {
 	 * @return whether to ignore durability
 	 */
 	public static boolean ignoreCastItemDurability(int type) {
-		if (ignoreCastItemDurability != null && ignoreCastItemDurability.contains(type)) {
+		if (plugin.ignoreCastItemDurability != null && plugin.ignoreCastItemDurability.contains(type)) {
 			return true;
 		} else {
 			return false;
@@ -726,11 +730,15 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	public static boolean ignoreCastItemEnchants() {
-		return ignoreCastItemEnchants;
+		return plugin.ignoreCastItemEnchants;
 	}
 	
 	public static boolean ignoreCastItemNames() {
-		return ignoreCastItemNames;
+		return plugin.ignoreCastItemNames;
+	}
+	
+	public static boolean showStrCostOnMissingReagents() {
+		return plugin.showStrCostOnMissingReagents;
 	}
 	
 	/**
@@ -738,11 +746,11 @@ public class MagicSpells extends JavaPlugin {
 	 * @return the no-magic zone handler
 	 */
 	public static NoMagicZoneManager getNoMagicZoneManager() {
-		return noMagicZones;
+		return plugin.noMagicZones;
 	}
 	
 	public static BuffManager getBuffManager() {
-		return buffManager;
+		return plugin.buffManager;
 	}
 	
 	/**
@@ -750,7 +758,7 @@ public class MagicSpells extends JavaPlugin {
 	 * @return the mana handler
 	 */
 	public static ManaHandler getManaHandler() {
-		return mana;
+		return plugin.mana;
 	}
 	
 	/**
@@ -758,28 +766,28 @@ public class MagicSpells extends JavaPlugin {
 	 * @param handler the mana handler
 	 */
 	public static void setManaHandler(ManaHandler handler) {
-		mana.turnOff();
-		mana = handler;
+		plugin.mana.turnOff();
+		plugin.mana = handler;
 	}
 	
 	public static VolatileCodeHandle getVolatileCodeHandler() {
-		return volatileCodeHandle;
+		return plugin.volatileCodeHandle;
 	}
 	
 	public static ExperienceBarManager getExpBarManager() {
-		return expBarManager;
+		return plugin.expBarManager;
 	}
 	
 	public static ItemNameResolver getItemNameResolver() {
-		return itemNameResolver;
+		return plugin.itemNameResolver;
 	}
 	
 	public static void setItemNameResolver(ItemNameResolver resolver) {
-		itemNameResolver = resolver;
+		plugin.itemNameResolver = resolver;
 	}
 	
 	public static MoneyHandler getMoneyHandler() {
-		return moneyHandler;
+		return plugin.moneyHandler;
 	}
 	
 	/**
@@ -824,7 +832,7 @@ public class MagicSpells extends JavaPlugin {
 			String [] msgs = message.replaceAll("&([0-9a-fk-or])", "\u00A7$1").split("\n");
 			for (String msg : msgs) {
 				if (!msg.equals("")) {
-					player.sendMessage(MagicSpells.textColor + msg);
+					player.sendMessage(plugin.textColor + msg);
 				}
 			}
 		}
@@ -849,7 +857,7 @@ public class MagicSpells extends JavaPlugin {
             final Class<? extends Event> eventClass = checkClass.asSubclass(Event.class);
             method.setAccessible(true);
             EventExecutor executor = new EventExecutor() {
-            	final String eventKey = enableProfiling ? "Event:" + listener.getClass().getName().replace("com.nisovin.magicspells.","") + "." + method.getName() + "(" + eventClass.getSimpleName() + ")" : null;
+            	final String eventKey = plugin.enableProfiling ? "Event:" + listener.getClass().getName().replace("com.nisovin.magicspells.","") + "." + method.getName() + "(" + eventClass.getSimpleName() + ")" : null;
                 public void execute(Listener listener, Event event) {
                     try {
                         if (!eventClass.isAssignableFrom(event.getClass())) {
@@ -857,15 +865,15 @@ public class MagicSpells extends JavaPlugin {
                         }
                         long start = System.nanoTime();
                         method.invoke(listener, event);
-                        if (enableProfiling) {
-                        	Long total = profilingTotalTime.get(eventKey);
+                        if (plugin.enableProfiling) {
+                        	Long total = plugin.profilingTotalTime.get(eventKey);
                         	if (total == null) total = (long)0;
                         	total += (System.nanoTime() - start);
-                        	profilingTotalTime.put(eventKey, total);
-                        	Integer runs = profilingRuns.get(eventKey);
+                        	plugin.profilingTotalTime.put(eventKey, total);
+                        	Integer runs = plugin.profilingRuns.get(eventKey);
                         	if (runs == null) runs = 0;
                         	runs += 1;
-                        	profilingRuns.put(eventKey, runs);
+                        	plugin.profilingRuns.put(eventKey, runs);
                         }
                     } catch (Exception ex) {
                     	handleException(ex);
@@ -877,7 +885,7 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	public static int scheduleDelayedTask(final Runnable task, int delay) {
-		return Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, !enableErrorLogging ? task : new Runnable() {
+		return Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, !plugin.enableErrorLogging ? task : new Runnable() {
 			public void run() {
 				try {
 					task.run();
@@ -889,7 +897,7 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	public static int scheduleRepeatingTask(final Runnable task, int delay, int interval) {
-		return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, !enableErrorLogging ? task : new Runnable() {
+		return Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, !plugin.enableErrorLogging ? task : new Runnable() {
 			public void run() {
 				try {
 					task.run();
@@ -905,7 +913,7 @@ public class MagicSpells extends JavaPlugin {
 	}
 	
 	public static void handleException(Exception ex) {
-		if (enableErrorLogging) {
+		if (plugin.enableErrorLogging) {
 			plugin.getLogger().severe("AN EXCEPTION HAS OCCURED:");
 			PrintWriter writer = null;
 			try {
@@ -932,19 +940,19 @@ public class MagicSpells extends JavaPlugin {
 		} else {
 			ex.printStackTrace();
 		}
-		metricErrors++;
+		plugin.metricErrors++;
 	}
 	
 	static void profilingReport() {
-		if (profilingTotalTime != null && profilingRuns != null) {
+		if (plugin.profilingTotalTime != null && plugin.profilingRuns != null) {
 			PrintWriter writer = null;
 			try {
 				writer = new PrintWriter(new File(plugin.getDataFolder(), "profiling_report_" + System.currentTimeMillis() + ".txt"));
 				long totalTime = 0;
 				writer.println("Key\tRuns\tAvg\tTotal");
-				for (String key : profilingTotalTime.keySet()) {
-					long time = profilingTotalTime.get(key);
-					int runs = profilingRuns.get(key);
+				for (String key : plugin.profilingTotalTime.keySet()) {
+					long time = plugin.profilingTotalTime.get(key);
+					int runs = plugin.profilingRuns.get(key);
 					totalTime += time;
 					writer.println(key + "\t" + runs + "\t" + (time/runs/1000000F) + "ms\t" + (time/1000000F) + "ms");
 				}
@@ -956,8 +964,8 @@ public class MagicSpells extends JavaPlugin {
 			} finally {
 				if (writer != null) writer.close();
 			}
-			profilingTotalTime.clear();
-			profilingRuns.clear();
+			plugin.profilingTotalTime.clear();
+			plugin.profilingRuns.clear();
 		}
 	}
 	
@@ -976,7 +984,7 @@ public class MagicSpells extends JavaPlugin {
 	 * @param message the message to write to the console
 	 */
 	public static void debug(int level, String message) {
-		if (MagicSpells.debug && level <= debugLevel) {
+		if (plugin.debug && level <= plugin.debugLevel) {
 			log(Level.INFO, message);
 		}
 	}
@@ -1005,9 +1013,9 @@ public class MagicSpells extends JavaPlugin {
 	 * @return whether the spell was taught to the player
 	 */
 	public static boolean teachSpell(Player player, String spellName) {
-		Spell spell = spellNames.get(spellName.toLowerCase());
+		Spell spell = plugin.spellNames.get(spellName.toLowerCase());
 		if (spell == null) {
-			spell = spells.get(spellName.toLowerCase());
+			spell = plugin.spells.get(spellName.toLowerCase());
 			if (spell == null) {
 				return false;
 			}

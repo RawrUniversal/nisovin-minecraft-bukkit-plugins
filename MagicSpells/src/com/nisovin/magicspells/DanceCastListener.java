@@ -17,6 +17,8 @@ import com.nisovin.magicspells.util.Util;
 
 public class DanceCastListener implements Listener {
 
+	MagicSpells plugin;
+	
 	CastItem danceCastWand;
 	Map<String, Spell> spells = new HashMap<String, Spell>();
 	Map<String, String> playerCasts = new HashMap<String, String>();
@@ -25,7 +27,9 @@ public class DanceCastListener implements Listener {
 	boolean enableDoubleJump = false;
 	boolean enableMovement = false;
 	
-	public DanceCastListener(String castItem) {
+	public DanceCastListener(MagicSpells plugin, String castItem) {
+		this.plugin = plugin;
+		
 		danceCastWand = new CastItem(Util.getItemStackFromString(castItem));
 		
 		for (Spell spell : MagicSpells.spells()) {
@@ -63,10 +67,10 @@ public class DanceCastListener implements Listener {
 				MagicSpells.debug("Player " + player.getName() + " performed dance sequence " + castSequence);
 				Spell spell = spells.get(castSequence);
 				if (spell != null) {
-					MagicSpells.sendMessage(player, MagicSpells.strDanceComplete);
+					MagicSpells.sendMessage(player, plugin.strDanceComplete);
 					spell.cast(player);
 				} else {
-					MagicSpells.sendMessage(player, MagicSpells.strDanceFail);
+					MagicSpells.sendMessage(player, plugin.strDanceFail);
 				}
 				playerLocations.remove(playerName);
 			} else {
@@ -78,7 +82,7 @@ public class DanceCastListener implements Listener {
 						player.setAllowFlight(true);
 						player.setFlying(false);
 					}
-					MagicSpells.sendMessage(player, MagicSpells.strDanceStart);
+					MagicSpells.sendMessage(player, plugin.strDanceStart);
 				}
 			}
 		} else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {

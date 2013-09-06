@@ -34,7 +34,7 @@ public class MagicChatListener implements Listener {
 	boolean handleIncantation(Player player, String message) {
 		if (message.contains(" ")) {
 			String[] split = message.split(" ");
-			Spell spell = MagicSpells.incantations.get(split[0].toLowerCase() + " *");
+			Spell spell = plugin.incantations.get(split[0].toLowerCase() + " *");
 			if (spell != null) {
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				if (spellbook.hasSpell(spell)) {
@@ -48,7 +48,7 @@ public class MagicChatListener implements Listener {
 				return false;
 			}
 		}
-		Spell spell = MagicSpells.incantations.get(message.toLowerCase());
+		Spell spell = plugin.incantations.get(message.toLowerCase());
 		if (spell != null) {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			if (spellbook.hasSpell(spell)) {

@@ -54,9 +54,9 @@ public class Spellbook {
 		loadFromFile(playerWorld);
 		
 		// give all spells to ops, or if ignoring grant perms
-		if (MagicSpells.ignoreGrantPerms || (player.isOp() && MagicSpells.opsHaveAllSpells)) {
+		if (plugin.ignoreGrantPerms || (player.isOp() && plugin.opsHaveAllSpells)) {
 			MagicSpells.debug(2, "  Op, granting all spells...");
-			for (Spell spell : MagicSpells.spellsOrdered) {
+			for (Spell spell : plugin.spellsOrdered) {
 				if (!allSpells.contains(spell)) {
 					addSpell(spell);
 				}
@@ -69,7 +69,7 @@ public class Spellbook {
 		// sort spells or pre-select if just one
 		for (CastItem i : itemSpells.keySet()) {
 			ArrayList<Spell> spells = itemSpells.get(i);
-			if (spells.size() == 1 && !MagicSpells.allowCycleToNoSpell) {
+			if (spells.size() == 1 && !plugin.allowCycleToNoSpell) {
 				activeSpells.put(i, 0);
 			} else {
 				Collections.sort(spells);
@@ -81,7 +81,7 @@ public class Spellbook {
 		try {
 			MagicSpells.debug(2, "  Loading spells from player file...");
 			File file;
-			if (MagicSpells.separatePlayerSpellsPerWorld) {
+			if (plugin.separatePlayerSpellsPerWorld) {
 				File folder = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName());
 				if (!folder.exists()) {
 					folder.mkdir();
@@ -126,10 +126,10 @@ public class Spellbook {
 	public void addGrantedSpells() {
 		MagicSpells.debug(2, "  Adding granted spells...");
 		boolean added = false;
-		for (Spell spell : MagicSpells.spellsOrdered) {
+		for (Spell spell : plugin.spellsOrdered) {
 			MagicSpells.debug(3, "    Checking spell " + spell.getInternalName() + "...");
 			if (!hasSpell(spell, false)) {
-				if (MagicSpells.ignoreGrantPerms || spell.isAlwaysGranted() || player.hasPermission("magicspells.grant." + spell.getPermissionName())) {
+				if (plugin.ignoreGrantPerms || spell.isAlwaysGranted() || player.hasPermission("magicspells.grant." + spell.getPermissionName())) {
 					addSpell(spell);
 					added = true;
 				}
@@ -153,7 +153,7 @@ public class Spellbook {
 	}
 	
 	public boolean canCast(Spell spell) {
-		return MagicSpells.ignoreCastPerms || player.hasPermission("magicspells.cast." + spell.getPermissionName());
+		return plugin.ignoreCastPerms || player.hasPermission("magicspells.cast." + spell.getPermissionName());
 	}
 	
 	public boolean canTeach(Spell spell) {
@@ -228,7 +228,7 @@ public class Spellbook {
 			castItem = new CastItem(0);
 		}
 		ArrayList<Spell> spells = itemSpells.get(castItem);
-		if (spells != null && (spells.size() > 1 || (spells.size() == 1 && MagicSpells.allowCycleToNoSpell))) {
+		if (spells != null && (spells.size() > 1 || (spells.size() == 1 && plugin.allowCycleToNoSpell))) {
 			return castItem;
 		} else {
 			return null;
@@ -247,21 +247,21 @@ public class Spellbook {
 		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
-			if (spells.size() > 1 || i.equals(-1) || MagicSpells.allowCycleToNoSpell || MagicSpells.alwaysShowMessageOnCycle) {
+			if (spells.size() > 1 || i.equals(-1) || plugin.allowCycleToNoSpell || plugin.alwaysShowMessageOnCycle) {
 				int count = 0;
 				while (count++ < spells.size()) {
 					i++;
 					if (i >= spells.size()) {
-						if (MagicSpells.allowCycleToNoSpell) {
+						if (plugin.allowCycleToNoSpell) {
 							activeSpells.put(castItem, -1);
 							Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(null, player, castItem, this));
-							MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
+							MagicSpells.sendMessage(player, plugin.strSpellChangeEmpty);
 							return null;
 						} else {
 							i = 0;
 						}
 					}
-					if (!MagicSpells.onlyCycleToCastableSpells || canCast(spells.get(i))) {
+					if (!plugin.onlyCycleToCastableSpells || canCast(spells.get(i))) {
 						activeSpells.put(castItem, i);
 						Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(spells.get(i), player, castItem, this));
 						return spells.get(i);
@@ -288,21 +288,21 @@ public class Spellbook {
 		Integer i = activeSpells.get(castItem); // get the index of the active spell for the cast item
 		if (i != null) {
 			ArrayList<Spell> spells = itemSpells.get(castItem); // get all the spells for the cast item
-			if (spells.size() > 1 || i.equals(-1) || MagicSpells.allowCycleToNoSpell) {
+			if (spells.size() > 1 || i.equals(-1) || plugin.allowCycleToNoSpell) {
 				int count = 0;
 				while (count++ < spells.size()) {
 					i--;
 					if (i < 0) {
-						if (MagicSpells.allowCycleToNoSpell && i == -1) {
+						if (plugin.allowCycleToNoSpell && i == -1) {
 							activeSpells.put(castItem, -1);
 							Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(null, player, castItem, this));
-							MagicSpells.sendMessage(player, MagicSpells.strSpellChangeEmpty);
+							MagicSpells.sendMessage(player, plugin.strSpellChangeEmpty);
 							return null;
 						} else {
 							i = spells.size() - 1;
 						}
 					}
-					if (!MagicSpells.onlyCycleToCastableSpells || canCast(spells.get(i))) {
+					if (!plugin.onlyCycleToCastableSpells || canCast(spells.get(i))) {
 						activeSpells.put(castItem, i);
 						Bukkit.getPluginManager().callEvent(new SpellSelectionChangedEvent(spells.get(i), player, castItem, this));
 						return spells.get(i);
@@ -336,7 +336,7 @@ public class Spellbook {
 	}
 	
 	public boolean hasSpell(Spell spell, boolean checkGranted) {
-		if (MagicSpells.ignoreGrantPerms) return true;
+		if (plugin.ignoreGrantPerms) return true;
 		boolean has = allSpells.contains(spell);
 		if (has) {
 			return true;
@@ -375,7 +375,7 @@ public class Spellbook {
 					}
 				}
 				customBindings.put(spell, set);
-			} else if (MagicSpells.ignoreDefaultBindings) {
+			} else if (plugin.ignoreDefaultBindings) {
 				return; // no cast item provided and ignoring default, so just stop here
 			}
 			for (CastItem i : items) {
@@ -388,7 +388,7 @@ public class Spellbook {
 						temp = new ArrayList<Spell>();
 						temp.add(spell);
 						itemSpells.put(i, temp);
-						activeSpells.put(i, MagicSpells.allowCycleToNoSpell ? -1 : 0);
+						activeSpells.put(i, plugin.allowCycleToNoSpell ? -1 : 0);
 					}
 				}
 			}
@@ -476,7 +476,7 @@ public class Spellbook {
 		if (bindList == null) {
 			bindList = new ArrayList<Spell>();
 			itemSpells.put(castItem, bindList);
-			activeSpells.put(castItem, MagicSpells.allowCycleToNoSpell ? -1 : 0);
+			activeSpells.put(castItem, plugin.allowCycleToNoSpell ? -1 : 0);
 		}
 		bindList.add(spell);
 	}
@@ -535,7 +535,7 @@ public class Spellbook {
 	public void save() {
 		try {
 			File file;
-			if (MagicSpells.separatePlayerSpellsPerWorld) {
+			if (plugin.separatePlayerSpellsPerWorld) {
 				File folder = new File(plugin.getDataFolder(), "spellbooks" + File.separator + player.getWorld().getName());
 				if (!folder.exists()) {
 					folder.mkdirs();
