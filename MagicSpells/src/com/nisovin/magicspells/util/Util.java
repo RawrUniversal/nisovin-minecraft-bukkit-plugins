@@ -1,10 +1,6 @@
 package com.nisovin.magicspells.util;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -560,7 +556,7 @@ public class Util {
 	}
 	
 	public static boolean downloadFile(String url, File file) {
-		try {
+		/*try {
 			URL website = new URL(url);
 		    ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 		    FileOutputStream fos = new FileOutputStream(file);
@@ -571,7 +567,8 @@ public class Util {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
-		}
+		}*/
+		return false;
 	}
 	
 }

@@ -15,9 +15,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class FirenovaSpell extends InstantSpell {
+public class FirenovaSpell extends InstantSpell implements TargetedLocationSpell {
 
 	private int range;
 	private int tickSpeed;
@@ -63,6 +64,17 @@ public class FirenovaSpell extends InstantSpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
+	@Override
+	public boolean castAtLocation(Player caster, Location target, float power) {
+		return castAtLocation(target, power);
+	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		new FirenovaAnimation(target);
+		return true;
+	}
+
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.isCancelled() || fireImmunity == null) return;
@@ -93,19 +105,20 @@ public class FirenovaSpell extends InstantSpell {
 	
 	private class FirenovaAnimation implements Runnable {
 		Player player;
-		int i;
+		int i = 0;
 		Block center;
-		HashSet<Block> fireBlocks;
+		HashSet<Block> fireBlocks = new HashSet<Block>();
 		int taskId;
 		
 		public FirenovaAnimation(Player player) {
 			this.player = player;
-			
-			i = 0;
 			center = player.getLocation().getBlock();
-			fireBlocks = new HashSet<Block>();
-			
-			taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(MagicSpells.plugin, this, 0, tickSpeed);
+			taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickSpeed);
+		}
+		
+		public FirenovaAnimation(Location location) {
+			center = location.getBlock();
+			taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickSpeed);
 		}
 		
 		public void run() {
@@ -145,7 +158,7 @@ public class FirenovaSpell extends InstantSpell {
 			} else if (i > range+1) {
 				// stop if done
 				Bukkit.getServer().getScheduler().cancelTask(taskId);
-				if (fireImmunity != null) {
+				if (fireImmunity != null && player != null) {
 					fireImmunity.remove(player);
 				}
 			}

@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.entity.Player;
@@ -12,10 +13,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import com.nisovin.magicspells.spells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
-public class ConjureFireworkSpell extends InstantSpell {
+public class ConjureFireworkSpell extends InstantSpell implements TargetedLocationSpell {
 
 	boolean addToInventory;
 	ItemStack firework;
@@ -108,6 +110,18 @@ public class ConjureFireworkSpell extends InstantSpell {
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+
+	@Override
+	public boolean castAtLocation(Player caster, Location target, float power) {
+		return castAtLocation(target, power);
+	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		ItemStack item = firework.clone();
+		target.getWorld().dropItem(target, item).setItemStack(item);
+		return true;
 	}
 
 }

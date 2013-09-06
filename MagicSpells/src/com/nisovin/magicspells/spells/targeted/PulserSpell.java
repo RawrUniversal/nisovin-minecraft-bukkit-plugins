@@ -128,7 +128,11 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 		block.setTypeIdAndData(typeId, data, true);
 		pulsers.put(block, new Pulser(caster, block, power));
 		ticker.start();
-		playSpellEffects(caster, block.getLocation());
+		if (caster != null) {
+			playSpellEffects(caster, block.getLocation());
+		} else {
+			playSpellEffects(EffectPosition.TARGET, block.getLocation());
+		}
 	}
 
 	@Override

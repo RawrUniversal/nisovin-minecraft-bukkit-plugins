@@ -3,16 +3,18 @@ package com.nisovin.magicspells.spells.instant;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import com.nisovin.magicspells.spells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
-public class ConjureBookSpell extends InstantSpell {
+public class ConjureBookSpell extends InstantSpell implements TargetedLocationSpell {
 
 	boolean addToInventory;
 	ItemStack book;
@@ -45,6 +47,7 @@ public class ConjureBookSpell extends InstantSpell {
 		}
 		book.setItemMeta(meta);
 	}
+	
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
@@ -63,6 +66,18 @@ public class ConjureBookSpell extends InstantSpell {
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
+	}
+
+	@Override
+	public boolean castAtLocation(Player caster, Location target, float power) {
+		return castAtLocation(target, power);
+	}
+
+	@Override
+	public boolean castAtLocation(Location target, float power) {
+		ItemStack item = book.clone();
+		target.getWorld().dropItem(target, item).setItemStack(item);
+		return true;
 	}
 	
 }
