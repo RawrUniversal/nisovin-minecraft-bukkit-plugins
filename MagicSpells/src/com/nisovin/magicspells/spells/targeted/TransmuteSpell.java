@@ -87,6 +87,11 @@ public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpe
 
 	@Override
 	public boolean castAtLocation(Location target, float power) {
+		Block block = target.getBlock();
+		if (canTransmute(block)) {
+			block.setTypeIdAndData(transmuteType, transmuteData, true);
+			return true;
+		}
 		return false;
 	}
 	

@@ -90,6 +90,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected HashMap<Spell, Float> sharedCooldowns;
 	protected boolean ignoreGlobalCooldown;
 
+	private List<String> modifierStrings;
+	private List<String> targetModifierStrings;
 	protected ModifierSet modifiers;
 	protected ModifierSet targetModifiers;
 	
@@ -309,14 +311,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.nextCast = new HashMap<String, Long>();
 
 		// modifiers
-		if (config.contains(section + "." + spellName + ".modifiers")) {
-			MagicSpells.debug(2, "Adding modifiers to " + spellName + " spell");
-			this.modifiers = new ModifierSet(config.getStringList(section + "." + spellName + ".modifiers", null));
-		}
-		if (config.contains(section + "." + spellName + ".target-modifiers")) {
-			MagicSpells.debug(2, "Adding target modifiers to " + spellName + " spell");
-			this.targetModifiers = new ModifierSet(config.getStringList(section + "." + spellName + ".target-modifiers", null));
-		}
+		modifierStrings = config.getStringList(section + "." + spellName + ".modifiers", null);
+		targetModifierStrings = config.getStringList(section + "." + spellName + ".target-modifiers", null);
 		
 		// hierarchy options
 		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
@@ -425,6 +421,18 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * This method is called immediately after all spells have been loaded.
 	 */
 	protected void initialize() {
+		// modifiers		
+		if (modifierStrings != null && modifierStrings.size() > 0) {
+			MagicSpells.debug(2, "Adding modifiers to " + internalName + " spell");
+			modifiers = new ModifierSet(modifierStrings);
+			modifierStrings = null;
+		}
+		if (targetModifierStrings != null && targetModifierStrings.size() > 0) {
+			MagicSpells.debug(2, "Adding target modifiers to " + internalName + " spell");
+			targetModifiers = new ModifierSet(targetModifierStrings);
+			targetModifierStrings = null;
+		}
+		
 		// process shared cooldowns
 		if (rawSharedCooldowns != null) {
 			this.sharedCooldowns = new HashMap<Spell,Float>();

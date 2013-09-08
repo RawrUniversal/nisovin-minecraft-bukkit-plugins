@@ -85,7 +85,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 				MagicSpells.error("Invalid spell-on-land for " + name + " spell");
 			}
 		}
-		if (fallDamage > 0 || removeBlocks || preventBlocks || spell != null) {
+		if (fallDamage > 0 || removeBlocks || preventBlocks || spell != null || ensureSpellCast || stickyBlocks) {
 			fallingBlocks = new HashMap<FallingBlock, ThrowBlockSpell.FallingBlockInfo>();
 			registerEvents(new ThrowBlockListener(this));
 		}
@@ -106,24 +106,6 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 				v.multiply(power);
 			}
 			spawnFallingBlock(player, power, player.getEyeLocation().add(v), v);
-			FallingBlock block = player.getWorld().spawnFallingBlock(player.getEyeLocation().add(v), blockType, blockData);
-			block.setVelocity(v);
-			block.setDropItem(dropItem);
-			if (fallDamage > 0) {
-				MagicSpells.getVolatileCodeHandler().setFallingBlockHurtEntities(block, fallDamage, fallDamageMax);
-			}
-			if (fallingBlocks != null || ensureSpellCast || stickyBlocks) {
-				FallingBlockInfo info = new FallingBlockInfo(player, power);
-				if (fallingBlocks != null) {
-					fallingBlocks.put(block, info);
-					if (cleanTask < 0) {
-						startTask();
-					}
-				}
-				if (ensureSpellCast || stickyBlocks) {
-					new ThrowBlockMonitor(block, info);
-				}
-			}
 			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -136,7 +118,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 		if (fallDamage > 0) {
 			MagicSpells.getVolatileCodeHandler().setFallingBlockHurtEntities(block, fallDamage, fallDamageMax);
 		}
-		if (fallingBlocks != null || ensureSpellCast || stickyBlocks) {
+		if (fallingBlocks != null) {
 			FallingBlockInfo info = new FallingBlockInfo(player, power);
 			if (fallingBlocks != null) {
 				fallingBlocks.put(block, info);
@@ -274,7 +256,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 		@EventHandler(ignoreCancelled=true)
 		public void onBlockLand(EntityChangeBlockEvent event) {
 			if (!preventBlocks && spell == null) return;
-			FallingBlockInfo info = fallingBlocks.remove(event.getEntity());
+			FallingBlockInfo info = fallingBlocks.get(event.getEntity());
 			if (info != null) {
 				if (preventBlocks) {
 					event.getEntity().remove();
