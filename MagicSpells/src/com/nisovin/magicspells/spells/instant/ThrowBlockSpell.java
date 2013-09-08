@@ -166,7 +166,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 		public ThrowBlockMonitor(FallingBlock block, FallingBlockInfo info) {
 			this.block = block;
 			this.info = info;
-			this.task = MagicSpells.scheduleRepeatingTask(this, 1, 1);
+			this.task = MagicSpells.scheduleRepeatingTask(this, 20, 1);
 		}
 		
 		@Override

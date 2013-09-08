@@ -21,6 +21,9 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.nisovin.magicspells.util.DisguiseManager;
+import com.nisovin.magicspells.util.MagicConfig;
+
 public class VolatileCodeDisabled implements VolatileCodeHandle {
 
 	@Override
@@ -151,5 +154,10 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	@Override
 	public void setKiller(LivingEntity entity, Player killer) {
 		
+	}
+
+	@Override
+	public DisguiseManager getDisguiseManager(MagicConfig config) {
+		return null;
 	}
 }

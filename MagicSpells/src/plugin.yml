@@ -2,7 +2,7 @@ name: MagicSpells
 main: com.nisovin.magicspells.MagicSpells
 version: 3.0-b2
 author: nisovin
-softdepend: [Vault,WorldGuard,Residence]
+softdepend: [Vault,ProtocolLib,WorldGuard,Residence]
 commands:
     magicspellcast:
         description: Cast a spell
