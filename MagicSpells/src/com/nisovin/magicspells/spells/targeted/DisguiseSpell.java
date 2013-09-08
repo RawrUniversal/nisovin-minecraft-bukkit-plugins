@@ -36,6 +36,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 	private int var3 = 0;
 	private boolean showPlayerName = false;
 	private String nameplateText = "";
+	private boolean alwaysShowNameplate = true;
 	private boolean preventPickups = false;
 	private boolean friendlyMobs = true;
 	private boolean undisguiseOnDeath = true;
@@ -138,6 +139,10 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 			type = type.toLowerCase().replace("ocelot", "ozelot");
 		} else if (type.equalsIgnoreCase("snowgolem")) {
 			type = "snowman";
+		} else if (type.equalsIgnoreCase("wither")) {
+			type = "witherboss";
+		} else if (type.equalsIgnoreCase("dragon")) {
+			type = "enderdragon";
 		} else if (type.toLowerCase().startsWith("block") || type.toLowerCase().startsWith("fallingblock")) {
 			String data = type.split(" ")[1];
 			if (data.contains(":")) {
@@ -213,6 +218,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		}
 		showPlayerName = getConfigBoolean("show-player-name", false);
 		nameplateText = ChatColor.translateAlternateColorCodes('&', getConfigString("nameplate-text", ""));
+		alwaysShowNameplate = getConfigBoolean("always-show-nameplate", true);
 		preventPickups = getConfigBoolean("prevent-pickups", true);
 		friendlyMobs = getConfigBoolean("friendly-mobs", true);
 		undisguiseOnDeath = getConfigBoolean("undisguise-on-death", true);
@@ -256,7 +262,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 	private void disguise(Player player) {
 		String nameplate = nameplateText;
 		if (showPlayerName) nameplate = player.getDisplayName();
-		Disguise disguise = new Disguise(player, entityType, nameplate, flag, var1, var2, var3, duration, this);
+		Disguise disguise = new Disguise(player, entityType, nameplate, alwaysShowNameplate, flag, var1, var2, var3, duration, this);
 		manager.addDisguise(player, disguise);
 		disguised.put(player.getName().toLowerCase(), disguise);
 	}
@@ -336,6 +342,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		private Player player;
 		private EntityType entityType;
 		private String nameplateText;
+		private boolean alwaysShowNameplate;
 		private boolean flag;
 		private int var1;
 		private int var2;
@@ -344,10 +351,11 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		
 		private int taskId;
 		
-		public Disguise(Player player, EntityType entityType, String nameplateText, boolean flag, int var1, int var2, int var3, int duration, DisguiseSpell spell) {
+		public Disguise(Player player, EntityType entityType, String nameplateText, boolean alwaysShowNameplate, boolean flag, int var1, int var2, int var3, int duration, DisguiseSpell spell) {
 			this.player = player;
 			this.entityType = entityType;
 			this.nameplateText = nameplateText;
+			this.alwaysShowNameplate = alwaysShowNameplate;
 			this.flag = flag;
 			this.var1 = var1;
 			this.var2 = var2;
@@ -368,6 +376,10 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		
 		public String getNameplateText() {
 			return nameplateText;
+		}
+		
+		public boolean alwaysShowNameplate() {
+			return alwaysShowNameplate;
 		}
 		
 		public boolean getFlag() {

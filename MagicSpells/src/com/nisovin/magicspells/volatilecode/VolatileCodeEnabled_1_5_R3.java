@@ -579,6 +579,7 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 				
 			} else if (entityType == EntityType.BAT) {
 				entity = new EntityBat(world);
+				entity.getDataWatcher().watch(16, Byte.valueOf((byte)0));
 				
 			} else if (entityType == EntityType.CHICKEN) {
 				entity = new EntityChicken(world);
@@ -614,6 +615,9 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 			} else if (entityType == EntityType.GHAST) {
 				entity = new EntityGhast(world);
 				
+			} else if (entityType == EntityType.WITHER) {
+				entity = new EntityWither(world);
+				
 			} else if (entityType == EntityType.ENDER_DRAGON) {
 				entity = new EntityEnderDragon(world);
 							
@@ -635,7 +639,7 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 				String nameplateText = disguise.getNameplateText();
 				if (entity instanceof EntityLiving && nameplateText != null && !nameplateText.isEmpty()) {
 					((EntityLiving)entity).setCustomName(nameplateText);
-					((EntityLiving)entity).setCustomNameVisible(true);
+					((EntityLiving)entity).setCustomNameVisible(disguise.alwaysShowNameplate());
 				}
 				
 				if (player.hasPotionEffect(PotionEffectType.INVISIBILITY) && entity instanceof EntityLiving) {
@@ -669,7 +673,7 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 					((CraftWorld)p.getWorld()).getHandle().broadcastEntityEffect(((CraftEntity)p).getHandle(), (byte) 15);
 				} else if (entityType == EntityType.VILLAGER) {
 					((CraftWorld)p.getWorld()).getHandle().broadcastEntityEffect(((CraftEntity)p).getHandle(), (byte) 13);
-				} else if (entityType == EntityType.BLAZE || entityType == EntityType.SPIDER) {
+				} else if (entityType == EntityType.BLAZE || entityType == EntityType.SPIDER || entityType == EntityType.GHAST) {
 					final DataWatcher dw = new DataWatcher();
 					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
@@ -679,6 +683,19 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
 							dw.watch(16, Byte.valueOf((byte)0));
+							tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+						}
+					}, 10);
+				} else if (entityType == EntityType.WITCH) {
+					final DataWatcher dw = new DataWatcher();
+					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
+					dw.a(0, Byte.valueOf((byte) 0));
+					dw.a(1, Short.valueOf((short) 300));
+					dw.a(21, Byte.valueOf((byte)1));
+					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+						public void run() {
+							dw.watch(21, Byte.valueOf((byte)0));
 							tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
 						}
 					}, 10);
@@ -984,6 +1001,8 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 					packet24.k = 1;
 				}
 				packets.add(packet24);
+				Packet40EntityMetadata packet40 = new Packet40EntityMetadata(-disguised.getEntityId(), entity.getDataWatcher(), true);
+				packets.add(packet40);
 				if (dragons.contains(disguised.getEntityId())) {
 					Packet28EntityVelocity packet28 = new Packet28EntityVelocity(disguised.getEntityId(), 0.15, 0, 0.15);
 					packets.add(packet28);
