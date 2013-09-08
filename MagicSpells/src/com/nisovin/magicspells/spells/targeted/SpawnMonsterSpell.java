@@ -1,5 +1,7 @@
 package com.nisovin.magicspells.spells.targeted;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Location;
@@ -19,6 +21,8 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
@@ -45,6 +49,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 	private float chestplateDropChance;
 	private float leggingsDropChance;
 	private float bootsDropChance;
+	private List<PotionEffect> potionEffects;
 	private int duration;
 	private String nameplateText;
 	private boolean useCasterName;
@@ -84,6 +89,31 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 		chestplateDropChance = getConfigFloat("chestplate-drop-chance", 0) / 100F;
 		leggingsDropChance = getConfigFloat("leggings-drop-chance", 0) / 100F;
 		bootsDropChance = getConfigFloat("boots-drop-chance", 0) / 100F;
+		
+		List<String> list = getConfigStringList("potion-effects", null);
+		if (list != null && list.size() > 0) {
+			potionEffects = new ArrayList<PotionEffect>();
+			for (String data : list) {
+				String[] split = data.split(" ");
+				try {
+					PotionEffectType type = null;
+					if (split[0].matches("^[0-9]+$")) {
+						type = PotionEffectType.getById(Integer.parseInt(split[0]));
+					} else {
+						type = PotionEffectType.getByName(split[0]);
+					}
+					if (type == null) throw new Exception("");
+					int duration = 600;
+					if (split.length > 1) duration = Integer.parseInt(split[1]);
+					int strength = 0;
+					if (split.length > 2) strength = Integer.parseInt(split[2]);
+					potionEffects.add(new PotionEffect(type, duration, strength, false));
+				} catch (Exception e) {
+					MagicSpells.debug("Invalid potion effect string on '" + internalName + "' spell: " + data);
+				}
+			}
+		}
+		
 		duration = getConfigInt("duration", 0);
 		nameplateText = getConfigString("nameplate-text", "");
 		useCasterName = getConfigBoolean("use-caster-name", false);
@@ -204,6 +234,10 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 					((LivingEntity)entity).setCustomName(nameplateText);
 					((LivingEntity)entity).setCustomNameVisible(true);
 				}
+			}
+			// add potion effects
+			if (potionEffects != null) {
+				((LivingEntity)entity).addPotionEffects(potionEffects);
 			}
 			// play effects
 			if (player != null) {
