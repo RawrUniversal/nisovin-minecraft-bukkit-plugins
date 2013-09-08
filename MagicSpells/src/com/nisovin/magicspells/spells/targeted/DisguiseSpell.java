@@ -39,6 +39,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 	private boolean alwaysShowNameplate = true;
 	private boolean preventPickups = false;
 	private boolean friendlyMobs = true;
+	private boolean ridingBoat = false;
 	private boolean undisguiseOnDeath = true;
 	private boolean undisguiseOnLogout = false;
 	private int duration;
@@ -221,6 +222,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		alwaysShowNameplate = getConfigBoolean("always-show-nameplate", true);
 		preventPickups = getConfigBoolean("prevent-pickups", true);
 		friendlyMobs = getConfigBoolean("friendly-mobs", true);
+		ridingBoat = getConfigBoolean("riding-boat", false);
 		undisguiseOnDeath = getConfigBoolean("undisguise-on-death", true);
 		undisguiseOnLogout = getConfigBoolean("undisguise-on-logout", false);
 		duration = getConfigInt("duration", 0);
@@ -262,7 +264,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 	private void disguise(Player player) {
 		String nameplate = nameplateText;
 		if (showPlayerName) nameplate = player.getDisplayName();
-		Disguise disguise = new Disguise(player, entityType, nameplate, alwaysShowNameplate, flag, var1, var2, var3, duration, this);
+		Disguise disguise = new Disguise(player, entityType, nameplate, alwaysShowNameplate, ridingBoat, flag, var1, var2, var3, duration, this);
 		manager.addDisguise(player, disguise);
 		disguised.put(player.getName().toLowerCase(), disguise);
 	}
@@ -343,6 +345,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		private EntityType entityType;
 		private String nameplateText;
 		private boolean alwaysShowNameplate;
+		private boolean ridingBoat;
 		private boolean flag;
 		private int var1;
 		private int var2;
@@ -351,11 +354,12 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		
 		private int taskId;
 		
-		public Disguise(Player player, EntityType entityType, String nameplateText, boolean alwaysShowNameplate, boolean flag, int var1, int var2, int var3, int duration, DisguiseSpell spell) {
+		public Disguise(Player player, EntityType entityType, String nameplateText, boolean alwaysShowNameplate, boolean ridingBoat, boolean flag, int var1, int var2, int var3, int duration, DisguiseSpell spell) {
 			this.player = player;
 			this.entityType = entityType;
 			this.nameplateText = nameplateText;
 			this.alwaysShowNameplate = alwaysShowNameplate;
+			this.ridingBoat = ridingBoat;
 			this.flag = flag;
 			this.var1 = var1;
 			this.var2 = var2;
@@ -380,6 +384,10 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		
 		public boolean alwaysShowNameplate() {
 			return alwaysShowNameplate;
+		}
+		
+		public boolean isRidingBoat() {
+			return ridingBoat;
 		}
 		
 		public boolean getFlag() {

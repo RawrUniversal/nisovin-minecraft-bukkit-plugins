@@ -2,7 +2,6 @@ package com.nisovin.magicspells.volatilecode;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,8 +41,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -51,6 +48,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ConnectionSide;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.targeted.DisguiseSpell;
@@ -389,14 +387,16 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 		private Map<String, DisguiseSpell.Disguise> disguises = new HashMap<String, DisguiseSpell.Disguise>();
 		private Set<Integer> disguisedEntityIds = new HashSet<Integer>();
 		private Set<Integer> dragons = new HashSet<Integer>();
+		private Map<Integer, Integer> mounts = new HashMap<Integer, Integer>();
 
+		ProtocolManager protocolManager;
 		private PacketListener packetListener = null;
 		private Random random = new Random();
 		
 		public DisguiseManager_1_6_R2(MagicConfig config) {
 			this.hideArmor = config.getBoolean("general.disguise-spell-hide-armor", false);
 			
-			ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+			protocolManager = ProtocolLibrary.getProtocolManager();
 			packetListener = new PacketListener();
 			protocolManager.addPacketListener(packetListener);
 			
@@ -435,6 +435,7 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 				clearDisguise(player);
 				disguise.getSpell().undisguise(player);
 			}
+			mounts.remove(player.getEntityId());
 		}
 		
 		public boolean isDisguised(Player player) {
@@ -453,11 +454,15 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 			disguises.clear();
 			disguisedEntityIds.clear();
 			dragons.clear();
+			mounts.clear();
 			disguiseSpells.clear();
 		}
 		
 		private void applyDisguise(Player player, DisguiseSpell.Disguise disguise) {
 			sendDestroyEntityPackets(player);
+			if (mounts.containsKey(player.getEntityId())) {
+				sendDestroyEntityPackets(player, mounts.remove(player.getEntityId()));
+			}
 			sendDisguisedSpawnPackets(player, disguise);
 		}
 		
@@ -646,15 +651,6 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 					((EntityInsentient)entity).setCustomNameVisible(disguise.alwaysShowNameplate());
 				}
 				
-				if (player.hasPotionEffect(PotionEffectType.INVISIBILITY) && entity instanceof EntityLiving) {
-					Collection<PotionEffect> effects = player.getActivePotionEffects();
-					for (PotionEffect effect : effects) {
-						if (effect.getType() == PotionEffectType.INVISIBILITY) {
-							((LivingEntity)entity.getBukkitEntity()).addPotionEffect(effect);
-						}
-					}
-				}
-				
 				entity.setPositionRotation(location.getX(), location.getY() + yOffset, location.getZ(), location.getYaw(), location.getPitch());
 				
 				return entity;
@@ -667,7 +663,7 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 		@EventHandler(priority=EventPriority.MONITOR)
 		public void onArmSwing(PlayerAnimationEvent event) {
 			final Player p = event.getPlayer();
-			final int entityId = -p.getEntityId();
+			final int entityId = p.getEntityId();
 			if (isDisguised(p)) {
 				DisguiseSpell.Disguise disguise = getDisguise(p);
 				EntityType entityType = disguise.getEntityType();
@@ -679,67 +675,62 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 					((CraftWorld)p.getWorld()).getHandle().broadcastEntityEffect(((CraftEntity)p).getHandle(), (byte) 13);
 				} else if (entityType == EntityType.BLAZE || entityType == EntityType.SPIDER || entityType == EntityType.GHAST) {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(16, Byte.valueOf((byte)1));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
 							dw.watch(16, Byte.valueOf((byte)0));
-							tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+							broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 						}
 					}, 10);
 				} else if (entityType == EntityType.WITCH) {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(21, Byte.valueOf((byte)1));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
 							dw.watch(21, Byte.valueOf((byte)0));
-							tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+							broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 						}
 					}, 10);
 				} else if (entityType == EntityType.CREEPER && !disguise.getFlag()) {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(17, Byte.valueOf((byte)1));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
 							dw.watch(17, Byte.valueOf((byte)0));
-							tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+							broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 						}
 					}, 10);
 				} else if (entityType == EntityType.WOLF) {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(16, Byte.valueOf((byte)(p.isSneaking() ? 3 : 2)));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
 							dw.watch(16, Byte.valueOf((byte)(p.isSneaking() ? 1 : 0)));
-							tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+							broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 						}
 					}, 10);
 				} else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE) {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(16, Byte.valueOf((byte)(p.isSneaking() ? 2 : 3)));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
 							dw.watch(16, Byte.valueOf((byte)(p.isSneaking() ? 1 : 2)));
-							tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+							broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 						}
 					}, 10);
 				}
@@ -752,54 +743,48 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 			if (disguise == null) return;
 			EntityType entityType = disguise.getEntityType();
 			Player p = event.getPlayer();
-			int entityId = -p.getEntityId();
+			int entityId = p.getEntityId();
 			if (entityType == EntityType.WOLF) {
 				if (event.isSneaking()) {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(16, Byte.valueOf((byte)1));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 				} else {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(16, Byte.valueOf((byte)0));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 				}
 			} else if (entityType == EntityType.ENDERMAN) {
 				if (event.isSneaking()) {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(18, Byte.valueOf((byte)1));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 				} else {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(18, Byte.valueOf((byte)0));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 				}
 			} else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE) {
 				if (event.isSneaking()) {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(16, Byte.valueOf((byte)1));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 				} else {
 					final DataWatcher dw = new DataWatcher();
-					final EntityTracker tracker = ((CraftWorld)p.getWorld()).getHandle().tracker;
 					dw.a(0, Byte.valueOf((byte) 0));
 					dw.a(1, Short.valueOf((short) 300));
 					dw.a(16, Byte.valueOf((byte)2));
-					tracker.a(((CraftPlayer)p).getHandle(), new Packet40EntityMetadata(entityId, dw, true));
+					broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
 				}
 			} else if (entityType == EntityType.SHEEP && event.isSneaking()) {
 				p.playEffect(EntityEffect.SHEEP_EAT);
@@ -810,6 +795,9 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 		public void onQuit(PlayerQuitEvent event) {
 			disguisedEntityIds.remove(event.getPlayer().getEntityId());
 			dragons.remove(event.getPlayer().getEntityId());
+			if (mounts.containsKey(event.getPlayer().getEntityId())) {
+				sendDestroyEntityPackets(event.getPlayer(), mounts.remove(event.getPlayer().getEntityId()));
+			}
 		}
 		
 		@EventHandler
@@ -826,7 +814,7 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 		class PacketListener extends PacketAdapter {
 			
 			public PacketListener() {
-				super(MagicSpells.plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.NORMAL, 0x14, 0x28, 0x5, 0x20, 0x21, 0x22, 0x23);
+				super(MagicSpells.plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.NORMAL, 0x14, 0x28, 0x5, 0x1F, 0x20, 0x21, 0x22, 0x23);
 			}
 			
 			@Override
@@ -853,6 +841,16 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 					if (packet.b > 0 && disguisedEntityIds.contains(packet.a)) {
 						event.setCancelled(true);
 					}
+				} else if (event.getPacketID() == 0x1F) {
+					Packet31RelEntityMove packet = (Packet31RelEntityMove)event.getPacket().getHandle();
+					if (mounts.containsKey(packet.a)) {
+						Packet31RelEntityMove newpacket = new Packet31RelEntityMove();
+						newpacket.a = mounts.get(packet.a);
+						newpacket.b = packet.b;
+						newpacket.c = packet.c;
+						newpacket.d = packet.d;
+						((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
+					}
 				} else if (event.getPacketID() == 0x20) {
 					Packet32EntityLook packet = (Packet32EntityLook)event.getPacket().getHandle();
 					if (packet.a < 0) {
@@ -866,6 +864,12 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 						newpacket.f = 0;
 						((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
 						event.setCancelled(true);
+					} else if (mounts.containsKey(packet.a)) {
+						Packet32EntityLook newpacket = new Packet32EntityLook();
+						newpacket.a = mounts.get(packet.a);
+						newpacket.e = packet.e;
+						newpacket.f = packet.f;
+						((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
 					}
 				} else if (event.getPacketID() == 0x21) {
 					Packet33RelEntityMoveLook packet = (Packet33RelEntityMoveLook)event.getPacket().getHandle();
@@ -885,6 +889,15 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 						Packet28EntityVelocity packet28 = new Packet28EntityVelocity(packet.a, 0.15, 0, 0.15);
 						((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(packet28);
 						event.setCancelled(true);
+					} else if (mounts.containsKey(packet.a)) {
+						Packet33RelEntityMoveLook newpacket = new Packet33RelEntityMoveLook();
+						newpacket.a = mounts.get(packet.a);
+						newpacket.b = packet.b;
+						newpacket.c = packet.c;
+						newpacket.d = packet.d;
+						newpacket.e = packet.e;
+						newpacket.f = packet.f;
+						((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
 					}
 				} else if (event.getPacketID() == 0x22) {
 					Packet34EntityTeleport packet = (Packet34EntityTeleport)event.getPacket().getHandle();
@@ -902,6 +915,15 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 						newpacket.f = 0;
 						((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
 						event.setCancelled(true);
+					} else if (mounts.containsKey(packet.a)) {
+						Packet34EntityTeleport newpacket = new Packet34EntityTeleport();
+						newpacket.a = mounts.get(packet.a);
+						newpacket.b = packet.b;
+						newpacket.c = packet.c;
+						newpacket.d = packet.d;
+						newpacket.e = packet.e;
+						newpacket.f = packet.f;
+						((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
 					}
 				} else if (event.getPacketID() == 0x23) {
 					Packet35EntityHeadRotation packet = (Packet35EntityHeadRotation)event.getPacket().getHandle();
@@ -910,9 +932,7 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 					}
 				} else if (event.getPacketID() == 0x28) {
 					Packet40EntityMetadata packet = (Packet40EntityMetadata)event.getPacket().getHandle();
-					if (packet.a < 0) {
-						packet.a *= -1;
-					} else if (disguisedEntityIds.contains(packet.a) && !dragons.contains(packet.a)) {
+					if (disguisedEntityIds.contains(packet.a) && !dragons.contains(packet.a)) {
 						event.setCancelled(true);
 					}
 				}
@@ -927,9 +947,24 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 		}*/
 		
 		private void sendDestroyEntityPackets(Player disguised) {
-			Packet29DestroyEntity packet29 = new Packet29DestroyEntity(disguised.getEntityId());
+			sendDestroyEntityPackets(disguised, disguised.getEntityId());
+		}
+		
+		private void sendDestroyEntityPackets(Player disguised, int entityId) {
+			Packet29DestroyEntity packet29 = new Packet29DestroyEntity(entityId);
 			final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
 			tracker.a(((CraftPlayer)disguised).getHandle(), packet29);
+		}
+		
+		private void broadcastPacket40(Player disguised, Packet40EntityMetadata packet) {
+			PacketContainer con = new PacketContainer(40, packet);
+			try {
+				for (Player player : protocolManager.getEntityTrackers(disguised)) {
+					protocolManager.sendServerPacket(player, con, false);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		private void sendDisguisedSpawnPacket(Player viewer, Player disguised, DisguiseSpell.Disguise disguise, Entity entity) {
@@ -938,8 +973,16 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 				List<Packet> packets = getPacketsToSend(disguised, disguise, entity);
 				if (packets != null && packets.size() > 0) {
 					EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
-					for (Packet packet : packets) {
-						ep.playerConnection.sendPacket(packet);
+					try {
+						for (Packet packet : packets) {
+							if (packet instanceof Packet40EntityMetadata) {
+								protocolManager.sendServerPacket(viewer, new PacketContainer(40, packet), false);
+							} else {
+								ep.playerConnection.sendPacket(packet);
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			}
@@ -952,7 +995,11 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 				if (packets != null && packets.size() > 0) {
 					final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
 					for (Packet packet : packets) {
-						tracker.a(((CraftPlayer)disguised).getHandle(), packet);
+						if (packet instanceof Packet40EntityMetadata) {
+							broadcastPacket40(disguised, (Packet40EntityMetadata)packet);
+						} else {
+							tracker.a(((CraftPlayer)disguised).getHandle(), packet);
+						}
 					}
 				}
 			}
@@ -1005,7 +1052,7 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 					packet24.k = 1;
 				}
 				packets.add(packet24);
-				Packet40EntityMetadata packet40 = new Packet40EntityMetadata(-disguised.getEntityId(), entity.getDataWatcher(), true);
+				Packet40EntityMetadata packet40 = new Packet40EntityMetadata(disguised.getEntityId(), entity.getDataWatcher(), true);
 				packets.add(packet40);
 				if (dragons.contains(disguised.getEntityId())) {
 					Packet28EntityVelocity packet28 = new Packet28EntityVelocity(disguised.getEntityId(), 0.15, 0, 0.15);
@@ -1030,6 +1077,23 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 				Packet40EntityMetadata packet40 = new Packet40EntityMetadata(-disguised.getEntityId(), entity.getDataWatcher(), true);
 				packets.add(packet40);
 			}
+			
+			if (disguise.isRidingBoat()) {
+				EntityBoat boat = new EntityBoat(entity.world);
+				if (mounts.containsKey(disguised.getEntityId())) {
+					boat.id = mounts.get(disguised.getEntityId());
+				} else {
+					mounts.put(disguised.getEntityId(), boat.id);
+				}
+				boat.setPositionRotation(disguised.getLocation().getX(), disguised.getLocation().getY(), disguised.getLocation().getZ(), disguised.getLocation().getYaw(), 0);
+				Packet23VehicleSpawn packet23 = new Packet23VehicleSpawn(boat, 1);
+				packets.add(packet23);
+				Packet39AttachEntity packet39 = new Packet39AttachEntity();
+				packet39.a = disguised.getEntityId();
+				packet39.b = boat.id;
+				packets.add(packet39);
+			}
+			
 			return packets;
 		}
 		
