@@ -121,7 +121,9 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 				}
 			}
 			if (b != null && b.getType() != Material.AIR) {
-				doIt(player.getLocation(), b.getLocation().add(.5, .5, .5));
+				Location loc = b.getLocation().add(.5, .5, .5);
+				doIt(player.getLocation(), loc);
+				playSpellEffects(player, loc);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -232,6 +234,7 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		doIt(caster.getLocation(), target);
+		playSpellEffects(caster, target);
 		return true;
 	}
 
@@ -243,6 +246,7 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 	@Override
 	public boolean castAtEntityFromLocation(Player caster, Location from, LivingEntity target, float power) {
 		doIt(from, target.getLocation());
+		playSpellEffects(from, target);
 		return true;
 	}
 
