@@ -40,6 +40,8 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 	private boolean onlyCountOnSuccess;
 	private List<String> spellNames;
 	private List<TargetedLocationSpell> spells;
+	private String spellNameOnBreak;
+	private TargetedLocationSpell spellOnBreak;
 
 	private String strAtCap;
 
@@ -60,6 +62,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 		unbreakable = getConfigBoolean("unbreakable", false);
 		onlyCountOnSuccess = getConfigBoolean("only-count-on-success", false);
 		spellNames = getConfigStringList("spells", null);
+		spellNameOnBreak = getConfigString("spell-on-break", null);
 
 		strAtCap = getConfigString("str-at-cap", "You have too many effects at once.");
 
@@ -79,8 +82,16 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 				}
 			}
 		}
+		if (spellNameOnBreak != null) {
+			Spell spell = MagicSpells.getSpellByInternalName(spellNameOnBreak);
+			if (spell != null && spell instanceof TargetedLocationSpell) {
+				spellOnBreak = (TargetedLocationSpell)spell;
+			} else {
+				MagicSpells.error("Pulser spell '" + internalName + "' has an invalid spell-on-break spell defined");
+			}
+		}
 		if (spells.size() == 0) {
-			MagicSpells.error("Pulse spell '" + internalName + "' has no spells defined!");
+			MagicSpells.error("Pulser spell '" + internalName + "' has no spells defined!");
 		}
 	}
 
@@ -295,6 +306,13 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 
 		public void stop() {
 			block.setType(Material.AIR);
+			if (spellOnBreak != null) {
+				if (caster == null) {
+					spellOnBreak.castAtLocation(location, power);
+				} else if (caster.isValid()) {
+					spellOnBreak.castAtLocation(caster, location, power);
+				}
+			}
 		}
 
 	}
