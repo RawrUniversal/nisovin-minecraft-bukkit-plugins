@@ -17,9 +17,12 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.MessageBlocker;
 import com.nisovin.magicspells.util.ValidTargetList;
 
 public class ExternalCommandSpell extends TargetedSpell implements TargetedEntitySpell {
+	
+	private static MessageBlocker messageBlocker;
 	
 	private boolean castWithItem;
 	private boolean castByCommand;
@@ -66,15 +69,21 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 		}
 		
 		if (blockChatOutput) {
-			convoPrompt = new StringPrompt() {	
-				public String getPromptText(ConversationContext arg0) {
-					return strBlockedOutput;
+			if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+				if (messageBlocker == null) {
+					messageBlocker = new MessageBlocker();
 				}
-				public Prompt acceptInput(ConversationContext arg0, String arg1) {
-					return Prompt.END_OF_CONVERSATION;
-				}
-			};
-			convoFac = new ConversationFactory(MagicSpells.plugin).withModality(true).withFirstPrompt(convoPrompt).withTimeout(1);
+			} else {
+				convoPrompt = new StringPrompt() {	
+					public String getPromptText(ConversationContext arg0) {
+						return strBlockedOutput;
+					}
+					public Prompt acceptInput(ConversationContext arg0, String arg1) {
+						return Prompt.END_OF_CONVERSATION;
+					}
+				};
+				convoFac = new ConversationFactory(MagicSpells.plugin).withModality(true).withFirstPrompt(convoPrompt).withTimeout(1);
+			}
 		}
 	}
 
@@ -96,73 +105,73 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 	}
 	
 	private void process(CommandSender sender, Player target, String[] args) {
+		// get actual sender
+		CommandSender actualSender;
+		if (executeAsTargetInstead) {
+			actualSender = target;
+		} else if (executeOnConsoleInstead) {
+			actualSender = Bukkit.getConsoleSender();
+		} else {
+			actualSender = sender;
+		}
+		
 		// grant permissions and op
 		boolean opped = false;
-		if (sender instanceof Player) {
+		if (actualSender instanceof Player) {
 			if (temporaryPermissions != null) {
 				for (String perm : temporaryPermissions) {
-					if (!executeAsTargetInstead) {
-						if (!sender.hasPermission(perm)) {
-							sender.addAttachment(MagicSpells.plugin, perm.trim(), true, 5);
-						}
-					} else {
-						if (!target.hasPermission(perm)) {
-							target.addAttachment(MagicSpells.plugin, perm.trim(), true, 5);
-						}
+					if (!actualSender.hasPermission(perm)) {
+						actualSender.addAttachment(MagicSpells.plugin, perm.trim(), true, 5);
 					}
 				}
 			}
-			if (temporaryOp && !sender.isOp()) {
+			if (temporaryOp && !actualSender.isOp()) {
 				opped = true;
-				sender.setOp(true);
+				actualSender.setOp(true);
 			}
 		}
 		
 		// perform commands
 		try {
 			if (commandToExecute != null && commandToExecute.size() > 0) {
+
+				Conversation convo = null;
+				if (sender instanceof Player) {
+					if (messageBlocker != null) {
+						messageBlocker.addPlayer((Player)sender);
+					} else if (convoFac != null) {
+						convo = convoFac.buildConversation((Player)sender);
+						convo.begin();
+					}
+				}
 				for (String comm : commandToExecute) {
-					if (args != null && args.length > 0) {
-						for (int i = 0; i < args.length; i++) {
-							comm = comm.replace("%"+(i+1), args[i]);
+					if (comm != null && !comm.isEmpty()) {
+						if (args != null && args.length > 0) {
+							for (int i = 0; i < args.length; i++) {
+								comm = comm.replace("%"+(i+1), args[i]);
+							}
 						}
+						comm = comm.replace("%a", sender.getName());
+						if (target != null) {
+							comm = comm.replace("%t", target.getName());
+						}
+						Bukkit.dispatchCommand(actualSender, comm);
 					}
-					comm = comm.replace("%a", sender.getName());
-					if (target != null) {
-						comm = comm.replace("%t", target.getName());
-					}
-					if (executeAsTargetInstead) {
-						Conversation convo = null;
-						if (blockChatOutput) {
-							convo = convoFac.buildConversation(target);
-							convo.begin();
-						}
-						target.performCommand(comm);
-						if (convo != null) {
-							convo.abandon();
-						}
-					} else if (executeOnConsoleInstead) {
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
-					} else {
-						Conversation convo = null;
-						if (blockChatOutput && sender instanceof Player) {
-							convo = convoFac.buildConversation((Player)sender);
-							convo.begin();
-						}
-						Bukkit.dispatchCommand(sender, comm);
-						if (convo != null) {
-							convo.abandon();
-						}
-					}
+				}
+				if (messageBlocker != null && sender instanceof Player) {
+					messageBlocker.removePlayer((Player)sender);
+				} else if (convo != null) {
+					convo.abandon();
 				}
 			}
 		} catch (Exception e) {
 			// catch all exceptions to make sure we don't leave someone opped
 			e.printStackTrace();
 		}
+		
 		// deop
 		if (opped) {
-			sender.setOp(false);
+			actualSender.setOp(false);
 		}
 		
 		// effects
@@ -236,6 +245,14 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 		return beneficial;
 	}
 	
+	@Override
+	public void turnOff() {
+		if (messageBlocker != null) {
+			messageBlocker.turnOff();
+			messageBlocker = null;
+		}
+	}
+	
 	private class DelayedCommand implements Runnable {
 
 		private CommandSender sender;
@@ -248,68 +265,67 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 		
 		@Override
 		public void run() {
+			// get actual sender
+			CommandSender actualSender;
+			if (executeAsTargetInstead) {
+				actualSender = target;
+			} else if (executeOnConsoleInstead) {
+				actualSender = Bukkit.getConsoleSender();
+			} else {
+				actualSender = sender;
+			}
+			
 			// grant permissions
 			boolean opped = false;
-			if (sender instanceof Player) {
+			if (actualSender instanceof Player) {
 				if (temporaryPermissions != null) {
 					for (String perm : temporaryPermissions) {
-						if (!executeAsTargetInstead) {
-							if (!sender.hasPermission(perm)) {
-								sender.addAttachment(MagicSpells.plugin, perm, true, 5);
-							}
-						} else {
-							if (!target.hasPermission(perm)) {
-								target.addAttachment(MagicSpells.plugin, perm, true, 5);
-							}
+						if (!actualSender.hasPermission(perm)) {
+							actualSender.addAttachment(MagicSpells.plugin, perm, true, 5);
 						}
 					}
 				}
-				if (temporaryOp && !sender.isOp()) {
+				if (temporaryOp && !actualSender.isOp()) {
 					opped = true;
-					sender.setOp(true);
+					actualSender.setOp(true);
 				}
 			}
+			
 			// run commands
 			try {
+				Conversation convo = null;
+				if (sender instanceof Player) {
+					if (messageBlocker != null) {
+						messageBlocker.addPlayer((Player)sender);
+					} else if (convoFac != null) {
+						convo = convoFac.buildConversation((Player)sender);
+						convo.begin();
+					}
+				}
 				for (String comm : commandToExecuteLater) {
 					if (comm != null && !comm.isEmpty()) {
 						comm = comm.replace("%a", sender.getName());
 						if (target != null) {
 							comm = comm.replace("%t", target.getName());
 						}
-						if (executeAsTargetInstead) {
-							Conversation convo = null;
-							if (blockChatOutput) {
-								convo = convoFac.buildConversation(target);
-								convo.begin();
-							}
-							target.performCommand(comm);
-							if (convo != null) {
-								convo.abandon();
-							}
-						} else if (executeOnConsoleInstead) {
-							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), comm);
-						} else {
-							Conversation convo = null;
-							if (blockChatOutput && sender instanceof Player) {
-								convo = convoFac.buildConversation((Player)sender);
-								convo.begin();
-							}
-							Bukkit.dispatchCommand(sender, comm);
-							if (convo != null) {
-								convo.abandon();
-							}
-						}
+						Bukkit.dispatchCommand(actualSender, comm);
 					}
+				}
+				if (messageBlocker != null && sender instanceof Player) {
+					messageBlocker.removePlayer((Player)sender);
+				} else if (convo != null) {
+					convo.abandon();
 				}
 			} catch (Exception e) {
 				// catch exceptions to make sure we don't leave someone opped
 				e.printStackTrace();
 			}
+			
 			// deop
 			if (opped) {
-				sender.setOp(false);
+				actualSender.setOp(false);
 			}
+			
 			// graphical effect
 			if (sender instanceof Player) {
 				playSpellEffects(EffectPosition.DISABLED, (Player)sender);
