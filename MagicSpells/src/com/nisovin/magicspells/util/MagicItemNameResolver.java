@@ -4,11 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
 import org.bukkit.block.BlockFace;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Tree;
+import org.bukkit.material.Wool;
 
 public class MagicItemNameResolver implements ItemNameResolver {
 
@@ -19,7 +21,14 @@ public class MagicItemNameResolver implements ItemNameResolver {
 		for (Material mat : Material.values()) {
 			nameMap.put(mat.name().toLowerCase(), mat);
 			nameMap.put(mat.name().toLowerCase().replace("_", ""), mat);
+			nameMap.put(mat.name().toLowerCase().replace("_", " "), mat);
 		}
+		nameMap.put("cobble", Material.COBBLESTONE);
+		nameMap.put("plank", Material.WOOD);
+		nameMap.put("woodplank", Material.WOOD);
+		nameMap.put("woodenplank", Material.WOOD);
+		nameMap.put("tree", Material.LOG);
+		nameMap.put("leaf", Material.LEAVES);
 	}
 	
 	@Override
@@ -73,22 +82,7 @@ public class MagicItemNameResolver implements ItemNameResolver {
 		}
 		
 		if (type.isBlock()) {
-			MaterialData data = null;
-			if (type == Material.LOG) {
-				data = getTree(sdata);
-			}
-			
-			if (data != null) {
-				return new MagicBlockMaterial(data);
-			} else if (sdata.matches("^[0-9]+$")) {
-				short durability = 0;
-				try {
-					durability = Short.parseShort(sdata);
-				} catch (NumberFormatException e) {}
-				return new MagicItemMaterial(type, durability);
-			} else {
-				return new MagicBlockMaterial(new MaterialData(type));
-			}
+			return new MagicBlockMaterial(resolveBlockData(type, sdata));
 		} else {
 			short durability = 0;
 			try {
@@ -98,11 +92,59 @@ public class MagicItemNameResolver implements ItemNameResolver {
 		}
 	}
 	
+	public MagicMaterial resolveBlock(String string) {
+		if (string == null || string.isEmpty()) return null;
+		
+		String stype;
+		String sdata;
+		if (string.contains(":")) {
+			String[] split = string.split(":", 2);
+			stype = split[0].toLowerCase();
+			sdata = split[1];
+		} else {
+			stype = string.toLowerCase();
+			sdata = "";
+		}
+		
+		Material type = nameMap.get(stype);
+		if (type == null) {
+			return resolveUnknown(stype, sdata);
+		}
+		
+		if (type.isBlock()) {
+			return new MagicBlockMaterial(resolveBlockData(type, sdata));
+		} else {
+			return null;
+		}
+	}
+	
+	private MaterialData resolveBlockData(Material type, String sdata) {
+		if (type == Material.LOG) {
+			return getTree(sdata);
+		} else if (type == Material.WOOL) {
+			return getWool(sdata);
+		} else {
+			return new MaterialData(type);
+		}
+	}
+	
 	private MagicMaterial resolveUnknown(String stype, String sdata) {
 		return null;
 	}
 	
-	
+	private Wool getWool(String data) {
+		DyeColor color = DyeColor.WHITE;
+		if (data != null && data.length() > 0) {
+			data = data.replace("_", "").replace(" ", "").toLowerCase();
+			for (DyeColor c : DyeColor.values()) {
+				if (data.equals(c.name().replace("_", "").toLowerCase())) {
+					color = c;
+					break;
+				}
+			}
+		}
+		return new Wool(color);
+	}
 	
 	private Tree getTree(String data) {
 		TreeSpecies species = TreeSpecies.GENERIC;
