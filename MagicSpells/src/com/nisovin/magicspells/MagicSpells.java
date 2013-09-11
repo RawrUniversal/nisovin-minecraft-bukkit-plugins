@@ -48,10 +48,8 @@ import com.nisovin.magicspells.util.ExperienceBarManager;
 import com.nisovin.magicspells.util.ItemNameResolver;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MagicItemNameResolver;
-import com.nisovin.magicspells.util.Metrics;
 import com.nisovin.magicspells.util.MoneyHandler;
 import com.nisovin.magicspells.util.Util;
-import com.nisovin.magicspells.util.Metrics.Graph;
 import com.nisovin.magicspells.volatilecode.*;
 import com.nisovin.magicspells.zones.NoMagicZoneManager;
 
@@ -113,15 +111,6 @@ public class MagicSpells extends JavaPlugin {
 	String strDanceStart;
 	String strDanceComplete;
 	String strDanceFail;
-		
-	// metrics vars
-	boolean metricsEnabled;
-	int metricSpellCasts;
-	int metricSpellCastsExternal;
-	int metricSpellCastsTargeted;
-	int metricSpellCastsInstant;
-	int metricSpellCastsBuff;
-	int metricErrors;
 	
 	// spell containers
 	HashMap<String, Spell> spells; // map internal names to spells
@@ -470,15 +459,6 @@ public class MagicSpells extends JavaPlugin {
 		CastCommand exec = new CastCommand(this, config.getBoolean("general.enable-tab-completion", true));
 		getCommand("magicspellcast").setExecutor(exec);
 		getCommand("magicspellmana").setExecutor(exec);
-		//if (config.getBoolean("general.enable-tab-completion", true)) {
-		//	getCommand("magicspellcast").setTabCompleter(exec);
-		//}
-		
-		// setup metrics
-		metricsEnabled = false;//config.getBoolean("general.enable-stat-collection", true);
-		if (metricsEnabled) {
-			setupMetrics();
-		}
 		
 		// setup profiling
 		if (enableProfiling) {
@@ -582,68 +562,6 @@ public class MagicSpells extends JavaPlugin {
 			} else {
 				pm.addPermission(new Permission("magicspells." + perm, description, permDefault, children));
 			}
-		}
-	}
-	
-	private void setupMetrics() {
-		try {
-			Metrics metrics = new Metrics(this);
-			
-			Graph graph1 = metrics.createGraph("Spell Casts");
-			graph1.addPlotter(new Metrics.Plotter("Total") {
-				@Override
-				public int getValue() {
-					int r = metricSpellCasts;
-					metricSpellCasts = 0;
-					return r;
-				}
-			});
-			graph1.addPlotter(new Metrics.Plotter("External") {
-				@Override
-				public int getValue() {
-					int r = metricSpellCastsExternal;
-					metricSpellCastsExternal = 0;
-					return r;
-				}
-			});
-			graph1.addPlotter(new Metrics.Plotter("Targeted") {
-				@Override
-				public int getValue() {
-					int r = metricSpellCastsTargeted;
-					metricSpellCastsTargeted = 0;
-					return r;
-				}
-			});
-			graph1.addPlotter(new Metrics.Plotter("Instant") {
-				@Override
-				public int getValue() {
-					int r = metricSpellCastsInstant;
-					metricSpellCastsInstant = 0;
-					return r;
-				}
-			});
-			graph1.addPlotter(new Metrics.Plotter("Buff") {
-				@Override
-				public int getValue() {
-					int r = metricSpellCastsBuff;
-					metricSpellCastsBuff = 0;
-					return r;
-				}
-			});
-			
-			Graph graph2 = metrics.createGraph("Errors");
-			graph2.addPlotter(new Metrics.Plotter("Errors") {
-				@Override
-				public int getValue() {
-					int r = metricErrors;
-					metricErrors = 0;
-					return r;
-				}
-			});
-			
-			metrics.start();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -940,7 +858,6 @@ public class MagicSpells extends JavaPlugin {
 		} else {
 			ex.printStackTrace();
 		}
-		plugin.metricErrors++;
 	}
 	
 	static void profilingReport() {

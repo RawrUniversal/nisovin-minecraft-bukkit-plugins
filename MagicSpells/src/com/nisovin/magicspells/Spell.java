@@ -33,10 +33,6 @@ import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.mana.ManaHandler;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spelleffects.SpellEffect;
-import com.nisovin.magicspells.spells.BuffSpell;
-import com.nisovin.magicspells.spells.ExternalCommandSpell;
-import com.nisovin.magicspells.spells.InstantSpell;
-import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -523,18 +519,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	public final SpellCastResult cast(Player player, float power, String[] args) {
 		MagicSpells.debug(1, "Player " + player.getName() + " is trying to cast " + internalName);
-		if (MagicSpells.plugin.metricsEnabled) {
-			MagicSpells.plugin.metricSpellCasts++;
-			if (this instanceof ExternalCommandSpell) {
-				MagicSpells.plugin.metricSpellCastsExternal++;
-			} else if (this instanceof TargetedSpell) {
-				MagicSpells.plugin.metricSpellCastsTargeted++;
-			} else if (this instanceof InstantSpell) {
-				MagicSpells.plugin.metricSpellCastsInstant++;
-			} else if (this instanceof BuffSpell) {
-				MagicSpells.plugin.metricSpellCastsBuff++;
-			}
-		}
 		
 		// get spell state
 		SpellCastState state = getCastState(player);
