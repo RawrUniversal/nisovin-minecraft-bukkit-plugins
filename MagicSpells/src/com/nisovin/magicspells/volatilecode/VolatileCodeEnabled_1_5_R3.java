@@ -484,22 +484,20 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 			float yOffset = 0;
 			World world = ((CraftWorld)location.getWorld()).getHandle();
 			if (entityType == EntityType.PLAYER) {
-				entity = new EntityHuman(world) {
-					
+				entity = new EntityHuman(world) {					
 					@Override
 					public void sendMessage(String arg0) {
-					}
-					
+					}					
 					@Override
 					public ChunkCoordinates b() {
 						return null;
-					}
-					
+					}					
 					@Override
 					public boolean a(int arg0, String arg1) {
 						return false;
 					}
 				};
+				((EntityHuman)entity).name = disguise.getNameplateText();
 				yOffset = -1.5F;
 			} else if (entityType == EntityType.ZOMBIE) {
 				entity = new EntityZombie(world);
