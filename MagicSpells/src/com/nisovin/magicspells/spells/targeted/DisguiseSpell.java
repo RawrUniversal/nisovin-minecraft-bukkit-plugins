@@ -247,15 +247,13 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 				sendMessage(player, strFade);
 				return PostCastAction.ALREADY_HANDLED;
 			}
-			if (state == SpellCastState.NORMAL) {
-				Player target = getTargetPlayer(player);
-				if (target != null) {
-					disguise(target);
-					sendMessages(player, target);
-					return PostCastAction.NO_MESSAGES;
-				} else {
-					return noTarget(player);
-				}
+			Player target = getTargetPlayer(player);
+			if (target != null) {
+				disguise(target);
+				sendMessages(player, target);
+				return PostCastAction.NO_MESSAGES;
+			} else {
+				return noTarget(player);
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -305,14 +303,14 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
 		if (undisguiseOnDeath && disguised.containsKey(event.getEntity().getName().toLowerCase())) {
-			manager.removeDisguise(event.getEntity());
+			manager.removeDisguise(event.getEntity(), false);
 		}
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 		if (undisguiseOnLogout && disguised.containsKey(event.getPlayer().getName().toLowerCase())) {
-			manager.removeDisguise(event.getPlayer());
+			manager.removeDisguise(event.getPlayer(), false);
 		}
 	}
 	
@@ -321,6 +319,10 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		if (friendlyMobs && event.getTarget() instanceof Player && disguised.containsKey(((Player)event.getTarget()).getName().toLowerCase())) {
 			event.setCancelled(true);
 		}
+	}
+	
+	public static DisguiseManager getDisguiseManager() {
+		return manager;
 	}
 	
 	@Override

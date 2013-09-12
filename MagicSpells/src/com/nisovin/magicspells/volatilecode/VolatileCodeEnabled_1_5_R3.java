@@ -2,12 +2,7 @@ package com.nisovin.magicspells.volatilecode;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
 
 import net.minecraft.server.v1_5_R3.*;
 
@@ -33,18 +28,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ConnectionSide;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
@@ -382,97 +371,12 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 		return new DisguiseManager_1_5_R3(config);
 	}
 	
-	public class DisguiseManager_1_5_R3 implements Listener, DisguiseManager {
-		private boolean hideArmor;
-		
-		private Set<DisguiseSpell> disguiseSpells = new HashSet<DisguiseSpell>();
-		private Map<String, DisguiseSpell.Disguise> disguises = new HashMap<String, DisguiseSpell.Disguise>();
-		private Set<Integer> disguisedEntityIds = new HashSet<Integer>();
-		private Set<Integer> dragons = new HashSet<Integer>();
-		private Map<Integer, Integer> mounts = new HashMap<Integer, Integer>();
-
-		ProtocolManager protocolManager;
-		private PacketListener packetListener = null;
-		private Random random = new Random();
+	public class DisguiseManager_1_5_R3 extends DisguiseManager {		
 		
 		public DisguiseManager_1_5_R3(MagicConfig config) {
-			this.hideArmor = config.getBoolean("general.disguise-spell-hide-armor", false);
-			
-			protocolManager = ProtocolLibrary.getProtocolManager();
+			super(config);
 			packetListener = new PacketListener();
 			protocolManager.addPacketListener(packetListener);
-			
-			Bukkit.getPluginManager().registerEvents(this, MagicSpells.plugin);
-		}
-		
-		public void registerSpell(DisguiseSpell spell) {
-			disguiseSpells.add(spell);
-		}
-		
-		public void unregisterSpell(DisguiseSpell spell) {
-			disguiseSpells.remove(spell);
-		}
-		
-		public int registeredSpellsCount() {
-			return disguiseSpells.size();
-		}
-		
-		public void addDisguise(Player player, DisguiseSpell.Disguise disguise) {
-			if (isDisguised(player)) {
-				removeDisguise(player);
-			}
-			disguises.put(player.getName().toLowerCase(), disguise);
-			disguisedEntityIds.add(player.getEntityId());
-			if (disguise.getEntityType() == EntityType.ENDER_DRAGON) {
-				dragons.add(player.getEntityId());
-			}
-			applyDisguise(player, disguise);
-		}
-		
-		public void removeDisguise(Player player) {
-			DisguiseSpell.Disguise disguise = disguises.remove(player.getName().toLowerCase());
-			disguisedEntityIds.remove(player.getEntityId());
-			dragons.remove(player.getEntityId());
-			if (disguise != null) {
-				clearDisguise(player);
-				disguise.getSpell().undisguise(player);
-			}
-			mounts.remove(player.getEntityId());
-		}
-		
-		public boolean isDisguised(Player player) {
-			return disguises.containsKey(player.getName().toLowerCase());
-		}
-		
-		public DisguiseSpell.Disguise getDisguise(Player player) {
-			return disguises.get(player.getName().toLowerCase());
-		}
-		
-		public void destroy() {
-			HandlerList.unregisterAll(this);
-			ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-			protocolManager.removePacketListener(packetListener);
-			
-			disguises.clear();
-			disguisedEntityIds.clear();
-			dragons.clear();
-			mounts.clear();
-			disguiseSpells.clear();
-		}
-		
-		private void applyDisguise(Player player, DisguiseSpell.Disguise disguise) {
-			sendDestroyEntityPackets(player);
-			sendDisguisedSpawnPackets(player, disguise);
-		}
-		
-		private void clearDisguise(Player player) {
-			sendDestroyEntityPackets(player);
-			if (mounts.containsKey(player.getEntityId())) {
-				sendDestroyEntityPackets(player, mounts.remove(player.getEntityId()));
-			}
-			if (player.isValid()) {
-				sendPlayerSpawnPackets(player);
-			}
 		}
 
 		private Entity getEntity(Player player, DisguiseSpell.Disguise disguise) {
@@ -784,26 +688,6 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 				p.playEffect(EntityEffect.SHEEP_EAT);
 			}
 		}
-		
-		@EventHandler
-		public void onQuit(PlayerQuitEvent event) {
-			disguisedEntityIds.remove(event.getPlayer().getEntityId());
-			dragons.remove(event.getPlayer().getEntityId());
-			if (mounts.containsKey(event.getPlayer().getEntityId())) {
-				sendDestroyEntityPackets(event.getPlayer(), mounts.remove(event.getPlayer().getEntityId()));
-			}
-		}
-		
-		@EventHandler
-		public void onJoin(PlayerJoinEvent event) {
-			Player p = event.getPlayer();
-			if (isDisguised(p)) {
-				disguisedEntityIds.add(p.getEntityId());
-				if (getDisguise(p).getEntityType() == EntityType.ENDER_DRAGON) {
-					dragons.add(p.getEntityId());
-				}
-			}
-		}
 			
 		class PacketListener extends PacketAdapter {
 			
@@ -825,7 +709,10 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 							event.setCancelled(true);
 							Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 								public void run() {
-									sendDisguisedSpawnPacket(player, Bukkit.getPlayer(name), disguise, null);
+									Player disguised = Bukkit.getPlayer(name);
+									if (disguised != null) {
+										sendDisguisedSpawnPacket(player, disguised, disguise, null);
+									}
 								}
 							}, 0);
 						}
@@ -934,17 +821,13 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 			
 		}
 		
-		/*private void sendDestroyEntityPacket(Player viewer, Player disguised) {
-			Packet29DestroyEntity packet29 = new Packet29DestroyEntity(disguised.getEntityId());		
-			EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
-			ep.playerConnection.sendPacket(packet29);
-		}*/
-		
-		private void sendDestroyEntityPackets(Player disguised) {
+		@Override
+		protected void sendDestroyEntityPackets(Player disguised) {
 			sendDestroyEntityPackets(disguised, disguised.getEntityId());
 		}
 		
-		private void sendDestroyEntityPackets(Player disguised, int entityId) {
+		@Override
+		protected void sendDestroyEntityPackets(Player disguised, int entityId) {
 			Packet29DestroyEntity packet29 = new Packet29DestroyEntity(entityId);
 			final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
 			tracker.a(((CraftPlayer)disguised).getHandle(), packet29);
@@ -982,7 +865,8 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 			}
 		}
 		
-		private void sendDisguisedSpawnPackets(Player disguised, DisguiseSpell.Disguise disguise) {
+		@Override
+		protected void sendDisguisedSpawnPackets(Player disguised, DisguiseSpell.Disguise disguise) {
 			Entity entity = getEntity(disguised, disguise);
 			if (entity != null) {
 				List<Packet> packets = getPacketsToSend(disguised, disguise, entity);
@@ -1091,13 +975,8 @@ public class VolatileCodeEnabled_1_5_R3 implements VolatileCodeHandle {
 			return packets;
 		}
 		
-		/*private void sendPlayerSpawnPacket(Player viewer, Player player) {
-			Packet20NamedEntitySpawn packet20 = new Packet20NamedEntitySpawn(((CraftPlayer)player).getHandle());
-			EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
-			ep.playerConnection.sendPacket(packet20);
-		}*/
-		
-		private void sendPlayerSpawnPackets(Player player) {
+		@Override
+		protected void sendPlayerSpawnPackets(Player player) {
 			Packet20NamedEntitySpawn packet20 = new Packet20NamedEntitySpawn(((CraftPlayer)player).getHandle());
 			final EntityTracker tracker = ((CraftWorld)player.getWorld()).getHandle().tracker;
 			tracker.a(((CraftPlayer)player).getHandle(), packet20);
