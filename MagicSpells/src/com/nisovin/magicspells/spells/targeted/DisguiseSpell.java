@@ -9,17 +9,24 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Villager.Profession;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.DisguiseManager;
@@ -29,6 +36,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 
 	static DisguiseManager manager;
 
+	private DisguiseSpell thisSpell;
 	private EntityType entityType;
 	private boolean flag = false;
 	private int var1 = 0;
@@ -42,6 +50,9 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 	private boolean ridingBoat = false;
 	private boolean undisguiseOnDeath = true;
 	private boolean undisguiseOnLogout = false;
+	private boolean undisguiseOnCast = false;
+	private boolean undisguiseOnGiveDamage = false;
+	private boolean undisguiseOnTakeDamage = false;
 	private int duration;
 	private boolean toggle;
 	private String strFade;
@@ -50,6 +61,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 	
 	public DisguiseSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
+		thisSpell = this;
 		
 		if (manager == null) {
 			try {
@@ -236,6 +248,17 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 			MagicSpells.error("Invalid entity-type specified for disguise spell '" + spellName + "'");
 		}
 	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+		if (undisguiseOnCast) {
+			registerEvents(new CastListener());
+		}
+		if (undisguiseOnGiveDamage || undisguiseOnTakeDamage) {
+			registerEvents(new DamageListener());
+		}
+	}
 
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
@@ -318,6 +341,37 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 	public void onTarget(EntityTargetEvent event) {
 		if (friendlyMobs && event.getTarget() instanceof Player && disguised.containsKey(((Player)event.getTarget()).getName().toLowerCase())) {
 			event.setCancelled(true);
+		}
+	}
+	
+	class CastListener implements Listener {
+		@EventHandler
+		void onSpellCast(SpellCastedEvent event) {
+			if (event.getSpell() != thisSpell && disguised.containsKey(event.getCaster().getName().toLowerCase())) {
+				manager.removeDisguise(event.getCaster());
+			}
+		}
+	}
+	
+	class DamageListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		void onDamage(EntityDamageEvent event) {
+			if (undisguiseOnTakeDamage && event.getEntity() instanceof Player && disguised.containsKey(((Player)event.getEntity()).getName().toLowerCase())) {
+				manager.removeDisguise((Player)event.getEntity());
+			}
+			if (undisguiseOnGiveDamage && event instanceof EntityDamageByEntityEvent) {
+				Entity e = ((EntityDamageByEntityEvent)event).getDamager();
+				if (e instanceof Player) {
+					if (disguised.containsKey(((Player)e).getName().toLowerCase())) {
+						manager.removeDisguise((Player)e);
+					}
+				} else if (e instanceof Projectile) {
+					LivingEntity shooter = ((Projectile)e).getShooter();
+					if (shooter instanceof Player && disguised.containsKey(((Player)shooter).getName().toLowerCase())) {
+						manager.removeDisguise((Player)shooter);
+					}
+				}
+			}
 		}
 	}
 	
