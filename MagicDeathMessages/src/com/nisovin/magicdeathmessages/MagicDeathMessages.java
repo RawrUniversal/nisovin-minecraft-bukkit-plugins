@@ -149,7 +149,7 @@ public class MagicDeathMessages extends JavaPlugin implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		EntityDamageEvent dam = lastDamage.get(player.getName());
-		if (dam.isCancelled()) dam = null;
+		if (dam != null && dam.isCancelled()) dam = null;
 		DamageCause damageCause = dam != null ? dam.getCause() : DamageCause.CUSTOM;
 		
 		// get attacker data

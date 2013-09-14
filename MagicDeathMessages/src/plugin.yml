@@ -1,5 +1,5 @@
 name: MagicDeathMessages
-version: 5
+version: 6
 main: com.nisovin.magicdeathmessages.MagicDeathMessages
 
 commands:
