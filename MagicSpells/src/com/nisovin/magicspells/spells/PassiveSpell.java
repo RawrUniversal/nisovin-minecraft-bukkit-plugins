@@ -216,19 +216,19 @@ public class PassiveSpell extends Spell {
 		return MagicSpells.getSpellbook(caster).hasSpell(this);
 	}
 	
-	private void activate(Player caster) {
+	public void activate(Player caster) {
 		activate(caster, null, null);
 	}
 	
-	private void activate(Player caster, LivingEntity target) {
+	public void activate(Player caster, LivingEntity target) {
 		activate(caster, target, null);
 	}
 	
-	private void activate(Player caster, Location location) {
+	public void activate(Player caster, Location location) {
 		activate(caster, null, location);
 	}
 	
-	private void activate(final Player caster, final LivingEntity target, final Location location) {
+	public void activate(final Player caster, final LivingEntity target, final Location location) {
 		if (delay < 0) {
 			activateSpells(caster, target, location);
 		} else {

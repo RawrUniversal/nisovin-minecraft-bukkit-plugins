@@ -12,7 +12,7 @@ class ParticlesEffect extends SpellEffect {
 	float vertSpread = 0.2F;
 	float speed = 0.2F;
 	int count = 5;
-	float yOffset = 1F;
+	float yOffset = 0F;
 	int renderDistance = 32;
 
 	@Override

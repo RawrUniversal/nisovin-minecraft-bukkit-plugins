@@ -57,7 +57,7 @@ public class ProjectileSpell extends InstantSpell {
 	private int maxDistanceSquared;
 	private int effectInterval;
 	private List<String> spellNames;
-	private List<TargetedSpell> spells;
+	private List<Spell> spells;
 	private int aoeRadius;
 	private boolean targetPlayers;
 	private boolean allowTargetChange;
@@ -122,7 +122,7 @@ public class ProjectileSpell extends InstantSpell {
 	@Override
 	public void initialize() {
 		super.initialize();
-		spells = new ArrayList<TargetedSpell>();
+		spells = new ArrayList<Spell>();
 		if (spellNames != null) {
 			for (String spellName : spellNames) {
 				Spell spell = MagicSpells.getSpellByInternalName(spellName);
@@ -205,7 +205,7 @@ public class ProjectileSpell extends InstantSpell {
 				}
 				
 				// run spells
-				for (TargetedSpell spell : spells) {
+				for (Spell spell : spells) {
 					if (spell instanceof TargetedEntitySpell) {
 						((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
 						playSpellEffects(EffectPosition.TARGET, target);
@@ -243,7 +243,7 @@ public class ProjectileSpell extends InstantSpell {
 	private boolean projectileHitLocation(Entity projectile, ProjectileInfo info) {
 		if (!requireHitEntity && !info.done && (maxDistanceSquared == 0 || projectile.getLocation().distanceSquared(info.start) <= maxDistanceSquared)) {
 			if (aoeRadius == 0) {
-				for (TargetedSpell spell : spells) {
+				for (Spell spell : spells) {
 					if (spell instanceof TargetedLocationSpell) {
 						Location loc = projectile.getLocation();
 						Util.setLocationFacingFromVector(loc, projectile.getVelocity());
@@ -277,7 +277,7 @@ public class ProjectileSpell extends InstantSpell {
 				}
 				
 				// run spells
-				for (TargetedSpell spell : spells) {
+				for (Spell spell : spells) {
 					if (spell instanceof TargetedEntitySpell) {
 						((TargetedEntitySpell)spell).castAtEntity(info.player, target, info.power);
 						playSpellEffects(EffectPosition.TARGET, target);
