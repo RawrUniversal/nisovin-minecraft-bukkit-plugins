@@ -112,7 +112,7 @@ public class CastItem {
 				n = ChatColor.stripColor(meta.getDisplayName());
 			}
 		}
-		if (n == null && name == null) return true;
+		if (n == null && (name == null || name.isEmpty())) return true;
 		if (n == null || name == null) return false;
 		return n.equals(name);
 	}
