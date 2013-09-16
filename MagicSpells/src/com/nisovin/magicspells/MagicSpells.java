@@ -452,7 +452,9 @@ public class MagicSpells extends JavaPlugin {
 		if (consumeListener.hasConsumeCastItems()) {
 			registerEvents(consumeListener);
 		}
-		new DanceCastListener(this, config.getString("general.dance-cast-item", "2256"));
+		if (config.getBoolean("general.enable-dance-casting", true)) {
+			new DanceCastListener(this, config.getString("general.dance-cast-item", "2256"));
+		}
 		ModifierSet.initializeModifierListeners();
 		
 		// register commands
