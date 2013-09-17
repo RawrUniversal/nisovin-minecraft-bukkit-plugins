@@ -122,4 +122,9 @@ public class VaultPermissionService extends net.milkbowl.vault.permission.Permis
 		return YAPP.getGroupNames().toArray(new String[]{});
 	}
 
+	@Override
+	public boolean hasGroupSupport() {
+		return true;
+	}
+
 }

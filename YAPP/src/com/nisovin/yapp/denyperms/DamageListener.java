@@ -38,7 +38,7 @@ public class DamageListener implements Listener {
 					player = (Player)evt.getDamager();
 				} else if (evt.getDamager() instanceof Projectile) {
 					Projectile proj = (Projectile)evt.getDamager();
-					if (proj.getShooter().getType() == EntityType.PLAYER) {
+					if (proj.getShooter() != null && proj.getShooter().getType() == EntityType.PLAYER) {
 						player = (Player)proj.getShooter();
 					}
 				}
@@ -51,6 +51,7 @@ public class DamageListener implements Listener {
 				}
 			}
 			if (checkDamage && evt.getEntity().getType() == EntityType.PLAYER) {
+				player = (Player)evt.getEntity();
 				// player receiving entity damage
 				if (!player.isOp() && (player.hasPermission("yapp.deny.damage.*") || player.hasPermission("yapp.deny.damage." + getEntityTypeId(evt.getDamager())))) {
 					event.setCancelled(true);
@@ -58,7 +59,7 @@ public class DamageListener implements Listener {
 				}
 				if (evt.getDamager() instanceof Projectile) {
 					Projectile proj = (Projectile)evt.getDamager();
-					if (!player.isOp() && player.hasPermission("yapp.deny.damage." + getEntityTypeId(proj.getShooter()))) {
+					if (!player.isOp() && proj.getShooter() != null && player.hasPermission("yapp.deny.damage." + getEntityTypeId(proj.getShooter()))) {
 						event.setCancelled(true);
 						return;
 					}
