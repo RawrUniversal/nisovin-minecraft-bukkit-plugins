@@ -3,6 +3,7 @@ package com.nisovin.magicspells;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,17 +21,21 @@ public class DanceCastListener implements Listener {
 	MagicSpells plugin;
 	
 	CastItem danceCastWand;
+	int duration;
 	Map<String, Spell> spells = new HashMap<String, Spell>();
+	
 	Map<String, String> playerCasts = new HashMap<String, String>();
 	Map<String, Location> playerLocations = new HashMap<String, Location>();
+	Map<String, Integer> playerTasks = new HashMap<String, Integer>();
 	
 	boolean enableDoubleJump = false;
 	boolean enableMovement = false;
 	
-	public DanceCastListener(MagicSpells plugin, String castItem) {
+	public DanceCastListener(MagicSpells plugin, String castItem, int duration) {
 		this.plugin = plugin;
 		
-		danceCastWand = new CastItem(Util.getItemStackFromString(castItem));
+		this.danceCastWand = new CastItem(Util.getItemStackFromString(castItem));
+		this.duration = duration;
 		
 		for (Spell spell : MagicSpells.spells()) {
 			String seq = spell.getDanceCastSequence();
@@ -73,6 +78,10 @@ public class DanceCastListener implements Listener {
 					MagicSpells.sendMessage(player, plugin.strDanceFail);
 				}
 				playerLocations.remove(playerName);
+				Integer taskId = playerTasks.remove(playerName);
+				if (taskId != null) {
+					MagicSpells.cancelTask(taskId.intValue());
+				}
 			} else {
 				// starting a cast
 				if (!player.isSneaking() && !player.isFlying()) {
@@ -83,6 +92,9 @@ public class DanceCastListener implements Listener {
 						player.setFlying(false);
 					}
 					MagicSpells.sendMessage(player, plugin.strDanceStart);
+					if (duration > 0) {
+						playerTasks.put(playerName, MagicSpells.scheduleDelayedTask(new DanceCastDuration(playerName), duration));
+					}
 				}
 			}
 		} else if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
@@ -144,6 +156,28 @@ public class DanceCastListener implements Listener {
 		}		
 		
 		return castSequence;
+	}
+	
+	public class DanceCastDuration implements Runnable {
+		
+		String playerName;
+		
+		public DanceCastDuration(String playerName) {
+			this.playerName = playerName;
+		}
+		
+		@Override
+		public void run() {
+			String cast = playerCasts.remove(playerName);
+			playerLocations.remove(playerName);
+			playerTasks.remove(playerName);
+			if (cast != null) {
+				Player player = Bukkit.getPlayerExact(playerName);
+				if (player != null) {
+					MagicSpells.sendMessage(player, plugin.strDanceFail);
+				}
+			}
+		}
 	}
 	
 }

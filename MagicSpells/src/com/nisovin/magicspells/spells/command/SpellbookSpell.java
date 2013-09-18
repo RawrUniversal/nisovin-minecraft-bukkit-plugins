@@ -30,9 +30,6 @@ import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MagicLocation;
 
 public class SpellbookSpell extends CommandSpell {
-
-	@SuppressWarnings("unused")
-	private static final String SPELL_NAME = "spellbook";
 	
 	private int defaultUses;
 	private boolean destroyBookcase;

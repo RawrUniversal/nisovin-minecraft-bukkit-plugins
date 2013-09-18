@@ -38,7 +38,7 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 			allowedTypes[i] = Integer.parseInt(allowed[i]);
 		}
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		playBreakEffect = getConfigBoolean("play-break-effect", true);
+		playBreakEffect = getConfigBoolean("show-effect", true);
 		strInvalidBlock = getConfigString("str-invalid-block", "You can't build that block.");
 		strCantBuild = getConfigString("str-cant-build", "You can't build there.");
 	}
