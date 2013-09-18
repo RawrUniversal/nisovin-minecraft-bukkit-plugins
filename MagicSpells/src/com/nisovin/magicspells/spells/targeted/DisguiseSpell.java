@@ -237,6 +237,9 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		ridingBoat = getConfigBoolean("riding-boat", false);
 		undisguiseOnDeath = getConfigBoolean("undisguise-on-death", true);
 		undisguiseOnLogout = getConfigBoolean("undisguise-on-logout", false);
+		undisguiseOnCast = getConfigBoolean("undisguise-on-cast", false);
+		undisguiseOnGiveDamage = getConfigBoolean("undisguise-on-give-damage", false);
+		undisguiseOnTakeDamage = getConfigBoolean("undisguise-on-take-damage", false);
 		duration = getConfigInt("duration", 0);
 		toggle = getConfigBoolean("toggle", false);
 		targetSelf = getConfigBoolean("target-self", true);
