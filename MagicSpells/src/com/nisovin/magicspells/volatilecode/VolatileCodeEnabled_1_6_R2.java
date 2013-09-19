@@ -2,6 +2,7 @@ package com.nisovin.magicspells.volatilecode;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.server.v1_6_R2.*;
 
@@ -27,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.DisguiseManager;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -345,6 +347,39 @@ public class VolatileCodeEnabled_1_6_R2 implements VolatileCodeHandle {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public void playDragonDeathEffect(Location location) {
+		EntityEnderDragon dragon = new EntityEnderDragon(((CraftWorld)location.getWorld()).getHandle());
+		dragon.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), 0F);
+		
+		Packet24MobSpawn packet24 = new Packet24MobSpawn(dragon);
+		int dir = packet24.f + 128;
+		if (dir > 127) dir -= 256;
+		packet24.f = (byte)dir;
+		Packet38EntityStatus packet38 = new Packet38EntityStatus(dragon.id, (byte)3);
+		final Packet29DestroyEntity packet29 = new Packet29DestroyEntity(dragon.id);
+		
+		BoundingBox box = new BoundingBox(location, 64);
+		final List<Player> players = new ArrayList<Player>();
+		for (Player player : location.getWorld().getPlayers()) {
+			if (box.contains(player)) {
+				players.add(player);
+				((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet24);
+				((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet38);
+			}
+		}
+		
+		MagicSpells.scheduleDelayedTask(new Runnable() {
+			public void run() {
+				for (Player player : players) {
+					if (player.isValid()) {
+						((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet29);
+					}
+				}
+			}
+		}, 250);
 	}
 	
 	@Override

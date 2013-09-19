@@ -152,6 +152,11 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	}
 	
 	@Override
+	public void playDragonDeathEffect(Location location) {
+		
+	}
+	
+	@Override
 	public void setKiller(LivingEntity entity, Player killer) {
 		
 	}

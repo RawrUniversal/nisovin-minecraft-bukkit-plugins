@@ -27,6 +27,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellCastedEvent;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.DisguiseManager;
@@ -277,6 +278,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 			if (target != null) {
 				disguise(target);
 				sendMessages(player, target);
+				playSpellEffects(EffectPosition.CASTER, player);
 				return PostCastAction.NO_MESSAGES;
 			} else {
 				return noTarget(player);
@@ -291,6 +293,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		Disguise disguise = new Disguise(player, entityType, nameplate, alwaysShowNameplate, ridingBoat, flag, var1, var2, var3, duration, this);
 		manager.addDisguise(player, disguise);
 		disguised.put(player.getName().toLowerCase(), disguise);
+		playSpellEffects(EffectPosition.TARGET, player);
 	}
 	
 	public void undisguise(Player player) {
@@ -298,6 +301,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 		if (disguise != null) {
 			disguise.cancelDuration();
 			sendMessage(player, strFade);
+			playSpellEffects(EffectPosition.DISABLED, player);
 		}
 	}
 	

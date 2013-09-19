@@ -58,4 +58,6 @@ public interface VolatileCodeHandle {
 	
 	public DisguiseManager getDisguiseManager(MagicConfig config);
 	
+	public void playDragonDeathEffect(Location location);
+	
 }
