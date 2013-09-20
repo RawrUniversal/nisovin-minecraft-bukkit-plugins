@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -41,17 +42,20 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			
-			Block target;
-			try {
-				target = player.getTargetBlock(null, range>0?range:100);
-			} catch (IllegalStateException e) {
-				target = null;
-			}
-			if (target == null || target.getType() == Material.AIR) {
-				return noTarget(player);
+			if (noTarget) {
+				volley(player, player.getLocation(), null, power);
 			} else {
-				volley(player, player.getLocation(), target.getLocation(), power);
+				Block target;
+				try {
+					target = player.getTargetBlock(null, range>0?range:100);
+				} catch (IllegalStateException e) {
+					target = null;
+				}
+				if (target == null || target.getType() == Material.AIR) {
+					return noTarget(player);
+				} else {
+					volley(player, player.getLocation(), target.getLocation(), power);
+				}
 			}
 		}
 		return PostCastAction.HANDLE_NORMALLY;
@@ -61,7 +65,7 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 		Location spawn = from.clone();
 		spawn.setY(spawn.getY()+3);
 		Vector v;
-		if (noTarget) {
+		if (noTarget || target == null) {
 			v = from.getDirection();
 		} else {
 			v = target.toVector().subtract(spawn.toVector()).normalize();
@@ -74,7 +78,9 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 			for (int i = 0; i < arrows; i++) {
 				Arrow a = from.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
 				a.setVelocity(a.getVelocity());
-				a.setShooter(player);
+				if (player != null) {
+					a.setShooter(player);
+				}
 				if (removeDelay > 0) arrowList.add(a);
 			}
 			
@@ -93,7 +99,11 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 			new ArrowShooter(player, spawn, v);
 		}
 		
-		playSpellEffects(player, target);
+		if (target != null) {
+			playSpellEffects(player, target);
+		} else {
+			playSpellEffects(EffectPosition.CASTER, player);
+		}
 	}
 	
 	@Override
@@ -123,7 +133,12 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 
 	@Override
 	public boolean castAtEntityFromLocation(Location from, LivingEntity target, float power) {
-		return false;
+		if (!noTarget) {
+			volley(null, from, target.getLocation(), power);
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private class ArrowShooter implements Runnable {
@@ -151,9 +166,11 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 		public void run() {			
 			// fire an arrow
 			if (count < arrows) {
-				Arrow a = player.getWorld().spawnArrow(spawn, dir, (speed/10.0F), (spread/10.0F));
+				Arrow a = spawn.getWorld().spawnArrow(spawn, dir, (speed/10.0F), (spread/10.0F));
 				a.setVelocity(a.getVelocity());
-				a.setShooter(player);
+				if (player != null) {
+					a.setShooter(player);
+				}
 				if (removeDelay > 0) {
 					arrowMap.put(count, a);
 				}
