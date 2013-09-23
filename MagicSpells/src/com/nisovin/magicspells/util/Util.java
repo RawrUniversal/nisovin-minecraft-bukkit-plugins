@@ -263,9 +263,12 @@ public class Util {
 		if (meta.hasLore()) {
 			lore = meta.getLore();
 			if (lore.size() > 0) {
-				String s = ChatColor.stripColor(lore.get(lore.size() - 1));
-				if (s.startsWith("MS$")) {
-					lore.remove(lore.size() - 1);
+				for (int i = 0; i < lore.size(); i++) {
+					String s = ChatColor.stripColor(lore.get(i));
+					if (s.startsWith("MS$:")) {
+						lore.remove(i);
+						break;
+					}
 				}
 			}
 		} else {
@@ -281,9 +284,11 @@ public class Util {
 		if (meta.hasLore()) {
 			List<String> lore = meta.getLore();
 			if (lore.size() > 0) {
-				String s = ChatColor.stripColor(lore.get(lore.size() - 1));
-				if (s.startsWith("MS$")) {
-					return s.substring(4);
+				for (int i = 0; i < lore.size(); i++) {
+					String s = ChatColor.stripColor(lore.get(lore.size() - 1));
+					if (s.startsWith("MS$:")) {
+						return s.substring(4);
+					}
 				}
 			}
 		}
@@ -296,9 +301,16 @@ public class Util {
 		if (meta.hasLore()) {
 			lore = meta.getLore();
 			if (lore.size() > 0) {
-				String s = ChatColor.stripColor(lore.get(lore.size() - 1));
-				if (s.startsWith("MS$")) {
-					lore.remove(lore.size() - 1);
+				boolean removed = false;
+				for (int i = 0; i < lore.size(); i++) {
+					String s = ChatColor.stripColor(lore.get(i));
+					if (s.startsWith("MS$:")) {
+						lore.remove(i);
+						removed = true;
+						break;
+					}
+				}
+				if (removed) {
 					if (lore.size() > 0) {
 						meta.setLore(lore);
 					} else {

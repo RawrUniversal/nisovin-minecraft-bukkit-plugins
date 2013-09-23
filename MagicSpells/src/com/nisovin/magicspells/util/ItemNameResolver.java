@@ -18,6 +18,8 @@ public interface ItemNameResolver {
 	}
 	
 	public abstract class MagicMaterial {
+		public Material getMaterial() { return null; }
+		public MaterialData getMaterialData() { return null; }
 		public void setBlock(Block block) {}
 		public abstract ItemStack toItemStack();
 		public abstract ItemStack toItemStack(int quantity);
@@ -28,6 +30,16 @@ public interface ItemNameResolver {
 		
 		public MagicBlockMaterial(MaterialData data) {
 			this.data = data;
+		}
+		
+		@Override
+		public Material getMaterial() {
+			return data.getItemType();
+		}
+		
+		@Override
+		public MaterialData getMaterialData() {
+			return data;
 		}
 		
 		@Override
@@ -59,6 +71,11 @@ public interface ItemNameResolver {
 		}
 		
 		@Override
+		public Material getMaterial() {
+			return type;
+		}
+		
+		@Override
 		public ItemStack toItemStack() {
 			return new ItemStack(type, 1, data);
 		}
@@ -72,6 +89,11 @@ public interface ItemNameResolver {
 	public class MagicUnknownMaterial extends MagicMaterial {
 		int type;
 		short data;
+		
+		@Override
+		public Material getMaterial() {
+			return Material.getMaterial(type);
+		}
 		
 		@Override
 		public void setBlock(Block block) {
