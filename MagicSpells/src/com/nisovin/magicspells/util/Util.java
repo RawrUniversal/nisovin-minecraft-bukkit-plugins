@@ -129,9 +129,9 @@ public class Util {
 			if (!config.contains("type")) return null;
 			
 			// basic item
-			ItemTypeAndData itemTypeAndData = MagicSpells.getItemNameResolver().resolve(config.getString("type"));
-			if (itemTypeAndData == null) return null;
-			ItemStack item = new ItemStack(itemTypeAndData.id, 1, itemTypeAndData.data);
+			ItemNameResolver.MagicMaterial material = MagicSpells.getItemNameResolver().resolveItem(config.getString("type"));
+			if (material == null) return null;
+			ItemStack item = material.toItemStack();
 			ItemMeta meta = item.getItemMeta();
 			
 			// name and lore
@@ -153,6 +153,7 @@ public class Util {
 			}
 			
 			// enchants
+			boolean emptyEnchants = false;
 			if (config.contains("enchants") && config.isList("enchants")) {
 				List<String> enchants = config.getStringList("enchants");
 				for (String enchant : enchants) {
@@ -174,6 +175,9 @@ public class Util {
 						}
 						meta.addEnchant(e, level, true);
 					}
+				}
+				if (enchants.size() == 0) {
+					emptyEnchants = true;
 				}
 			}
 			
@@ -250,7 +254,14 @@ public class Util {
 				}
 			}
 			
+			// set meta
 			item.setItemMeta(meta);
+			
+			// empty enchant
+			if (emptyEnchants) {
+				item = MagicSpells.getVolatileCodeHandler().addFakeEnchantment(item);
+			}
+			
 			return item;
 		} catch (Exception e) {
 			return null;
