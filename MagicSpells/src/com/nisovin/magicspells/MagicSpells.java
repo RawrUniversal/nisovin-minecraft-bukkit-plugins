@@ -182,7 +182,12 @@ public class MagicSpells extends JavaPlugin {
 						error("This MagicSpells version is not fully compatible with this server version.");
 						error("Some features have been disabled.");
 						error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
-						volatileCodeHandle = new VolatileCodeDisabled();
+						if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+							error("ProtocolLib found: some compatibility re-enabled");
+							volatileCodeHandle = new VolatileCodeProtocolLib();
+						} else {
+							volatileCodeHandle = new VolatileCodeDisabled();
+						}
 					}
 				}
 			}
