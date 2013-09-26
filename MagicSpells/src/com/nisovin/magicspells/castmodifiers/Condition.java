@@ -46,12 +46,13 @@ public abstract class Condition {
 		conditions.put("lightlevelbelow", LightLevelBelowCondition.class);
 		conditions.put("onblock", OnBlockCondition.class);
 		conditions.put("inblock", InBlockCondition.class);
-		conditions.put("sneaking", SneakingCondition.class);
-		conditions.put("blocking", BlockingCondition.class);
-		conditions.put("riding", RidingCondition.class);
 		conditions.put("outside", OutsideCondition.class);
 		conditions.put("roof", RoofCondition.class);
 		conditions.put("biome", BiomeCondition.class);
+		conditions.put("sneaking", SneakingCondition.class);
+		conditions.put("sprinting", SprintingCondition.class);
+		conditions.put("blocking", BlockingCondition.class);
+		conditions.put("riding", RidingCondition.class);
 		conditions.put("wearing", WearingCondition.class);
 		conditions.put("holding", HoldingCondition.class);
 		conditions.put("hasitem", HasItemCondition.class);
@@ -61,6 +62,8 @@ public abstract class Condition {
 		conditions.put("foodbelow", FoodBelowCondition.class);
 		conditions.put("levelabove", LevelAboveCondition.class);
 		conditions.put("levelbelow", LevelBelowCondition.class);
+		conditions.put("pitchabove", PitchAboveCondition.class);
+		conditions.put("pitchbelow", PitchBelowCondition.class);
 		conditions.put("potioneffect", PotionEffectCondition.class);
 		conditions.put("onfire", OnFireCondition.class);
 		conditions.put("buffactive", BuffActiveCondition.class);
@@ -71,8 +74,6 @@ public abstract class Condition {
 		conditions.put("entitytype", EntityTypeCondition.class);
 		conditions.put("distancemorethan", DistanceMoreThan.class);
 		conditions.put("distancelessthan", DistanceLessThan.class);
-		conditions.put("pitchabove", PitchAboveCondition.class);
-		conditions.put("pitchbelow", PitchBelowCondition.class);
 	}
 	
 }
