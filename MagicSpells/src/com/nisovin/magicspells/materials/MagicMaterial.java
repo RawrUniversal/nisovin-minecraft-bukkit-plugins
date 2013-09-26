@@ -7,9 +7,9 @@ import org.bukkit.material.MaterialData;
 
 public abstract class MagicMaterial {
 	
-	public Material getMaterial() { return null; }
+	public abstract Material getMaterial();
 	
-	public MaterialData getMaterialData() { return null; }
+	public abstract MaterialData getMaterialData();
 	
 	public final void setBlock(Block block) {
 		setBlock(block, true);
@@ -44,5 +44,30 @@ public abstract class MagicMaterial {
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof MagicMaterial) {
+			MagicMaterial m = (MagicMaterial)o;
+			return m.getMaterial() == getMaterial() && m.getMaterialData().equals(getMaterialData());
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return getMaterialData().hashCode();
+	}
+	
+	public static MagicMaterial fromItemStack(ItemStack item) {
+		if (item.getType().isBlock()) {
+			return new MagicBlockMaterial(item.getData());
+		}
+		return new MagicItemMaterial(item.getData());
+	}
+	
+	public static MagicMaterial fromBlock(Block block) {
+		return new MagicBlockMaterial(block.getState().getData());
 	}
 }

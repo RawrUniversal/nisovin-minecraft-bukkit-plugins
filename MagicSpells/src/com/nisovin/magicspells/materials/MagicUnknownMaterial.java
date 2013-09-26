@@ -20,6 +20,15 @@ public class MagicUnknownMaterial extends MagicMaterial {
 	}
 	
 	@Override
+	public MaterialData getMaterialData() {
+		if (data == (byte)data) {
+			return new MaterialData(type, (byte)data);
+		} else {
+			return new MaterialData(type);
+		}
+	}
+	
+	@Override
 	public void setBlock(Block block, boolean applyPhysics) {
 		if (data < 16) {
 			block.setTypeIdAndData(type, (byte)data, applyPhysics);

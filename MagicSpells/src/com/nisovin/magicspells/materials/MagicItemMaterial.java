@@ -33,7 +33,7 @@ public class MagicItemMaterial extends MagicMaterial {
 		if (matData != null) {
 			return matData;
 		} else {
-			return null;
+			return new MaterialData(type);
 		}
 	}
 
