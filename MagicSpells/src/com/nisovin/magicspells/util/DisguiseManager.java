@@ -27,7 +27,7 @@ public abstract class DisguiseManager implements Listener {
 	
 	protected Set<DisguiseSpell> disguiseSpells = new HashSet<DisguiseSpell>();
 	protected Map<String, DisguiseSpell.Disguise> disguises = new HashMap<String, DisguiseSpell.Disguise>();
-	protected Set<Integer> disguisedEntityIds = new HashSet<Integer>();
+	protected Map<Integer, DisguiseSpell.Disguise> disguisedEntityIds = new HashMap<Integer, DisguiseSpell.Disguise>();
 	protected Set<Integer> dragons = new HashSet<Integer>();
 	protected Map<Integer, Integer> mounts = new HashMap<Integer, Integer>();
 
@@ -58,7 +58,7 @@ public abstract class DisguiseManager implements Listener {
 			removeDisguise(player);
 		}
 		disguises.put(player.getName().toLowerCase(), disguise);
-		disguisedEntityIds.add(player.getEntityId());
+		disguisedEntityIds.put(player.getEntityId(), disguise);
 		if (disguise.getEntityType() == EntityType.ENDER_DRAGON) {
 			dragons.add(player.getEntityId());
 		}
@@ -138,7 +138,7 @@ public abstract class DisguiseManager implements Listener {
 	public void onJoin(PlayerJoinEvent event) {
 		Player p = event.getPlayer();
 		if (isDisguised(p)) {
-			disguisedEntityIds.add(p.getEntityId());
+			disguisedEntityIds.put(p.getEntityId(), getDisguise(p));
 			if (getDisguise(p).getEntityType() == EntityType.ENDER_DRAGON) {
 				dragons.add(p.getEntityId());
 			}

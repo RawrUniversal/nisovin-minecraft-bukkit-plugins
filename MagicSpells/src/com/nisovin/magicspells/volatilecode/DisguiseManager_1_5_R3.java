@@ -379,7 +379,7 @@ public class DisguiseManager_1_5_R3 extends DisguiseManager {
 				}
 			} else if (hideArmor && event.getPacketID() == 0x5) {
 				Packet5EntityEquipment packet = (Packet5EntityEquipment)event.getPacket().getHandle();
-				if (packet.b > 0 && disguisedEntityIds.contains(packet.a)) {
+				if (packet.b > 0 && disguisedEntityIds.containsKey(packet.a)) {
 					event.setCancelled(true);
 				}
 			} else if (event.getPacketID() == 0x1F) {
@@ -473,7 +473,8 @@ public class DisguiseManager_1_5_R3 extends DisguiseManager {
 				}
 			} else if (event.getPacketID() == 0x28) {
 				Packet40EntityMetadata packet = (Packet40EntityMetadata)event.getPacket().getHandle();
-				if (disguisedEntityIds.contains(packet.a) && !dragons.contains(packet.a)) {
+				DisguiseSpell.Disguise disguise = disguisedEntityIds.get(packet.a);
+				if (disguise != null && disguise.getEntityType() != EntityType.PLAYER) {
 					event.setCancelled(true);
 				}
 			}
