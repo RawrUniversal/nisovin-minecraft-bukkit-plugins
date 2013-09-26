@@ -13,8 +13,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.materials.MagicBlockMaterial;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -27,7 +31,7 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 	private double velocity;
 	private int tickInterval;
 	private int geyserHeight;
-	private Material geyserType;
+	private MagicMaterial geyserType;
 	private boolean ignoreArmor;
 	private boolean checkPlugins;
 
@@ -40,9 +44,11 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 		geyserHeight = getConfigInt("geyser-height", 4);
 		String s = getConfigString("geyser-type", "water");
 		if (s.equalsIgnoreCase("lava")) {
-			geyserType = Material.STATIONARY_LAVA;
+			geyserType = new MagicBlockMaterial(new MaterialData(Material.STATIONARY_LAVA));
+		} else if (s.equalsIgnoreCase("water")) {
+			geyserType = new MagicBlockMaterial(new MaterialData(Material.STATIONARY_WATER));
 		} else {
-			geyserType = Material.STATIONARY_WATER;
+			geyserType = MagicSpells.getItemNameResolver().resolveBlock(s);
 		}
 		ignoreArmor = getConfigBoolean("ignore-armor", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
@@ -137,11 +143,13 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 
 		private Location start;
 		private List<Player> nearby;
+		private MaterialData materialData;
 		
 		public GeyserAnimation(Location start, List<Player> nearby) {
 			super(0, tickInterval, true);
 			this.start = start;
 			this.nearby = nearby;
+			this.materialData = geyserType.getMaterialData();
 		}
 
 		@Override
@@ -152,12 +160,11 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 				Block block = start.clone().add(0,tick,0).getBlock();
 				if (block.getType() == Material.AIR) {
 					for (Player p : nearby) {
-						p.sendBlockChange(block.getLocation(), geyserType, (byte)0);
+						p.sendBlockChange(block.getLocation(), materialData.getItemType(), materialData.getData());
 					}
 				}
 			} else {
 				int n = geyserHeight-(tick-geyserHeight)-1; // top to bottom
-				//int n = tick-height; // bottom to top
 				Block block = start.clone().add(0, n, 0).getBlock();
 				for (Player p : nearby) {
 					p.sendBlockChange(block.getLocation(), block.getType(), block.getData());

@@ -29,7 +29,8 @@ import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
-import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
+import com.nisovin.magicspells.materials.ItemNameResolver.ItemTypeAndData;
+import com.nisovin.magicspells.materials.MagicMaterial;
 
 public class Util {
 
@@ -129,7 +130,7 @@ public class Util {
 			if (!config.contains("type")) return null;
 			
 			// basic item
-			ItemNameResolver.MagicMaterial material = MagicSpells.getItemNameResolver().resolveItem(config.getString("type"));
+			MagicMaterial material = MagicSpells.getItemNameResolver().resolveItem(config.getString("type"));
 			if (material == null) return null;
 			ItemStack item = material.toItemStack();
 			ItemMeta meta = item.getItemMeta();

@@ -1,12 +1,10 @@
 package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -14,32 +12,35 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpell {
 
-	int[] blockTypes;
-	int transmuteType;
-	byte transmuteData;
+	List<MagicMaterial> blockTypes;
+	MagicMaterial transmuteType;
 	BlockFace[] checkDirs = new BlockFace[] { BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
 	boolean checkAll = false;
 	
 	public TransmuteSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		List<Integer> list = getConfigIntList("transmutable-types", null);
-		if (list == null) list = new ArrayList<Integer>();
-		if (list.size() == 0) list.add(Material.IRON_BLOCK.getId());
-		blockTypes = new int[list.size()];
-		for (int i = 0; i < blockTypes.length; i++) {
-			blockTypes[i] = list.get(i);
+		List<String> list = getConfigStringList("transmutable-types", null);
+		blockTypes = new ArrayList<MagicMaterial>();
+		if (list != null && list.size() > 0) {
+			for (String s : list) {
+				MagicMaterial m = MagicSpells.getItemNameResolver().resolveBlock(s);
+				if (m != null) {
+					blockTypes.add(m);
+				}
+			}
+		} else {
+			blockTypes.add(MagicSpells.getItemNameResolver().resolveBlock("iron_block"));
 		}
-		Arrays.sort(blockTypes);
 		
-		transmuteType = getConfigInt("transmute-type", Material.GOLD_BLOCK.getId());
-		transmuteData = (byte)getConfigInt("transmute-data", 0);
+		transmuteType = MagicSpells.getItemNameResolver().resolveBlock(getConfigString("transmute-type", "gold_block"));
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpe
 				return noTarget(player);
 			}
 			
-			block.setTypeIdAndData(transmuteType, transmuteData, true);
+			transmuteType.setBlock(block);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -71,13 +72,13 @@ public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpe
 	public boolean castAtLocation(Player caster, Location target, float power) {
 		Block block = target.getBlock();
 		if (canTransmute(block)) {
-			block.setTypeIdAndData(transmuteType, transmuteData, true);
+			transmuteType.setBlock(block);
 			return true;
 		} else {
 			Vector v = target.getDirection();
 			block = target.clone().add(v).getBlock();
 			if (canTransmute(block)) {
-				block.setTypeIdAndData(transmuteType, transmuteData, true);
+				transmuteType.setBlock(block);
 				return true;
 			}
 		}
@@ -89,14 +90,17 @@ public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpe
 	public boolean castAtLocation(Location target, float power) {
 		Block block = target.getBlock();
 		if (canTransmute(block)) {
-			block.setTypeIdAndData(transmuteType, transmuteData, true);
+			transmuteType.setBlock(block);
 			return true;
 		}
 		return false;
 	}
 	
 	private boolean canTransmute(Block block) {
-		return Arrays.binarySearch(blockTypes, block.getTypeId()) >= 0;
+		for (MagicMaterial m : blockTypes) {
+			if (m.equals(block)) return true;
+		}
+		return false;
 	}
 
 }

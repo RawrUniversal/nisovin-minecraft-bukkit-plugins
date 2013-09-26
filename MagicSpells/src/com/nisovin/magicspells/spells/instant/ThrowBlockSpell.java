@@ -16,22 +16,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
-import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
 public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpell {
 
-	int blockType;
-	byte blockData;
+	MagicMaterial material;
 	float velocity;
 	boolean applySpellPowerToVelocity;
 	float verticalAdjustment;
@@ -55,9 +55,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 		super(config, spellName);
 		
 		String blockTypeInfo = getConfigString("block-type", Material.ANVIL.getId() + "");
-		ItemTypeAndData typeAndData = MagicSpells.getItemNameResolver().resolve(blockTypeInfo);
-		blockType = typeAndData.id;
-		blockData = (byte)typeAndData.data;
+		material = MagicSpells.getItemNameResolver().resolveBlock(blockTypeInfo);
 		velocity = getConfigFloat("velocity", 1);
 		applySpellPowerToVelocity = getConfigBoolean("apply-spell-power-to-velocity", false);
 		verticalAdjustment = getConfigFloat("vertical-adjustment", 0.5F);
@@ -77,12 +75,15 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 	@Override
 	public void initialize() {
 		super.initialize();
+		if (material == null) {
+			MagicSpells.error("Invalid block-type for " + internalName + " spell");
+		}
 		if (spellOnLand != null && !spellOnLand.isEmpty()) {
 			Spell s = MagicSpells.getSpellByInternalName(spellOnLand);
 			if (s != null && s instanceof TargetedLocationSpell) {
 				spell = (TargetedLocationSpell)s;
 			} else {
-				MagicSpells.error("Invalid spell-on-land for " + name + " spell");
+				MagicSpells.error("Invalid spell-on-land for " + internalName + " spell");
 			}
 		}
 		if (fallDamage > 0 || removeBlocks || preventBlocks || spell != null || ensureSpellCast || stickyBlocks) {
@@ -112,7 +113,8 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 	}
 	
 	private void spawnFallingBlock(Player player, float power, Location location, Vector velocity) {
-		FallingBlock block = location.getWorld().spawnFallingBlock(location, blockType, blockData);
+		MaterialData matData = material.getMaterialData();
+		FallingBlock block = location.getWorld().spawnFallingBlock(location, matData.getItemType(), matData.getData());
 		block.setVelocity(velocity);
 		block.setDropItem(dropItem);
 		if (fallDamage > 0) {
@@ -142,7 +144,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 						iter.remove();
 						if (removeBlocks) {
 							Block b = block.getLocation().getBlock();
-							if (b.getTypeId() == blockType && (b.getData() == blockData || blockType == Material.ANVIL.getId())) {
+							if (material.equals(b) || (material.getMaterial() == Material.ANVIL && b.getType() == Material.ANVIL)) {
 								b.setType(Material.AIR);
 							}
 						}

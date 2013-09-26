@@ -1,6 +1,9 @@
-package com.nisovin.magicspells.util;
+package com.nisovin.magicspells.materials;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -8,11 +11,14 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.material.Dye;
 import org.bukkit.material.Leaves;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Tree;
 import org.bukkit.material.Wool;
+
+import com.nisovin.magicspells.MagicSpells;
 
 public class MagicItemNameResolver implements ItemNameResolver {
 
@@ -25,19 +31,30 @@ public class MagicItemNameResolver implements ItemNameResolver {
 			materialMap.put(mat.name().toLowerCase(), mat);
 		}
 		
-		materialMap.put("cobble", Material.COBBLESTONE);
-		materialMap.put("plank", Material.WOOD);
-		materialMap.put("woodplank", Material.WOOD);
-		materialMap.put("woodenplank", Material.WOOD);
-		materialMap.put("tree", Material.LOG);
-		materialMap.put("leaf", Material.LEAVES);
-		materialMap.put("dye", Material.INK_SACK);
+		File file = new File(MagicSpells.getInstance().getDataFolder(), "itemnames.yml");
+		if (!file.exists()) {
+			MagicSpells.getInstance().saveResource("itemnames.yml", false);
+		}
+		YamlConfiguration config = new YamlConfiguration();
+		try {
+			config.load(file);
+			for (String s : config.getKeys(false)) {
+				Material m = materialMap.get(config.getString(s).toLowerCase());
+				if (m != null) {
+					materialMap.put(s.toLowerCase(), m);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
+		Map<String, Material> toAdd = new HashMap<String, Material>();
 		for (String s : materialMap.keySet()) {
 			if (s.contains("_")) {
-				materialMap.put(s.replace("_", ""), materialMap.get(s));
+				toAdd.put(s.replace("_", ""), materialMap.get(s));
 			}
 		}
+		materialMap.putAll(toAdd);
 	}
 	
 	@Override
@@ -108,6 +125,7 @@ public class MagicItemNameResolver implements ItemNameResolver {
 		if (type.isBlock()) {
 			return new MagicBlockMaterial(resolveBlockData(type, sdata));
 		} else {
+			if (sdata.equals("*")) return new MagicItemAnyDataMaterial(type);
 			MaterialData itemData = resolveItemData(type, sdata);
 			if (itemData != null) {
 				return new MagicItemMaterial(itemData);
@@ -123,6 +141,10 @@ public class MagicItemNameResolver implements ItemNameResolver {
 	@Override
 	public MagicMaterial resolveBlock(String string) {
 		if (string == null || string.isEmpty()) return null;
+		
+		if (string.contains("|")) {
+			return resolveRandomBlock(string);
+		}
 		
 		String stype;
 		String sdata;
@@ -141,10 +163,30 @@ public class MagicItemNameResolver implements ItemNameResolver {
 		}
 		
 		if (type.isBlock()) {
-			return new MagicBlockMaterial(resolveBlockData(type, sdata));
+			if (sdata.equals("*")) {
+				return new MagicBlockAnyDataMaterial(new MaterialData(type));
+			} else {
+				return new MagicBlockMaterial(resolveBlockData(type, sdata));
+			}
 		} else {
 			return null;
 		}
+	}
+	
+	private MagicMaterial resolveRandomBlock(String string) {
+		List<MagicMaterial> materials = new ArrayList<MagicMaterial>();
+		String[] strings = string.split("\\|");
+		for (String s : strings) {
+			MagicMaterial mat = resolveBlock(s.trim());
+			if (mat != null) {
+				materials.add(mat);
+			}
+		}
+		MaterialData[] datas = new MaterialData[materials.size()];
+		for (int i = 0; i < datas.length; i++) {
+			datas[i] = materials.get(i).getMaterialData();
+		}
+		return new MagicBlockRandomMaterial(datas);
 	}
 	
 	private MaterialData resolveBlockData(Material type, String sdata) {
@@ -170,8 +212,12 @@ public class MagicItemNameResolver implements ItemNameResolver {
 	private MagicMaterial resolveUnknown(String stype, String sdata) {
 		try {
 			int type = Integer.parseInt(stype);
-			short data = Short.parseShort(sdata);
-			return new MagicUnknownMaterial(type, data);
+			if (sdata.equals("*")) {
+				return new MagicUnknownAnyDataMaterial(type);
+			} else {
+				short data = Short.parseShort(sdata);
+				return new MagicUnknownMaterial(type, data);
+			}
 		} catch (NumberFormatException e) {
 			return null;
 		}

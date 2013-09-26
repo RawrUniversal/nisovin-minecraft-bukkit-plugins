@@ -22,10 +22,10 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
-import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class PulserSpell extends TargetedSpell implements TargetedLocationSpell {
@@ -34,8 +34,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 	private int interval;
 	private int capPerPlayer;
 	private int maxDistanceSquared;
-	private int typeId;
-	private byte data;
+	private MagicMaterial material;
 	private boolean unbreakable;
 	private boolean onlyCountOnSuccess;
 	private List<String> spellNames;
@@ -56,9 +55,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 		capPerPlayer = getConfigInt("cap-per-player", 10);
 		maxDistanceSquared = getConfigInt("max-distance", 30);
 		maxDistanceSquared *= maxDistanceSquared;
-		ItemTypeAndData type = MagicSpells.getItemNameResolver().resolve(getConfigString("block-type", "diamond_block"));
-		typeId = type.id;
-		data = (byte) type.data;
+		material = MagicSpells.getItemNameResolver().resolveBlock(getConfigString("block-type", "diamond_block"));
 		unbreakable = getConfigBoolean("unbreakable", false);
 		onlyCountOnSuccess = getConfigBoolean("only-count-on-success", false);
 		spellNames = getConfigStringList("spells", null);
@@ -136,7 +133,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 	}
 
 	private void createPulser(Player caster, Block block, float power) {
-		block.setTypeIdAndData(typeId, data, true);
+		material.setBlock(block);
 		pulsers.put(block, new Pulser(caster, block, power));
 		ticker.start();
 		if (caster != null) {
@@ -261,7 +258,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 
 		public boolean pulse() {
 			if (caster == null) {
-				if (block.getTypeId() == typeId
+				if (material.equals(block)
 					&& block.getChunk().isLoaded()) {
 					return activate();
 				} else {
@@ -269,7 +266,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 					return true;
 				}
 			} else if (caster.isValid() && caster.isOnline()
-					&& block.getTypeId() == typeId
+					&& material.equals(block)
 					&& block.getChunk().isLoaded()) {
 				if (maxDistanceSquared > 0
 						&& (!location.getWorld().equals(caster.getLocation().getWorld()) || location.distanceSquared(caster.getLocation()) > maxDistanceSquared)) {

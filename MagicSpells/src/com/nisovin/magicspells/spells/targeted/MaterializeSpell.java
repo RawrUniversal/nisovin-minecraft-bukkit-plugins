@@ -11,19 +11,19 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.material.MaterialData;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
-import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class MaterializeSpell extends TargetedSpell implements TargetedLocationSpell {
 
-	private int type;
-	private byte data;
+	private MagicMaterial material;
 	private int resetDelay;
 	private boolean falling;
 	private boolean applyPhysics;
@@ -35,11 +35,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		super(config, spellName);
 		
 		String s = getConfigString("block-type", "1");
-		ItemTypeAndData typeAndData = MagicSpells.getItemNameResolver().resolve(s);
-		if (typeAndData != null) {
-			type = typeAndData.id;
-			data = (byte)typeAndData.data;
-		}
+		material = MagicSpells.getItemNameResolver().resolveBlock(s);
 		resetDelay = getConfigInt("reset-delay", 0);
 		falling = getConfigBoolean("falling", false);
 		applyPhysics = getConfigBoolean("apply-physics", true);
@@ -84,7 +80,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		BlockState blockState = block.getState();
 		
 		if (checkPlugins && player != null) {
-			block.setTypeIdAndData(type, data, false);
+			material.setBlock(block, false);
 			BlockPlaceEvent event = new BlockPlaceEvent(block, blockState, against, player.getItemInHand(), player, true);
 			Bukkit.getPluginManager().callEvent(event);
 			blockState.update(true);
@@ -93,9 +89,10 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 			}
 		}
 		if (!falling) {
-			block.setTypeIdAndData(type, data, applyPhysics);
+			material.setBlock(block, applyPhysics);
 		} else {
-			block.getWorld().spawnFallingBlock(block.getLocation().add(.5, 0, .5), type, data);
+			MaterialData matData = material.getMaterialData();
+			block.getWorld().spawnFallingBlock(block.getLocation().add(.5, 0, .5), matData.getItemType(), matData.getData());
 		}
 		
 		if (player != null) {
@@ -110,7 +107,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		if (resetDelay > 0 && !falling) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 				public void run() {
-					if (block.getTypeId() == type && block.getData() == data) {
+					if (material.equals(block)) {
 						block.setType(Material.AIR);
 						playSpellEffects(EffectPosition.DELAYED, block.getLocation());
 						if (playBreakEffect) {

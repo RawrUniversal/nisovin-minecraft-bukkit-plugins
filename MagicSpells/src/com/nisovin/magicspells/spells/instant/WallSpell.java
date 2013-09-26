@@ -12,9 +12,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
-import com.nisovin.magicspells.util.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.TemporaryBlockSet;
 import com.nisovin.magicspells.util.TemporaryBlockSet.BlockSetRemovalCallback;
@@ -25,8 +25,7 @@ public class WallSpell extends InstantSpell {
 	private int wallWidth;
 	private int wallHeight;
 	private int wallDepth;
-	private int wallType;
-	private byte wallData;
+	private MagicMaterial wallMaterial;
 	private int wallDuration;
 	private boolean preventBreaking;
 	private boolean preventDrops;
@@ -42,9 +41,7 @@ public class WallSpell extends InstantSpell {
 		wallHeight = getConfigInt("wall-height", 3);
 		wallDepth = getConfigInt("wall-depth", 1);
 		String type = getConfigString("wall-type", Material.BRICK.getId() + "");
-		ItemTypeAndData t = MagicSpells.getItemNameResolver().resolve(type);
-		wallType = t != null ? t.id : Material.BRICK.getId();
-		wallData = (byte)(t != null ? t.data : 0);
+		wallMaterial = MagicSpells.getItemNameResolver().resolveBlock(type);
 		wallDuration = getConfigInt("wall-duration", 15);
 		preventBreaking = getConfigBoolean("prevent-breaking", false);
 		preventDrops = getConfigBoolean("prevent-drops", true);
@@ -69,7 +66,7 @@ public class WallSpell extends InstantSpell {
 				sendMessage(player, strNoTarget);
 				return PostCastAction.ALREADY_HANDLED;
 			} else {
-				TemporaryBlockSet blockSet = new TemporaryBlockSet(Material.AIR, wallType, wallData);
+				TemporaryBlockSet blockSet = new TemporaryBlockSet(Material.AIR, wallMaterial);
 				Location loc = target.getLocation();
 				Vector dir = player.getLocation().getDirection();
 				int wallWidth = Math.round(this.wallWidth*power);
