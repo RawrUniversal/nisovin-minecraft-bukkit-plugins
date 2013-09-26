@@ -934,22 +934,29 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				}
 			}
 		}
-		if (healthCost > 0) {
-			player.setHealth(player.getHealth() - healthCost);
+		if (healthCost != 0) {
+			int h = player.getHealth() - healthCost;
+			if (h < 0) h = 0;
+			if (h > player.getMaxHealth()) h = player.getMaxHealth();
+			player.setHealth(h);
 		}
 		if (manaCost != 0) {
 			MagicSpells.plugin.mana.addMana(player, -manaCost, ManaChangeReason.SPELL_COST);
 		}
-		if (hungerCost > 0) {
-			player.setFoodLevel(player.getFoodLevel() - hungerCost);
+		if (hungerCost != 0) {
+			int f = player.getFoodLevel() - hungerCost;
+			if (f < 0) f = 0;
+			if (f > 20) f = 20;
+			player.setFoodLevel(f);
 		}
-		if (experienceCost > 0) {
+		if (experienceCost != 0) {
 			ExperienceUtils.changeExp(player, -experienceCost);
 		}
-		if (durabilityCost > 0) {
+		if (durabilityCost != 0) {
 			ItemStack inHand = player.getItemInHand();
 			if (inHand != null && inHand.getType().getMaxDurability() > 0) {
 				short newDura = (short) (inHand.getDurability() + durabilityCost);
+				if (newDura < 0) newDura = 0;
 				if (newDura >= inHand.getType().getMaxDurability()) {
 					player.setItemInHand(null);
 				} else {
@@ -958,13 +965,17 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				}
 			}
 		}
-		if (moneyCost > 0) {
+		if (moneyCost != 0) {
 			MoneyHandler moneyHandler = MagicSpells.getMoneyHandler();
 			if (moneyHandler != null) {
-				moneyHandler.removeMoney(player, moneyCost);
+				if (moneyCost > 0) {
+					moneyHandler.removeMoney(player, moneyCost);
+				} else {
+					moneyHandler.addMoney(player, moneyCost);
+				}
 			}
 		}
-		if (levelsCost > 0) {
+		if (levelsCost != 0) {
 			int lvl = player.getLevel() - levelsCost;
 			if (lvl < 0) lvl = 0;
 			player.setLevel(lvl);

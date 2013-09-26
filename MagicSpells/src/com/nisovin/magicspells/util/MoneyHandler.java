@@ -28,4 +28,10 @@ public class MoneyHandler {
 		}
 	}
 	
+	public void addMoney(Player player, float money) {
+		if (economy != null) {
+			economy.depositPlayer(player.getName(), money);
+		}
+	}
+	
 }
