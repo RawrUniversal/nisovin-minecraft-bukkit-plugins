@@ -137,6 +137,12 @@ public abstract class BuffSpell extends Spell {
 		return true;
 	}
 	
+	public void setAsEverlasting() {
+		duration = 0;
+		numUses = 0;
+		useCostInterval = 0;
+	}
+	
 	/**
 	 * Begins counting the spell duration for a player
 	 * @param player the player to begin counting duration

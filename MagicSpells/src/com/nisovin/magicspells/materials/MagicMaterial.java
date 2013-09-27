@@ -57,7 +57,7 @@ public abstract class MagicMaterial {
 	
 	@Override
 	public int hashCode() {
-		return getMaterialData().hashCode();
+		return getMaterial().hashCode();
 	}
 	
 	public static MagicMaterial fromItemStack(ItemStack item) {

@@ -1,9 +1,19 @@
 package com.nisovin.magicspells.spells.passive;
 
+import org.bukkit.event.Listener;
+
 import com.nisovin.magicspells.spells.PassiveSpell;
 
-public interface PassiveListener {
+public abstract class PassiveListener implements Listener {
 
-	public void registerSpell(PassiveSpell spell, String var);
+	public abstract void registerSpell(PassiveSpell spell, PassiveTrigger trigger, String var);
+	
+	public void initialize() {
+		
+	}
+	
+	public void turnOff() {
+		
+	}
 	
 }

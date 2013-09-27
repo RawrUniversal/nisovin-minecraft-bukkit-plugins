@@ -46,6 +46,8 @@ import com.nisovin.magicspells.mana.ManaHandler;
 import com.nisovin.magicspells.mana.ManaSystem;
 import com.nisovin.magicspells.materials.ItemNameResolver;
 import com.nisovin.magicspells.materials.MagicItemNameResolver;
+import com.nisovin.magicspells.spells.PassiveSpell;
+import com.nisovin.magicspells.spells.passive.PassiveManager;
 import com.nisovin.magicspells.util.ExperienceBarManager;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MoneyHandler;
@@ -378,6 +380,12 @@ public class MagicSpells extends JavaPlugin {
 		// load online player spellbooks
 		for (Player p : getServer().getOnlinePlayers()) {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
+		}
+		
+		// initialize passive manager
+		PassiveManager passiveManager = PassiveSpell.getManager();
+		if (passiveManager != null) {
+			passiveManager.initialize();
 		}
 		
 		// load saved cooldowns
