@@ -31,10 +31,11 @@ public class Spellbook {
 	private String playerName;
 	
 	private TreeSet<Spell> allSpells = new TreeSet<Spell>();
-	private HashMap<CastItem,ArrayList<Spell>> itemSpells = new HashMap<CastItem,ArrayList<Spell>>();
-	private HashMap<CastItem,Integer> activeSpells = new HashMap<CastItem,Integer>();
-	private HashMap<Spell,Set<CastItem>> customBindings = new HashMap<Spell,Set<CastItem>>();
-	private HashMap<Plugin,Set<Spell>> temporarySpells = new HashMap<Plugin,Set<Spell>>();
+	private HashMap<CastItem, ArrayList<Spell>> itemSpells = new HashMap<CastItem,ArrayList<Spell>>();
+	private HashMap<CastItem, Integer> activeSpells = new HashMap<CastItem,Integer>();
+	private HashMap<Spell, Set<CastItem>> customBindings = new HashMap<Spell,Set<CastItem>>();
+	private HashMap<Plugin, Set<Spell>> temporarySpells = new HashMap<Plugin,Set<Spell>>();
+	private Set<String> cantLearn = new HashSet<String>();
 	
 	public Spellbook(Player player, MagicSpells plugin) {
 		this.plugin = plugin;
@@ -141,6 +142,7 @@ public class Spellbook {
 	}
 	
 	public boolean canLearn(Spell spell) {
+		if (cantLearn.contains(spell.getInternalName().toLowerCase())) return false;
 		if (spell.prerequisites != null) {
 			for (String spellName : spell.prerequisites) {
 				Spell sp = MagicSpells.getSpellByInternalName(spellName);
@@ -401,6 +403,12 @@ public class Spellbook {
 					MagicSpells.debug(3, "        Removing replaced spell: " + sp.getInternalName());
 					removeSpell(sp);
 				}
+			}
+		}
+		// prevent learning of spells this spell precludes
+		if (spell.precludes != null) {
+			for (String s : spell.precludes) {
+				cantLearn.add(s.toLowerCase());
 			}
 		}
 	}

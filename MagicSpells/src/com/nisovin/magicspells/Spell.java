@@ -93,6 +93,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	
 	protected List<String> prerequisites;
 	protected List<String> replaces;
+	protected List<String> precludes;
 	protected List<String> worldRestrictions;
 	
 	protected String strCost;
@@ -313,6 +314,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		// hierarchy options
 		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
 		this.replaces = config.getStringList(section + "." + spellName + ".replaces", null);
+		this.precludes = config.getStringList(section + "." + spellName + ".precludes", null);
 		this.worldRestrictions = config.getStringList(section + "." + spellName + ".restrict-to-worlds", null);
 		
 		// strings
