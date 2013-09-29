@@ -506,7 +506,9 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 		PacketContainer con = new PacketContainer(40, packet);
 		try {
 			for (Player player : protocolManager.getEntityTrackers(disguised)) {
-				protocolManager.sendServerPacket(player, con, false);
+				if (player.isOnline()) {
+					protocolManager.sendServerPacket(player, con, false);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
