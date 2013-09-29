@@ -2,8 +2,11 @@ package com.nisovin.magicspells.spells.passive;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -16,7 +19,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spellbook;
@@ -27,7 +29,8 @@ import com.nisovin.magicspells.spells.PassiveSpell;
 public class TakeDamageListener extends PassiveListener {
 
 	Map<DamageCause, List<PassiveSpell>> damageCauses = new HashMap<EntityDamageEvent.DamageCause, List<PassiveSpell>>();
-	Map<MagicMaterial, List<PassiveSpell>> weapons = new HashMap<MagicMaterial, List<PassiveSpell>>();
+	Set<Material> types = new HashSet<Material>();
+	Map<MagicMaterial, List<PassiveSpell>> weapons = new LinkedHashMap<MagicMaterial, List<PassiveSpell>>();
 	List<PassiveSpell> always = new ArrayList<PassiveSpell>();
 	
 	@Override
@@ -69,6 +72,7 @@ public class TakeDamageListener extends PassiveListener {
 							weapons.put(mat, list);
 						}
 						list.add(spell);
+						types.add(mat.getMaterial());
 					}
 				}
 			}
@@ -110,16 +114,9 @@ public class TakeDamageListener extends PassiveListener {
 				Player playerAttacker = (Player)attacker;
 				ItemStack item = playerAttacker.getItemInHand();
 				if (item != null && item.getType() != Material.AIR) {
-					MagicMaterial mat = MagicMaterial.fromItemStack(item);
-					if (item.hasItemMeta()) {
-						ItemMeta meta = item.getItemMeta();
-						if (meta.hasDisplayName()) {
-							mat = new MagicItemWithNameMaterial(mat, meta.getDisplayName());
-						}
-					}
-					if (weapons.containsKey(mat)) {
+					List<PassiveSpell> list = getSpells(item);
+					if (list != null) {
 						if (spellbook == null) spellbook = MagicSpells.getSpellbook(player);
-						List<PassiveSpell> list = weapons.get(mat);
 						for (PassiveSpell spell : list) {
 							if (spellbook.hasSpell(spell, false)) {
 								spell.activate(player, attacker);
@@ -138,6 +135,17 @@ public class TakeDamageListener extends PassiveListener {
 				return (LivingEntity)e;
 			} else if (e instanceof Projectile) {
 				return ((Projectile)e).getShooter();
+			}
+		}
+		return null;
+	}
+	
+	private List<PassiveSpell> getSpells(ItemStack item) {
+		if (types.contains(item.getType())) {
+			for (MagicMaterial m : weapons.keySet()) {
+				if (m.equals(item)) {
+					return weapons.get(m);
+				}
 			}
 		}
 		return null;

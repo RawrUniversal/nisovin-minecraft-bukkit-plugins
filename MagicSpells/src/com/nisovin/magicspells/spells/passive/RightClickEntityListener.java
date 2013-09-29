@@ -27,7 +27,7 @@ public class RightClickEntityListener extends PassiveListener {
 		} else {
 			String[] split = var.replace(" ", "").toUpperCase().split(",");
 			for (String s : split) {
-				EntityType t = EntityType.fromName(s);
+				EntityType t = s.equalsIgnoreCase("player") ? EntityType.PLAYER : EntityType.fromName(s);
 				if (t != null) {
 					List<PassiveSpell> list = types.get(t);
 					if (list == null) {
@@ -51,7 +51,7 @@ public class RightClickEntityListener extends PassiveListener {
 				}
 			}
 		}
-		if (!types.containsKey(event.getRightClicked().getType())) {
+		if (types.containsKey(event.getRightClicked().getType())) {
 			Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
 			List<PassiveSpell> list = types.get(event.getRightClicked().getType());
 			for (PassiveSpell spell : list) {

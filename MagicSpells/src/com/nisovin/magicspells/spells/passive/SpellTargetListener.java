@@ -31,7 +31,9 @@ public class SpellTargetListener extends PassiveListener {
 					List<PassiveSpell> passives = spells.get(sp);
 					if (passives == null) {
 						passives = new ArrayList<PassiveSpell>();
+						spells.put(sp, passives);
 					}
+					passives.add(spell);
 				}
 			}
 		}

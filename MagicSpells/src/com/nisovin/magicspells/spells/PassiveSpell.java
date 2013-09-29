@@ -196,5 +196,12 @@ public class PassiveSpell extends Spell {
 	public boolean canCastByCommand() {
 		return false;
 	}
+	
+	public static void resetManager() {
+		if (manager != null) {
+			manager.turnOff();
+			manager = null;
+		}
+	}
 
 }

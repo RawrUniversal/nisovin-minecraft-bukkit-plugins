@@ -1,8 +1,8 @@
 package com.nisovin.magicspells.spells.passive;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,8 +22,8 @@ import com.nisovin.magicspells.spells.PassiveSpell;
 public class HotBarListener extends PassiveListener {
 
 	Set<Material> materials = new HashSet<Material>();
-	Map<MagicMaterial, List<PassiveSpell>> select = new HashMap<MagicMaterial, List<PassiveSpell>>();
-	Map<MagicMaterial, List<PassiveSpell>> deselect = new HashMap<MagicMaterial, List<PassiveSpell>>();
+	Map<MagicMaterial, List<PassiveSpell>> select = new LinkedHashMap<MagicMaterial, List<PassiveSpell>>();
+	Map<MagicMaterial, List<PassiveSpell>> deselect = new LinkedHashMap<MagicMaterial, List<PassiveSpell>>();
 	
 	@Override
 	public void registerSpell(PassiveSpell spell, PassiveTrigger trigger, String var) {
@@ -61,28 +61,12 @@ public class HotBarListener extends PassiveListener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerScroll(PlayerItemHeldEvent event) {
-		if (select.size() > 0) {
-			ItemStack item = event.getPlayer().getInventory().getItem(event.getNewSlot());
-			if (item != null && item.getType() != Material.AIR) {
-				MagicMaterial m = MagicMaterial.fromItemStack(item);
-				if (select.containsKey(m)) {
-					Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
-					List<PassiveSpell> list = select.get(m);
-					for (PassiveSpell spell : list) {
-						if (spellbook.hasSpell(spell, false)) {
-							spell.activate(event.getPlayer());
-						}
-					}
-				}
-			}
-		}
 		if (deselect.size() > 0) {
 			ItemStack item = event.getPlayer().getInventory().getItem(event.getPreviousSlot());
 			if (item != null && item.getType() != Material.AIR) {
-				MagicMaterial m = MagicMaterial.fromItemStack(item);
-				if (deselect.containsKey(m)) {
+				List<PassiveSpell> list = getSpells(item, deselect);
+				if (list != null) {
 					Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
-					List<PassiveSpell> list = deselect.get(m);
 					for (PassiveSpell spell : list) {
 						if (spellbook.hasSpell(spell, false)) {
 							spell.activate(event.getPlayer());
@@ -91,6 +75,31 @@ public class HotBarListener extends PassiveListener {
 				}
 			}
 		}
+		if (select.size() > 0) {
+			ItemStack item = event.getPlayer().getInventory().getItem(event.getNewSlot());
+			if (item != null && item.getType() != Material.AIR) {
+				List<PassiveSpell> list = getSpells(item, select);
+				if (list != null) {
+					Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
+					for (PassiveSpell spell : list) {
+						if (spellbook.hasSpell(spell, false)) {
+							spell.activate(event.getPlayer());
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private List<PassiveSpell> getSpells(ItemStack item, Map<MagicMaterial, List<PassiveSpell>> map) {
+		if (materials.contains(item.getType())) {
+			for (MagicMaterial m : map.keySet()) {
+				if (m.equals(item)) {
+					return map.get(m);
+				}
+			}
+		}
+		return null;
 	}
 
 }

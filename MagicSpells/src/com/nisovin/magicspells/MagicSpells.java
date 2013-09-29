@@ -981,6 +981,7 @@ public class MagicSpells extends JavaPlugin {
 		for (Spell spell : spells.values()) {
 			spell.turnOff();
 		}
+		PassiveSpell.resetManager();
 		
 		// save cooldowns
 		if (cooldownsPersistThroughReload) {
