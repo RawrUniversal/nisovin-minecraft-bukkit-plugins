@@ -10,6 +10,8 @@ public enum PassiveTrigger {
 	KILL("kill", KillListener.class),
 	DEATH("death", DeathListener.class),
 	RESPAWN("respawn", RespawnListener.class),
+	JOIN("join", JoinListener.class),
+	QUIT("quit", QuitListener.class),
 	BLOCK_BREAK("blockbreak", BlockBreakListener.class),
 	BLOCK_PLACE("blockplace", BlockPlaceListener.class),
 	RIGHT_CLICK("rightclick", RightClickItemListener.class),
@@ -23,8 +25,14 @@ public enum PassiveTrigger {
 	STOP_SPRINT("stopsprint", SprintListener.class),
 	SNEAK("sneak", SneakListener.class),
 	STOP_SNEAK("stopsneak", SneakListener.class),
+	FLY("fly", FlyListener.class),
+	STOP_FLY("stopfly", FlyListener.class),
 	HOT_BAR_SELECT("hotbarselect", HotBarListener.class),
 	HOT_BAR_DESELECT("hotbardeselect", HotBarListener.class),
+	DROP_ITEM("dropitem", DropItemListener.class),
+	PICKUP_ITEM("pickupitem", PickupItemListener.class),
+	FISH("fish", FishListener.class),
+	TELEPORT("teleport", TeleportListener.class),
 	BUFF("buff", BuffListener.class),
 	TICKS("ticks", TicksListener.class);
 	

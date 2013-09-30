@@ -44,7 +44,7 @@ public class RightClickBlockCoordListener extends PassiveListener {
 		if (spell != null) {
 			Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
 			if (spellbook.hasSpell(spell, false)) {
-				spell.activate(event.getPlayer(), location);
+				spell.activate(event.getPlayer(), location.add(0.5, 0.5, 0.5));
 			}
 		}
 	}

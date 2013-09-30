@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.passive.PassiveManager;
 import com.nisovin.magicspells.spells.passive.PassiveTrigger;
@@ -148,19 +150,32 @@ public class PassiveSpell extends Spell {
 				float power = event.getPower();
 				for (Spell spell : spells) {
 					MagicSpells.debug(3, "    Casting spell effect '" + spell.getName() + "'");
-					if (castWithoutTarget || !(spell instanceof TargetedSpell)) {
+					if (castWithoutTarget || (!(spell instanceof TargetedEntitySpell) && !(spell instanceof TargetedLocationSpell))) {
 						spell.castSpell(caster, SpellCastState.NORMAL, power, null);
 						playSpellEffects(EffectPosition.CASTER, caster);
 					} else if (spell instanceof TargetedEntitySpell && target != null) {
-						((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
-						playSpellEffects(caster, target);
+						SpellTargetEvent targetEvent = new SpellTargetEvent(this, caster, target);
+						Bukkit.getPluginManager().callEvent(targetEvent);
+						if (!targetEvent.isCancelled()) {
+							target = targetEvent.getTarget();
+							((TargetedEntitySpell)spell).castAtEntity(caster, target, power);
+							playSpellEffects(caster, target);
+						}
 					} else if (spell instanceof TargetedLocationSpell && (location != null || target != null)) {
+						Location loc = null;
 						if (location != null) {
-							((TargetedLocationSpell)spell).castAtLocation(caster, location, power);
-							playSpellEffects(caster, location);
+							loc = location;
 						} else if (target != null) {
-							((TargetedLocationSpell)spell).castAtLocation(caster, target.getLocation(), power);
-							playSpellEffects(caster, target.getLocation());
+							loc = target.getLocation();
+						}
+						if (loc != null) {
+							SpellTargetLocationEvent targetEvent = new SpellTargetLocationEvent(this, caster, loc);
+							Bukkit.getPluginManager().callEvent(targetEvent);
+							if (!targetEvent.isCancelled()) {
+								loc = targetEvent.getTargetLocation();
+								((TargetedLocationSpell)spell).castAtLocation(caster, loc, power);
+								playSpellEffects(caster, loc);
+							}
 						}
 					}
 				}

@@ -48,7 +48,7 @@ public class KillListener extends PassiveListener {
 			if (allTypes.size() > 0) {
 				for (PassiveSpell spell : allTypes) {
 					if (spellbook.hasSpell(spell)) {
-						spell.activate(killer);
+						spell.activate(killer, event.getEntity());
 					}
 				}
 			}
@@ -56,7 +56,7 @@ public class KillListener extends PassiveListener {
 				List<PassiveSpell> list = entityTypes.get(event.getEntityType());
 				for (PassiveSpell spell : list) {
 					if (spellbook.hasSpell(spell)) {
-						spell.activate(killer);
+						spell.activate(killer, event.getEntity());
 					}
 				}
 			}

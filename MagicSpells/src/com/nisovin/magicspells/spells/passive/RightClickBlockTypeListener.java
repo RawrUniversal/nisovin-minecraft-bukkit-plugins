@@ -44,7 +44,7 @@ public class RightClickBlockTypeListener extends PassiveListener {
 			Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
 			for (PassiveSpell spell : types.get(m)) {
 				if (spellbook.hasSpell(spell, false)) {
-					spell.activate(event.getPlayer(), event.getClickedBlock().getLocation());
+					spell.activate(event.getPlayer(), event.getClickedBlock().getLocation().add(0.5, 0.5, 0.5));
 				}
 			}
 		}
