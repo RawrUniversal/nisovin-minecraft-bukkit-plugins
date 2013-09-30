@@ -129,6 +129,7 @@ public class MagicSpells extends JavaPlugin {
 	ExperienceBarManager expBarManager;
 	ItemNameResolver itemNameResolver;
 	MoneyHandler moneyHandler;
+	MagicXpHandler magicXpHandler;
 	
 	// profiling
 	HashMap<String, Long> profilingTotalTime;
@@ -380,6 +381,11 @@ public class MagicSpells extends JavaPlugin {
 		// load online player spellbooks
 		for (Player p : getServer().getOnlinePlayers()) {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
+		}
+		
+		// load xp system
+		if (config.getBoolean("general.enable-magic-xp", true)) {
+			magicXpHandler = new MagicXpHandler(this);
 		}
 		
 		// initialize passive manager

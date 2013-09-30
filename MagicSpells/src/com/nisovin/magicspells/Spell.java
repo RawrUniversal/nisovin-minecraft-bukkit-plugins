@@ -3,6 +3,7 @@ package com.nisovin.magicspells;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -94,6 +95,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected List<String> prerequisites;
 	protected List<String> replaces;
 	protected List<String> precludes;
+	protected Map<String, Integer> xpGranted;
+	protected Map<String, Integer> xpRequired;
 	protected List<String> worldRestrictions;
 	
 	protected String strCost;
@@ -108,6 +111,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String strCastStart;
 	protected String strInterrupted;
 	protected String strModifierFailed;
+	protected String strXpLearned;
 	
 	private HashMap<String, Long> nextCast;
 	
@@ -308,14 +312,40 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.nextCast = new HashMap<String, Long>();
 
 		// modifiers
-		modifierStrings = config.getStringList(section + "." + spellName + ".modifiers", null);
-		targetModifierStrings = config.getStringList(section + "." + spellName + ".target-modifiers", null);
+		this.modifierStrings = config.getStringList(section + "." + spellName + ".modifiers", null);
+		this.targetModifierStrings = config.getStringList(section + "." + spellName + ".target-modifiers", null);
 		
 		// hierarchy options
 		this.prerequisites = config.getStringList(section + "." + spellName + ".prerequisites", null);
 		this.replaces = config.getStringList(section + "." + spellName + ".replaces", null);
 		this.precludes = config.getStringList(section + "." + spellName + ".precludes", null);
 		this.worldRestrictions = config.getStringList(section + "." + spellName + ".restrict-to-worlds", null);
+		List<String> sXpGranted = config.getStringList(section + "." + spellName + ".xp-granted", null);
+		List<String> sXpRequired = config.getStringList(section + "." + spellName + ".xp-required", null);
+		if (sXpGranted != null) {
+			xpGranted = new LinkedHashMap<String, Integer>();
+			for (String s : sXpGranted) {
+				String[] split = s.split(" ");
+				try {
+					int amt = Integer.parseInt(split[1]);
+					xpGranted.put(split[0], amt);
+				} catch (NumberFormatException e) {
+					MagicSpells.error("Error in xp-granted entry for spell '" + internalName + "': " + s);
+				}
+			}
+		}
+		if (sXpRequired != null) {
+			xpRequired = new LinkedHashMap<String, Integer>();
+			for (String s : sXpRequired) {
+				String[] split = s.split(" ");
+				try {
+					int amt = Integer.parseInt(split[1]);
+					xpRequired.put(split[0], amt);
+				} catch (NumberFormatException e) {
+					MagicSpells.error("Error in xp-required entry for spell '" + internalName + "': " + s);
+				}
+			}
+		}
 		
 		// strings
 		this.strCost = config.getString(section + "." + spellName + ".str-cost", null);
@@ -330,6 +360,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
 		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
 		this.strModifierFailed = config.getString(section + "." + spellName + ".str-modifier-failed", null);
+		this.strXpLearned = config.getString(section + "." + spellName + ".str-xp-learned", "You have learned the " + name + " spell!");
 		
 	}
 	
@@ -1379,9 +1410,22 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return strModifierFailed;
 	}
 	
+	public Map<String, Integer> getXpGranted() {
+		return xpGranted;
+	}
+	
+	public Map<String, Integer> getXpRequired() {
+		return xpRequired;
+	}
+	
+	public String getStrXpLearned() {
+		return strXpLearned;
+	}
+	
 	Map<String, Long> getCooldowns() {
 		return nextCast;
 	}
+	
 	
 	void setCooldownManually(String name, long nextCast) {
 		this.nextCast.put(name, nextCast);
