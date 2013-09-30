@@ -1,10 +1,11 @@
 package com.nisovin.magicspells.util;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
@@ -26,10 +27,10 @@ public abstract class DisguiseManager implements Listener {
 	protected boolean hideArmor;
 	
 	protected Set<DisguiseSpell> disguiseSpells = new HashSet<DisguiseSpell>();
-	protected Map<String, DisguiseSpell.Disguise> disguises = new HashMap<String, DisguiseSpell.Disguise>();
-	protected Map<Integer, DisguiseSpell.Disguise> disguisedEntityIds = new HashMap<Integer, DisguiseSpell.Disguise>();
-	protected Set<Integer> dragons = new HashSet<Integer>();
-	protected Map<Integer, Integer> mounts = new HashMap<Integer, Integer>();
+	protected Map<String, DisguiseSpell.Disguise> disguises = new ConcurrentHashMap<String, DisguiseSpell.Disguise>();
+	protected Map<Integer, DisguiseSpell.Disguise> disguisedEntityIds = new ConcurrentHashMap<Integer, DisguiseSpell.Disguise>();
+	protected Set<Integer> dragons = Collections.synchronizedSet(new HashSet<Integer>());
+	protected Map<Integer, Integer> mounts = new ConcurrentHashMap<Integer, Integer>();
 
 	protected ProtocolManager protocolManager;
 	protected PacketAdapter packetListener = null;
