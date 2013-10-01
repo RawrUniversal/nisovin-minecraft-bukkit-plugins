@@ -43,7 +43,7 @@ public class Modifier {
 		
 		// process modifiervar
 		try {
-			if (m.type == ModifierType.POWER || m.type == ModifierType.COOLDOWN || m.type == ModifierType.REAGENTS) {
+			if (m.type == ModifierType.POWER || m.type == ModifierType.ADD_POWER || m.type == ModifierType.COOLDOWN || m.type == ModifierType.REAGENTS) {
 				m.modifierVarFloat = Float.parseFloat(m.modifierVar);
 			} else if (m.type == ModifierType.CAST_TIME) {
 				m.modifierVarInt = Integer.parseInt(m.modifierVar);
@@ -70,6 +70,8 @@ public class Modifier {
 				return false;
 			} else if (type == ModifierType.POWER) {
 				event.increasePower(modifierVarFloat);
+			} else if (type == ModifierType.ADD_POWER) {
+				event.setPower(event.getPower() + modifierVarFloat);
 			} else if (type == ModifierType.COOLDOWN) {
 				event.setCooldown(modifierVarFloat);
 			} else if (type == ModifierType.REAGENTS) {
@@ -100,6 +102,10 @@ public class Modifier {
 			int gain = event.getNewAmount() - event.getOldAmount();
 			gain = Math.round(gain * modifierVarFloat);
 			int newAmt = event.getOldAmount() + gain;
+			if (newAmt > event.getMaxMana()) newAmt = event.getMaxMana();
+			event.setNewAmount(newAmt);
+		} else if (check == true && type == ModifierType.ADD_POWER) {
+			int newAmt = event.getNewAmount() + (int)modifierVarFloat;
 			if (newAmt > event.getMaxMana()) newAmt = event.getMaxMana();
 			event.setNewAmount(newAmt);
 		}
@@ -147,6 +153,8 @@ public class Modifier {
 			return ModifierType.DENIED;
 		} else if (name.equalsIgnoreCase("power") || name.equalsIgnoreCase("empower") || name.equalsIgnoreCase("multiply")) {
 			return ModifierType.POWER;
+		} else if (name.equalsIgnoreCase("addpower") || name.equalsIgnoreCase("add")) {
+			return ModifierType.ADD_POWER;
 		} else if (name.equalsIgnoreCase("cooldown")) {
 			return ModifierType.COOLDOWN;
 		} else if (name.equalsIgnoreCase("reagents")) {
@@ -166,6 +174,7 @@ public class Modifier {
 		REQUIRED,
 		DENIED,
 		POWER,
+		ADD_POWER,
 		COOLDOWN,
 		REAGENTS,
 		CAST_TIME,
