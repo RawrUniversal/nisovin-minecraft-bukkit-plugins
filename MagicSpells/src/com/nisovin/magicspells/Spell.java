@@ -660,8 +660,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 					removeReagents(player, reagents);
 				}
 				if (action == PostCastAction.HANDLE_NORMALLY || action == PostCastAction.MESSAGES_ONLY || action == PostCastAction.NO_COOLDOWN || action == PostCastAction.NO_REAGENTS) {
-					sendMessage(player, strCastSelf, "%a", player.getDisplayName());
-					sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getDisplayName()));
+					sendMessages(player);
 				}
 				if (experience > 0) {
 					player.giveExp(experience);
@@ -686,6 +685,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		Bukkit.getPluginManager().callEvent(event);
 		
 		return action;
+	}
+	
+	public void sendMessages(Player player) {
+		sendMessage(player, strCastSelf, "%a", player.getDisplayName());
+		sendMessageNear(player, formatMessage(strCastOthers, "%a", player.getDisplayName()));
 	}
 
 	protected boolean preCastTimeCheck(Player player, String[] args) {

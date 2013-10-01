@@ -20,6 +20,7 @@ public final class MultiSpell extends InstantSpell {
 	private boolean castWithItem;
 	private boolean castByCommand;
 	private boolean checkIndividualCooldowns;
+	private boolean showIndividualMessages;
 	private boolean castRandomSpellInstead;
 	private boolean fakeCastIndividualSpells;
 	
@@ -33,6 +34,7 @@ public final class MultiSpell extends InstantSpell {
 		castWithItem = getConfigBoolean("can-cast-with-item", true);
 		castByCommand = getConfigBoolean("can-cast-by-command", true);
 		checkIndividualCooldowns = getConfigBoolean("check-individual-cooldowns", false);
+		showIndividualMessages = getConfigBoolean("show-individual-messages", false);
 		castRandomSpellInstead = getConfigBoolean("cast-random-spell-instead", false);
 		fakeCastIndividualSpells = getConfigBoolean("fake-cast-individual-spells", false);
 
@@ -104,7 +106,7 @@ public final class MultiSpell extends InstantSpell {
 						return PostCastAction.ALREADY_HANDLED;
 					}
 					// cast the spell
-					action.getSpell().castSpell(player, SpellCastState.NORMAL, power, null);
+					castSpell(player, action.getSpell(), power);
 				}
 			}
 			playSpellEffects(EffectPosition.CASTER, player);
@@ -123,6 +125,9 @@ public final class MultiSpell extends InstantSpell {
 			}
 		}
 		PostCastAction act = spell.castSpell(player, SpellCastState.NORMAL, power, null);
+		if (showIndividualMessages && act.sendMessages()) {
+			spell.sendMessages(player);
+		}
 		if (fakeCastIndividualSpells) {
 			Bukkit.getPluginManager().callEvent(new SpellCastedEvent(spell, player, SpellCastState.NORMAL, power, null, cooldown, reagents.clone(), act));
 		}

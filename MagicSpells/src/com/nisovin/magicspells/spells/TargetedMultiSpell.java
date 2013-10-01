@@ -18,6 +18,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public final class TargetedMultiSpell extends TargetedSpell implements TargetedEntitySpell, TargetedLocationSpell {
 
 	private boolean checkIndividualCooldowns;
+	private boolean showIndividualMessages;
 	private boolean requireEntityTarget;
 	private boolean castRandomSpellInstead;
 	
@@ -29,6 +30,7 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 		super(config, spellName);
 		
 		checkIndividualCooldowns = getConfigBoolean("check-individual-cooldowns", false);
+		showIndividualMessages = getConfigBoolean("show-individual-messages", false);
 		requireEntityTarget = getConfigBoolean("require-entity-target", false);
 		castRandomSpellInstead = getConfigBoolean("cast-random-spell-instead", false);
 
@@ -166,7 +168,7 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 		} else {
 			Action action = actions.get(random.nextInt(actions.size()));
 			if (action.isSpell()) {
-				action.getSpell().castSpell(player, SpellCastState.NORMAL, power, null);
+				castTargetedSpell(action.getSpell(), player, entTarget, locTarget, power);
 				return true;
 			} else {
 				return false;
@@ -175,16 +177,24 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 	}
 	
 	private boolean castTargetedSpell(TargetedSpell spell, Player caster, LivingEntity entTarget, Location locTarget, float power) {
+		boolean success = false;
 		if (spell instanceof TargetedEntitySpell && entTarget != null) {
-			return ((TargetedEntitySpell)spell).castAtEntity(caster, entTarget, power);
+			success = ((TargetedEntitySpell)spell).castAtEntity(caster, entTarget, power);
 		} else if (spell instanceof TargetedLocationSpell) {
 			if (entTarget != null) {
-				return ((TargetedLocationSpell)spell).castAtLocation(caster, entTarget.getLocation(), power);
+				success = ((TargetedLocationSpell)spell).castAtLocation(caster, entTarget.getLocation(), power);
 			} else if (locTarget != null) {
-				return ((TargetedLocationSpell)spell).castAtLocation(caster, locTarget, power);
+				success = ((TargetedLocationSpell)spell).castAtLocation(caster, locTarget, power);
 			}
 		}
-		return false;
+		if (success && showIndividualMessages) {
+			if (entTarget != null) {
+				spell.sendMessages(caster, entTarget);
+			} else {
+				spell.sendMessages(caster);
+			}
+		}
+		return success;
 	}
 	
 	private class Action {
