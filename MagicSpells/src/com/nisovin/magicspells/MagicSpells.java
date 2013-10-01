@@ -360,6 +360,11 @@ public class MagicSpells extends JavaPlugin {
 		advancedPermChildren.put("magicspells.advanced.scroll", true);
 		addPermission(pm, "advanced.*", defaultAllPermsFalse? PermissionDefault.FALSE : PermissionDefault.OP, advancedPermChildren);
 		
+		// load xp system
+		if (config.getBoolean("general.enable-magic-xp", false)) {
+			magicXpHandler = new MagicXpHandler(this, config);
+		}
+		
 		// load in-game spell names, incantations, and initialize spells
 		for (Spell spell : spells.values()) {
 			spellNames.put(spell.getName().toLowerCase(), spell);
@@ -383,11 +388,6 @@ public class MagicSpells extends JavaPlugin {
 		// load online player spellbooks
 		for (Player p : getServer().getOnlinePlayers()) {
 			spellbooks.put(p.getName(), new Spellbook(p, this));
-		}
-		
-		// load xp system
-		if (config.getBoolean("general.enable-magic-xp", false)) {
-			magicXpHandler = new MagicXpHandler(this, config);
 		}
 		
 		// initialize passive manager

@@ -27,13 +27,15 @@ public class MagicXpHandler implements Listener {
 
 	MagicSpells plugin;
 	
+	
 	Map<String, String> schools = new HashMap<String, String>();
 	Map<String, IntMap<String>> xp = new HashMap<String, IntMap<String>>();
 	Set<String> dirty = new HashSet<String>();
 	Map<String, String> currentWorld = new HashMap<String, String>();
 	
 	Map<String, List<Spell>> spellSchoolRequirements = new HashMap<String, List<Spell>>();
-	
+
+	boolean autoLearn = true;
 	String strXpHeader;
 	
 	public MagicXpHandler(MagicSpells plugin, MagicConfig config) {
@@ -48,6 +50,7 @@ public class MagicXpHandler implements Listener {
 				}
 			}
 		}
+		autoLearn = config.getBoolean("general.magic-xp-auto-learn", true);
 		strXpHeader = config.getString("general.str-xp-header", null);
 		
 		for (Spell spell : MagicSpells.spells()) {
@@ -118,38 +121,30 @@ public class MagicXpHandler implements Listener {
 		}
 		dirty.add(event.getCaster().getName());
 		
-		// get spells to check if learned
-		Set<Spell> toCheck = new HashSet<Spell>();
-		for (String school : xpGranted.keySet()) {
-			List<Spell> list = spellSchoolRequirements.get(school.toLowerCase());
-			if (list != null) {
-				for (Spell spell : list) {
-					toCheck.add(spell);
-				}
-			}
-		}
+		if (autoLearn) {
 		
-		// check for new learned spells
-		if (toCheck.size() > 0) {
-			Spellbook spellbook = MagicSpells.getSpellbook(event.getCaster());
-			for (Spell spell : toCheck) {
-				if (!spellbook.hasSpell(spell, false) && spellbook.canLearn(spell)) {
-					Map<String, Integer> xpRequired = spell.getXpRequired();
-					if (xpRequired != null) {
-						boolean learn = true;
-						for (String school : xpRequired.keySet()) {
-							if (playerXp.get(school.toLowerCase()) < xpRequired.get(school)) {
-								learn = false;
-								break;
-							}
-						}
-						if (learn) {
-							spellbook.addSpell(spell);
-							MagicSpells.sendMessage(event.getCaster(), spell.getStrXpLearned());
-						}
+			// get spells to check if learned
+			Set<Spell> toCheck = new HashSet<Spell>();
+			for (String school : xpGranted.keySet()) {
+				List<Spell> list = spellSchoolRequirements.get(school.toLowerCase());
+				if (list != null) {
+					for (Spell spell : list) {
+						toCheck.add(spell);
 					}
 				}
 			}
+			
+			// check for new learned spells
+			if (toCheck.size() > 0) {
+				Spellbook spellbook = MagicSpells.getSpellbook(event.getCaster());
+				for (Spell spell : toCheck) {
+					if (!spellbook.hasSpell(spell, false) && spellbook.canLearn(spell)) {
+						spellbook.addSpell(spell);
+						MagicSpells.sendMessage(event.getCaster(), spell.getStrXpLearned());
+					}
+				}
+			}
+			
 		}
 	}
 	

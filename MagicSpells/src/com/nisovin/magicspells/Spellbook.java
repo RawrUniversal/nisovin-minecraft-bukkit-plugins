@@ -151,6 +151,16 @@ public class Spellbook {
 				}
 			}
 		}
+		if (spell.xpRequired != null) {
+			MagicXpHandler handler = MagicSpells.getMagicXpHandler();
+			if (handler != null) {
+				for (String school : spell.xpRequired.keySet()) {
+					if (handler.getXp(player, school) < spell.xpRequired.get(school)) {
+						return false;
+					}
+				}
+			}
+		}
 		return player.hasPermission("magicspells.learn." + spell.getPermissionName());
 	}
 	
