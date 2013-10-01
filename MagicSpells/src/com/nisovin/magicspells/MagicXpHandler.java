@@ -20,6 +20,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.Spell.PostCastAction;
 import com.nisovin.magicspells.events.SpellCastedEvent;
+import com.nisovin.magicspells.events.SpellLearnEvent;
+import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
 import com.nisovin.magicspells.util.IntMap;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -35,7 +37,7 @@ public class MagicXpHandler implements Listener {
 	
 	Map<String, List<Spell>> spellSchoolRequirements = new HashMap<String, List<Spell>>();
 
-	boolean autoLearn = true;
+	boolean autoLearn;
 	String strXpHeader;
 	
 	public MagicXpHandler(MagicSpells plugin, MagicConfig config) {
@@ -50,7 +52,7 @@ public class MagicXpHandler implements Listener {
 				}
 			}
 		}
-		autoLearn = config.getBoolean("general.magic-xp-auto-learn", true);
+		autoLearn = config.getBoolean("general.magic-xp-auto-learn", false);
 		strXpHeader = config.getString("general.str-xp-header", null);
 		
 		for (Spell spell : MagicSpells.spells()) {
@@ -106,7 +108,7 @@ public class MagicXpHandler implements Listener {
 	public void onCast(SpellCastedEvent event) {
 		if (event.getPostCastAction() == PostCastAction.ALREADY_HANDLED) return;
 		
-		Map<String, Integer> xpGranted = event.getSpell().getXpGranted();
+		final Map<String, Integer> xpGranted = event.getSpell().getXpGranted();
 		if (xpGranted == null) return;
 
 		// get player xp
@@ -123,29 +125,39 @@ public class MagicXpHandler implements Listener {
 		dirty.add(event.getCaster().getName());
 		
 		if (autoLearn) {
-		
-			// get spells to check if learned
-			Set<Spell> toCheck = new HashSet<Spell>();
-			for (String school : xpGranted.keySet()) {
-				List<Spell> list = spellSchoolRequirements.get(school.toLowerCase());
-				if (list != null) {
-					for (Spell spell : list) {
-						toCheck.add(spell);
+			final Player player = event.getCaster();
+			final Spell castedSpell = event.getSpell();
+			MagicSpells.scheduleDelayedTask(new Runnable() {
+				public void run() {
+					
+					// get spells to check if learned
+					Set<Spell> toCheck = new HashSet<Spell>();
+					for (String school : xpGranted.keySet()) {
+						List<Spell> list = spellSchoolRequirements.get(school.toLowerCase());
+						if (list != null) {
+							for (Spell spell : list) {
+								toCheck.add(spell);
+							}
+						}
 					}
-				}
-			}
-			
-			// check for new learned spells
-			if (toCheck.size() > 0) {
-				Spellbook spellbook = MagicSpells.getSpellbook(event.getCaster());
-				for (Spell spell : toCheck) {
-					if (!spellbook.hasSpell(spell, false) && spellbook.canLearn(spell)) {
-						spellbook.addSpell(spell);
-						MagicSpells.sendMessage(event.getCaster(), spell.getStrXpLearned());
+					
+					// check for new learned spells
+					if (toCheck.size() > 0) {
+						Spellbook spellbook = MagicSpells.getSpellbook(player);
+						for (Spell spell : toCheck) {
+							if (!spellbook.hasSpell(spell, false) && spellbook.canLearn(spell)) {
+								SpellLearnEvent evt = new SpellLearnEvent(spell, player, LearnSource.MAGIC_XP, castedSpell);
+								Bukkit.getPluginManager().callEvent(evt);
+								if (!evt.isCancelled()) {
+									spellbook.addSpell(spell);
+									MagicSpells.sendMessage(player, spell.getStrXpLearned());
+								}
+							}
+						}
 					}
+					
 				}
-			}
-			
+			}, 1);
 		}
 	}
 	
