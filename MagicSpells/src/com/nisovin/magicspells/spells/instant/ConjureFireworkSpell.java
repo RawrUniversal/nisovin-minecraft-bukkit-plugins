@@ -36,7 +36,7 @@ public class ConjureFireworkSpell extends InstantSpell implements TargetedLocati
 			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
 		}
 		
-		List<String> effects = getConfigStringList("effects", null);
+		List<String> effects = getConfigStringList("firework-effects", null);
 		if (effects != null && effects.size() > 0) {
 			for (String e : effects) {
 				FireworkEffect.Type type = Type.BALL;
