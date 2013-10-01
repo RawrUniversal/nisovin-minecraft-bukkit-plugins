@@ -21,7 +21,7 @@ public class FlyListener extends PassiveListener {
 			if (fly == null) fly = new ArrayList<PassiveSpell>();
 			fly.add(spell);
 		} else if (trigger == PassiveTrigger.STOP_FLY) {
-			if (fly == null) stopFly = new ArrayList<PassiveSpell>();
+			if (stopFly == null) stopFly = new ArrayList<PassiveSpell>();
 			stopFly.add(spell);
 		}
 	}
