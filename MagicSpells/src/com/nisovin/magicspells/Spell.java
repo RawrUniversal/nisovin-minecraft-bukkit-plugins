@@ -360,7 +360,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
 		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
 		this.strModifierFailed = config.getString(section + "." + spellName + ".str-modifier-failed", null);
-		this.strXpLearned = config.getString(section + "." + spellName + ".str-xp-learned", "You have learned the " + name + " spell!");
+		this.strXpLearned = config.getString(section + "." + spellName + ".str-xp-learned", MagicSpells.plugin.strXpLearned);
+		if (this.strXpLearned != null) {
+			strXpLearned = strXpLearned.replace("%s", this.name);
+		}
 		
 	}
 	
