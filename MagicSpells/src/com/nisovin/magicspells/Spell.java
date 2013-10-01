@@ -111,7 +111,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String strCastStart;
 	protected String strInterrupted;
 	protected String strModifierFailed;
-	protected String strXpLearned;
+	protected String strXpAutoLearned;
 	
 	private HashMap<String, Long> nextCast;
 	
@@ -360,9 +360,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.strCastStart = config.getString(section + "." + spellName + ".str-cast-start", null);
 		this.strInterrupted = config.getString(section + "." + spellName + ".str-interrupted", null);
 		this.strModifierFailed = config.getString(section + "." + spellName + ".str-modifier-failed", null);
-		this.strXpLearned = config.getString(section + "." + spellName + ".str-xp-learned", MagicSpells.plugin.strXpLearned);
-		if (this.strXpLearned != null) {
-			strXpLearned = strXpLearned.replace("%s", this.name);
+		this.strXpAutoLearned = config.getString(section + "." + spellName + ".str-xp-auto-learned", MagicSpells.plugin.strXpAutoLearned);
+		if (this.strXpAutoLearned != null) {
+			strXpAutoLearned = strXpAutoLearned.replace("%s", this.name);
 		}
 		
 	}
@@ -1422,7 +1422,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	}
 	
 	public String getStrXpLearned() {
-		return strXpLearned;
+		return strXpAutoLearned;
 	}
 	
 	Map<String, Long> getCooldowns() {

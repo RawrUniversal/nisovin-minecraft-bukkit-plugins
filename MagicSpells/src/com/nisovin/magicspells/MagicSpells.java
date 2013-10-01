@@ -113,7 +113,7 @@ public class MagicSpells extends JavaPlugin {
 	String strDanceStart;
 	String strDanceComplete;
 	String strDanceFail;
-	String strXpLearned;
+	String strXpAutoLearned;
 	
 	// spell containers
 	HashMap<String, Spell> spells; // map internal names to spells
@@ -270,7 +270,7 @@ public class MagicSpells extends JavaPlugin {
 		strDanceStart = config.getString("general.str-dance-start", "You begin to cast a spell.");
 		strDanceComplete = config.getString("general.str-dance-complete", "");
 		strDanceFail = config.getString("general.str-dance-fail", "Your dancing has no effect.");
-		strXpLearned = config.getString("general.str-xp-learned", "You have learned the %s spell!");
+		strXpAutoLearned = config.getString("general.str-xp-auto-learned", "You have learned the %s spell!");
 		
 		enableManaBars = config.getBoolean("mana.enable-mana-system", false);
 		manaPotionCooldown = config.getInt("mana.mana-potion-cooldown", 30);
