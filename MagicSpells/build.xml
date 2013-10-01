@@ -28,6 +28,7 @@
 		<copy file="${src.dir}\spells-command.yml" tofile="${build.dir}\spells-command.yml" />
 		<copy file="${src.dir}\spells-regular.yml" tofile="${build.dir}\spells-regular.yml" />
 		<copy file="${src.dir}\zones.yml" tofile="${build.dir}\zones.yml" />
+		<copy file="${src.dir}\itemnames.yml" tofile="${build.dir}\itemnames.yml" />
 	</target>
 
 	<!-- Creates the deployable jar file  -->

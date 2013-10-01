@@ -62,6 +62,8 @@ public abstract class Condition {
 		conditions.put("foodbelow", FoodBelowCondition.class);
 		conditions.put("levelabove", LevelAboveCondition.class);
 		conditions.put("levelbelow", LevelBelowCondition.class);
+		conditions.put("magicxpabove", MagicXpAboveCondition.class);
+		conditions.put("Magicxpbelow", MagicXpBelowCondition.class);
 		conditions.put("pitchabove", PitchAboveCondition.class);
 		conditions.put("pitchbelow", PitchBelowCondition.class);
 		conditions.put("potioneffect", PotionEffectCondition.class);

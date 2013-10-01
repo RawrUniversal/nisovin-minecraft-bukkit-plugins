@@ -12,3 +12,7 @@ commands:
         description: Show mana bar
         usage: /<command>
         aliases: [mana]
+    magicspellxp:
+        description: Show magic XP info
+        usage: /<command>
+        aliases: [magicxp,spellxp]

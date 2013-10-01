@@ -384,8 +384,8 @@ public class MagicSpells extends JavaPlugin {
 		}
 		
 		// load xp system
-		if (config.getBoolean("general.enable-magic-xp", true)) {
-			magicXpHandler = new MagicXpHandler(this);
+		if (config.getBoolean("general.enable-magic-xp", false)) {
+			magicXpHandler = new MagicXpHandler(this, config);
 		}
 		
 		// initialize passive manager
@@ -485,6 +485,7 @@ public class MagicSpells extends JavaPlugin {
 		CastCommand exec = new CastCommand(this, config.getBoolean("general.enable-tab-completion", true));
 		getCommand("magicspellcast").setExecutor(exec);
 		getCommand("magicspellmana").setExecutor(exec);
+		getCommand("magicspellxp").setExecutor(exec);
 		
 		// setup profiling
 		if (enableProfiling) {
@@ -732,6 +733,10 @@ public class MagicSpells extends JavaPlugin {
 	
 	public static MoneyHandler getMoneyHandler() {
 		return plugin.moneyHandler;
+	}
+	
+	public static MagicXpHandler getMagicXpHandler() {
+		return plugin.magicXpHandler;
 	}
 	
 	/**
@@ -1028,6 +1033,10 @@ public class MagicSpells extends JavaPlugin {
 		spellbooks = null;
 		incantations.clear();
 		incantations = null;
+		if (magicXpHandler != null) {
+			magicXpHandler.saveAll();
+			magicXpHandler = null;
+		}
 		if (mana != null) {
 			mana.turnOff();
 			mana = null;

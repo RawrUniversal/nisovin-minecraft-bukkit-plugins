@@ -219,6 +219,14 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 					plugin.mana.showMana(player, true);
 				}
 				return true;
+			} else if (command.getName().equalsIgnoreCase("magicspellxp")) {
+				if (sender instanceof Player) {
+					MagicXpHandler xpHandler = plugin.magicXpHandler;
+					if (xpHandler != null) {
+						xpHandler.showXpInfo((Player)sender);
+					}
+				}
+				return true;
 			}
 			return false;
 		} catch (Exception ex) {

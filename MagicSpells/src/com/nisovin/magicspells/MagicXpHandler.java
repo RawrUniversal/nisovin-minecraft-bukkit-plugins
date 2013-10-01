@@ -1,6 +1,7 @@
 package com.nisovin.magicspells;
 
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,19 +21,34 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.nisovin.magicspells.Spell.PostCastAction;
 import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.util.IntMap;
+import com.nisovin.magicspells.util.MagicConfig;
 
 public class MagicXpHandler implements Listener {
 
 	MagicSpells plugin;
 	
+	Map<String, String> schools = new HashMap<String, String>();
 	Map<String, IntMap<String>> xp = new HashMap<String, IntMap<String>>();
 	Set<String> dirty = new HashSet<String>();
 	Map<String, String> currentWorld = new HashMap<String, String>();
 	
 	Map<String, List<Spell>> spellSchoolRequirements = new HashMap<String, List<Spell>>();
 	
-	public MagicXpHandler(MagicSpells plugin) {
+	String strXpHeader;
+	
+	public MagicXpHandler(MagicSpells plugin, MagicConfig config) {
 		this.plugin = plugin;
+		
+		Set<String> keys = config.getKeys("general.magic-schools");
+		if (keys != null) {
+			for (String school : keys) {
+				String name = config.getString("general.magic-schools." + school, null);
+				if (name != null) {
+					schools.put(school.toLowerCase(), name);
+				}
+			}
+		}
+		strXpHeader = config.getString("general.str-xp-header", null);
 		
 		for (Spell spell : MagicSpells.spells()) {
 			Map<String, Integer> xpRequired = spell.getXpRequired();
@@ -61,10 +77,34 @@ public class MagicXpHandler implements Listener {
 		MagicSpells.registerEvents(this);
 	}
 	
+	public void showXpInfo(Player player) {
+		IntMap<String> playerXp = xp.get(player.getName());
+		if (playerXp != null) {
+			MagicSpells.sendMessage(player, strXpHeader);
+			for (String school : playerXp.keySet()) {
+				String schoolName = schools.get(school);
+				if (schoolName == null) schoolName = school;
+				String amt = NumberFormat.getInstance().format(playerXp.get(school));
+				MagicSpells.sendMessage(player, schoolName + ": " + amt);
+			}
+		}
+	}
+	
+	public int getXp(Player player, String school) {
+		IntMap<String> playerXp = xp.get(player.getName());
+		if (playerXp != null) {
+			return playerXp.get(school.toLowerCase());
+		}
+		return 0;
+	}
+	
 	@EventHandler
 	public void onCast(SpellCastedEvent event) {
 		if (event.getPostCastAction() == PostCastAction.ALREADY_HANDLED) return;
 		
+		Map<String, Integer> xpGranted = event.getSpell().getXpGranted();
+		if (xpGranted == null) return;
+
 		// get player xp
 		IntMap<String> playerXp = xp.get(event.getCaster().getName());
 		if (playerXp == null) {
@@ -73,10 +113,10 @@ public class MagicXpHandler implements Listener {
 		}
 		
 		// grant xp
-		Map<String, Integer> xpGranted = event.getSpell().getXpGranted();
 		for (String school : xpGranted.keySet()) {
 			playerXp.increment(school.toLowerCase(), xpGranted.get(school));
 		}
+		dirty.add(event.getCaster().getName());
 		
 		// get spells to check if learned
 		Set<Spell> toCheck = new HashSet<Spell>();
