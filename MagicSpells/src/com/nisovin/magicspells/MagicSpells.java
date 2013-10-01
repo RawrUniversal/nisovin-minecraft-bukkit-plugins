@@ -131,6 +131,7 @@ public class MagicSpells extends JavaPlugin {
 	ItemNameResolver itemNameResolver;
 	MoneyHandler moneyHandler;
 	MagicXpHandler magicXpHandler;
+	MagicLogger magicLogger;
 	
 	// profiling
 	HashMap<String, Long> profilingTotalTime;
@@ -482,6 +483,11 @@ public class MagicSpells extends JavaPlugin {
 			new DanceCastListener(this, config.getString("general.dance-cast-item", "2256"), config.getInt("general.dance-cast-duration", 200));
 		}
 		ModifierSet.initializeModifierListeners();
+		
+		// initialize logger
+		if (config.getBoolean("general.enable-logging", false)) {
+			magicLogger = new MagicLogger(this);
+		}
 		
 		// register commands
 		CastCommand exec = new CastCommand(this, config.getBoolean("general.enable-tab-completion", true));
@@ -1050,6 +1056,10 @@ public class MagicSpells extends JavaPlugin {
 		if (noMagicZones != null) {
 			noMagicZones.turnOff();
 			noMagicZones = null;
+		}
+		if (magicLogger != null) {
+			magicLogger.disable();
+			magicLogger = null;
 		}
 		expBarManager = null;
 		itemNameResolver = null;
