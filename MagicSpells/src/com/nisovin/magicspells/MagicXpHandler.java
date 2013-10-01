@@ -86,9 +86,10 @@ public class MagicXpHandler implements Listener {
 			MagicSpells.sendMessage(player, strXpHeader);
 			for (String school : playerXp.keySet()) {
 				String schoolName = schools.get(school);
-				if (schoolName == null) schoolName = school;
-				String amt = NumberFormat.getInstance().format(playerXp.get(school));
-				MagicSpells.sendMessage(player, schoolName + ": " + amt);
+				if (schoolName != null) {
+					String amt = NumberFormat.getInstance().format(playerXp.get(school));
+					MagicSpells.sendMessage(player, schoolName + ": " + amt);
+				}
 			}
 		}
 	}
