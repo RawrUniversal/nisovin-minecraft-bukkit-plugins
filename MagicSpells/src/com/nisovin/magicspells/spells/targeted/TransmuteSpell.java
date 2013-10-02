@@ -13,6 +13,7 @@ import org.bukkit.util.Vector;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.materials.MagicMaterial;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -64,6 +65,7 @@ public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpe
 			}
 			
 			transmuteType.setBlock(block);
+			playSpellEffects(player, block.getLocation().add(0.5, 0.5, 0.5));
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
@@ -73,12 +75,14 @@ public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpe
 		Block block = target.getBlock();
 		if (canTransmute(block)) {
 			transmuteType.setBlock(block);
+			playSpellEffects(caster, block.getLocation().add(0.5, 0.5, 0.5));
 			return true;
 		} else {
 			Vector v = target.getDirection();
 			block = target.clone().add(v).getBlock();
 			if (canTransmute(block)) {
 				transmuteType.setBlock(block);
+				playSpellEffects(caster, block.getLocation().add(0.5, 0.5, 0.5));
 				return true;
 			}
 		}
@@ -91,6 +95,7 @@ public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpe
 		Block block = target.getBlock();
 		if (canTransmute(block)) {
 			transmuteType.setBlock(block);
+			playSpellEffects(EffectPosition.TARGET, block.getLocation().add(0.5, 0.5, 0.5));
 			return true;
 		}
 		return false;
