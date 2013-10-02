@@ -41,6 +41,7 @@ public class BlockBreakListener extends PassiveListener {
 						types.put(m, list);
 					}
 					list.add(spell);
+					materials.add(m.getMaterial());
 				}
 			}
 		}
