@@ -2,12 +2,17 @@ package com.nisovin.magicspells.spells.passive;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.material.MaterialData;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spellbook;
@@ -16,6 +21,7 @@ import com.nisovin.magicspells.spells.PassiveSpell;
 
 public class BlockPlaceListener extends PassiveListener {
 
+	Set<Material> materials = new HashSet<Material>();
 	Map<MagicMaterial, List<PassiveSpell>> types = new HashMap<MagicMaterial, List<PassiveSpell>>();
 	List<PassiveSpell> allTypes = new ArrayList<PassiveSpell>();
 	
@@ -43,7 +49,7 @@ public class BlockPlaceListener extends PassiveListener {
 	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
-		if (allTypes.size() > 0) {			
+		if (allTypes.size() > 0) {
 			for (PassiveSpell spell : allTypes) {
 				if (spellbook.hasSpell(spell, false)) {
 					spell.activate(event.getPlayer(), event.getBlock().getLocation().add(0.5, 0.5, 0.5));
@@ -51,9 +57,8 @@ public class BlockPlaceListener extends PassiveListener {
 			}
 		}
 		if (types.size() > 0) {
-			MagicMaterial m = MagicMaterial.fromBlock(event.getBlock());
-			if (types.containsKey(m)) {
-				List<PassiveSpell> list = types.get(m);		
+			List<PassiveSpell> list = getSpells(event.getBlock());
+			if (list != null) {
 				for (PassiveSpell spell : list) {
 					if (spellbook.hasSpell(spell, false)) {
 						spell.activate(event.getPlayer(), event.getBlock().getLocation().add(0.5, 0.5, 0.5));
@@ -61,6 +66,18 @@ public class BlockPlaceListener extends PassiveListener {
 				}
 			}
 		}
+	}
+	
+	private List<PassiveSpell> getSpells(Block block) {
+		if (materials.contains(block.getType())) {
+			MaterialData data = block.getState().getData();
+			for (MagicMaterial m : types.keySet()) {
+				if (m.equals(data)) {
+					return types.get(m);
+				}
+			}
+		}
+		return null;
 	}
 
 }
