@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.Spell.PostCastAction;
+import com.nisovin.magicspells.Spell.SpellCastState;
 import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent;
 import com.nisovin.magicspells.events.SpellLearnEvent.LearnSource;
@@ -107,6 +108,7 @@ public class MagicXpHandler implements Listener {
 	@EventHandler
 	public void onCast(SpellCastedEvent event) {
 		if (event.getPostCastAction() == PostCastAction.ALREADY_HANDLED) return;
+		if (event.getSpellCastState() != SpellCastState.NORMAL) return;
 		
 		final Map<String, Integer> xpGranted = event.getSpell().getXpGranted();
 		if (xpGranted == null) return;
@@ -143,6 +145,7 @@ public class MagicXpHandler implements Listener {
 					
 					// check for new learned spells
 					if (toCheck.size() > 0) {
+						boolean learned = false;
 						Spellbook spellbook = MagicSpells.getSpellbook(player);
 						for (Spell spell : toCheck) {
 							if (!spellbook.hasSpell(spell, false) && spellbook.canLearn(spell)) {
@@ -151,8 +154,12 @@ public class MagicXpHandler implements Listener {
 								if (!evt.isCancelled()) {
 									spellbook.addSpell(spell);
 									MagicSpells.sendMessage(player, spell.getStrXpLearned());
+									learned = true;
 								}
 							}
+						}
+						if (learned) {
+							spellbook.save();
 						}
 					}
 					
