@@ -12,6 +12,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -63,8 +64,9 @@ public class ArmorSpell extends BuffSpell {
 	
 	@Override
 	public void initialize() {
+		super.initialize();
 		if (!permanent) {
-			registerEvents();
+			registerEvents(new ArmorListener());
 		}
 	}
 	
@@ -75,6 +77,7 @@ public class ArmorSpell extends BuffSpell {
 				
 				// get type and data
 				ItemStack item = Util.getItemStackFromString(info[0]);
+				if (item == null) return null;
 				item.setAmount(1);
 				if (!permanent) {
 					ItemMeta meta = item.getItemMeta();
@@ -165,68 +168,71 @@ public class ArmorSpell extends BuffSpell {
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
-	public void onEntityDamage(EntityDamageEvent event) {
-		if (event.getEntity() instanceof Player) {
-			Player p = (Player)event.getEntity();
-			if (isActive(p) && p.getNoDamageTicks() < 10) {
-				addUseAndChargeCost(p);
-			}
-		}
-	}
+	class ArmorListener implements Listener {
 	
-	@EventHandler(ignoreCancelled=true)
-	public void onInventoryClick(InventoryClickEvent event) {
-		if (event.getSlotType() == SlotType.ARMOR && event.getWhoClicked() instanceof Player) {
-			Player p = (Player)event.getWhoClicked();
-			if (isActive(p)) {
-				event.setCancelled(true);
-			}
-		}
-	}
-	
-	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
-		Iterator<ItemStack> drops = event.getDrops().iterator();
-		while (drops.hasNext()) {
-			ItemStack drop = drops.next();
-			List<String> lore = drop.getItemMeta().getLore();
-			if (lore != null && lore.size() > 0 && lore.get(lore.size()-1).equals(strLoreText)) {
-				drops.remove();
-			}
-		}
-	}
-	
-	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		if (isActive(event.getPlayer()) && !isExpired(event.getPlayer())) {
-			final PlayerInventory inv = event.getPlayer().getInventory();
-			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
-				public void run() {
-					setArmor(inv);
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onEntityDamage(EntityDamageEvent event) {
+			if (event.getEntity() instanceof Player) {
+				Player p = (Player)event.getEntity();
+				if (isActive(p) && p.getNoDamageTicks() < 10) {
+					addUseAndChargeCost(p);
 				}
-			});
-		}
-	}
-	
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		if (isActive(event.getPlayer())) {
-			if (cancelOnLogout) {
-				turnOff(event.getPlayer());
-			} else {
-				removeArmor(event.getPlayer().getInventory());
 			}
 		}
-	}
-	
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (isActive(event.getPlayer())) {
-			if (!isExpired(event.getPlayer())) {
-				setArmor(event.getPlayer().getInventory());
-			} else {
-				turnOff(event.getPlayer());
+		
+		@EventHandler(ignoreCancelled=true)
+		public void onInventoryClick(InventoryClickEvent event) {
+			if (event.getSlotType() == SlotType.ARMOR && event.getWhoClicked() instanceof Player) {
+				Player p = (Player)event.getWhoClicked();
+				if (isActive(p)) {
+					event.setCancelled(true);
+				}
+			}
+		}
+		
+		@EventHandler
+		public void onPlayerDeath(PlayerDeathEvent event) {
+			Iterator<ItemStack> drops = event.getDrops().iterator();
+			while (drops.hasNext()) {
+				ItemStack drop = drops.next();
+				List<String> lore = drop.getItemMeta().getLore();
+				if (lore != null && lore.size() > 0 && lore.get(lore.size()-1).equals(strLoreText)) {
+					drops.remove();
+				}
+			}
+		}
+		
+		@EventHandler
+		public void onPlayerRespawn(PlayerRespawnEvent event) {
+			if (isActive(event.getPlayer()) && !isExpired(event.getPlayer())) {
+				final PlayerInventory inv = event.getPlayer().getInventory();
+				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+					public void run() {
+						setArmor(inv);
+					}
+				});
+			}
+		}
+		
+		@EventHandler
+		public void onPlayerQuit(PlayerQuitEvent event) {
+			if (isActive(event.getPlayer())) {
+				if (cancelOnLogout) {
+					turnOff(event.getPlayer());
+				} else {
+					removeArmor(event.getPlayer().getInventory());
+				}
+			}
+		}
+		
+		@EventHandler
+		public void onPlayerJoin(PlayerJoinEvent event) {
+			if (isActive(event.getPlayer())) {
+				if (!isExpired(event.getPlayer())) {
+					setArmor(event.getPlayer().getInventory());
+				} else {
+					turnOff(event.getPlayer());
+				}
 			}
 		}
 	}

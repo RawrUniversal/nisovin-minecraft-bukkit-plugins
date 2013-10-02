@@ -215,7 +215,7 @@ public class MagicItemNameResolver implements ItemNameResolver {
 			if (sdata.equals("*")) {
 				return new MagicUnknownAnyDataMaterial(type);
 			} else {
-				short data = Short.parseShort(sdata);
+				short data = ((sdata == null || sdata.isEmpty()) ? 0 : Short.parseShort(sdata));
 				return new MagicUnknownMaterial(type, data);
 			}
 		} catch (NumberFormatException e) {

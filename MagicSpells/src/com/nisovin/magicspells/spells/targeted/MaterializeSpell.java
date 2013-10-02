@@ -36,6 +36,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		
 		String s = getConfigString("block-type", "1");
 		material = MagicSpells.getItemNameResolver().resolveBlock(s);
+		if (material == null) MagicSpells.error("Invalid block-type on materialize spell '" + internalName + "'");
 		resetDelay = getConfigInt("reset-delay", 0);
 		falling = getConfigBoolean("falling", false);
 		applyPhysics = getConfigBoolean("apply-physics", true);
