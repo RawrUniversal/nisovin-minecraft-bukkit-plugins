@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.server.v1_5_R2.Packet14BlockDig;
+//import net.minecraft.server.v1_5_R3.Packet14BlockDig;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -29,6 +29,7 @@ import com.comphenix.protocol.events.ConnectionSide;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.MagicSpellsLoadedEvent;
@@ -172,8 +173,8 @@ public class FoodCasting extends JavaPlugin implements Listener {
 		public void onPacketReceiving(final PacketEvent event) {
 			if (eating.containsKey(event.getPlayer().getName())) {
 				final long eatStart = eating.remove(event.getPlayer().getName());
-				Packet14BlockDig packet = (Packet14BlockDig)event.getPacket().getHandle();
-				if (packet.e == 5 && packet.a == 0 && packet.b == 0 && packet.c == 0 && packet.face == 255) {
+				StructureModifier<Integer> packet = event.getPacket().getIntegers();
+				if (packet.read(4) == 5 && packet.read(0) == 0 && packet.read(1) == 0 && packet.read(2) == 0 && packet.read(3) == 255) {
 					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 						public void run() {
 							long eatDuration = (System.currentTimeMillis() - eatStart);
