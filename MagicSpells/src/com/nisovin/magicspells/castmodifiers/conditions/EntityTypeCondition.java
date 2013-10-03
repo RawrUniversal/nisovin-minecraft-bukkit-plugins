@@ -1,5 +1,6 @@
 package com.nisovin.magicspells.castmodifiers.conditions;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -16,7 +17,7 @@ public class EntityTypeCondition extends Condition {
 	boolean player = false;
 	boolean monster = false;
 	boolean animal = false;
-	Set<EntityType> types;
+	Set<EntityType> types = new HashSet<EntityType>();
 	
 	@Override
 	public boolean setVar(String var) {
