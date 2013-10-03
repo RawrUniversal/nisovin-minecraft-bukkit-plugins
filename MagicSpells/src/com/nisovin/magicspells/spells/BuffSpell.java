@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import com.nisovin.magicspells.BuffManager;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spelleffects.SpellEffect;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -45,6 +46,7 @@ public abstract class BuffSpell extends Spell {
 	protected boolean cancelOnDeath;
 	protected boolean cancelOnTeleport;
 	protected boolean cancelOnChangeWorld;
+	protected boolean cancelOnSpellCast;
 	protected boolean cancelOnLogout;
 	protected String strFade;
 	private boolean castWithItem;
@@ -68,6 +70,7 @@ public abstract class BuffSpell extends Spell {
 		cancelOnDeath = getConfigBoolean("cancel-on-death", false);
 		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", false);
 		cancelOnChangeWorld = getConfigBoolean("cancel-on-change-world", false);
+		cancelOnSpellCast = getConfigBoolean("cancel-on-spell-cast", false);
 		cancelOnLogout = getConfigBoolean("cancel-on-logout", false);
 		if (cancelOnGiveDamage || cancelOnTakeDamage) {
 			registerEvents(new DamageListener());
@@ -80,6 +83,9 @@ public abstract class BuffSpell extends Spell {
 		}
 		if (cancelOnChangeWorld) {
 			registerEvents(new ChangeWorldListener());
+		}
+		if (cancelOnSpellCast) {
+			registerEvents(new SpellCastListener());
 		}
 		if (cancelOnLogout) {
 			registerEvents(new QuitListener());
@@ -325,6 +331,15 @@ public abstract class BuffSpell extends Spell {
 		public void onChangeWorld(PlayerChangedWorldEvent event) {
 			if (isActive(event.getPlayer())) {
 				turnOff(event.getPlayer());
+			}
+		}
+	}
+	
+	public class SpellCastListener implements Listener {
+		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+		public void onChangeWorld(SpellCastEvent event) {
+			if (thisSpell != event.getSpell() && event.getSpellCastState() == SpellCastState.NORMAL && isActive(event.getCaster())) {
+				turnOff(event.getCaster());
 			}
 		}
 	}
