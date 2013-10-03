@@ -33,8 +33,13 @@ public class HasItemCondition extends Condition {
 			if (var.contains(":")) {
 				String[] vardata = var.split(":");
 				id = Integer.parseInt(vardata[0]);
-				data = Short.parseShort(vardata[1]);
-				checkData = true;
+				if (vardata[1].equals("*")) {
+					data = 0;
+					checkData = false;
+				} else {
+					data = Short.parseShort(vardata[1]);
+					checkData = true;
+				}
 			} else {
 				id = Integer.parseInt(var);
 				checkData = false;
@@ -49,14 +54,16 @@ public class HasItemCondition extends Condition {
 	public boolean check(Player player) {
 		if (checkData || checkName) {
 			for (ItemStack item : player.getInventory().getContents()) {
-				String thisname = null;
-				try {
-					if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-						thisname = item.getItemMeta().getDisplayName();
+				if (item != null) {
+					String thisname = null;
+					try {
+						if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+							thisname = item.getItemMeta().getDisplayName();
+						}
+					} catch (Exception e) {}
+					if (item.getTypeId() == id && (!checkData || item.getDurability() == data) && (!checkName || strEquals(thisname, name))) {
+						return true;
 					}
-				} catch (Exception e) {}
-				if (item != null && item.getTypeId() == id && (!checkData || item.getDurability() == data) && (!checkName || strEquals(thisname, name))) {
-					return true;
 				}
 			}
 			return false;

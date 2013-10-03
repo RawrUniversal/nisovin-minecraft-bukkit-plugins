@@ -40,8 +40,13 @@ public class HoldingCondition extends Condition {
 				if (vardata[i].contains(":")) {
 					String[] subvardata = vardata[i].split(":");
 					ids[i] = Integer.parseInt(subvardata[0]);
-					datas[i] = Short.parseShort(subvardata[1]);
-					checkData[i] = true;
+					if (subvardata[1].equals("*")) {
+						datas[i] = 0;
+						checkData[i] = false;
+					} else {
+						datas[i] = Short.parseShort(subvardata[1]);
+						checkData[i] = true;
+					}
 				} else {
 					ids[i] = Integer.parseInt(vardata[i]);
 					datas[i] = 0;
