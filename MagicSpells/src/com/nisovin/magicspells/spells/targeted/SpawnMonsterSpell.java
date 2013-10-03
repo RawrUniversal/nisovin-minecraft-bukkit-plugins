@@ -60,7 +60,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 		super(config, spellName);
 		
 		location = getConfigString("location", "target");
-		entityType = EntityType.fromName(getConfigString("entity-type", "wolf"));
+		entityType = Util.getEntityType(getConfigString("entity-type", "wolf"));
 		allowSpawnInMidair = getConfigBoolean("allow-spawn-in-midair", false);
 		baby = getConfigBoolean("baby", false);
 		tamed = getConfigBoolean("tamed", false);

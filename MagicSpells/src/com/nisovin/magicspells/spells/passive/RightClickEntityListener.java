@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.spells.PassiveSpell;
+import com.nisovin.magicspells.util.Util;
 
 public class RightClickEntityListener extends PassiveListener {
 
@@ -27,7 +28,7 @@ public class RightClickEntityListener extends PassiveListener {
 		} else {
 			String[] split = var.replace(" ", "").toUpperCase().split(",");
 			for (String s : split) {
-				EntityType t = s.equalsIgnoreCase("player") ? EntityType.PLAYER : EntityType.fromName(s);
+				EntityType t = Util.getEntityType(s);
 				if (t != null) {
 					List<PassiveSpell> list = types.get(t);
 					if (list == null) {

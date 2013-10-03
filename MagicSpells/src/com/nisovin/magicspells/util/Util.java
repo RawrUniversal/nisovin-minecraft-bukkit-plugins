@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -332,6 +333,19 @@ public class Util {
 				}
 			}
 		}
+	}
+	
+	public static EntityType getEntityType(String type) {
+		type = type.trim().toLowerCase().replace("_", "").replace(" ", "");
+		for (EntityType t : EntityType.values()) {
+			String enumName = t.name().toLowerCase().replace("_", "").replace(" ", "");
+			String mcName = t.getName();
+			if (mcName != null) mcName = mcName.toLowerCase().replace("_", "").replace(" ", "");
+			if (enumName.equals(type) || (mcName != null && mcName.equals(type))) {
+				return t;
+			}
+		}
+		return null;
 	}
 	
 	public static void setFacing(Player player, Vector vector) {

@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.spells.PassiveSpell;
+import com.nisovin.magicspells.util.Util;
 
 public class KillListener extends PassiveListener {
 
@@ -27,7 +28,7 @@ public class KillListener extends PassiveListener {
 		} else {
 			String[] split = var.replace(" ", "").split(",");
 			for (String s : split) {
-				EntityType t = EntityType.fromName(s);
+				EntityType t = Util.getEntityType(s);
 				if (t != null) {
 					List<PassiveSpell> spells = entityTypes.get(t);
 					if (spells == null) {
