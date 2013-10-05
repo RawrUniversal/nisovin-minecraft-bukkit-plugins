@@ -3,6 +3,8 @@ package com.nisovin.magicspells.spells.targeted;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -88,6 +90,19 @@ public class MountSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public boolean isBeneficial() {
 		return true;
+	}
+	
+	@EventHandler
+	public void onQuit(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+		Entity vehicle = player.getVehicle();
+		Entity passenger = player.getPassenger();
+		if (passenger != null) {
+			player.eject();
+		}
+		if (vehicle != null && vehicle instanceof Player) {
+			vehicle.eject();
+		}
 	}
 
 }
