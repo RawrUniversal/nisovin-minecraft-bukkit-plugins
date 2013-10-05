@@ -244,11 +244,11 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)1));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(16, Byte.valueOf((byte)0));
-						broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.WITCH) {
@@ -256,11 +256,11 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(21, Byte.valueOf((byte)1));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(21, Byte.valueOf((byte)0));
-						broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.CREEPER && !disguise.getFlag()) {
@@ -268,11 +268,11 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(17, Byte.valueOf((byte)1));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(17, Byte.valueOf((byte)0));
-						broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.WOLF) {
@@ -280,11 +280,11 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)(p.isSneaking() ? 3 : 2)));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(16, Byte.valueOf((byte)(p.isSneaking() ? 1 : 0)));
-						broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE) {
@@ -292,11 +292,11 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)(p.isSneaking() ? 2 : 3)));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(16, Byte.valueOf((byte)(p.isSneaking() ? 1 : 2)));
-						broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			}
@@ -316,13 +316,13 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)1));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 			} else {
 				final DataWatcher dw = new DataWatcher();
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)0));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 			}
 		} else if (entityType == EntityType.ENDERMAN) {
 			if (event.isSneaking()) {
@@ -330,13 +330,13 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(18, Byte.valueOf((byte)1));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 			} else {
 				final DataWatcher dw = new DataWatcher();
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(18, Byte.valueOf((byte)0));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 			}
 		} else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE) {
 			if (event.isSneaking()) {
@@ -344,13 +344,13 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)1));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 			} else {
 				final DataWatcher dw = new DataWatcher();
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)2));
-				broadcastPacket40(p, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
 			}
 		} else if (entityType == EntityType.SHEEP && event.isSneaking()) {
 			p.playEffect(EntityEffect.SHEEP_EAT);
@@ -366,24 +366,19 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 		@Override
 		public void onPacketSending(PacketEvent event) {
 			if (event.getPacketID() == 0x14) {
-				Packet20NamedEntitySpawn packet = (Packet20NamedEntitySpawn)event.getPacket().getHandle();
-				if (packet.a < 0) {
-					packet.a *= -1;
-				} else {
-					final Player player = event.getPlayer();
-					final String name = event.getPacket().getStrings().getValues().get(0);
-					final DisguiseSpell.Disguise disguise = disguises.get(name.toLowerCase());
-					if (player != null && disguise != null) {
-						event.setCancelled(true);
-						Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
-							public void run() {
-								Player disguised = Bukkit.getPlayer(name);
-								if (disguised != null) {
-									sendDisguisedSpawnPacket(player, disguised, disguise, null);
-								}
+				final Player player = event.getPlayer();
+				final String name = event.getPacket().getStrings().getValues().get(0);
+				final DisguiseSpell.Disguise disguise = disguises.get(name.toLowerCase());
+				if (player != null && disguise != null) {
+					event.setCancelled(true);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
+						public void run() {
+							Player disguised = Bukkit.getPlayer(name);
+							if (disguised != null) {
+								sendDisguisedSpawnPacket(player, disguised, disguise, null);
 							}
-						}, 0);
-					}
+						}
+					}, 0);
 				}
 			} else if (hideArmor && event.getPacketID() == 0x5) {
 				Packet5EntityEquipment packet = (Packet5EntityEquipment)event.getPacket().getHandle();
@@ -402,9 +397,7 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				}
 			} else if (event.getPacketID() == 0x20) {
 				Packet32EntityLook packet = (Packet32EntityLook)event.getPacket().getHandle();
-				if (packet.a < 0) {
-					packet.a *= -1;
-				} else if (dragons.contains(packet.a)) {
+				if (dragons.contains(packet.a)) {
 					Packet32EntityLook newpacket = new Packet32EntityLook();
 					newpacket.a = -packet.a;
 					int dir = packet.e + 128;
@@ -422,9 +415,7 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				}
 			} else if (event.getPacketID() == 0x21) {
 				Packet33RelEntityMoveLook packet = (Packet33RelEntityMoveLook)event.getPacket().getHandle();
-				if (packet.a < 0) {
-					packet.a *= -1;
-				} else if (dragons.contains(packet.a)) {
+				if (dragons.contains(packet.a)) {
 					Packet33RelEntityMoveLook newpacket = new Packet33RelEntityMoveLook();
 					newpacket.a = -packet.a;
 					newpacket.b = packet.b;
@@ -450,9 +441,7 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				}
 			} else if (event.getPacketID() == 0x22) {
 				Packet34EntityTeleport packet = (Packet34EntityTeleport)event.getPacket().getHandle();
-				if (packet.a < 0) {
-					packet.a *= -1;
-				} else if (dragons.contains(packet.a)) {
+				if (dragons.contains(packet.a)) {
 					Packet34EntityTeleport newpacket = new Packet34EntityTeleport();
 					newpacket.a = -packet.a;
 					newpacket.b = packet.b;
@@ -502,8 +491,8 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 		tracker.a(((CraftPlayer)disguised).getHandle(), packet29);
 	}
 	
-	private void broadcastPacket40(Player disguised, Packet40EntityMetadata packet) {
-		PacketContainer con = new PacketContainer(40, packet);
+	private void broadcastPacket(Player disguised, int packetId, Packet packet) {
+		PacketContainer con = new PacketContainer(packetId, packet);
 		for (Player player : protocolManager.getEntityTrackers(disguised)) {
 			if (player.isOnline()) {
 				try {
@@ -523,6 +512,8 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 					for (Packet packet : packets) {
 						if (packet instanceof Packet40EntityMetadata) {
 							protocolManager.sendServerPacket(viewer, new PacketContainer(40, packet), false);
+						} else if (packet instanceof Packet20NamedEntitySpawn) {
+							protocolManager.sendServerPacket(viewer, new PacketContainer(20, packet), false);
 						} else {
 							ep.playerConnection.sendPacket(packet);
 						}
@@ -543,7 +534,9 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 				final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
 				for (Packet packet : packets) {
 					if (packet instanceof Packet40EntityMetadata) {
-						broadcastPacket40(disguised, (Packet40EntityMetadata)packet);
+						broadcastPacket(disguised, 40, packet);
+					} else if (packet instanceof Packet20NamedEntitySpawn) {
+						broadcastPacket(disguised, 20, packet);
 					} else {
 						tracker.a(((CraftPlayer)disguised).getHandle(), packet);
 					}
@@ -556,7 +549,7 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 		List<Packet> packets = new ArrayList<Packet>();
 		if (entity instanceof EntityHuman) {
 			Packet20NamedEntitySpawn packet20 = new Packet20NamedEntitySpawn((EntityHuman)entity);
-			packet20.a = -disguised.getEntityId();
+			packet20.a = disguised.getEntityId();
 			packets.add(packet20);
 			
 			ItemStack inHand = disguised.getItemInHand();
@@ -638,6 +631,20 @@ public class DisguiseManager_1_6_R2 extends DisguiseManager {
 			Packet39AttachEntity packet39 = new Packet39AttachEntity();
 			packet39.a = disguised.getEntityId();
 			packet39.b = boat.id;
+			packets.add(packet39);
+		}
+		
+		// handle passengers and vehicles
+		if (disguised.getPassenger() != null) {
+			Packet39AttachEntity packet39 = new Packet39AttachEntity();
+			packet39.a = disguised.getPassenger().getEntityId();
+			packet39.b = disguised.getEntityId();
+			packets.add(packet39);
+		}
+		if (disguised.getVehicle() != null) {
+			Packet39AttachEntity packet39 = new Packet39AttachEntity();
+			packet39.a = disguised.getEntityId();
+			packet39.b = disguised.getVehicle().getEntityId();
 			packets.add(packet39);
 		}
 		
