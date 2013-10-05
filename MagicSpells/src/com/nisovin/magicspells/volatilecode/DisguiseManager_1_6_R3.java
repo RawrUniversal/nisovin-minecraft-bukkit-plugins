@@ -504,14 +504,12 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 	
 	private void broadcastPacket40(Player disguised, Packet40EntityMetadata packet) {
 		PacketContainer con = new PacketContainer(40, packet);
-		try {
-			for (Player player : protocolManager.getEntityTrackers(disguised)) {
-				if (player.isOnline()) {
+		for (Player player : protocolManager.getEntityTrackers(disguised)) {
+			if (player.isOnline()) {
+				try {
 					protocolManager.sendServerPacket(player, con, false);
-				}
+				} catch (Exception e) {}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	

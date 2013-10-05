@@ -102,7 +102,6 @@ public abstract class SpellEffect {
 	}
 	
 	public void playEffectWhileActiveOrbit(final Entity entity, final SpellEffectActiveChecker checker) {
-		System.out.println("ORBIT");
 		new OrbitTracker(entity, checker);
 	}
 	
