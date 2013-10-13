@@ -133,13 +133,10 @@ public class SeeHealthSpell extends BuffSpell {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public void turnOff(Player player) {
+	public void turnOffBuff(Player player) {
 		Integer i = bars.remove(player.getName());
 		if (i != null) {
-			super.turnOff(player);
 			player.updateInventory();
-			sendMessage(player, strFade);
-			
 			if (updater != null && bars.size() == 0) {
 				updater.stop();
 				updater = null;

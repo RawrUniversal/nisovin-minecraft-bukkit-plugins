@@ -238,10 +238,8 @@ public class ArmorSpell extends BuffSpell {
 	}
 	
 	@Override
-	public void turnOff(Player player) {
-		if (armored.contains(player.getName())) {
-			super.turnOff(player);
-			armored.remove(player.getName());
+	public void turnOffBuff(Player player) {
+		if (armored.remove(player.getName())) {
 			PlayerInventory inv = player.getInventory();
 			removeArmor(inv);
 		}

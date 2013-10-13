@@ -50,15 +50,11 @@ public class LifewalkSpell extends BuffSpell {
 	}	
 	
 	@Override
-	public void turnOff(Player player) {
-		if (lifewalkers.contains(player.getName())) {
-			super.turnOff(player);
-			lifewalkers.remove(player.getName());
-			sendMessage(player, strFade);
-			if (lifewalkers.size() == 0 && grower != null) {
-				grower.stop();
-				grower = null;
-			}
+	public void turnOffBuff(Player player) {
+		lifewalkers.remove(player.getName());
+		if (lifewalkers.size() == 0 && grower != null) {
+			grower.stop();
+			grower = null;
 		}
 	}
 	

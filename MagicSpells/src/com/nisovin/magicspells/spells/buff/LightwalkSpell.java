@@ -72,13 +72,10 @@ public class LightwalkSpell extends BuffSpell {
 	}
 	
 	@Override
-	public void turnOff(Player player) {
-		Block b = lightwalkers.get(player.getName());
+	public void turnOffBuff(Player player) {
+		Block b = lightwalkers.remove(player.getName());
 		if (b != null) {
-			super.turnOff(player);
 			player.sendBlockChange(b.getLocation(), b.getType(), b.getData());
-			lightwalkers.remove(player.getName());
-			sendMessage(player, strFade);
 		}
 	}
 

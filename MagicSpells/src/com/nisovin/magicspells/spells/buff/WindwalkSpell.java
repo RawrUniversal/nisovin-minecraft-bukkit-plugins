@@ -126,17 +126,14 @@ public class WindwalkSpell extends BuffSpell {
 	}
 
 	@Override
-	public void turnOff(final Player player) {
-		if (flyers.contains(player.getName())) {
-			super.turnOff(player);
+	public void turnOffBuff(final Player player) {
+		if (flyers.remove(player.getName())) {
 			player.setFlying(false);
 			if (player.getGameMode() != GameMode.CREATIVE) {
 				player.setAllowFlight(false);
 			}
 			player.setFlySpeed(0.1F);
 			player.setFallDistance(0);
-			flyers.remove(player.getName());
-			sendMessage(player, strFade);
 		}
 		if (tasks != null && tasks.containsKey(player.getName())) {
 			int taskId = tasks.remove(player.getName());

@@ -59,12 +59,8 @@ public class SpellHasteSpell extends BuffSpell {
     }
 
     @Override
-    public void turnOff(Player player) {
-    	if (isActive(player)) {
-    		super.turnOff(player);
-    		sendMessage(player, strFade);
-    		spellTimersModified.remove(player.getName());
-    	}
+    public void turnOffBuff(Player player) {
+    	spellTimersModified.remove(player.getName());
     }
 
     @Override

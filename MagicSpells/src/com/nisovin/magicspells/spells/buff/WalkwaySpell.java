@@ -111,13 +111,10 @@ public class WalkwaySpell extends BuffSpell {
 	}
 	
 	@Override
-	public void turnOff(Player player) {
-		Platform platform = platforms.get(player.getName());
+	public void turnOffBuff(Player player) {
+		Platform platform = platforms.remove(player.getName());
 		if (platform != null) {
-			super.turnOff(player);
 			platform.remove();
-			platforms.remove(player.getName());
-			sendMessage(player, strFade);
 			unregisterListener();
 		}
 	}

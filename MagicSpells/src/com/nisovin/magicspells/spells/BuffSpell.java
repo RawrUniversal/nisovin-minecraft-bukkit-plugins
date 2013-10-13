@@ -270,17 +270,22 @@ public abstract class BuffSpell extends Spell {
 	 * When overriding this function, you should always be sure to call super.turnOff(player).
 	 * @param player
 	 */
-	public void turnOff(Player player) {
-		if (useCounter != null) useCounter.remove(player.getName());
-		if (durationEndTime != null) durationEndTime.remove(player.getName());
-		BuffManager buffman = MagicSpells.getBuffManager();
-		if (buffman != null) buffman.removeBuff(player, this);
-		playSpellEffects(EffectPosition.DISABLED, player);
+	public final void turnOff(Player player) {
+		if (isActive(player)) {
+			if (useCounter != null) useCounter.remove(player.getName());
+			if (durationEndTime != null) durationEndTime.remove(player.getName());
+			BuffManager buffman = MagicSpells.getBuffManager();
+			if (buffman != null) buffman.removeBuff(player, this);
+			sendMessage(player, strFade);
+			playSpellEffects(EffectPosition.DISABLED, player);
+			turnOffBuff(player);
+		}
 	}
 	
+	protected abstract void turnOffBuff(Player player);
+	
 	@Override
-	protected
-	abstract void turnOff();
+	protected abstract void turnOff();
 	
 	@Override
 	public boolean isBeneficial() {

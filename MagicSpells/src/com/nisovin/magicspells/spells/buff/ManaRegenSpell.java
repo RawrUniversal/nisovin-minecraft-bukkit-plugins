@@ -45,12 +45,8 @@ public class ManaRegenSpell extends BuffSpell {
 	}
 
 	@Override
-	public void turnOff(Player player) {
-		if (regenning.contains(player.getName())){
-			super.turnOff(player);
-			regenning.remove(player.getName());
-			sendMessage(player, strFade);
-		}
+	public void turnOffBuff(Player player) {
+		regenning.remove(player.getName());
 	}
 
 	@Override

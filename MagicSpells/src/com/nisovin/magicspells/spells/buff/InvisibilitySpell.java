@@ -107,17 +107,15 @@ public class InvisibilitySpell extends BuffSpell {
 	}
 	
 	@Override
-	public void turnOff(Player player) {
-		if (invisibles.containsKey(player.getName())) {
-			super.turnOff(player);
-			// stop charge ticker
-			CostCharger c = invisibles.remove(player.getName());
+	public void turnOffBuff(Player player) {
+		// stop charge ticker
+		CostCharger c = invisibles.remove(player.getName());
+		if (c != null) {
 			c.stop();
 			// force visible
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				p.showPlayer(player);
 			}
-			sendMessage(player, strFade);
 		}
 	}
 

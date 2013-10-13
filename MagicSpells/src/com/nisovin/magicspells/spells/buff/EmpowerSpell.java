@@ -41,12 +41,8 @@ public class EmpowerSpell extends BuffSpell {
 	}
 	
 	@Override
-	public void turnOff(Player player) {
-		if (empowered.containsKey(player)) {
-			super.turnOff(player);
-			empowered.remove(player);
-			sendMessage(player, strFade);
-		}
+	public void turnOffBuff(Player player) {
+		empowered.remove(player);
 	}
 
 	@Override

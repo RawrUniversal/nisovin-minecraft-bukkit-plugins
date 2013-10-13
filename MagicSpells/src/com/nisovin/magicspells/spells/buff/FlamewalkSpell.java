@@ -48,15 +48,11 @@ public class FlamewalkSpell extends BuffSpell {
 	}	
 	
 	@Override
-	public void turnOff(Player player) {
-		if (flamewalkers.containsKey(player.getName())) {
-			super.turnOff(player);
-			sendMessage(player, strFade);
-			flamewalkers.remove(player.getName());
-			if (flamewalkers.size() == 0 && burner != null) {
-				burner.stop();
-				burner = null;
-			}
+	public void turnOffBuff(Player player) {
+		flamewalkers.remove(player.getName());
+		if (flamewalkers.size() == 0 && burner != null) {
+			burner.stop();
+			burner = null;
 		}
 	}
 	

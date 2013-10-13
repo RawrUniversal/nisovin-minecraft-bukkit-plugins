@@ -66,10 +66,8 @@ public class GillsSpell extends BuffSpell {
 	}
 
 	@Override
-	public void turnOff(Player player) {
-		if (fishes.contains(player.getName())) {
-			super.turnOff(player);
-			fishes.remove(player.getName());
+	public void turnOffBuff(Player player) {
+		if (fishes.remove(player.getName())) {
 			if (glassHeadEffect) {
 				if (helmets.containsKey(player)) {
 					player.getInventory().setHelmet(helmets.get(player));
@@ -78,7 +76,6 @@ public class GillsSpell extends BuffSpell {
 					player.getInventory().setHelmet(null);				
 				}
 			}
-			sendMessage(player, strFade);
 		}
 	}
 	

@@ -56,13 +56,10 @@ public class HasteSpell extends BuffSpell {
 	}
 
 	@Override
-	public void turnOff(Player player) {
-		if (hasted.containsKey(player)) {
-			super.turnOff(player);
-			hasted.remove(player);
+	public void turnOffBuff(Player player) {
+		if (hasted.remove(player) != null) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1, 0), true);
 			player.removePotionEffect(PotionEffectType.SPEED);
-			sendMessage(player, strFade);
 		}
 	}
 	

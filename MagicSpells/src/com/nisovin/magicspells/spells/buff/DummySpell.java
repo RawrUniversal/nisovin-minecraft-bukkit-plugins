@@ -28,8 +28,7 @@ public class DummySpell extends BuffSpell {
 	}
 	
 	@Override
-	public void turnOff(Player player) {
-		super.turnOff(player);
+	public void turnOffBuff(Player player) {
 		players.remove(player.getName());
 	}
 

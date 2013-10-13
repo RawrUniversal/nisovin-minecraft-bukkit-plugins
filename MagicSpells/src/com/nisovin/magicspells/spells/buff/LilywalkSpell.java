@@ -177,13 +177,10 @@ public class LilywalkSpell extends BuffSpell {
 	}
 	
 	@Override
-	public void turnOff(Player player) {
-		Lilies lilies = lilywalkers.get(player.getName());
+	public void turnOffBuff(Player player) {
+		Lilies lilies = lilywalkers.remove(player.getName());
 		if (lilies != null) {
-			super.turnOff(player);
 			lilies.remove();
-			lilywalkers.remove(player.getName());
-			sendMessage(player, strFade);
 			unregisterListener();
 		}
 	}

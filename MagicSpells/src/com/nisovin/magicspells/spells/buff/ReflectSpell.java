@@ -41,12 +41,8 @@ public class ReflectSpell extends BuffSpell {
 	}
 
 	@Override
-	public void turnOff(Player player) {
-		if (reflectors.contains(player.getName())) {
-			super.turnOff(player);
-			reflectors.remove(player.getName());
-			sendMessage(player, strFade);
-		}
+	public void turnOffBuff(Player player) {
+		reflectors.remove(player.getName());
 	}
 
 	@Override

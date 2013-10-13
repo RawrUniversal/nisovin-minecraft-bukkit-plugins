@@ -47,18 +47,15 @@ public class WaterwalkSpell extends BuffSpell {
 	}
 
 	@Override
-	public void turnOff(Player player) {
-		if (waterwalking.contains(player.getName())) {
-			super.turnOff(player);
-			waterwalking.remove(player.getName());
+	public void turnOffBuff(Player player) {
+		if (waterwalking.remove(player.getName())) {
 			player.setFlying(false);
 			if (player.getGameMode() != GameMode.CREATIVE) {
 				player.setAllowFlight(false);
 			}
-			sendMessage(player, strFade);
-			if (waterwalking.size() == 0) {
-				stopTicker();
-			}
+		}
+		if (waterwalking.size() == 0) {
+			stopTicker();
 		}
 	}
 	

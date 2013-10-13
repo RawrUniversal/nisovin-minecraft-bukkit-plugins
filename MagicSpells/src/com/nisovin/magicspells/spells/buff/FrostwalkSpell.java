@@ -80,13 +80,11 @@ public class FrostwalkSpell extends BuffSpell {
 	}
 	
 	@Override
-	public void turnOff(Player player) {
+	public void turnOffBuff(Player player) {
 		BlockPlatform platform = frostwalkers.get(player.getName());
 		if (platform != null) {
-			super.turnOff(player);
 			platform.destroyPlatform();
 			frostwalkers.remove(player.getName());
-			sendMessage(player, strFade);
 		}
 	}
 	
