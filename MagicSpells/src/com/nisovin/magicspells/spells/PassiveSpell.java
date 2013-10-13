@@ -150,7 +150,7 @@ public class PassiveSpell extends Spell {
 				float power = event.getPower();
 				for (Spell spell : spells) {
 					MagicSpells.debug(3, "    Casting spell effect '" + spell.getName() + "'");
-					if (castWithoutTarget || (!(spell instanceof TargetedEntitySpell) && !(spell instanceof TargetedLocationSpell))) {
+					if (castWithoutTarget || (target == null && location == null) || (!(spell instanceof TargetedEntitySpell) && !(spell instanceof TargetedLocationSpell))) {
 						spell.castSpell(caster, SpellCastState.NORMAL, power, null);
 						playSpellEffects(EffectPosition.CASTER, caster);
 					} else if (spell instanceof TargetedEntitySpell && target != null) {
