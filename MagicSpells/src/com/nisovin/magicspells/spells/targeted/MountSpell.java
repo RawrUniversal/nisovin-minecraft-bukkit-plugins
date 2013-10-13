@@ -4,6 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
@@ -95,6 +96,19 @@ public class MountSpell extends TargetedSpell implements TargetedEntitySpell {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
+		Entity vehicle = player.getVehicle();
+		Entity passenger = player.getPassenger();
+		if (passenger != null) {
+			player.eject();
+		}
+		if (vehicle != null && vehicle instanceof Player) {
+			vehicle.eject();
+		}
+	}
+	
+	@EventHandler
+	public void onDeath(PlayerDeathEvent event) {
+		Player player = event.getEntity();
 		Entity vehicle = player.getVehicle();
 		Entity passenger = player.getPassenger();
 		if (passenger != null) {
