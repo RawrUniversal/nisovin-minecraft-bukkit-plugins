@@ -132,7 +132,7 @@ public class DrainlifeSpell extends TargetedSpell implements TargetedEntitySpell
 	private void giveToCaster(Player player, int give) {
 		if (giveType.equals("health")) {
 			int h = player.getHealth()+Math.round(give);
-			if (h>20) h=20;
+			if (h > player.getMaxHealth()) h = player.getMaxHealth();
 			player.setHealth(h);
 		} else if (giveType.equals("mana")) {
 			MagicSpells.getManaHandler().addMana(player, give, ManaChangeReason.OTHER);
