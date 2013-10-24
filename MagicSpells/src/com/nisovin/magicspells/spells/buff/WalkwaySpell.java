@@ -72,7 +72,7 @@ public class WalkwaySpell extends BuffSpell {
 	
 		@EventHandler(priority=EventPriority.MONITOR)
 		public void onPlayerMove(PlayerMoveEvent event) {
-			Platform carpet = platforms.get(event.getPlayer());
+			Platform carpet = platforms.get(event.getPlayer().getName());
 			if (carpet != null) {
 				boolean moved = carpet.move();
 				if (moved) {
@@ -96,7 +96,7 @@ public class WalkwaySpell extends BuffSpell {
 	public class TeleportListener implements Listener {
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onPlayerTeleport(PlayerTeleportEvent event) {
-			if (platforms.containsKey(event.getPlayer())) {
+			if (platforms.containsKey(event.getPlayer().getName())) {
 				if (!event.getFrom().getWorld().getName().equals(event.getTo().getWorld().getName()) || event.getFrom().toVector().distanceSquared(event.getTo().toVector()) > 50*50) {
 					turnOff(event.getPlayer());
 				}
@@ -104,7 +104,7 @@ public class WalkwaySpell extends BuffSpell {
 		}
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onPlayerPortal(PlayerPortalEvent event) {
-			if (platforms.containsKey(event.getPlayer())) {
+			if (platforms.containsKey(event.getPlayer().getName())) {
 				turnOff(event.getPlayer());
 			}
 		}
