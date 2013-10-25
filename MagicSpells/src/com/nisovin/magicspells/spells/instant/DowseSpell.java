@@ -46,7 +46,7 @@ public class DowseSpell extends InstantSpell {
 				entityType = EntityType.PLAYER;
 				playerName = entityName.split(":")[1];
 			} else {
-				entityType = EntityType.fromName(entityName);
+				entityType = Util.getEntityType(entityName);
 			}
 		}
 		

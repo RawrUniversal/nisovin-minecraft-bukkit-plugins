@@ -33,7 +33,7 @@ public class FrostwalkSpell extends BuffSpell {
 
 	@Override
 	public boolean castBuff(Player player, float power, String[] args) {
-		frostwalkers.put(player.getName(), new BlockPlatform(Material.ICE.getId(), Material.STATIONARY_WATER.getId(), player.getLocation().getBlock().getRelative(0,-1,0), size, !leaveFrozen, "square"));
+		frostwalkers.put(player.getName(), new BlockPlatform(Material.ICE, Material.STATIONARY_WATER, player.getLocation().getBlock().getRelative(0,-1,0), size, !leaveFrozen, "square"));
 		return true;
 	}
 

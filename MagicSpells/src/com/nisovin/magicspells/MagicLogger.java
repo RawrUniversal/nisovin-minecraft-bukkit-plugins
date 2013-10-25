@@ -120,7 +120,7 @@ public class MagicLogger implements Listener {
 		if (target instanceof Player) {
 			return ((Player)target).getName();
 		} else {
-			return target.getType().getName();
+			return target.getType().name();
 		}
 	}
 	

@@ -1,7 +1,9 @@
 package com.nisovin.magicspells.materials;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
@@ -33,6 +35,11 @@ public class MagicUnknownMaterial extends MagicMaterial {
 		if (data < 16) {
 			block.setTypeIdAndData(type, (byte)data, applyPhysics);
 		}
+	}
+	
+	@Override
+	public FallingBlock spawnFallingBlock(Location location) {
+		return location.getWorld().spawnFallingBlock(location, getMaterial(), getMaterialData().getData());
 	}
 	
 	@Override

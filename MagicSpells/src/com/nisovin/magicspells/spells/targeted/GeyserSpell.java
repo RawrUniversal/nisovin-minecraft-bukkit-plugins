@@ -24,10 +24,11 @@ import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.SpellAnimation;
+import com.nisovin.magicspells.util.Util;
 
 public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 	
-	private int damage;
+	private double damage;
 	private double velocity;
 	private int tickInterval;
 	private int geyserHeight;
@@ -38,7 +39,7 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 	public GeyserSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		damage = getConfigInt("damage", 0);
+		damage = getConfigFloat("damage", 0);
 		velocity = getConfigInt("velocity", 10) / 10.0D;
 		tickInterval = getConfigInt("animation-speed", 2);
 		geyserHeight = getConfigInt("geyser-height", 4);
@@ -63,7 +64,7 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 				return noTarget(player);
 			}
 			
-			int dam = Math.round(damage*power);
+			double dam = damage * power;
 			
 			// check plugins
 			if (target instanceof Player && checkPlugins) {
@@ -78,7 +79,7 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 			// do damage and launch target
 			if (dam > 0) {
 				if (ignoreArmor) {
-					int health = target.getHealth() - dam;
+					double health = target.getHealth() - dam;
 					if (health < 0) health = 0;
 					target.setHealth(health);
 					target.playEffect(EntityEffect.HURT);
@@ -143,13 +144,11 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 
 		private Location start;
 		private List<Player> nearby;
-		private MaterialData materialData;
 		
 		public GeyserAnimation(Location start, List<Player> nearby) {
 			super(0, tickInterval, true);
 			this.start = start;
 			this.nearby = nearby;
-			this.materialData = geyserType.getMaterialData();
 		}
 
 		@Override
@@ -160,14 +159,14 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 				Block block = start.clone().add(0,tick,0).getBlock();
 				if (block.getType() == Material.AIR) {
 					for (Player p : nearby) {
-						p.sendBlockChange(block.getLocation(), materialData.getItemType(), materialData.getData());
+						Util.sendFakeBlockChange(p, block, geyserType);
 					}
 				}
 			} else {
 				int n = geyserHeight-(tick-geyserHeight)-1; // top to bottom
 				Block block = start.clone().add(0, n, 0).getBlock();
 				for (Player p : nearby) {
-					p.sendBlockChange(block.getLocation(), block.getType(), block.getData());
+					Util.restoreFakeBlockChange(p, block);
 				}
 			}
 		}

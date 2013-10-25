@@ -28,7 +28,7 @@ class HeartsEffect extends SpellEffect {
 	}
 	
 	@Override
-	public void playEffect(Location location) {
+	public void playEffectLocation(Location location) {
 		MagicSpells.getVolatileCodeHandler().playParticleEffect(location, "heart", .3F, .2F, .2F, 4, 32, 2F);
 	}
 	

@@ -96,12 +96,7 @@ public class ArmorSpell extends BuffSpell {
 				if (info.length > 1) {
 					for (int i = 1; i < info.length; i++) {
 						String[] enchinfo = info[i].split(":");
-						Enchantment ench = null;
-						if (enchinfo[0].matches("[0-9]+")) {
-							ench = Enchantment.getById(Integer.parseInt(enchinfo[0]));
-						} else {
-							ench = Enchantment.getByName(enchinfo[0].toUpperCase());
-						}
+						Enchantment ench = Util.getEnchantmentType(enchinfo[0]);
 						int lvl = 1;
 						if (enchinfo.length > 1) {
 							lvl = Integer.parseInt(enchinfo[1].toUpperCase().replace(" ", "_"));

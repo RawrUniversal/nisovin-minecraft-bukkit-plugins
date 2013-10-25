@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
@@ -19,7 +18,7 @@ public class LightningSpell extends TargetedSpell implements TargetedLocationSpe
 	
 	private boolean requireEntityTarget;
 	private boolean checkPlugins;
-	private int additionalDamage;
+	private double additionalDamage;
 	private boolean noDamage;
 	
 	public LightningSpell(MagicConfig config, String spellName) {
@@ -27,7 +26,7 @@ public class LightningSpell extends TargetedSpell implements TargetedLocationSpe
 		
 		requireEntityTarget = getConfigBoolean("require-entity-target", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
-		additionalDamage = getConfigInt("additional-damage", 0);
+		additionalDamage = getConfigFloat("additional-damage", 0);
 		noDamage = getConfigBoolean("no-damage", false);
 	}
 
@@ -48,14 +47,14 @@ public class LightningSpell extends TargetedSpell implements TargetedLocationSpe
 				if (entityTarget != null) {
 					target = entityTarget.getLocation().getBlock();
 					if (additionalDamage > 0) {
-						entityTarget.damage(Math.round(additionalDamage*power), player);
+						entityTarget.damage(additionalDamage * power, player);
 					}
 				} else {
 					return noTarget(player);
 				}
 			} else {
 				try {
-					target = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+					target = getTargetedBlock(player, range);
 				} catch (IllegalStateException e) {	
 					target = null;
 				}

@@ -184,7 +184,7 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 		} else if (entityType == EntityType.WITHER) {
 			entity = new EntityWither(world);
 			
-		} else if (entityType.getTypeId() == 100 /*horse*/) {
+		} else if (entityType == EntityType.HORSE) {
 			entity = new EntityHorse(world);
 			((EntityAgeable)entity).setAge(flag ? -24000 : 0);
 			((EntityHorse)entity).getDataWatcher().watch(19, Byte.valueOf((byte)disguise.getVar1()));

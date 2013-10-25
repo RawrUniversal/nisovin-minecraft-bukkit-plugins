@@ -9,10 +9,11 @@ import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySpell {
 	
-	private int type;
+	private PotionEffectType type;
 	private int duration;
 	private int amplifier;
 	private boolean ambient;
@@ -22,7 +23,7 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 	public PotionEffectSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		type = getConfigInt("type", 0);
+		type = Util.getPotionEffectType(getConfigString("type", "1"));
 		duration = getConfigInt("duration", 0);
 		amplifier = getConfigInt("strength", 0);
 		ambient = getConfigBoolean("ambient", false);
@@ -30,7 +31,12 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 		beneficial = getConfigBoolean("beneficial", false);
 	}
 	
+	@Deprecated
 	public int getType() {
+		return type.getId();
+	}
+	
+	public PotionEffectType getPotionType() {
 		return type;
 	}
 	
@@ -52,7 +58,7 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 				return noTarget(player);
 			}
 			
-			target.addPotionEffect(new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier, ambient), true);
+			target.addPotionEffect(new PotionEffect(type, Math.round(duration*power), amplifier, ambient), true);
 			if (targeted) {
 				playSpellEffects(player, target);
 			} else {
@@ -69,7 +75,7 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 		if (!validTargetList.canTarget(caster, target)) {
 			return false;
 		} else {
-			PotionEffect effect = new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier, ambient);
+			PotionEffect effect = new PotionEffect(type, Math.round(duration*power), amplifier, ambient);
 			if (targeted) {
 				target.addPotionEffect(effect, true);
 				playSpellEffects(caster, target);
@@ -86,7 +92,7 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 		if (!validTargetList.canTarget(target)) {
 			return false;
 		} else {
-			PotionEffect effect = new PotionEffect(PotionEffectType.getById(type), Math.round(duration*power), amplifier, ambient);
+			PotionEffect effect = new PotionEffect(type, Math.round(duration*power), amplifier, ambient);
 			target.addPotionEffect(effect);
 			playSpellEffects(EffectPosition.TARGET, target);
 			return true;

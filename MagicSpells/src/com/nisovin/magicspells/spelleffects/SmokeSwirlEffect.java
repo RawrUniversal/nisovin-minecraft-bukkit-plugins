@@ -31,7 +31,7 @@ class SmokeSwirlEffect extends SpellEffect {
 	private int[] v = {7,6,3,0,1,2,5,8};
 	
 	@Override
-	public void playEffect(Location location) {		
+	public void playEffectLocation(Location location) {		
 		new Animator(location, 1, duration);
 	}
 	

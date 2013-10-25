@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
+import com.nisovin.magicspells.util.Util;
 
 public class PotionEffectCondition extends Condition {
 
@@ -13,10 +14,7 @@ public class PotionEffectCondition extends Condition {
 	
 	@Override
 	public boolean setVar(String var) {
-		if (var.matches("^[0-9]+$")) {
-			int type = Integer.parseInt(var);
-			effectType = PotionEffectType.getById(type);
-		}
+		effectType = Util.getPotionEffectType(var);
 		return effectType != null;
 	}
 

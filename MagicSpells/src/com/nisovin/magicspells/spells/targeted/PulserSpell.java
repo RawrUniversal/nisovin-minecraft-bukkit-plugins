@@ -107,8 +107,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 					}
 				}
 			}
-			Block target = player.getTargetBlock(
-					MagicSpells.getTransparentBlocks(), range);
+			Block target = getTargetedBlock(player, range);
 			if (target == null || target.getType() == Material.AIR) {
 				return noTarget(player);
 			}

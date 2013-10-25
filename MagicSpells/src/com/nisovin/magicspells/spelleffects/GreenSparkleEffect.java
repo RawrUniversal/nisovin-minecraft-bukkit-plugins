@@ -16,7 +16,7 @@ class GreenSparkleEffect extends SpellEffect {
 	}
 
 	@Override
-	public void playEffect(Location location) {
+	public void playEffectLocation(Location location) {
 		MagicSpells.getVolatileCodeHandler().playParticleEffect(location, "happyVillager", .3F, .3F, .5F, 4, 32, 2F);
 	}
 	

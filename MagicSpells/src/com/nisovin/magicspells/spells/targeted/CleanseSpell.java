@@ -16,6 +16,7 @@ import com.nisovin.magicspells.spells.TargetedEntitySpell;
 
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 
@@ -43,19 +44,13 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 		for (String s : toCleanse) {
 			if (s.equalsIgnoreCase("fire")) {
 				fire = true;
-			} else if (s.matches("^[0-9]+$")) {
-				int t = Integer.parseInt(s);
-				PotionEffectType type = PotionEffectType.getById(t);
-				if (type != null) {
-					potionEffectTypes.add(type);
-				}
 			} else if (s.startsWith("buff:")) {
 				Spell spell = MagicSpells.getSpellByInternalName(s.replace("buff:", ""));
 				if (spell != null && spell instanceof BuffSpell) {
 					buffSpells.add((BuffSpell)spell);
 				}
 			} else {
-				PotionEffectType type = PotionEffectType.getByName(s.toUpperCase());
+				PotionEffectType type = Util.getPotionEffectType(s);
 				if (type != null) {
 					potionEffectTypes.add(type);
 				}

@@ -15,7 +15,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -39,7 +38,7 @@ public class TreeSpell extends TargetedSpell implements TargetedLocationSpell {
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
 			// get target block
-			Block target = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+			Block target = getTargetedBlock(player, range);
 
 			if (target != null && target.getType() != Material.AIR) {
 				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, target.getLocation());

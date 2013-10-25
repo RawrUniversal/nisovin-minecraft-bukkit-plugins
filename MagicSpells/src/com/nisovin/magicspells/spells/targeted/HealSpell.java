@@ -13,7 +13,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	
-	private int healAmount;
+	private double healAmount;
 	private boolean cancelIfFull;
 	private boolean checkPlugins;
 	private String strMaxHealth;
@@ -22,7 +22,7 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	public HealSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		healAmount = getConfigInt("heal-amount", 10);
+		healAmount = getConfigFloat("heal-amount", 10);
 		cancelIfFull = getConfigBoolean("cancel-if-full", true);
 		strMaxHealth = getConfigString("str-max-health", "%t is already at max health.");
 		checkPlugins = getConfigBoolean("check-plugins", true);
@@ -55,8 +55,8 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	}
 	
 	private boolean heal(Player player, LivingEntity target, float power) {
-		int health = target.getHealth();
-		int amt = Math.round(healAmount*power);
+		double health = target.getHealth();
+		double amt = healAmount * power;
 		if (checkPlugins) {
 			EntityRegainHealthEvent evt = new EntityRegainHealthEvent(target, amt, RegainReason.CUSTOM);
 			Bukkit.getPluginManager().callEvent(evt);

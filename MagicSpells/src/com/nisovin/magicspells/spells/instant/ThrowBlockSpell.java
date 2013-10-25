@@ -16,7 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -54,7 +53,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 	public ThrowBlockSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		String blockTypeInfo = getConfigString("block-type", Material.ANVIL.getId() + "");
+		String blockTypeInfo = getConfigString("block-type", "anvil");
 		material = MagicSpells.getItemNameResolver().resolveBlock(blockTypeInfo);
 		velocity = getConfigFloat("velocity", 1);
 		applySpellPowerToVelocity = getConfigBoolean("apply-spell-power-to-velocity", false);
@@ -113,8 +112,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 	}
 	
 	private void spawnFallingBlock(Player player, float power, Location location, Vector velocity) {
-		MaterialData matData = material.getMaterialData();
-		FallingBlock block = location.getWorld().spawnFallingBlock(location, matData.getItemType(), matData.getData());
+		FallingBlock block = material.spawnFallingBlock(location);
 		block.setVelocity(velocity);
 		block.setDropItem(dropItem);
 		if (fallDamage > 0) {
@@ -178,7 +176,8 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 					if (!preventBlocks) {
 						Block b = block.getLocation().getBlock();
 						if (b.getType() == Material.AIR) {
-							b.setTypeIdAndData(block.getBlockId(), block.getBlockData(), true);
+							b.setType(block.getMaterial());
+							b.setData(block.getBlockData());
 						}
 					}
 					if (!info.spellActivated && spell != null) {
@@ -226,7 +225,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 				info = fallingBlocks.remove(event.getDamager());
 			}
 			if (info != null && event.getEntity() instanceof LivingEntity) {
-				int damage = Math.round(event.getDamage() * info.power);
+				double damage = event.getDamage() * info.power;
 				if (callTargetEvent && info.player != null) {
 					SpellTargetEvent evt = new SpellTargetEvent(thisSpell, info.player, (LivingEntity)event.getEntity());
 					Bukkit.getPluginManager().callEvent(evt);

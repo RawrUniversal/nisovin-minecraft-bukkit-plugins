@@ -62,7 +62,7 @@ public class ReachSpell extends BuffSpell {
 			
 			// get targeted block
 			Action action = event.getAction();
-			List<Block> targets = player.getLastTwoTargetBlocks(null, range);
+			List<Block> targets = getLastTwoTargetedBlocks(player, range);
 			Block airBlock, targetBlock;
 			if (targets.size() == 2) {
 				airBlock = targets.get(0);
@@ -79,7 +79,7 @@ public class ReachSpell extends BuffSpell {
 					Bukkit.getPluginManager().callEvent(evt);
 					if (!evt.isCancelled()) {
 						// remove block
-						targetBlock.getWorld().playEffect(targetBlock.getLocation(), Effect.STEP_SOUND, targetBlock.getTypeId());
+						targetBlock.getWorld().playEffect(targetBlock.getLocation(), Effect.STEP_SOUND, targetBlock.getType());
 						// drop item
 						if (dropBlocks && player.getGameMode() == GameMode.SURVIVAL) {
 							targetBlock.breakNaturally();

@@ -65,7 +65,7 @@ class NovaEffect extends SpellEffect {
 	}
 
 	@Override
-	public void playEffect(Location location) {
+	public void playEffectLocation(Location location) {
 		// get nearby players
 		Item item = location.getWorld().dropItem(location, new ItemStack(1, 0));
 		List<Entity> nearbyEntities = item.getNearbyEntities(20, 20, 20);

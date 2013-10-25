@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -19,7 +20,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 
-	private int tombBlockType;
+	private MagicMaterial tombBlockType;
 	private int tombDuration;
 	private boolean closeTopAndBottom;
 	private boolean allowBreaking;
@@ -29,12 +30,16 @@ public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 	public EntombSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 
-		tombBlockType = getConfigInt("tomb-block-type", Material.GLASS.getId());
+		tombBlockType = MagicSpells.getItemNameResolver().resolveBlock(getConfigString("tomb-block-type", "glass"));
 		tombDuration = getConfigInt("tomb-duration", 20);
 		closeTopAndBottom = getConfigBoolean("close-top-and-bottom", true);
 		allowBreaking = getConfigBoolean("allow-breaking", true);
 		
 		blocks = new HashSet<Block>();
+		
+		if (tombBlockType == null) {
+			MagicSpells.error("Entomb spell '" + spellName + "' has an invalid tomb-block-type!");
+		}
 	}
 
 	@Override
@@ -66,53 +71,53 @@ public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 		
 		Block temp = feet.getRelative(1,0,0);
 		if (temp.getType() == Material.AIR) {
-			temp.setTypeId(tombBlockType);
+			tombBlockType.setBlock(temp);
 			tombBlocks.add(temp);
 		}
 		temp = feet.getRelative(1,1,0);
 		if (temp.getType() == Material.AIR) {
-			temp.setTypeId(tombBlockType);
+			tombBlockType.setBlock(temp);
 			tombBlocks.add(temp);
 		}
 		temp = feet.getRelative(-1,0,0);
 		if (temp.getType() == Material.AIR) {
-			temp.setTypeId(tombBlockType);
+			tombBlockType.setBlock(temp);
 			tombBlocks.add(temp);
 		}
 		temp = feet.getRelative(-1,1,0);
 		if (temp.getType() == Material.AIR) {
-			temp.setTypeId(tombBlockType);
+			tombBlockType.setBlock(temp);
 			tombBlocks.add(temp);
 		}
 		temp = feet.getRelative(0,0,1);
 		if (temp.getType() == Material.AIR) {
-			temp.setTypeId(tombBlockType);
+			tombBlockType.setBlock(temp);
 			tombBlocks.add(temp);
 		}
 		temp = feet.getRelative(0,1,1);
 		if (temp.getType() == Material.AIR) {
-			temp.setTypeId(tombBlockType);
+			tombBlockType.setBlock(temp);
 			tombBlocks.add(temp);
 		}
 		temp = feet.getRelative(0,0,-1);
 		if (temp.getType() == Material.AIR) {
-			temp.setTypeId(tombBlockType);
+			tombBlockType.setBlock(temp);
 			tombBlocks.add(temp);
 		}
 		temp = feet.getRelative(0,1,-1);
 		if (temp.getType() == Material.AIR) {
-			temp.setTypeId(tombBlockType);
+			tombBlockType.setBlock(temp);
 			tombBlocks.add(temp);
 		}
 		if (closeTopAndBottom) {
 			temp = feet.getRelative(0,-1,0);
 			if (temp.getType() == Material.AIR) {
-				temp.setTypeId(tombBlockType);
+				tombBlockType.setBlock(temp);
 				tombBlocks.add(temp);
 			}
 			temp = feet.getRelative(0,2,0);
 			if (temp.getType() == Material.AIR) {
-				temp.setTypeId(tombBlockType);
+				tombBlockType.setBlock(temp);
 				tombBlocks.add(temp);
 			}
 		}				
@@ -166,7 +171,7 @@ public class EntombSpell extends TargetedSpell implements TargetedEntitySpell {
 		@Override
 		public void run() {
 			for (Block block : tomb) {
-				if (block.getTypeId() == tombBlockType) {
+				if (tombBlockType.getMaterial() == block.getType()) {
 					block.setType(Material.AIR);
 				}
 			}

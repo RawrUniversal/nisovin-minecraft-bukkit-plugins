@@ -40,7 +40,7 @@ public class WallSpell extends InstantSpell {
 		wallWidth = getConfigInt("wall-width", 5);
 		wallHeight = getConfigInt("wall-height", 3);
 		wallDepth = getConfigInt("wall-depth", 1);
-		String type = getConfigString("wall-type", Material.BRICK.getId() + "");
+		String type = getConfigString("wall-type", "stone");
 		wallMaterial = MagicSpells.getItemNameResolver().resolveBlock(type);
 		wallDuration = getConfigInt("wall-duration", 15);
 		preventBreaking = getConfigBoolean("prevent-breaking", false);
@@ -60,7 +60,7 @@ public class WallSpell extends InstantSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block target = player.getTargetBlock(null, distance>0&&distance<15?distance:3);
+			Block target = getTargetedBlock(player, (distance > 0 && distance < 15) ? distance : 3);
 			if (target == null || target.getType() != Material.AIR) {
 				// fail
 				sendMessage(player, strNoTarget);

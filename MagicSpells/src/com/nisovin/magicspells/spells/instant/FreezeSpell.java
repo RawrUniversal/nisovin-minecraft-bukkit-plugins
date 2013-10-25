@@ -3,7 +3,6 @@ package com.nisovin.magicspells.spells.instant;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -27,7 +26,6 @@ public class FreezeSpell extends InstantSpell {
 	private int damage;
 	private int slowAmount;
 	private int slowDuration;
-	private boolean playBowSound;
 	private boolean callTargetEvents;
 	
 	private float identifier;
@@ -41,7 +39,6 @@ public class FreezeSpell extends InstantSpell {
 		damage = getConfigInt("damage", 3);
 		slowAmount = getConfigInt("slow-amount", 3);
 		slowDuration = getConfigInt("slow-duration", 40);
-		playBowSound = getConfigBoolean("play-bow-sound", true);
 		callTargetEvents = getConfigBoolean("call-target-events", false);
 		
 		identifier = (float)Math.random() * 20F;
@@ -57,9 +54,6 @@ public class FreezeSpell extends InstantSpell {
 				snowball.setFallDistance(identifier); // tag the snowballs
 				mod = new Vector((rand.nextDouble() - .5) * horizSpread, (rand.nextDouble() - .5) * vertSpread, (rand.nextDouble() - .5) * horizSpread);
 				snowball.setVelocity(snowball.getVelocity().add(mod));
-			}
-			if (playBowSound) {
-				player.playEffect(player.getLocation(), Effect.BOW_FIRE, 0);
 			}
 			playSpellEffects(EffectPosition.CASTER, player);
 		}

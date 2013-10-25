@@ -1,7 +1,9 @@
 package com.nisovin.magicspells.materials;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
@@ -16,6 +18,8 @@ public abstract class MagicMaterial {
 	}
 	
 	public void setBlock(Block block, boolean applyPhysics) {}
+	
+	public FallingBlock spawnFallingBlock(Location location) { return null; }
 	
 	public final ItemStack toItemStack() {
 		return toItemStack(1);

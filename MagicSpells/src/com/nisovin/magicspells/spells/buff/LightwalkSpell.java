@@ -10,13 +10,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.material.MaterialData;
 
+import com.nisovin.magicspells.materials.MagicBlockMaterial;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class LightwalkSpell extends BuffSpell {
 	
 	private HashMap<String, Block> lightwalkers;
+	private MagicMaterial mat = new MagicBlockMaterial(new MaterialData(Material.GLOWSTONE));
 
 	public LightwalkSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -41,9 +46,9 @@ public class LightwalkSpell extends BuffSpell {
 					turnOff(p);
 				} else {
 					if (oldBlock != null) {
-						p.sendBlockChange(oldBlock.getLocation(), oldBlock.getType(), oldBlock.getData());
+						Util.restoreFakeBlockChange(p, oldBlock);
 					}
-					p.sendBlockChange(newBlock.getLocation(), Material.GLOWSTONE, (byte)0);
+					Util.sendFakeBlockChange(p, newBlock, mat);
 					lightwalkers.put(p.getName(), newBlock);
 					addUse(p);
 					chargeUseCost(p);
@@ -75,7 +80,7 @@ public class LightwalkSpell extends BuffSpell {
 	public void turnOffBuff(Player player) {
 		Block b = lightwalkers.remove(player.getName());
 		if (b != null) {
-			player.sendBlockChange(b.getLocation(), b.getType(), b.getData());
+			Util.restoreFakeBlockChange(player, b);
 		}
 	}
 
@@ -86,7 +91,7 @@ public class LightwalkSpell extends BuffSpell {
 			if (p != null) {
 				Block b = lightwalkers.get(s);
 				if (b != null) {
-					p.sendBlockChange(b.getLocation(), b.getType(), b.getData());
+					Util.restoreFakeBlockChange(p, b);
 				}
 			}
 		}

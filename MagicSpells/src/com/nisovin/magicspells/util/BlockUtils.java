@@ -1,11 +1,28 @@
 package com.nisovin.magicspells.util;
 
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.LivingEntity;
+
+import com.nisovin.magicspells.MagicSpells;
 
 public class BlockUtils {
 
+	public static boolean isTransparent(Block block) {
+		return MagicSpells.getTransparentBlocks().contains((byte)block.getTypeId());
+	}
+	
+	public static Block getTargetBlock(LivingEntity entity, int range) {
+		return entity.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+	}
+	
+	public static List<Block> getLastTwoTargetBlock(LivingEntity entity, int range) {
+		return entity.getLastTwoTargetBlocks(MagicSpells.getTransparentBlocks(), range);
+	}
+	
 	public static boolean isPathable(Block block) {
 		return isPathable(block.getType());
 	}

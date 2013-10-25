@@ -38,7 +38,7 @@ public class ForcetossSpell extends TargetedSpell implements TargetedEntitySpell
 			
 			// do damage
 			if (damage > 0) {
-				int damage = Math.round(this.damage*power);
+				double damage = this.damage * power;
 				if (target instanceof Player && checkPlugins) {
 					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, damage);
 					Bukkit.getServer().getPluginManager().callEvent(event);

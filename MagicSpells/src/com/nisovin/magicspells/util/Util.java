@@ -10,6 +10,7 @@ import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -336,6 +337,7 @@ public class Util {
 	}
 	
 	public static EntityType getEntityType(String type) {
+		if (type.equalsIgnoreCase("player")) return EntityType.PLAYER;
 		type = type.trim().toLowerCase().replace("_", "").replace(" ", "");
 		for (EntityType t : EntityType.values()) {
 			String enumName = t.name().toLowerCase().replace("_", "").replace(" ", "");
@@ -346,6 +348,30 @@ public class Util {
 			}
 		}
 		return null;
+	}
+	
+	public static PotionEffectType getPotionEffectType(String type) {
+		if (type.matches("^[0-9]+$")) {
+			return PotionEffectType.getById(Integer.parseInt(type));
+		} else {
+			return PotionEffectType.getByName(type);
+		}
+	}
+	
+	public static Enchantment getEnchantmentType(String type) {
+		if (type.matches("^[0-9]+$")) {
+			return Enchantment.getById(Integer.parseInt(type));
+		} else {
+			return Enchantment.getByName(type.toUpperCase());
+		}
+	}
+	
+	public static void sendFakeBlockChange(Player player, Block block, MagicMaterial mat) {
+		player.sendBlockChange(block.getLocation(), mat.getMaterial(), mat.getMaterialData().getData());
+	}
+	
+	public static void restoreFakeBlockChange(Player player, Block block) {
+		player.sendBlockChange(block.getLocation(), block.getType(), block.getData());
 	}
 	
 	public static void setFacing(Player player, Vector vector) {

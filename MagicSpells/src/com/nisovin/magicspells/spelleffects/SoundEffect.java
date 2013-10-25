@@ -42,7 +42,7 @@ public class SoundEffect extends SpellEffect {
 	}
 	
 	@Override
-	public void playEffect(Location location) {
+	public void playEffectLocation(Location location) {
 		MagicSpells.getVolatileCodeHandler().playSound(location, sound, volume, pitch);
 	}
 	

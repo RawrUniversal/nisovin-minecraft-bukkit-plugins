@@ -4,10 +4,13 @@ import java.util.HashSet;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GrassSpecies;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.bukkit.material.LongGrass;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.BuffSpell;
@@ -113,15 +116,19 @@ public class LifewalkSpell extends BuffSpell {
 								} else {
 									rand -= saplingChance;
 									if (rand < tallgrassChance) {
-										feet.setTypeId(31);
-										feet.setData((byte)1);
+										BlockState state = feet.getState();
+										state.setType(Material.LONG_GRASS);
+										state.setData(new LongGrass(GrassSpecies.NORMAL));
+										state.update(true);
 										addUse(player);
 										chargeUseCost(player);
 									} else {
 										rand -= tallgrassChance;
 										if (rand < fernChance) {
-											feet.setTypeId(31);
-											feet.setData((byte)2);
+											BlockState state = feet.getState();
+											state.setType(Material.LONG_GRASS);
+											state.setData(new LongGrass(GrassSpecies.FERN_LIKE));
+											state.update(true);
 											addUse(player);
 											chargeUseCost(player);
 										}

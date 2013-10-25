@@ -68,7 +68,7 @@ class ItemSprayEffect extends SpellEffect {
 	}
 	
 	@Override
-	public void playEffect(Location location) {		
+	public void playEffectLocation(Location location) {
 		// spawn items
 		Random rand = new Random();
 		Location loc = location.clone().add(0, 1, 0);

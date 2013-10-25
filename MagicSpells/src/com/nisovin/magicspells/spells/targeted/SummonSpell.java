@@ -61,7 +61,7 @@ public class SummonSpell extends TargetedSpell {
 				targetName = args[0];
 				landLoc = player.getLocation().add(0, .25, 0);
 			} else {
-				Block block = player.getTargetBlock(null, 10);
+				Block block = getTargetedBlock(player, 10);
 				if (block != null && (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST)) {
 					Sign sign = (Sign)block.getState();
 					targetName = sign.getLine(0);

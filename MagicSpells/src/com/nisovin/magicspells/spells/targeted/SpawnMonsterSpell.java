@@ -20,7 +20,6 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -65,23 +64,23 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 		baby = getConfigBoolean("baby", false);
 		tamed = getConfigBoolean("tamed", false);
 		holding = Util.getItemStackFromString(getConfigString("holding", "0"));
-		if (holding != null && holding.getTypeId() > 0) {
+		if (holding != null && holding.getType() != Material.AIR) {
 			holding.setAmount(1);
 		}
 		helmet = Util.getItemStackFromString(getConfigString("helmet", "0"));
-		if (helmet != null && helmet.getTypeId() > 0) {
+		if (helmet != null && helmet.getType() != Material.AIR) {
 			helmet.setAmount(1);
 		}
 		chestplate = Util.getItemStackFromString(getConfigString("chestplate", "0"));
-		if (chestplate != null && chestplate.getTypeId() > 0) {
+		if (chestplate != null && chestplate.getType() != Material.AIR) {
 			chestplate.setAmount(1);
 		}
 		leggings = Util.getItemStackFromString(getConfigString("leggings", "0"));
-		if (leggings != null && leggings.getTypeId() > 0) {
+		if (leggings != null && leggings.getType() != Material.AIR) {
 			leggings.setAmount(1);
 		}
 		boots = Util.getItemStackFromString(getConfigString("boots", "0"));
-		if (boots != null && boots.getTypeId() > 0) {
+		if (boots != null && boots.getType() != Material.AIR) {
 			boots.setAmount(1);
 		}
 		holdingDropChance = getConfigFloat("holding-drop-chance", 0) / 100F;
@@ -96,12 +95,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 			for (String data : list) {
 				String[] split = data.split(" ");
 				try {
-					PotionEffectType type = null;
-					if (split[0].matches("^[0-9]+$")) {
-						type = PotionEffectType.getById(Integer.parseInt(split[0]));
-					} else {
-						type = PotionEffectType.getByName(split[0]);
-					}
+					PotionEffectType type = Util.getPotionEffectType(split[0]);
 					if (type == null) throw new Exception("");
 					int duration = 600;
 					if (split.length > 1) duration = Integer.parseInt(split[1]);
@@ -130,7 +124,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 			Location loc = null;
 			
 			if (location.equalsIgnoreCase("target")) {
-				Block block = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+				Block block = getTargetedBlock(player, range);
 				if (block != null && block.getType() != Material.AIR) { 
 					if (BlockUtils.isPathable(block)) {
 						loc = block.getLocation();
@@ -206,9 +200,9 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 				((Tameable)entity).setOwner(player);
 			}
 			// set held item
-			if (holding != null && holding.getTypeId() > 0) {
+			if (holding != null && holding.getType() != Material.AIR) {
 				if (entity instanceof Enderman) {
-					((Enderman)entity).setCarriedMaterial(new MaterialData(holding.getTypeId(), (byte)holding.getDurability()));
+					((Enderman)entity).setCarriedMaterial(holding.getData());
 				} else if (entity instanceof Skeleton || entity instanceof Zombie) {
 					EntityEquipment equip = ((LivingEntity)entity).getEquipment();
 					equip.setItemInHand(holding.clone());

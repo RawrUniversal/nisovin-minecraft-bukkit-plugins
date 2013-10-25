@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
 
+import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -32,7 +33,7 @@ public class WalkwaySpell extends BuffSpell {
 	public WalkwaySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		material = Material.getMaterial(getConfigInt("platform-type", Material.WOOD.getId()));
+		material = MagicSpells.getItemNameResolver().resolveBlock(getConfigString("platform-type", "wood")).getMaterial();
 		size = getConfigInt("size", 6);
 		cancelOnTeleport = getConfigBoolean("cancel-on-teleport", true);
 		

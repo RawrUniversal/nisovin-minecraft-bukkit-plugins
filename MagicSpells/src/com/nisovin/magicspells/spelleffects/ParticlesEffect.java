@@ -53,7 +53,7 @@ class ParticlesEffect extends SpellEffect {
 	}
 
 	@Override
-	public void playEffect(Location location) {
+	public void playEffectLocation(Location location) {
 		MagicSpells.getVolatileCodeHandler().playParticleEffect(location, name, horizSpread, vertSpread, speed, count, renderDistance, yOffset);
 	}
 	

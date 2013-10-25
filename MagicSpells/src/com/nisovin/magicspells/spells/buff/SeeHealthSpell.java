@@ -75,7 +75,7 @@ public class SeeHealthSpell extends BuffSpell {
 		// get item
 		ItemStack item = player.getItemInHand();
 		if (item == null || item.getType() == Material.AIR) {
-			item = new ItemStack(36, 0);
+			item = new ItemStack(Material.PISTON_MOVING_PIECE, 0);
 		} else {
 			item = item.clone();
 		}

@@ -16,6 +16,10 @@ import com.nisovin.magicspells.MagicSpells;
  */
 public abstract class SpellEffect {
 	
+	// for normal/line
+	double heightOffset = 0;
+	double forwardOffset = 0;
+	
 	// for line
 	double distanceBetween = 1;
 	
@@ -37,6 +41,9 @@ public abstract class SpellEffect {
 	public abstract void loadFromString(String string);
 	
 	public final void loadFromConfiguration(ConfigurationSection config) {
+		heightOffset = config.getDouble("height-offset", heightOffset);
+		forwardOffset = config.getDouble("forward-offset", forwardOffset);
+		
 		distanceBetween = config.getDouble("distance-between", distanceBetween);
 		
 		effectInterval = config.getInt("effect-interval", effectInterval);
@@ -69,7 +76,22 @@ public abstract class SpellEffect {
 	 * @param location location to play the effect at
 	 * @param param the parameter specified in the spell config (can be ignored)
 	 */
-	public void playEffect(Location location) {
+	public final void playEffect(Location location) {
+		if (heightOffset > 0 || forwardOffset > 0) {
+			Location loc = location.clone();
+			if (heightOffset > 0) {
+				loc.setY(loc.getY() + heightOffset);
+			}
+			if (forwardOffset > 0) {
+				loc.add(loc.getDirection().setY(0).normalize().multiply(forwardOffset));
+			}
+			playEffectLocation(loc);
+		} else {
+			playEffectLocation(location);
+		}
+	}
+	
+	protected void playEffectLocation(Location location) {
 		
 	}
 	
@@ -84,6 +106,9 @@ public abstract class SpellEffect {
 		if (c <= 0) return;
 		Vector v = location2.toVector().subtract(location1.toVector()).normalize().multiply(distanceBetween);
 		Location l = location1.clone();
+		if (heightOffset > 0) {
+			l.setY(l.getY() + heightOffset);
+		}
 		
 		for (int i = 0; i < c; i++) {
 			l.add(v);

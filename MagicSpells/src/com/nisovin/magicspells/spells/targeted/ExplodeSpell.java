@@ -51,7 +51,7 @@ public class ExplodeSpell extends TargetedSpell implements TargetedLocationSpell
 		if (state == SpellCastState.NORMAL) {
 			Block target = null;
 			try {
-				target = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+				target = getTargetedBlock(player, range);
 			} catch (IllegalStateException e) {
 				target = null;
 			}

@@ -110,7 +110,7 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block b = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+			Block b = getTargetedBlock(player, range);
 			if (b != null && b.getType() != Material.AIR) {
 				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, b.getLocation());
 				Bukkit.getPluginManager().callEvent(event);
@@ -169,7 +169,7 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 		}
 		for (Block b : blocksToThrow) {
 			Location l = new Location(target.getWorld(), b.getX() + 0.5, b.getY() + 0.5, b.getZ() + 0.5);
-			FallingBlock fb = target.getWorld().spawnFallingBlock(l, b.getTypeId(), b.getData());
+			FallingBlock fb = target.getWorld().spawnFallingBlock(l, b.getType(), b.getData());
 			fb.setDropItem(false);
 			Vector v = null;
 			if (velocityType == VelocityType.OUT) {

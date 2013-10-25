@@ -9,6 +9,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
@@ -72,7 +73,7 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 					return noTarget(player);
 				} else if (entity instanceof Player && checkPlugins) {
 					// run a pvp damage check
-					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, 1);
+					EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, entity, DamageCause.ENTITY_ATTACK, (double)1);
 					Bukkit.getServer().getPluginManager().callEvent(event);
 					if (event.isCancelled()) {
 						return noTarget(player);
@@ -166,9 +167,12 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 						for (int x = loc.getBlockX()-1; x <= loc.getBlockX()+1; x++) {
 							for (int y = loc.getBlockY()-1; y <= loc.getBlockY()+1; y++) {
 								for (int z = loc.getBlockZ()-1; z <= loc.getBlockZ()+1; z++) {
-									if (loc.getWorld().getBlockTypeIdAt(x,y,z) == 0) {
+									if (loc.getWorld().getBlockAt(x,y,z).getType() == Material.AIR) {
 										Block b = loc.getWorld().getBlockAt(x,y,z);
-										b.setTypeIdAndData(Material.FIRE.getId(), (byte)15, false);
+										BlockState state = b.getState();
+										state.setType(Material.FIRE);
+										state.setRawData((byte)15);
+										state.update(true, false);
 										fires.add(b);
 									}
 								}

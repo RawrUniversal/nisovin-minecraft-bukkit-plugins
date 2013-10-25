@@ -31,7 +31,7 @@ class CloudEffect extends SpellEffect {
 	}
 	
 	@Override
-	public void playEffect(Location location) {		
+	public void playEffectLocation(Location location) {		
 		World w = location.getWorld();
 		int cx = location.getBlockX();
 		int cy = location.getBlockY();

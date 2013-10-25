@@ -47,7 +47,7 @@ public class TransmuteSpell extends TargetedSpell implements TargetedLocationSpe
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block block = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+			Block block = getTargetedBlock(player, range);
 			if (block == null) {
 				return noTarget(player);
 			} else {

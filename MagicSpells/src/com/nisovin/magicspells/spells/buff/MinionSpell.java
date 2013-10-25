@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.Util;
 
 public class MinionSpell extends BuffSpell {
 	
@@ -48,7 +49,7 @@ public class MinionSpell extends BuffSpell {
 		chances = new int[c.size()];
 		for (int i = 0; i < c.size(); i++) {
 			String[] data = c.get(i).split(" ");
-			EntityType creatureType = EntityType.fromName(data[0]);
+			EntityType creatureType = Util.getEntityType(data[0]);
 			int chance = 0;
 			if (creatureType != null) {
 				try {

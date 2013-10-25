@@ -11,7 +11,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.material.MaterialData;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
@@ -50,7 +49,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		if (state == SpellCastState.NORMAL) {
 			List<Block> lastTwo = null;
 			try {
-				lastTwo = player.getLastTwoTargetBlocks(null, range);
+				lastTwo = getLastTwoTargetedBlocks(player, range);
 			} catch (IllegalStateException e) {
 				lastTwo = null;
 			}
@@ -92,8 +91,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		if (!falling) {
 			material.setBlock(block, applyPhysics);
 		} else {
-			MaterialData matData = material.getMaterialData();
-			block.getWorld().spawnFallingBlock(block.getLocation().add(.5, 0, .5), matData.getItemType(), matData.getData());
+			material.spawnFallingBlock(block.getLocation().add(0.5, 0.5, 0.5));
 		}
 		
 		if (player != null) {
@@ -102,7 +100,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 			playSpellEffectsTrail(player.getLocation(), block.getLocation());
 		}
 		if (playBreakEffect) {
-			block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
+			block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
 		}
 		
 		if (resetDelay > 0 && !falling) {
@@ -112,7 +110,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 						block.setType(Material.AIR);
 						playSpellEffects(EffectPosition.DELAYED, block.getLocation());
 						if (playBreakEffect) {
-							block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
+							block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
 						}
 					}
 				}

@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -21,7 +23,7 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 	
 	private int slot;
 	private boolean consumeBlock;
-	private int[] allowedTypes;
+	private Material[] allowedTypes;
 	private boolean checkPlugins;
 	private boolean playBreakEffect;
 	private String strInvalidBlock;
@@ -33,9 +35,12 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 		slot = getConfigInt("slot", 0);
 		consumeBlock = getConfigBoolean("consume-block", true);
 		String[] allowed = getConfigString("allowed-types", "1,2,3,4,5,12,13,17,20,22,24,35,41,42,43,44,45,47,48,49,50,53,57,65,67,80,85,87,88,89,91,92").split(",");
-		allowedTypes = new int[allowed.length];
+		allowedTypes = new Material[allowed.length];
 		for (int i = 0; i < allowed.length; i++) {
-			allowedTypes[i] = Integer.parseInt(allowed[i]);
+			MagicMaterial mat = MagicSpells.getItemNameResolver().resolveBlock(allowed[i]);
+			if (mat != null) {
+				allowedTypes[i] = mat.getMaterial();
+			}
 		}
 		checkPlugins = getConfigBoolean("check-plugins", true);
 		playBreakEffect = getConfigBoolean("show-effect", true);
@@ -55,7 +60,7 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 			// get target
 			List<Block> lastBlocks = null;
 			try {
-				lastBlocks = player.getLastTwoTargetBlocks(null, range);
+				lastBlocks = getLastTwoTargetedBlocks(player, range);
 			} catch (IllegalStateException e) {
 				lastBlocks = null;
 			}
@@ -74,18 +79,21 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private boolean build(Player player, Block block, Block against, ItemStack item) {
 		// check plugins
-		BlockState blockState = block.getState();
-		block.setTypeIdAndData(item.getTypeId(), (byte)item.getDurability(), true);
+		BlockState previousState = block.getState();
+		item.getData();
+		BlockState state = block.getState();
+		state.setData(item.getData());
+		state.update(true);
 		if (checkPlugins) {
-			BlockPlaceEvent event = new BlockPlaceEvent(block, blockState, against, player.getItemInHand(), player, true);
+			BlockPlaceEvent event = new BlockPlaceEvent(block, previousState, against, player.getItemInHand(), player, true);
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			if (event.isCancelled() && block.getType() == item.getType()) {
-				blockState.update(true);
+				previousState.update(true);
 				return false;
 			}
 		}
 		if (playBreakEffect) {
-			block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
+			block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getType());
 		}
 		playSpellEffects(EffectPosition.CASTER, player);
 		playSpellEffects(EffectPosition.TARGET, block.getLocation());
@@ -124,7 +132,7 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 	
 	private boolean isAllowed(Material mat) {
 		for (int i = 0; i < allowedTypes.length; i++) {
-			if (allowedTypes[i] == mat.getId()) {
+			if (allowedTypes[i] != null && allowedTypes[i] == mat) {
 				return true;
 			}
 		}

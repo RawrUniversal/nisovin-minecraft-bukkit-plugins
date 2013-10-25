@@ -1,14 +1,18 @@
 package com.nisovin.magicspells.spells.targeted;
 
 import org.bukkit.Bukkit;
+import org.bukkit.CropState;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Crops;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -18,7 +22,7 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 
 	private int radius;
 	private int growth;
-	private int newCropType;
+	private MagicMaterial newCropType;
 	private boolean targeted;
 	
 	public FarmSpell(MagicConfig config, String spellName) {
@@ -26,7 +30,7 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 		
 		radius = getConfigInt("radius", 3);
 		growth = getConfigInt("growth", 1);
-		newCropType = getConfigInt("new-crop-type", Material.CROPS.getId());
+		newCropType = MagicSpells.getItemNameResolver().resolveBlock(getConfigString("new-crop-type", "crops"));
 		targeted = getConfigBoolean("targeted", false);
 	}
 
@@ -35,7 +39,7 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 		if (state == SpellCastState.NORMAL) {
 			Block block = null;
 			if (targeted) {
-				block = player.getTargetBlock(MagicSpells.getTransparentBlocks(), range);
+				block = getTargetedBlock(player, range);
 			} else {
 				block = player.getLocation().subtract(0, 1, 0).getBlock();
 			}
@@ -79,12 +83,14 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 				}
 				b = b.getRelative(BlockFace.UP);
 				if (b.getType() == Material.AIR) {
-					if (newCropType > 0) {
-						b.setTypeId(newCropType);
-						if (growth > 1) b.setData((byte) (growth-1));
+					if (newCropType != null) {
+						newCropType.setBlock(b);
+						if (growth > 1) {
+							b.setData((byte) (growth-1));
+						}
 						count++;
 					}
-				} else if ((b.getType() == Material.CROPS || b.getType() == Material.CARROT || b.getType() == Material.POTATO) && b.getData() < 7) {
+				} else if ((b.getType() == Material.CROPS || b.getType() == Material.CARROT || b.getType() == Material.POTATO) && ((Crops)b.getState().getData()).getState() != CropState.RIPE) {
 					byte newData = (byte) (b.getData() + growth);
 					if (newData > 7) newData = 7;
 					b.setData(newData);

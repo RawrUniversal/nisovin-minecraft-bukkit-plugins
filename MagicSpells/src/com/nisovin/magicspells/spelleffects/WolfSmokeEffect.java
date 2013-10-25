@@ -29,7 +29,7 @@ class WolfSmokeEffect extends SpellEffect {
 	}
 	
 	@Override
-	public void playEffect(Location location) {
+	public void playEffectLocation(Location location) {
 		MagicSpells.getVolatileCodeHandler().playEntityAnimation(location, EntityType.OCELOT, EntityEffect.WOLF_SMOKE.getData(), false);
 	}
 	

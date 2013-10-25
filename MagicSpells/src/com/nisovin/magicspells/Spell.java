@@ -10,6 +10,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -34,6 +35,7 @@ import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.mana.ManaHandler;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spelleffects.SpellEffect;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.ExperienceUtils;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -223,7 +225,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			spellIcon = null;
 		} else {
 			spellIcon = Util.getItemStackFromString(icontemp);
-			if (spellIcon != null && spellIcon.getTypeId() != 0) {
+			if (spellIcon != null && spellIcon.getType() != Material.AIR) {
 				spellIcon.setAmount(0);
 				if (!icontemp.contains("|")) {
 					ItemMeta iconMeta = spellIcon.getItemMeta();
@@ -975,7 +977,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			}
 		}
 		if (healthCost != 0) {
-			int h = player.getHealth() - healthCost;
+			double h = player.getHealth() - healthCost;
 			if (h < 0) h = 0;
 			if (h > player.getMaxHealth()) h = player.getMaxHealth();
 			player.setHealth(h);
@@ -1120,7 +1122,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			bx = b.getX();
 			by = b.getY();
 			bz = b.getZ();
-			if (obeyLos && !MagicSpells.getTransparentBlocks().contains((byte)b.getTypeId())) {
+			if (obeyLos && !BlockUtils.isTransparent(b)) {
 				// line of sight is broken, stop without target
 				break;
 			} else {
@@ -1173,6 +1175,14 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 		
 		return null;
+	}
+	
+	protected Block getTargetedBlock(LivingEntity entity, int range) {
+		return BlockUtils.getTargetBlock(entity, range);
+	}
+	
+	protected List<Block> getLastTwoTargetedBlocks(LivingEntity entity, int range) {
+		return BlockUtils.getLastTwoTargetBlock(entity, range);
 	}
 	
 	protected void playSpellEffects(Entity pos1, Entity pos2) {

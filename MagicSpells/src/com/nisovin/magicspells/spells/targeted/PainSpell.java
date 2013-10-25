@@ -15,14 +15,14 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 
-	private int damage;
+	private double damage;
 	private boolean ignoreArmor;
 	private boolean checkPlugins;
 	
 	public PainSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		damage = getConfigInt("damage", 4);
+		damage = getConfigFloat("damage", 4);
 		ignoreArmor = getConfigBoolean("ignore-armor", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 	}
@@ -49,7 +49,7 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 	
 	private boolean causePain(Player player, LivingEntity target, float power) {
 		if (target.isDead()) return false;
-		int dam = Math.round(damage*power);
+		double dam = damage * power;
 		if (target instanceof Player && checkPlugins && player != null) {
 			// handle the event myself so I can detect cancellation properly
 			EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
@@ -61,7 +61,7 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 			target.setLastDamageCause(event);
 		}
 		if (ignoreArmor) {
-			int health = target.getHealth() - dam;
+			double health = target.getHealth() - dam;
 			if (health < 0) health = 0;
 			if (health == 0 && player != null) {
 				MagicSpells.getVolatileCodeHandler().setKiller(target, player);

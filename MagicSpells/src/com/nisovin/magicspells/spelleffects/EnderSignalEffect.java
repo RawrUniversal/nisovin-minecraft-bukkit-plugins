@@ -15,7 +15,7 @@ class EnderSignalEffect extends SpellEffect {
 	}
 
 	@Override
-	public void playEffect(Location location) {
+	public void playEffectLocation(Location location) {
 		location.getWorld().playEffect(location, Effect.ENDER_SIGNAL, 0);
 	}
 

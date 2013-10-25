@@ -16,7 +16,7 @@ class BigSmokeEffect extends SpellEffect {
 	}
 
 	@Override
-	public void playEffect(Location location) {
+	public void playEffectLocation(Location location) {
 		World world = location.getWorld();
 		int lx = location.getBlockX();
 		int ly = location.getBlockY();

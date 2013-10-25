@@ -223,7 +223,7 @@ public class ProjectileSpell extends InstantSpell {
 					EntityType entityType = target.getType();
 					entityName = MagicSpells.getEntityNames().get(entityType);
 					if (entityName == null) {
-						entityName = entityType.getName();
+						entityName = entityType.name().toLowerCase();
 					}
 				}
 				sendMessage(info.player, strHitCaster, "%t", entityName);

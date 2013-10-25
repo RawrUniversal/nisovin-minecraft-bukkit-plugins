@@ -113,13 +113,13 @@ public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 			if (dropNormal) {
 				target.breakNaturally();
 			} else {
-				target.getWorld().dropItemNaturally(target.getLocation(), new ItemStack(target.getType(), 1, target.getData()));
+				target.getWorld().dropItemNaturally(target.getLocation(), target.getState().getData().toItemStack(1));
 			}
 		}
 		
 		// show animation
 		if (playBreakEffect) {
-			target.getWorld().playEffect(target.getLocation(), Effect.STEP_SOUND, target.getTypeId());
+			target.getWorld().playEffect(target.getLocation(), Effect.STEP_SOUND, target.getType());
 		}
 		playSpellEffects(EffectPosition.CASTER, player);
 		playSpellEffects(EffectPosition.TARGET, target.getLocation());

@@ -22,7 +22,6 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -176,24 +175,14 @@ public class MagicSpells extends JavaPlugin {
 				Class.forName("net.minecraft.server.v1_6_R3.MinecraftServer");
 				volatileCodeHandle = new VolatileCodeEnabled_1_6_R3();
 			} catch (ClassNotFoundException e_1_6_r3) {
-				try {
-					Class.forName("net.minecraft.server.v1_6_R2.MinecraftServer");
-					volatileCodeHandle = new VolatileCodeEnabled_1_6_R2();
-				} catch (ClassNotFoundException e_1_6_r2) {
-					try {
-						Class.forName("net.minecraft.server.v1_5_R3.MinecraftServer");
-						volatileCodeHandle = new VolatileCodeEnabled_1_5_R3();
-					} catch (ClassNotFoundException e_1_5_r3) {
-						error("This MagicSpells version is not fully compatible with this server version.");
-						error("Some features have been disabled.");
-						error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
-						if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-							error("ProtocolLib found: some compatibility re-enabled");
-							volatileCodeHandle = new VolatileCodeProtocolLib();
-						} else {
-							volatileCodeHandle = new VolatileCodeDisabled();
-						}
-					}
+				error("This MagicSpells version is not fully compatible with this server version.");
+				error("Some features have been disabled.");
+				error("See http://nisovin.com/magicspells/volatilefeatures for more information.");
+				if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+					error("ProtocolLib found: some compatibility re-enabled");
+					volatileCodeHandle = new VolatileCodeProtocolLib();
+				} else {
+					volatileCodeHandle = new VolatileCodeDisabled();
 				}
 			}
 		} else {
@@ -227,19 +216,7 @@ public class MagicSpells extends JavaPlugin {
 		showStrCostOnMissingReagents = config.getBoolean("general.show-str-cost-on-missing-reagents", true);
 		losTransparentBlocks = new HashSet<Byte>(config.getByteList("general.los-transparent-blocks", new ArrayList<Byte>()));
 		if (losTransparentBlocks.size() == 0) {
-			losTransparentBlocks.add((byte)Material.AIR.getId());
-			losTransparentBlocks.add((byte)Material.TORCH.getId());
-			losTransparentBlocks.add((byte)Material.REDSTONE_WIRE.getId());
-			losTransparentBlocks.add((byte)Material.REDSTONE_TORCH_ON.getId());
-			losTransparentBlocks.add((byte)Material.REDSTONE_TORCH_OFF.getId());
-			losTransparentBlocks.add((byte)Material.YELLOW_FLOWER.getId());
-			losTransparentBlocks.add((byte)Material.RED_ROSE.getId());
-			losTransparentBlocks.add((byte)Material.BROWN_MUSHROOM.getId());
-			losTransparentBlocks.add((byte)Material.RED_MUSHROOM.getId());
-			losTransparentBlocks.add((byte)Material.LONG_GRASS.getId());
-			losTransparentBlocks.add((byte)Material.DEAD_BUSH.getId());
-			losTransparentBlocks.add((byte)Material.DIODE_BLOCK_ON.getId());
-			losTransparentBlocks.add((byte)Material.DIODE_BLOCK_OFF.getId());
+			losTransparentBlocks.add((byte)0);
 		}
 		ignoreCastItemDurability = config.getIntList("general.ignore-cast-item-durability", new ArrayList<Integer>());
 		globalCooldown = config.getInt("general.global-cooldown", 500);
@@ -251,9 +228,9 @@ public class MagicSpells extends JavaPlugin {
 		if (config.contains("general.entity-names")) {
 			Set<String> keys = config.getSection("general.entity-names").getKeys(false);
 			for (String key : keys) {
-				EntityType entityType = EntityType.fromName(key);
+				EntityType entityType = Util.getEntityType(key);
 				if (entityType != null) {
-					entityNames.put(entityType, config.getString("general.entity-names." + key, entityType.getName().toLowerCase()));
+					entityNames.put(entityType, config.getString("general.entity-names." + key, ""));
 				}
 			}
 		}

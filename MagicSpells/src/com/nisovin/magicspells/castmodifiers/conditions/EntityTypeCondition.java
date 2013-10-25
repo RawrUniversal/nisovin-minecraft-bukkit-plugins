@@ -11,6 +11,7 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.castmodifiers.Condition;
+import com.nisovin.magicspells.util.Util;
 
 public class EntityTypeCondition extends Condition {
 
@@ -30,7 +31,7 @@ public class EntityTypeCondition extends Condition {
 			} else if (v.equalsIgnoreCase("animal")) {
 				animal = true;
 			} else {
-				EntityType type = EntityType.fromName(v);
+				EntityType type = Util.getEntityType(v);
 				if (type != null) {
 					types.add(type);
 				}
