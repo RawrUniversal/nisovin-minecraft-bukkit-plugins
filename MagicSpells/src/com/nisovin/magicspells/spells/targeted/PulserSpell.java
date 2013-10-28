@@ -301,6 +301,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 		}
 
 		public void stop() {
+			if (!block.getChunk().isLoaded()) block.getChunk().load();
 			block.setType(Material.AIR);
 			if (spellOnBreak != null) {
 				if (caster == null) {
