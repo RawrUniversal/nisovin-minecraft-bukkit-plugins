@@ -1,8 +1,9 @@
 package com.nisovin.magicspells.spells.targeted;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -11,11 +12,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -24,9 +25,8 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 	
 	private String strCantZap;
-	private HashSet<Byte> transparentBlockTypes;
-	private List<Integer> allowedBlockTypes;
-	private List<Integer> disallowedBlockTypes;
+	private Set<Material> allowedBlockTypes;
+	private Set<Material> disallowedBlockTypes;
 	private boolean dropBlock;
 	private boolean dropNormal;
 	private boolean checkPlugins;
@@ -36,25 +36,33 @@ public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 		super(config, spellName);
 		
 		strCantZap = getConfigString("str-cant-zap", "");
-		String[] transparent = getConfigString("transparent-block-types","0,8,9").split(",");
-		String[] allowed = getConfigString("allowed-block-types","").split(",");
-		String[] disallowed = getConfigString("disallowed-block-types","0,7,10,11").split(",");
-		transparentBlockTypes = new HashSet<Byte>();
-		for (String s : transparent) {
-			transparentBlockTypes.add(Byte.parseByte(s));
-		}
-		allowedBlockTypes = new ArrayList<Integer>();
-		for (String s : allowed) {
-			if (!s.isEmpty()) {
-				allowedBlockTypes.add(Integer.parseInt(s));
+		
+		List<String> allowed = getConfigStringList("allowed-block-types",null);
+		if (allowed != null) {
+			allowedBlockTypes = EnumSet.noneOf(Material.class);
+			for (String s : allowed) {
+				if (!s.isEmpty()) {
+					MagicMaterial m = MagicSpells.getItemNameResolver().resolveBlock(s);
+					if (m != null && m.getMaterial() != null) {
+						allowedBlockTypes.add(m.getMaterial());
+					}
+				}
 			}
 		}
-		disallowedBlockTypes = new ArrayList<Integer>();
-		for (String s : disallowed) {
-			if (!s.isEmpty()) {
-				disallowedBlockTypes.add(Integer.parseInt(s));
+		
+		List<String> disallowed = getConfigStringList("disallowed-block-types", Arrays.asList("bedrock", "lava", "stationary_lava", "water", "stationary_water"));
+		if (disallowed != null) {
+			disallowedBlockTypes = EnumSet.noneOf(Material.class);
+			for (String s : disallowed) {
+				if (!s.isEmpty()) {
+					MagicMaterial m = MagicSpells.getItemNameResolver().resolveBlock(s);
+					if (m != null && m.getMaterial() != null) {
+						disallowedBlockTypes.add(m.getMaterial());
+					}
+				}
 			}
 		}
+		
 		dropBlock = getConfigBoolean("drop-block", false);
 		dropNormal = getConfigBoolean("drop-normal", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
@@ -67,7 +75,7 @@ public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 			// get targeted block
 			Block target;
 			try {
-				target = player.getTargetBlock(transparentBlockTypes, range>0?range:100);
+				target = getTargetedBlock(player, range);
 			} catch (IllegalStateException e) {
 				target = null;
 			}
@@ -154,6 +162,6 @@ public class ZapSpell extends TargetedSpell implements TargetedLocationSpell {
 	}
 	
 	private boolean canZap(Block target) {
-		return !(disallowedBlockTypes.contains(target.getTypeId()) || (allowedBlockTypes.size() > 0 && !allowedBlockTypes.contains(target.getTypeId())));
+		return !(disallowedBlockTypes.contains(target.getType()) || (allowedBlockTypes.size() > 0 && !allowedBlockTypes.contains(target.getType())));
 	}
 }

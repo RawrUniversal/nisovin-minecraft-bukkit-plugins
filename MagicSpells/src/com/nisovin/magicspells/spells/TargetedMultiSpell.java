@@ -88,7 +88,7 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 			} else {
 				Block b = null;
 				try {
-					b = player.getTargetBlock(null, range);
+					b = getTargetedBlock(player, range);
 					if (b != null && b.getType() != Material.AIR) {
 						locTarget = b.getLocation();
 					}

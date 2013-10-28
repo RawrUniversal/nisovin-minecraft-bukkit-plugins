@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
@@ -22,8 +23,7 @@ public class FirenovaSpell extends InstantSpell implements TargetedLocationSpell
 
 	private int range;
 	private int tickSpeed;
-	private int blockType;
-	private byte blockData;
+	private MagicMaterial mat;
 	private boolean burnTallGrass;
 	private boolean checkPlugins;
 	
@@ -37,17 +37,9 @@ public class FirenovaSpell extends InstantSpell implements TargetedLocationSpell
 		burnTallGrass = getConfigBoolean("burn-tall-grass", true);
 		checkPlugins = getConfigBoolean("check-plugins", true);
 		
-		String type = getConfigString("block-type", "51:15");
-		if (type.contains(":")) {
-			String[] data = type.split(":");
-			blockType = Integer.parseInt(data[0]);
-			blockData = Byte.parseByte(data[1]);
-		} else {
-			blockType = Integer.parseInt(type);
-			blockData = (byte)0;
-		}
+		mat = MagicSpells.getItemNameResolver().resolveBlock(getConfigString("block-type", "51:15"));
 		
-		if (blockType == Material.FIRE.getId()) {
+		if (mat.getMaterial() == Material.FIRE) {
 			fireImmunity = new HashSet<Player>();
 		}
 	}
@@ -124,8 +116,8 @@ public class FirenovaSpell extends InstantSpell implements TargetedLocationSpell
 		public void run() {
 			// remove old fire blocks
 			for (Block block : fireBlocks) {
-				if (block.getTypeId() == blockType) {
-					block.setTypeIdAndData(0, (byte)0, false);
+				if (block.getType() == mat.getMaterial()) {
+					block.setType(Material.AIR);
 				}
 			}
 			fireBlocks.clear();
@@ -145,11 +137,11 @@ public class FirenovaSpell extends InstantSpell implements TargetedLocationSpell
 								if (under.getType() == Material.AIR || (burnTallGrass && under.getType() == Material.LONG_GRASS)) {
 									b = under;
 								}
-								b.setTypeIdAndData(blockType, blockData, false);
+								mat.setBlock(b, false);
 								fireBlocks.add(b);
 							} else if (b.getRelative(BlockFace.UP).getType() == Material.AIR || (burnTallGrass && b.getRelative(BlockFace.UP).getType() == Material.LONG_GRASS)) {
 								b = b.getRelative(BlockFace.UP);
-								b.setTypeIdAndData(blockType, blockData, false);
+								mat.setBlock(b, false);
 								fireBlocks.add(b);
 							}
 						}

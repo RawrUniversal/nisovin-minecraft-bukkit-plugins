@@ -245,7 +245,6 @@ public abstract class SpellEffect {
 		effects.put("soundpersonal", SoundPersonalEffect.class);
 		effects.put("spawn", MobSpawnerEffect.class);
 		effects.put("splash", SplashPotionEffect.class);
-		effects.put("wolfsmoke", WolfSmokeEffect.class);
 	}
 	
 }

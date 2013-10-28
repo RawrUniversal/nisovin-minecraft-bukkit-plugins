@@ -88,7 +88,7 @@ public abstract class TargetedSpell extends InstantSpell {
 	 */
 	protected void fizzle(Player player) {
 		if (playFizzleSound) {
-			player.playEffect(player.getLocation(), Effect.EXTINGUISH, 0);
+			player.playEffect(player.getLocation(), Effect.EXTINGUISH, null);
 		}
 	}
 	

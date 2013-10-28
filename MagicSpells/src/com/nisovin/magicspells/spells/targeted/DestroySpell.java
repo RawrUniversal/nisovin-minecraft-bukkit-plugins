@@ -1,7 +1,7 @@
 package com.nisovin.magicspells.spells.targeted;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +20,8 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
+import com.nisovin.magicspells.materials.MagicBlockMaterial;
+import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
@@ -35,8 +37,8 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 	VelocityType velocityType;
 	boolean preventLandingBlocks;
 	int fallingBlockDamage;
-	int[] blockTypesToThrow;
-	int[] blockTypesToRemove;
+	Set<Material> blockTypesToThrow;
+	Set<Material> blockTypesToRemove;
 	
 	Set<FallingBlock> fallingBlocks;
 	
@@ -73,21 +75,26 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 		preventLandingBlocks = config.getBoolean("prevent-landing-blocks", false);
 		fallingBlockDamage = getConfigInt("falling-block-damage", 0);
 		
-		List<Integer> toThrow = getConfigIntList("block-types-to-throw", null);
+		List<String> toThrow = getConfigStringList("block-types-to-throw", null);
 		if (toThrow != null && toThrow.size() > 0) {
-			blockTypesToThrow = new int[toThrow.size()];
-			for (int i = 0; i < toThrow.size(); i++) {
-				blockTypesToThrow[i] = toThrow.get(i).intValue();
+			blockTypesToThrow = EnumSet.noneOf(Material.class);
+			for (String s : toThrow) {
+				MagicMaterial m = MagicSpells.getItemNameResolver().resolveBlock(s);
+				if (m != null && m.getMaterial() != null) {
+					blockTypesToThrow.add(m.getMaterial());
+				}
 			}
-			Arrays.sort(blockTypesToThrow);
 		}
-		List<Integer> toRemove = getConfigIntList("block-types-to-remove", null);
+		
+		List<String> toRemove = getConfigStringList("block-types-to-remove", null);
 		if (toRemove != null && toRemove.size() > 0) {
-			blockTypesToRemove = new int[toRemove.size()];
-			for (int i = 0; i < toRemove.size(); i++) {
-				blockTypesToRemove[i] = toRemove.get(i).intValue();
+			blockTypesToRemove = EnumSet.noneOf(Material.class);
+			for (String s : toRemove) {
+				MagicMaterial m = MagicSpells.getItemNameResolver().resolveBlock(s);
+				if (m != null && m.getMaterial() != null) {
+					blockTypesToRemove.add(m.getMaterial());
+				}
 			}
-			Arrays.sort(blockTypesToRemove);
 		}
 		
 		if (preventLandingBlocks) {
@@ -143,10 +150,10 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 					Block b = target.getWorld().getBlockAt(x, y, z);
 					if (b.getType() != Material.BEDROCK && b.getType() != Material.AIR) {
 						if (blockTypesToThrow != null) {
-							if (Arrays.binarySearch(blockTypesToThrow, b.getTypeId()) >= 0) {
+							if (blockTypesToThrow.contains(b.getType())) {
 								blocksToThrow.add(b);
 							} else if (blockTypesToRemove != null) {
-								if (Arrays.binarySearch(blockTypesToRemove, b.getTypeId()) >= 0) {
+								if (blockTypesToRemove.contains(b.getType())) {
 									blocksToRemove.add(b);
 								}
 							} else if (!b.getType().isSolid()) {
@@ -168,8 +175,9 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 			b.setType(Material.AIR);
 		}
 		for (Block b : blocksToThrow) {
+			MagicMaterial mat = new MagicBlockMaterial(b.getState().getData());
 			Location l = new Location(target.getWorld(), b.getX() + 0.5, b.getY() + 0.5, b.getZ() + 0.5);
-			FallingBlock fb = target.getWorld().spawnFallingBlock(l, b.getType(), b.getData());
+			FallingBlock fb = mat.spawnFallingBlock(l);
 			fb.setDropItem(false);
 			Vector v = null;
 			if (velocityType == VelocityType.OUT) {

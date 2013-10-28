@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Crops;
 
@@ -16,6 +15,7 @@ import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
@@ -86,14 +86,14 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 					if (newCropType != null) {
 						newCropType.setBlock(b);
 						if (growth > 1) {
-							b.setData((byte) (growth-1));
+							BlockUtils.setGrowthLevel(b, growth - 1);
 						}
 						count++;
 					}
 				} else if ((b.getType() == Material.CROPS || b.getType() == Material.CARROT || b.getType() == Material.POTATO) && ((Crops)b.getState().getData()).getState() != CropState.RIPE) {
-					byte newData = (byte) (b.getData() + growth);
-					if (newData > 7) newData = 7;
-					b.setData(newData);
+					int newGrowth = BlockUtils.getGrowthLevel(b) + growth;
+					if (newGrowth > 7) newGrowth = 7;
+					BlockUtils.setGrowthLevel(b, newGrowth);
 					count++;
 				}
 			}

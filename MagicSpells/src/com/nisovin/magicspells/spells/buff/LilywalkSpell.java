@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import com.nisovin.magicspells.spells.BuffSpell;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class LilywalkSpell extends BuffSpell {
@@ -131,7 +132,7 @@ public class LilywalkSpell extends BuffSpell {
 		private void setToLily(Block block) {
 			if (block.getType() == Material.AIR) {
 				BlockState state = block.getRelative(BlockFace.DOWN).getState();
-				if ((state.getType() == Material.WATER || state.getType() == Material.STATIONARY_WATER) && state.getRawData() == (byte)0) {
+				if ((state.getType() == Material.WATER || state.getType() == Material.STATIONARY_WATER) && BlockUtils.getWaterLevel(state) == 0) {
 					block.setType(Material.WATER_LILY);
 					blocks.add(block);
 				}

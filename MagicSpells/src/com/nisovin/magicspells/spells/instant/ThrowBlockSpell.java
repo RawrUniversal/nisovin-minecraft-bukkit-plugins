@@ -25,6 +25,7 @@ import com.nisovin.magicspells.materials.MagicMaterial;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
@@ -176,8 +177,7 @@ public class ThrowBlockSpell extends InstantSpell implements TargetedLocationSpe
 					if (!preventBlocks) {
 						Block b = block.getLocation().getBlock();
 						if (b.getType() == Material.AIR) {
-							b.setType(block.getMaterial());
-							b.setData(block.getBlockData());
+							BlockUtils.setBlockFromFallingBlock(b, block, true);
 						}
 					}
 					if (!info.spellActivated && spell != null) {

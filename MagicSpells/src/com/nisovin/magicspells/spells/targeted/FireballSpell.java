@@ -9,7 +9,6 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
@@ -27,6 +26,7 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
@@ -169,10 +169,7 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 								for (int z = loc.getBlockZ()-1; z <= loc.getBlockZ()+1; z++) {
 									if (loc.getWorld().getBlockAt(x,y,z).getType() == Material.AIR) {
 										Block b = loc.getWorld().getBlockAt(x,y,z);
-										BlockState state = b.getState();
-										state.setType(Material.FIRE);
-										state.setRawData((byte)15);
-										state.update(true, false);
+										BlockUtils.setTypeAndData(b, Material.FIRE, (byte)15, false);
 										fires.add(b);
 									}
 								}

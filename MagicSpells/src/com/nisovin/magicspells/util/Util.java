@@ -10,6 +10,7 @@ import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -335,19 +336,34 @@ public class Util {
 			}
 		}
 	}
+
+	static Map<String, EntityType> entityTypeMap = new HashMap<String, EntityType>();
+	static {
+		for (EntityType type : EntityType.values()) {
+			if (type != null && type.getName() != null) {
+				entityTypeMap.put(type.getName().toLowerCase(), type);
+				entityTypeMap.put(type.name().toLowerCase(), type);
+				entityTypeMap.put(type.name().toLowerCase().replace("_", ""), type);
+			}
+		}
+		entityTypeMap.put("zombiepig", EntityType.PIG_ZOMBIE);
+		entityTypeMap.put("mooshroom", EntityType.MUSHROOM_COW);
+		entityTypeMap.put("cat", EntityType.OCELOT);
+		entityTypeMap.put("golem", EntityType.IRON_GOLEM);
+		entityTypeMap.put("snowgolem", EntityType.SNOWMAN);
+		entityTypeMap.put("dragon", EntityType.ENDER_DRAGON);
+		Map<String, EntityType> toAdd = new HashMap<String, EntityType>();
+		for (String s : entityTypeMap.keySet()) {
+			toAdd.put(s + "s", entityTypeMap.get(s));
+		}
+		entityTypeMap.putAll(toAdd);
+		entityTypeMap.put("endermen", EntityType.ENDERMAN);
+		entityTypeMap.put("wolves", EntityType.WOLF);
+	}
 	
 	public static EntityType getEntityType(String type) {
 		if (type.equalsIgnoreCase("player")) return EntityType.PLAYER;
-		type = type.trim().toLowerCase().replace("_", "").replace(" ", "");
-		for (EntityType t : EntityType.values()) {
-			String enumName = t.name().toLowerCase().replace("_", "").replace(" ", "");
-			String mcName = t.getName();
-			if (mcName != null) mcName = mcName.toLowerCase().replace("_", "").replace(" ", "");
-			if (enumName.equals(type) || (mcName != null && mcName.equals(type))) {
-				return t;
-			}
-		}
-		return null;
+		return entityTypeMap.get(type.toLowerCase());
 	}
 	
 	public static PotionEffectType getPotionEffectType(String type) {
@@ -633,6 +649,10 @@ public class Util {
 			return false;
 		}*/
 		return false;
+	}
+	
+	public static void createFire(Block block, byte d) {
+		block.setTypeIdAndData(Material.FIRE.getId(), d, false);
 	}
 	
 }

@@ -1,10 +1,8 @@
 package com.nisovin.magicspells.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.GameMode;
@@ -19,33 +17,6 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 
 public class ValidTargetList {
-
-	static Map<String, EntityType> typeMap = new HashMap<String, EntityType>();
-	static {
-		//typeMap = new HashMap<String, EntityType>();
-		for (EntityType type : EntityType.values()) {
-			if (type != null && type.getName() != null) {
-				typeMap.put(type.getName().toLowerCase(), type);
-			}
-		}
-		typeMap.put("zombiepig", EntityType.PIG_ZOMBIE);
-		typeMap.put("mooshroom", EntityType.MUSHROOM_COW);
-		typeMap.put("dog", EntityType.WOLF);
-		typeMap.put("cat", EntityType.OCELOT);
-		typeMap.put("ocelot", EntityType.OCELOT);
-		typeMap.put("golem", EntityType.IRON_GOLEM);
-		typeMap.put("irongolem", EntityType.IRON_GOLEM);
-		typeMap.put("snowgolem", EntityType.SNOWMAN);
-		typeMap.put("dragon", EntityType.ENDER_DRAGON);
-		typeMap.put("magmacube", EntityType.MAGMA_CUBE);
-		Map<String, EntityType> toAdd = new HashMap<String, EntityType>();
-		for (String s : typeMap.keySet()) {
-			toAdd.put(s + "s", typeMap.get(s));
-		}
-		typeMap.putAll(toAdd);
-		typeMap.put("endermen", EntityType.ENDERMAN);
-		typeMap.put("wolves", EntityType.WOLF);
-	}
 	
 	boolean targetSelf = false;
 	boolean targetPlayers = false;
@@ -72,7 +43,7 @@ public class ValidTargetList {
 				} else if (s.equalsIgnoreCase("animals") || s.equalsIgnoreCase("animal")) {
 					targetAnimals = true;
 				} else {
-					EntityType type = typeMap.get(s.toLowerCase());
+					EntityType type = Util.getEntityType(s);
 					if (type != null) {
 						types.add(type);
 					} else {

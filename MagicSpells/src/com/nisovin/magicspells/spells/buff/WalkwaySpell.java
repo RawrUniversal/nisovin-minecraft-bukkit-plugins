@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.BuffSpell;
+import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class WalkwaySpell extends BuffSpell {
@@ -233,7 +234,7 @@ public class WalkwaySpell extends BuffSpell {
 		
 		public void drawCarpet(Block origin, int dirX, int dirY, int dirZ) {
 			// determine block type and maybe stair direction
-			int mat = material.getId();
+			Material mat = material;
 			byte data = 0;
 			if ((material == Material.WOOD || material == Material.COBBLESTONE) && dirY != 0) {
 				boolean changed = false;
@@ -268,9 +269,9 @@ public class WalkwaySpell extends BuffSpell {
 				}
 				if (changed) {
 					if (material == Material.WOOD) {
-						mat = Material.WOOD_STAIRS.getId();
+						mat = Material.WOOD_STAIRS;
 					} else if (material == Material.COBBLESTONE) {
-						mat = Material.COBBLESTONE_STAIRS.getId();
+						mat = Material.COBBLESTONE_STAIRS;
 					}
 				}
 			}
@@ -298,7 +299,7 @@ public class WalkwaySpell extends BuffSpell {
 			// set new blocks
 			for (Block b : blocks) {
 				if (platform.contains(b) || b.getType() == Material.AIR) {
-					b.setTypeIdAndData(mat, data, false);
+					BlockUtils.setTypeAndData(b, mat, data, false);
 					platform.add(b);
 				}
 			}
