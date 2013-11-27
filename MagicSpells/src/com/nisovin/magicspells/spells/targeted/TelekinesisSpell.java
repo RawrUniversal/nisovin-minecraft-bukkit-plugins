@@ -33,6 +33,8 @@ public class TelekinesisSpell extends TargetedSpell implements TargetedLocationS
 		transparent.remove((byte)Material.LEVER.getId());
 		transparent.remove((byte)Material.STONE_PLATE.getId());
 		transparent.remove((byte)Material.WOOD_PLATE.getId());
+		transparent.remove((byte)Material.IRON_PLATE.getId());
+		transparent.remove((byte)Material.GOLD_PLATE.getId());
 		transparent.remove((byte)Material.STONE_BUTTON.getId());
 	}
 	

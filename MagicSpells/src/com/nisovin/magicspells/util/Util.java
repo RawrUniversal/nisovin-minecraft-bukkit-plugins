@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -34,6 +35,9 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.materials.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.materials.MagicMaterial;
+import com.nisovin.magicspells.util.Attributes.Attribute;
+import com.nisovin.magicspells.util.Attributes.AttributeType;
+import com.nisovin.magicspells.util.Attributes.Operation;
 
 public class Util {
 
@@ -264,6 +268,32 @@ public class Util {
 			// empty enchant
 			if (emptyEnchants) {
 				item = MagicSpells.getVolatileCodeHandler().addFakeEnchantment(item);
+			}
+			
+			// attributes
+			if (config.contains("attributes")) {
+				Attributes attributes = new Attributes(item);
+				Set<String> attrs = config.getConfigurationSection("attributes").getKeys(false);
+				for (String attr : attrs) {
+					String[] attrData = config.getString("attributes." + attr).split(" ");
+					AttributeType attrType = AttributeType.fromId(attrData[0]);
+					double attrAmt = 1;
+					try {
+						attrAmt = Double.parseDouble(attrData[1]);
+					} catch (NumberFormatException e) {}
+					Attributes.Operation attrOp = Operation.ADD_NUMBER;
+					if (attrData.length > 2) {
+						if (attrData[2].toLowerCase().startsWith("mult")) {
+							attrOp = Operation.MULTIPLY_PERCENTAGE;
+						} else if (attrData[2].toLowerCase().contains("add") && attrData[2].toLowerCase().contains("perc")) {
+							attrOp = Operation.ADD_PERCENTAGE;
+						}
+					}
+					if (attrType != null) {
+						attributes.add(Attribute.newBuilder().name(attr).type(attrType).operation(attrOp).amount(attrAmt).build());
+					}
+				}
+				item = attributes.getStack();
 			}
 			
 			return item;
