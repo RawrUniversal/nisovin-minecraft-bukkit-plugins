@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.BuffSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 
@@ -88,7 +89,7 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 				return noTarget(player);
 			}
 			
-			cleanse(target);
+			cleanse(player, target);
 			
 			sendMessages(player, target);
 			return PostCastAction.NO_MESSAGES;
@@ -96,7 +97,7 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	private void cleanse(LivingEntity target) {
+	private void cleanse(Player caster, LivingEntity target) {
 		if (fire) {
 			target.setFireTicks(0);
 		}
@@ -109,17 +110,22 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 				spell.turnOff((Player)target);
 			}
 		}
+		if (caster != null) {
+			playSpellEffects(caster, target);
+		} else {
+			playSpellEffects(EffectPosition.TARGET, target);
+		}
 	}
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		cleanse(target);
+		cleanse(caster, target);
 		return true;
 	}
 
 	@Override
 	public boolean castAtEntity(LivingEntity target, float power) {
-		cleanse(target);
+		cleanse(null, target);
 		return true;
 	}
 	
