@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
@@ -180,7 +181,9 @@ public class PassiveSpell extends Spell {
 					}
 				}
 				removeReagents(caster, event.getReagents());
-				sendMessage(caster, strCastSelf);				
+				sendMessage(caster, strCastSelf);
+				SpellCastedEvent event2 = new SpellCastedEvent(this, caster, SpellCastState.NORMAL, power, null, event.getCooldown(), event.getReagents(), PostCastAction.HANDLE_NORMALLY);
+				Bukkit.getPluginManager().callEvent(event2);
 			} else {
 				MagicSpells.debug(3, "   Passive spell canceled");
 			}
