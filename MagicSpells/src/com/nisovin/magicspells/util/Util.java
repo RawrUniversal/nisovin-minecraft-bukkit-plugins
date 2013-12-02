@@ -35,9 +35,6 @@ import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
 import com.nisovin.magicspells.materials.ItemNameResolver.ItemTypeAndData;
 import com.nisovin.magicspells.materials.MagicMaterial;
-import com.nisovin.magicspells.util.Attributes.Attribute;
-import com.nisovin.magicspells.util.Attributes.AttributeType;
-import com.nisovin.magicspells.util.Attributes.Operation;
 
 public class Util {
 
@@ -272,28 +269,36 @@ public class Util {
 			
 			// attributes
 			if (config.contains("attributes")) {
-				Attributes attributes = new Attributes(item);
 				Set<String> attrs = config.getConfigurationSection("attributes").getKeys(false);
-				for (String attr : attrs) {
-					String[] attrData = config.getString("attributes." + attr).split(" ");
-					AttributeType attrType = AttributeType.fromId(attrData[0]);
+				String[] attrNames = new String[attrs.size()];
+				String[] attrTypes = new String[attrs.size()];
+				double[] attrAmounts = new double[attrs.size()];
+				int[] attrOperations = new int[attrs.size()];
+				int i = 0;
+				for (String attrName : attrs) {
+					String[] attrData = config.getString("attributes." + attrName).split(" ");
+					String attrType = attrData[0];
 					double attrAmt = 1;
 					try {
 						attrAmt = Double.parseDouble(attrData[1]);
 					} catch (NumberFormatException e) {}
-					Attributes.Operation attrOp = Operation.ADD_NUMBER;
+					int attrOp = 0; // add number
 					if (attrData.length > 2) {
 						if (attrData[2].toLowerCase().startsWith("mult")) {
-							attrOp = Operation.MULTIPLY_PERCENTAGE;
+							attrOp = 1; // multiply percent
 						} else if (attrData[2].toLowerCase().contains("add") && attrData[2].toLowerCase().contains("perc")) {
-							attrOp = Operation.ADD_PERCENTAGE;
+							attrOp = 2; // add percent
 						}
 					}
 					if (attrType != null) {
-						attributes.add(Attribute.newBuilder().name(attr).type(attrType).operation(attrOp).amount(attrAmt).build());
+						attrNames[i] = attrName;
+						attrTypes[i] = attrType;
+						attrAmounts[i] = attrAmt;
+						attrOperations[i] = attrOp;
 					}
+					i++;
 				}
-				item = attributes.getStack();
+				item = MagicSpells.getVolatileCodeHandler().addAttributes(item, attrNames, attrTypes, attrAmounts, attrOperations);
 			}
 			
 			return item;

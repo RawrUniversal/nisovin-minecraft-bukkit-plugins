@@ -165,4 +165,9 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	public DisguiseManager getDisguiseManager(MagicConfig config) {
 		return null;
 	}
+
+	@Override
+	public ItemStack addAttributes(ItemStack item, String[] names, String[] types, double[] amounts, int[] operations) {
+		return item;
+	}
 }

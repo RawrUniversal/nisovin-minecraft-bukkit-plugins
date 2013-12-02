@@ -60,4 +60,6 @@ public interface VolatileCodeHandle {
 	
 	public void playDragonDeathEffect(Location location);
 	
+	public ItemStack addAttributes(ItemStack item, String[] names, String[] types, double[] amounts, int[] operations);
+	
 }

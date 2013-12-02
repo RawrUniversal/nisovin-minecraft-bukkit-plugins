@@ -494,10 +494,12 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 	private void broadcastPacket(Player disguised, int packetId, Packet packet) {
 		PacketContainer con = new PacketContainer(packetId, packet);
 		for (Player player : protocolManager.getEntityTrackers(disguised)) {
-			if (player.isOnline()) {
+			if (player.isValid()) {
 				try {
 					protocolManager.sendServerPacket(player, con, false);
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

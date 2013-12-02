@@ -5,19 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.server.v1_6_R3.*;
+import net.minecraft.server.v1_7_R1.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftCreature;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftFallingSand;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftTNTPrimed;
-import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftCreature;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftFallingSand;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftTNTPrimed;
+import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
@@ -33,7 +34,7 @@ import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.DisguiseManager;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
+public class VolatileCodeEnabled_1_7_R1 implements VolatileCodeHandle {
 
 	
 	private static NBTTagCompound getTag(ItemStack item) {
@@ -41,7 +42,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 			try {
 				Field field = CraftItemStack.class.getDeclaredField("handle");
 				field.setAccessible(true);
-				return ((net.minecraft.server.v1_6_R3.ItemStack)field.get(item)).tag;
+				return ((net.minecraft.server.v1_7_R1.ItemStack)field.get(item)).tag;
 			} catch (Exception e) {
 			}
 		}
@@ -56,11 +57,11 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 			craftItem = CraftItemStack.asCraftCopy(item);
 		}
 		
-		net.minecraft.server.v1_6_R3.ItemStack nmsItem = null;
+		net.minecraft.server.v1_7_R1.ItemStack nmsItem = null;
 		try {
 			Field field = CraftItemStack.class.getDeclaredField("handle");
 			field.setAccessible(true);
-			nmsItem = ((net.minecraft.server.v1_6_R3.ItemStack)field.get(item));
+			nmsItem = ((net.minecraft.server.v1_7_R1.ItemStack)field.get(item));
 		} catch (Exception e) {
 		}
 		if (nmsItem == null) {
@@ -78,17 +79,17 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 		return craftItem;
 	}
 	
-	public VolatileCodeEnabled_1_6_R3() {
+	public VolatileCodeEnabled_1_7_R1() {
 		try {
-			packet63Fields[0] = Packet63WorldParticles.class.getDeclaredField("a");
-			packet63Fields[1] = Packet63WorldParticles.class.getDeclaredField("b");
-			packet63Fields[2] = Packet63WorldParticles.class.getDeclaredField("c");
-			packet63Fields[3] = Packet63WorldParticles.class.getDeclaredField("d");
-			packet63Fields[4] = Packet63WorldParticles.class.getDeclaredField("e");
-			packet63Fields[5] = Packet63WorldParticles.class.getDeclaredField("f");
-			packet63Fields[6] = Packet63WorldParticles.class.getDeclaredField("g");
-			packet63Fields[7] = Packet63WorldParticles.class.getDeclaredField("h");
-			packet63Fields[8] = Packet63WorldParticles.class.getDeclaredField("i");
+			packet63Fields[0] = PacketPlayOutWorldParticles.class.getDeclaredField("a");
+			packet63Fields[1] = PacketPlayOutWorldParticles.class.getDeclaredField("b");
+			packet63Fields[2] = PacketPlayOutWorldParticles.class.getDeclaredField("c");
+			packet63Fields[3] = PacketPlayOutWorldParticles.class.getDeclaredField("d");
+			packet63Fields[4] = PacketPlayOutWorldParticles.class.getDeclaredField("e");
+			packet63Fields[5] = PacketPlayOutWorldParticles.class.getDeclaredField("f");
+			packet63Fields[6] = PacketPlayOutWorldParticles.class.getDeclaredField("g");
+			packet63Fields[7] = PacketPlayOutWorldParticles.class.getDeclaredField("h");
+			packet63Fields[8] = PacketPlayOutWorldParticles.class.getDeclaredField("i");
 			for (int i = 0; i <= 8; i++) {
 				packet63Fields[i].setAccessible(true);
 			}
@@ -108,7 +109,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 				public void run() {
 					int c = 0;
 					if (!el.effects.isEmpty()) {
-						c = net.minecraft.server.v1_6_R3.PotionBrewer.a(el.effects.values());
+						c = net.minecraft.server.v1_7_R1.PotionBrewer.a(el.effects.values());
 					}
 					dw.watch(7, Integer.valueOf(c));
 				}
@@ -124,27 +125,24 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 
 	@Override
 	public void sendFakeSlotUpdate(Player player, int slot, ItemStack item) {
-		net.minecraft.server.v1_6_R3.ItemStack nmsItem;
+		net.minecraft.server.v1_7_R1.ItemStack nmsItem;
 		if (item != null) {
 			nmsItem = CraftItemStack.asNMSCopy(item);
 		} else {
 			nmsItem = null;
 		}
-		Packet103SetSlot packet = new Packet103SetSlot(0, (short)slot+36, nmsItem);
+		PacketPlayOutSetSlot packet = new PacketPlayOutSetSlot(0, (short)slot+36, nmsItem);
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
 	}
 
 	@Override
 	public void toggleLeverOrButton(Block block) {
-		net.minecraft.server.v1_6_R3.Block.byId[block.getType().getId()].interact(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);
+		// TODO
 	}
 
 	@Override
 	public void pressPressurePlate(Block block) {
-		block.setData((byte) (block.getData() ^ 0x1));
-		net.minecraft.server.v1_6_R3.World w = ((CraftWorld)block.getWorld()).getHandle();
-		w.applyPhysics(block.getX(), block.getY(), block.getZ(), block.getType().getId());
-		w.applyPhysics(block.getX(), block.getY()-1, block.getZ(), block.getType().getId());
+		// TODO
 	}
 
 	@Override
@@ -164,7 +162,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 	@Override
 	public void playExplosionEffect(Location location, float size) {
 		@SuppressWarnings("rawtypes")
-		Packet60Explosion packet = new Packet60Explosion(location.getX(), location.getY(), location.getZ(), size, new ArrayList(), null);
+		PacketPlayOutExplosion packet = new PacketPlayOutExplosion(location.getX(), location.getY(), location.getZ(), size, new ArrayList(), null);
 		for (Player player : location.getWorld().getPlayers()) {
 			if (player.getLocation().distanceSquared(location) < 50 * 50) {
 				((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
@@ -174,13 +172,13 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 
 	@Override
 	public void setExperienceBar(Player player, int level, float percent) {
-		Packet43SetExperience packet = new Packet43SetExperience(percent, player.getTotalExperience(), level);
+		PacketPlayOutExperience packet = new PacketPlayOutExperience(percent, player.getTotalExperience(), level);
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
 	}
 
 	@Override
 	public Fireball shootSmallFireball(Player player) {
-		net.minecraft.server.v1_6_R3.World w = ((CraftWorld)player.getWorld()).getHandle();
+		net.minecraft.server.v1_7_R1.World w = ((CraftWorld)player.getWorld()).getHandle();
 		Location playerLoc = player.getLocation();
 		Vector loc = player.getEyeLocation().toVector().add(player.getLocation().getDirection().multiply(10));
 		
@@ -211,7 +209,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 	@Override
 	public void playSound(Player player, String sound, float volume, float pitch) {
 		Location loc = player.getLocation();
-		Packet62NamedSoundEffect packet = new Packet62NamedSoundEffect(sound, loc.getX(), loc.getY(), loc.getZ(), volume, pitch);
+		PacketPlayOutNamedSoundEffect packet = new PacketPlayOutNamedSoundEffect(sound, loc.getX(), loc.getY(), loc.getZ(), volume, pitch);
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
 	}
 
@@ -225,7 +223,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 			tag = new NBTTagCompound();
 		}
 		if (!tag.hasKey("ench")) {
-			tag.set("ench", new NBTTagList("ench"));
+			tag.set("ench", new NBTTagList());
 		}		
 		return setTag(item, tag);
 	}
@@ -284,7 +282,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 	@Override
 	public void createFireworksExplosion(Location location, boolean flicker, boolean trail, int type, int[] colors, int[] fadeColors, int flightDuration) {
 		// create item
-		net.minecraft.server.v1_6_R3.ItemStack item = new net.minecraft.server.v1_6_R3.ItemStack(401, 1, 0);
+		net.minecraft.server.v1_7_R1.ItemStack item = new net.minecraft.server.v1_7_R1.ItemStack(Item.d(401), 1, 0);
 		
 		// get tag
 		NBTTagCompound tag = item.tag;
@@ -293,7 +291,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 		}
 		
 		// create explosion tag
-		NBTTagCompound explTag = new NBTTagCompound("Explosion");
+		NBTTagCompound explTag = new NBTTagCompound();
 		explTag.setByte("Flicker", flicker ? (byte)1 : (byte)0);
 		explTag.setByte("Trail", trail ? (byte)1 : (byte)0);
 		explTag.setByte("Type", (byte)type);
@@ -301,12 +299,12 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 		explTag.setIntArray("FadeColors", fadeColors);
 		
 		// create fireworks tag
-		NBTTagCompound fwTag = new NBTTagCompound("Fireworks");
+		NBTTagCompound fwTag = new NBTTagCompound();
 		fwTag.setByte("Flight", (byte)flightDuration);
-		NBTTagList explList = new NBTTagList("Explosions");
+		NBTTagList explList = new NBTTagList();
 		explList.add(explTag);
 		fwTag.set("Explosions", explList);
-		tag.setCompound("Fireworks", fwTag);
+		tag.set("Fireworks", fwTag);
 		
 		// set tag
 		item.tag = tag;
@@ -325,7 +323,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 	Field[] packet63Fields = new Field[9];
 	@Override
 	public void playParticleEffect(Location location, String name, float spreadHoriz, float spreadVert, float speed, int count, int radius, float yOffset) {
-		Packet63WorldParticles packet = new Packet63WorldParticles();
+		PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles();
 		try {
 			packet63Fields[0].set(packet, name);
 			packet63Fields[1].setFloat(packet, (float)location.getX());
@@ -352,10 +350,10 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 	
 	@Override
 	public void playDragonDeathEffect(Location location) {
-		EntityEnderDragon dragon = new EntityEnderDragon(((CraftWorld)location.getWorld()).getHandle());
+		/*EntityEnderDragon dragon = new EntityEnderDragon(((CraftWorld)location.getWorld()).getHandle());
 		dragon.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), 0F);
 		
-		Packet24MobSpawn packet24 = new Packet24MobSpawn(dragon);
+		PacketPlayOutSpawnEntityLiving packet24 = new PacketPlayOutSpawnEntityLiving(dragon);
 		int dir = packet24.f + 128;
 		if (dir > 127) dir -= 256;
 		packet24.f = (byte)dir;
@@ -380,7 +378,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 					}
 				}
 			}
-		}, 250);
+		}, 250);*/
 	}
 	
 	@Override
@@ -400,7 +398,7 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 		NBTTagList list = new NBTTagList();
 		for (int i = 0; i < names.length; i++) {
 			if (names[i] != null) {
-				NBTTagCompound attr = new NBTTagCompound("AttributeModifiers");
+				NBTTagCompound attr = new NBTTagCompound();
 				attr.setString("Name", names[i]);
 				attr.setString("AttributeName", types[i]);
 				attr.setDouble("Amount", amounts[i]);
