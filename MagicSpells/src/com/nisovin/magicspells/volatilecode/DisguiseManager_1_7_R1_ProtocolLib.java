@@ -2,17 +2,20 @@ package com.nisovin.magicspells.volatilecode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import net.minecraft.server.v1_6_R3.*;
+import net.minecraft.server.v1_7_R1.*;
+import net.minecraft.util.com.google.common.base.Charsets;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_6_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +24,7 @@ import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.comphenix.protocol.Packets;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ConnectionSide;
@@ -32,13 +36,27 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.targeted.DisguiseSpell;
 import com.nisovin.magicspells.util.DisguiseManager;
 import com.nisovin.magicspells.util.MagicConfig;
+import com.nisovin.magicspells.util.ReflectionHelper;
 
-public class DisguiseManager_1_6_R3 extends DisguiseManager {
+public class DisguiseManager_1_7_R1_ProtocolLib extends DisguiseManager {
 
+	ReflectionHelper<Packet> refPacketNamedEntity = new ReflectionHelper<Packet>(PacketPlayOutNamedEntitySpawn.class, "b");
+	ReflectionHelper<Packet> refPacketSpawnEntityLiving = new ReflectionHelper<Packet>(PacketPlayOutSpawnEntityLiving.class, "a", "i", "j", "k");
+	ReflectionHelper<Packet> refPacketSpawnEntity = new ReflectionHelper<Packet>(PacketPlayOutSpawnEntity.class, "a");
+	ReflectionHelper<Packet> refPacketEntityEquipment = new ReflectionHelper<Packet>(PacketPlayOutEntityEquipment.class, "a", "b");
+	ReflectionHelper<Packet> refPacketRelEntityMove = new ReflectionHelper<Packet>(PacketPlayOutEntity.class, "a", "b", "c", "d");
+	ReflectionHelper<Packet> refPacketRelEntityMoveLook = new ReflectionHelper<Packet>(PacketPlayOutEntity.class, "a", "b", "c", "d", "e", "f");
+	ReflectionHelper<Packet> refPacketRelEntityTeleport = new ReflectionHelper<Packet>(PacketPlayOutEntityTeleport.class, "a", "b", "c", "d", "e", "f");
+	ReflectionHelper<Packet> refPacketEntityLook = new ReflectionHelper<Packet>(PacketPlayOutEntity.class, "a", "e", "f");
+	ReflectionHelper<Packet> refPacketEntityHeadRot = new ReflectionHelper<Packet>(PacketPlayOutEntityHeadRotation.class, "a", "b");
+	ReflectionHelper<Packet> refPacketEntityMetadata = new ReflectionHelper<Packet>(PacketPlayOutEntityMetadata.class, "a");
+	ReflectionHelper<Packet> refPacketAttachEntity = new ReflectionHelper<Packet>(PacketPlayOutAttachEntity.class, "b", "c");
+	ReflectionHelper<Entity> refEntity = new ReflectionHelper<Entity>(Entity.class, "id");
+	
 	protected ProtocolManager protocolManager;
 	protected PacketAdapter packetListener = null;
 	
-	public DisguiseManager_1_6_R3(MagicConfig config) {
+	public DisguiseManager_1_7_R1_ProtocolLib(MagicConfig config) {
 		super(config);
 		protocolManager = ProtocolLibrary.getProtocolManager();
 		packetListener = new PacketListener();
@@ -58,18 +76,20 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 		Entity entity = null;
 		float yOffset = 0;
 		World world = ((CraftWorld)location.getWorld()).getHandle();
+		String name = disguise.getNameplateText();
+		UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
 		if (entityType == EntityType.PLAYER) {
-			entity = new EntityHuman(world, disguise.getNameplateText()) {
-				@Override
-				public void sendMessage(ChatMessage arg0) {
-				}
-				@Override
-				public ChunkCoordinates b() {
-					return null;
-				}				
+			entity = new EntityHuman(world, new GameProfile(uuid.toString().replaceAll("-", ""), name)) {
 				@Override
 				public boolean a(int arg0, String arg1) {
 					return false;
+				}
+				@Override
+				public ChunkCoordinates getChunkCoordinates() {
+					return null;
+				}
+				@Override
+				public void sendMessage(IChatBaseComponent arg0) {
 				}
 			};
 			yOffset = -1.5F;
@@ -210,13 +230,13 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 		} else if (entityType == EntityType.FALLING_BLOCK) {
 			int id = disguise.getVar1();
 			int data = disguise.getVar2();
-			entity = new EntityFallingBlock(world, 0, 0, 0, id > 0 ? id : 1, data > 15 ? 0 : data);
+			entity = new EntityFallingBlock(world, 0, 0, 0, Block.e(id > 0 ? id : 1), data > 15 ? 0 : data);
 			
 		} else if (entityType == EntityType.DROPPED_ITEM) {
 			int id = disguise.getVar1();
 			int data = disguise.getVar2();
 			entity = new EntityItem(world);
-			((EntityItem)entity).setItemStack(new net.minecraft.server.v1_6_R3.ItemStack(id > 0 ? id : 1, 1, data));
+			((EntityItem)entity).setItemStack(new net.minecraft.server.v1_7_R1.ItemStack(Item.d(id > 0 ? id : 1), 1, data));
 			
 		}
 		
@@ -244,6 +264,7 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 		if (isDisguised(p)) {
 			DisguiseSpell.Disguise disguise = getDisguise(p);
 			EntityType entityType = disguise.getEntityType();
+			EntityPlayer entityPlayer = ((CraftPlayer)p).getHandle();
 			if (entityType == EntityType.IRON_GOLEM) {
 				((CraftWorld)p.getWorld()).getHandle().broadcastEntityEffect(((CraftEntity)p).getHandle(), (byte) 4);
 			} else if (entityType == EntityType.WITCH) {
@@ -251,63 +272,63 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 			} else if (entityType == EntityType.VILLAGER) {
 				((CraftWorld)p.getWorld()).getHandle().broadcastEntityEffect(((CraftEntity)p).getHandle(), (byte) 13);
 			} else if (entityType == EntityType.BLAZE || entityType == EntityType.SPIDER || entityType == EntityType.GHAST) {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)1));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(16, Byte.valueOf((byte)0));
-						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.WITCH) {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(21, Byte.valueOf((byte)1));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(21, Byte.valueOf((byte)0));
-						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.CREEPER && !disguise.getFlag()) {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(17, Byte.valueOf((byte)1));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(17, Byte.valueOf((byte)0));
-						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.WOLF) {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)(p.isSneaking() ? 3 : 2)));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(16, Byte.valueOf((byte)(p.isSneaking() ? 1 : 0)));
-						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			} else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE) {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)(p.isSneaking() ? 2 : 3)));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 					public void run() {
 						dw.watch(16, Byte.valueOf((byte)(p.isSneaking() ? 1 : 2)));
-						broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+						broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 					}
 				}, 10);
 			}
@@ -319,69 +340,73 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 		DisguiseSpell.Disguise disguise = getDisguise(event.getPlayer());
 		if (disguise == null) return;
 		EntityType entityType = disguise.getEntityType();
+		EntityPlayer entityPlayer = ((CraftPlayer)event.getPlayer()).getHandle();
 		Player p = event.getPlayer();
 		int entityId = p.getEntityId();
 		if (entityType == EntityType.WOLF) {
 			if (event.isSneaking()) {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)1));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 			} else {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)0));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 			}
 		} else if (entityType == EntityType.ENDERMAN) {
 			if (event.isSneaking()) {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(18, Byte.valueOf((byte)1));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 			} else {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(18, Byte.valueOf((byte)0));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 			}
 		} else if (entityType == EntityType.SLIME || entityType == EntityType.MAGMA_CUBE) {
 			if (event.isSneaking()) {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)1));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 			} else {
-				final DataWatcher dw = new DataWatcher();
+				final DataWatcher dw = new DataWatcher(entityPlayer);
 				dw.a(0, Byte.valueOf((byte) 0));
 				dw.a(1, Short.valueOf((short) 300));
 				dw.a(16, Byte.valueOf((byte)2));
-				broadcastPacket(p, 40, new Packet40EntityMetadata(entityId, dw, true));
+				broadcastPacket(p, 40, new PacketPlayOutEntityMetadata(entityId, dw, true));
 			}
 		} else if (entityType == EntityType.SHEEP && event.isSneaking()) {
 			p.playEffect(EntityEffect.SHEEP_EAT);
 		}
 	}
-		
+	
 	class PacketListener extends PacketAdapter {
 		
 		public PacketListener() {
-			super(MagicSpells.plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.NORMAL, 0x14, 0x28, 0x5, 0x1F, 0x20, 0x21, 0x22, 0x23);
+			super(MagicSpells.plugin, ConnectionSide.SERVER_SIDE, ListenerPriority.NORMAL, 
+					Packets.Server.NAMED_ENTITY_SPAWN, Packets.Server.ENTITY_EQUIPMENT, Packets.Server.REL_ENTITY_MOVE, Packets.Server.REL_ENTITY_MOVE_LOOK,
+					Packets.Server.ENTITY_METADATA, Packets.Server.ENTITY_TELEPORT, Packets.Server.ENTITY_HEAD_ROTATION);
 		}
 		
 		@Override
 		public void onPacketSending(PacketEvent event) {
-			if (event.getPacketID() == 0x14) {
-				final Player player = event.getPlayer();
-				final String name = event.getPacket().getStrings().getValues().get(0);
+			final Player player = event.getPlayer();
+			final PacketContainer packetContainer = event.getPacket();
+			final Packet packet = (Packet)packetContainer.getHandle();
+			if (packet instanceof PacketPlayOutNamedEntitySpawn) {
+				final String name = ((GameProfile)refPacketNamedEntity.get(packet, "b")).getName();
 				final DisguiseSpell.Disguise disguise = disguises.get(name.toLowerCase());
 				if (player != null && disguise != null) {
-					event.setCancelled(true);
 					Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 						public void run() {
 							Player disguised = Bukkit.getPlayer(name);
@@ -390,99 +415,78 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 							}
 						}
 					}, 0);
-				}
-			} else if (hideArmor && event.getPacketID() == 0x5) {
-				Packet5EntityEquipment packet = (Packet5EntityEquipment)event.getPacket().getHandle();
-				if (packet.b > 0 && disguisedEntityIds.containsKey(packet.a)) {
 					event.setCancelled(true);
 				}
-			} else if (event.getPacketID() == 0x1F) {
-				Packet31RelEntityMove packet = (Packet31RelEntityMove)event.getPacket().getHandle();
-				if (mounts.containsKey(packet.a)) {
-					Packet31RelEntityMove newpacket = new Packet31RelEntityMove();
-					newpacket.a = mounts.get(packet.a);
-					newpacket.b = packet.b;
-					newpacket.c = packet.c;
-					newpacket.d = packet.d;
-					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
-				}
-			} else if (event.getPacketID() == 0x20) {
-				Packet32EntityLook packet = (Packet32EntityLook)event.getPacket().getHandle();
-				if (dragons.contains(packet.a)) {
-					Packet32EntityLook newpacket = new Packet32EntityLook();
-					newpacket.a = -packet.a;
-					int dir = packet.e + 128;
-					if (dir > 127) dir -= 256;
-					newpacket.e = (byte)dir;
-					newpacket.f = 0;
-					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
-					event.setCancelled(true);
-				} else if (mounts.containsKey(packet.a)) {
-					Packet32EntityLook newpacket = new Packet32EntityLook();
-					newpacket.a = mounts.get(packet.a);
-					newpacket.e = packet.e;
-					newpacket.f = packet.f;
-					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
-				}
-			} else if (event.getPacketID() == 0x21) {
-				Packet33RelEntityMoveLook packet = (Packet33RelEntityMoveLook)event.getPacket().getHandle();
-				if (dragons.contains(packet.a)) {
-					Packet33RelEntityMoveLook newpacket = new Packet33RelEntityMoveLook();
-					newpacket.a = -packet.a;
-					newpacket.b = packet.b;
-					newpacket.c = packet.c;
-					newpacket.d = packet.d;
-					int dir = packet.e + 128;
-					if (dir > 127) dir -= 256;
-					newpacket.e = (byte)dir;
-					newpacket.f = 0;
-					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
-					Packet28EntityVelocity packet28 = new Packet28EntityVelocity(packet.a, 0.15, 0, 0.15);
-					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(packet28);
-					event.setCancelled(true);
-				} else if (mounts.containsKey(packet.a)) {
-					Packet33RelEntityMoveLook newpacket = new Packet33RelEntityMoveLook();
-					newpacket.a = mounts.get(packet.a);
-					newpacket.b = packet.b;
-					newpacket.c = packet.c;
-					newpacket.d = packet.d;
-					newpacket.e = packet.e;
-					newpacket.f = packet.f;
-					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
-				}
-			} else if (event.getPacketID() == 0x22) {
-				Packet34EntityTeleport packet = (Packet34EntityTeleport)event.getPacket().getHandle();
-				if (dragons.contains(packet.a)) {
-					Packet34EntityTeleport newpacket = new Packet34EntityTeleport();
-					newpacket.a = -packet.a;
-					newpacket.b = packet.b;
-					newpacket.c = packet.c;
-					newpacket.d = packet.d;
-					int dir = packet.e + 128;
-					if (dir > 127) dir -= 256;
-					newpacket.e = (byte)dir;
-					newpacket.f = 0;
-					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
-					event.setCancelled(true);
-				} else if (mounts.containsKey(packet.a)) {
-					Packet34EntityTeleport newpacket = new Packet34EntityTeleport();
-					newpacket.a = mounts.get(packet.a);
-					newpacket.b = packet.b;
-					newpacket.c = packet.c;
-					newpacket.d = packet.d;
-					newpacket.e = packet.e;
-					newpacket.f = packet.f;
-					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
-				}
-			} else if (event.getPacketID() == 0x23) {
-				Packet35EntityHeadRotation packet = (Packet35EntityHeadRotation)event.getPacket().getHandle();
-				if (dragons.contains(packet.a)) {
+			} else if (hideArmor && packet instanceof PacketPlayOutEntityEquipment) {
+				if (refPacketEntityEquipment.getInt(packet, "b") > 0 && disguisedEntityIds.containsKey(refPacketEntityEquipment.getInt(packet, "a"))) {
 					event.setCancelled(true);
 				}
-			} else if (event.getPacketID() == 0x28) {
-				Packet40EntityMetadata packet = (Packet40EntityMetadata)event.getPacket().getHandle();
-				DisguiseSpell.Disguise disguise = disguisedEntityIds.get(packet.a);
+			} else if (packet instanceof PacketPlayOutRelEntityMove) {
+				int entId = refPacketRelEntityMove.getInt(packet, "a");
+				if (mounts.containsKey(entId)) {
+					PacketPlayOutRelEntityMove newpacket = new PacketPlayOutRelEntityMove(entId, refPacketRelEntityMove.getByte(packet, "b"), refPacketRelEntityMove.getByte(packet, "c"), refPacketRelEntityMove.getByte(packet, "d"));
+					((CraftPlayer)player).getHandle().playerConnection.sendPacket(newpacket);
+				}
+			} else if (packet instanceof PacketPlayOutEntityMetadata) {
+				int entId = refPacketEntityMetadata.getInt(packet, "a");
+				DisguiseSpell.Disguise disguise = disguisedEntityIds.get(entId);
 				if (disguise != null && disguise.getEntityType() != EntityType.PLAYER) {
+					event.setCancelled(true);
+				}
+			} else if (packet instanceof PacketPlayOutRelEntityMoveLook) {
+				int entId = refPacketRelEntityMove.getInt(packet, "a");
+				if (dragons.contains(entId)) {
+					PacketContainer clone = packetContainer.deepClone();
+					PacketPlayOutRelEntityMoveLook newpacket = (PacketPlayOutRelEntityMoveLook)clone.getHandle();
+					int dir = refPacketRelEntityMoveLook.getByte(newpacket, "e") + 128;
+					if (dir > 127) dir -= 256;
+					refPacketRelEntityMoveLook.setByte(newpacket, "e", (byte)dir);
+					event.setPacket(clone);
+					PacketPlayOutEntityVelocity packet28 = new PacketPlayOutEntityVelocity(entId, 0.15, 0, 0.15);
+					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(packet28);
+				} else if (mounts.containsKey(entId)) {
+					PacketContainer clone = packetContainer.deepClone();
+					PacketPlayOutRelEntityMoveLook newpacket = (PacketPlayOutRelEntityMoveLook)clone.getHandle();
+					refPacketRelEntityMoveLook.setInt(newpacket, "a", mounts.get(entId));
+					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
+				}
+			} else if (packet instanceof PacketPlayOutEntityLook) {
+				int entId = refPacketEntityLook.getInt(packet, "a");
+				if (dragons.contains(entId)) {
+					PacketContainer clone = packetContainer.deepClone();
+					PacketPlayOutEntityLook newpacket = (PacketPlayOutEntityLook)clone.getHandle();
+					int dir = refPacketEntityLook.getByte(newpacket, "e") + 128;
+					if (dir > 127) dir -= 256;
+					refPacketEntityLook.setByte(newpacket, "e", (byte)dir);
+					event.setPacket(clone);
+					PacketPlayOutEntityVelocity packet28 = new PacketPlayOutEntityVelocity(entId, 0.15, 0, 0.15);
+					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(packet28);
+				} else if (mounts.containsKey(entId)) {
+					PacketContainer clone = packetContainer.deepClone();
+					PacketPlayOutEntityLook newpacket = (PacketPlayOutEntityLook)clone.getHandle();
+					refPacketEntityLook.setInt(newpacket, "a", mounts.get(entId));
+					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
+				}
+			} else if (packet instanceof PacketPlayOutEntityTeleport) {
+				int entId = refPacketRelEntityTeleport.getInt(packet, "a");
+				if (dragons.contains(entId)) {
+					PacketContainer clone = packetContainer.deepClone();
+					PacketPlayOutEntityTeleport newpacket = (PacketPlayOutEntityTeleport)clone.getHandle();
+					int dir = refPacketRelEntityTeleport.getByte(newpacket, "e") + 128;
+					if (dir > 127) dir -= 256;
+					refPacketRelEntityTeleport.setByte(newpacket, "e", (byte)dir);
+					event.setPacket(clone);
+					PacketPlayOutEntityVelocity packet28 = new PacketPlayOutEntityVelocity(entId, 0.15, 0, 0.15);
+					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(packet28);
+				} else if (mounts.containsKey(entId)) {
+					PacketContainer clone = packetContainer.deepClone();
+					PacketPlayOutEntityTeleport newpacket = (PacketPlayOutEntityTeleport)clone.getHandle();
+					refPacketRelEntityTeleport.setInt(newpacket, "a", mounts.get(entId));
+					((CraftPlayer)event.getPlayer()).getHandle().playerConnection.sendPacket(newpacket);
+				}
+			} else if (packet instanceof PacketPlayOutEntityHeadRotation) {
+				int entId = refPacketEntityHeadRot.getInt(packet, "a");
+				if (dragons.contains(entId)) {
 					event.setCancelled(true);
 				}
 			}
@@ -497,7 +501,7 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 	
 	@Override
 	protected void sendDestroyEntityPackets(Player disguised, int entityId) {
-		Packet29DestroyEntity packet29 = new Packet29DestroyEntity(entityId);
+		PacketPlayOutEntityDestroy packet29 = new PacketPlayOutEntityDestroy(entityId);
 		final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
 		tracker.a(((CraftPlayer)disguised).getHandle(), packet29);
 	}
@@ -523,9 +527,9 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 				EntityPlayer ep = ((CraftPlayer)viewer).getHandle();
 				try {
 					for (Packet packet : packets) {
-						if (packet instanceof Packet40EntityMetadata) {
+						if (packet instanceof PacketPlayOutEntityMetadata) {
 							protocolManager.sendServerPacket(viewer, new PacketContainer(40, packet), false);
-						} else if (packet instanceof Packet20NamedEntitySpawn) {
+						} else if (packet instanceof PacketPlayOutNamedEntitySpawn) {
 							protocolManager.sendServerPacket(viewer, new PacketContainer(20, packet), false);
 						} else {
 							ep.playerConnection.sendPacket(packet);
@@ -546,9 +550,9 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 			if (packets != null && packets.size() > 0) {
 				final EntityTracker tracker = ((CraftWorld)disguised.getWorld()).getHandle().tracker;
 				for (Packet packet : packets) {
-					if (packet instanceof Packet40EntityMetadata) {
+					if (packet instanceof PacketPlayOutEntityMetadata) {
 						broadcastPacket(disguised, 40, packet);
-					} else if (packet instanceof Packet20NamedEntitySpawn) {
+					} else if (packet instanceof PacketPlayOutEntityMetadata) {
 						broadcastPacket(disguised, 20, packet);
 					} else {
 						tracker.a(((CraftPlayer)disguised).getHandle(), packet);
@@ -561,103 +565,106 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 	private List<Packet> getPacketsToSend(Player disguised, DisguiseSpell.Disguise disguise, Entity entity) {
 		List<Packet> packets = new ArrayList<Packet>();
 		if (entity instanceof EntityHuman) {
-			Packet20NamedEntitySpawn packet20 = new Packet20NamedEntitySpawn((EntityHuman)entity);
-			packet20.a = disguised.getEntityId();
+			PacketPlayOutNamedEntitySpawn packet20 = new PacketPlayOutNamedEntitySpawn((EntityHuman)entity);
+			refPacketNamedEntity.setInt(packet20, "a", disguised.getEntityId());
 			packets.add(packet20);
 			
 			ItemStack inHand = disguised.getItemInHand();
 			if (inHand != null && inHand.getType() != Material.AIR) {
-				Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
+				PacketPlayOutEntityEquipment packet5 = new PacketPlayOutEntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
 				packets.add(packet5);
 			}
 			
 			ItemStack helmet = disguised.getInventory().getHelmet();
 			if (helmet != null && helmet.getType() != Material.AIR) {
-				Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 4, CraftItemStack.asNMSCopy(helmet));
+				PacketPlayOutEntityEquipment packet5 = new PacketPlayOutEntityEquipment(disguised.getEntityId(), 4, CraftItemStack.asNMSCopy(helmet));
 				packets.add(packet5);
 			}
 			
 			ItemStack chestplate = disguised.getInventory().getChestplate();
 			if (chestplate != null && chestplate.getType() != Material.AIR) {
-				Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 3, CraftItemStack.asNMSCopy(chestplate));
+				PacketPlayOutEntityEquipment packet5 = new PacketPlayOutEntityEquipment(disguised.getEntityId(), 3, CraftItemStack.asNMSCopy(chestplate));
 				packets.add(packet5);
 			}
 			
 			ItemStack leggings = disguised.getInventory().getLeggings();
 			if (leggings != null && leggings.getType() != Material.AIR) {
-				Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 2, CraftItemStack.asNMSCopy(leggings));
+				PacketPlayOutEntityEquipment packet5 = new PacketPlayOutEntityEquipment(disguised.getEntityId(), 2, CraftItemStack.asNMSCopy(leggings));
 				packets.add(packet5);
 			}
 			
 			ItemStack boots = disguised.getInventory().getBoots();
 			if (boots != null && boots.getType() != Material.AIR) {
-				Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 1, CraftItemStack.asNMSCopy(boots));
+				PacketPlayOutEntityEquipment packet5 = new PacketPlayOutEntityEquipment(disguised.getEntityId(), 1, CraftItemStack.asNMSCopy(boots));
 				packets.add(packet5);
 			}
 		} else if (entity instanceof EntityLiving) {
-			Packet24MobSpawn packet24 = new Packet24MobSpawn((EntityLiving)entity);
-			packet24.a = disguised.getEntityId();
+			PacketPlayOutSpawnEntityLiving packet24 = new PacketPlayOutSpawnEntityLiving((EntityLiving)entity);
+			refPacketSpawnEntityLiving.setInt(packet24, "a", disguised.getEntityId());
 			if (dragons.contains(disguised.getEntityId())) {
-				int dir = packet24.i + 128;
+				int dir = refPacketSpawnEntityLiving.getByte(packet24, "i") + 128;
 				if (dir > 127) dir -= 256;
-				packet24.i = (byte)dir;
-				packet24.j = 0;
-				packet24.k = 1;
+				refPacketSpawnEntityLiving.setByte(packet24, "i", (byte)dir);
+				refPacketSpawnEntityLiving.setByte(packet24, "j", (byte)0);
+				refPacketSpawnEntityLiving.setByte(packet24, "k", (byte)1);
 			}
 			packets.add(packet24);
-			Packet40EntityMetadata packet40 = new Packet40EntityMetadata(disguised.getEntityId(), entity.getDataWatcher(), false);
+			PacketPlayOutEntityMetadata packet40 = new PacketPlayOutEntityMetadata(disguised.getEntityId(), entity.getDataWatcher(), false);
 			packets.add(packet40);
 			if (dragons.contains(disguised.getEntityId())) {
-				Packet28EntityVelocity packet28 = new Packet28EntityVelocity(disguised.getEntityId(), 0.15, 0, 0.15);
+				PacketPlayOutEntityVelocity packet28 = new PacketPlayOutEntityVelocity(disguised.getEntityId(), 0.15, 0, 0.15);
 				packets.add(packet28);
 			}
 			
 			if (disguise.getEntityType() == EntityType.ZOMBIE || disguise.getEntityType() == EntityType.SKELETON) {
 				ItemStack inHand = disguised.getItemInHand();
 				if (inHand != null && inHand.getType() != Material.AIR) {
-					Packet5EntityEquipment packet5 = new Packet5EntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
+					PacketPlayOutEntityEquipment packet5 = new PacketPlayOutEntityEquipment(disguised.getEntityId(), 0, CraftItemStack.asNMSCopy(inHand));
 					packets.add(packet5);
 				}
 			}
 		} else if (entity instanceof EntityFallingBlock) {
-			Packet23VehicleSpawn packet23 = new Packet23VehicleSpawn(entity, 70, disguise.getVar1() | ((byte)disguise.getVar2()) << 16);
-			packet23.a = disguised.getEntityId();
+			PacketPlayOutSpawnEntity packet23 = new PacketPlayOutSpawnEntity(entity, 70, disguise.getVar1() | ((byte)disguise.getVar2()) << 16);
+			refPacketSpawnEntity.setInt(packet23, "a", disguised.getEntityId());
 			packets.add(packet23);
 		} else if (entity instanceof EntityItem) {
-			Packet23VehicleSpawn packet23 = new Packet23VehicleSpawn(entity, 2, 1);
-			packet23.a = disguised.getEntityId();
+			PacketPlayOutSpawnEntity packet23 = new PacketPlayOutSpawnEntity(entity, 2, 1);
+			refPacketSpawnEntity.setInt(packet23, "a", disguised.getEntityId());
 			packets.add(packet23);
-			Packet40EntityMetadata packet40 = new Packet40EntityMetadata(disguised.getEntityId(), entity.getDataWatcher(), true);
+			PacketPlayOutEntityMetadata packet40 = new PacketPlayOutEntityMetadata(disguised.getEntityId(), entity.getDataWatcher(), true);
 			packets.add(packet40);
 		}
 		
 		if (disguise.isRidingBoat()) {
 			EntityBoat boat = new EntityBoat(entity.world);
+			int boatEntId;
 			if (mounts.containsKey(disguised.getEntityId())) {
-				boat.id = mounts.get(disguised.getEntityId());
+				boatEntId = mounts.get(disguised.getEntityId());
+				refEntity.setInt(boat, "id", boatEntId);
 			} else {
-				mounts.put(disguised.getEntityId(), boat.id);
+				boatEntId = refEntity.getInt(boat, "id");
+				mounts.put(disguised.getEntityId(), boatEntId);
 			}
 			boat.setPositionRotation(disguised.getLocation().getX(), disguised.getLocation().getY(), disguised.getLocation().getZ(), disguised.getLocation().getYaw(), 0);
-			Packet23VehicleSpawn packet23 = new Packet23VehicleSpawn(boat, 1);
+			PacketPlayOutSpawnEntity packet23 = new PacketPlayOutSpawnEntity(boat, 1);
 			packets.add(packet23);
-			Packet39AttachEntity packet39 = new Packet39AttachEntity();
-			packet39.a = disguised.getEntityId();
-			packet39.b = boat.id;
+			PacketPlayOutAttachEntity packet39 = new PacketPlayOutAttachEntity();
+			refPacketAttachEntity.setInt(packet39, "b", disguised.getEntityId());
+			refPacketAttachEntity.setInt(packet39, "c", boatEntId);
 			packets.add(packet39);
 		}
 		
 		// handle passengers and vehicles
 		if (disguised.getPassenger() != null) {
-			Packet39AttachEntity packet39 = new Packet39AttachEntity();
-			packet39.a = disguised.getPassenger().getEntityId();
-			packet39.b = disguised.getEntityId();
+			PacketPlayOutAttachEntity packet39 = new PacketPlayOutAttachEntity();
+			refPacketAttachEntity.setInt(packet39, "b", disguised.getPassenger().getEntityId());
+			refPacketAttachEntity.setInt(packet39, "c", disguised.getEntityId());
 			packets.add(packet39);
 		}
 		if (disguised.getVehicle() != null) {
-			Packet39AttachEntity packet39 = new Packet39AttachEntity();
-			packet39.a = disguised.getEntityId();
-			packet39.b = disguised.getVehicle().getEntityId();
+			PacketPlayOutAttachEntity packet39 = new PacketPlayOutAttachEntity();
+			refPacketAttachEntity.setInt(packet39, "b", disguised.getEntityId());
+			refPacketAttachEntity.setInt(packet39, "c", disguised.getVehicle().getEntityId());
 			packets.add(packet39);
 		}
 		
@@ -666,7 +673,7 @@ public class DisguiseManager_1_6_R3 extends DisguiseManager {
 	
 	@Override
 	protected void sendPlayerSpawnPackets(Player player) {
-		Packet20NamedEntitySpawn packet20 = new Packet20NamedEntitySpawn(((CraftPlayer)player).getHandle());
+		PacketPlayOutNamedEntitySpawn packet20 = new PacketPlayOutNamedEntitySpawn(((CraftPlayer)player).getHandle());
 		final EntityTracker tracker = ((CraftWorld)player.getWorld()).getHandle().tracker;
 		tracker.a(((CraftPlayer)player).getHandle(), packet20);
 	}

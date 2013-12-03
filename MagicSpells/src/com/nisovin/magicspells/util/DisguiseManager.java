@@ -16,9 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketAdapter;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.spells.targeted.DisguiseSpell;
 
@@ -32,13 +29,10 @@ public abstract class DisguiseManager implements Listener {
 	protected Set<Integer> dragons = Collections.synchronizedSet(new HashSet<Integer>());
 	protected Map<Integer, Integer> mounts = new ConcurrentHashMap<Integer, Integer>();
 
-	protected ProtocolManager protocolManager;
-	protected PacketAdapter packetListener = null;
-	protected Random random = new Random();	
+	protected Random random = new Random();
 
 	public DisguiseManager(MagicConfig config) {
-		this.hideArmor = config.getBoolean("general.disguise-spell-hide-armor", false);		
-		protocolManager = ProtocolLibrary.getProtocolManager();		
+		this.hideArmor = config.getBoolean("general.disguise-spell-hide-armor", false);
 		Bukkit.getPluginManager().registerEvents(this, MagicSpells.plugin);
 	}
 	
@@ -91,8 +85,7 @@ public abstract class DisguiseManager implements Listener {
 	
 	public void destroy() {
 		HandlerList.unregisterAll(this);
-		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-		protocolManager.removePacketListener(packetListener);
+		cleanup();
 		
 		disguises.clear();
 		disguisedEntityIds.clear();
@@ -100,6 +93,8 @@ public abstract class DisguiseManager implements Listener {
 		mounts.clear();
 		disguiseSpells.clear();
 	}
+	
+	protected abstract void cleanup();
 	
 	private void applyDisguise(Player player, DisguiseSpell.Disguise disguise) {
 		sendDestroyEntityPackets(player);

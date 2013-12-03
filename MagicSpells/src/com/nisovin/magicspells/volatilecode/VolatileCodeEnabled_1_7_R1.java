@@ -2,14 +2,12 @@ package com.nisovin.magicspells.volatilecode;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.server.v1_7_R1.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
@@ -30,7 +28,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
-import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.DisguiseManager;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -135,14 +132,19 @@ public class VolatileCodeEnabled_1_7_R1 implements VolatileCodeHandle {
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void toggleLeverOrButton(Block block) {
-		// TODO
+		net.minecraft.server.v1_7_R1.Block.e(block.getType().getId()).interact(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void pressPressurePlate(Block block) {
-		// TODO
+		block.setData((byte) (block.getData() ^ 0x1));
+		net.minecraft.server.v1_7_R1.World w = ((CraftWorld)block.getWorld()).getHandle();
+		w.applyPhysics(block.getX(), block.getY(), block.getZ(), net.minecraft.server.v1_7_R1.Block.e(block.getType().getId()));
+		w.applyPhysics(block.getX(), block.getY()-1, block.getZ(), net.minecraft.server.v1_7_R1.Block.e(block.getType().getId()));
 	}
 
 	@Override
@@ -388,7 +390,11 @@ public class VolatileCodeEnabled_1_7_R1 implements VolatileCodeHandle {
 	
 	@Override
 	public DisguiseManager getDisguiseManager(MagicConfig config) {
-		return new DisguiseManager_1_6_R3(config);
+		if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+			return new DisguiseManager_1_7_R1_ProtocolLib(config);
+		} else {
+			return new DisguiseManager_1_7_R1_Injected(config);
+		}
 	}
 
 	@Override

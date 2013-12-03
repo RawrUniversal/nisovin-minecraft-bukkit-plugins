@@ -7,6 +7,7 @@ import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
@@ -18,6 +19,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.material.Button;
+import org.bukkit.material.Lever;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -41,12 +44,15 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	@Override
 	public void toggleLeverOrButton(Block block) {
 		if (block.getType() == Material.STONE_BUTTON) {
-			block.setData((byte) (block.getData() ^ 0x1));
+			BlockState state = block.getState();
+			Button button = (Button)state.getData();
+			button.setPowered(true);
+			state.update();
 		} else {
-			byte data = block.getData();
-			byte var1 = (byte) (data & 7);
-			byte var2 = (byte) (8 - (data & 8));
-			block.setData((byte) (var1 + var2));
+			BlockState state = block.getState();
+			Lever lever = (Lever)state.getData();
+			lever.setPowered(!lever.isPowered());
+			state.update();
 		}
 	}
 

@@ -134,11 +134,13 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 		((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void toggleLeverOrButton(Block block) {
 		net.minecraft.server.v1_6_R3.Block.byId[block.getType().getId()].interact(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), null, 0, 0, 0, 0);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void pressPressurePlate(Block block) {
 		block.setData((byte) (block.getData() ^ 0x1));
