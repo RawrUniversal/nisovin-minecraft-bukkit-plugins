@@ -47,20 +47,24 @@ public class RightClickListener implements Listener {
 	    if (spell == null) return;
 
 	    Player player = event.getPlayer();
-		Long lastCastTime = lastCast.get(player.getName());
-		if (lastCastTime != null && lastCastTime + plugin.globalCooldown > System.currentTimeMillis()) {
-			return;
-		} else {
-			lastCast.put(player.getName(), System.currentTimeMillis());
-		}
+	    Spellbook spellbook = MagicSpells.getSpellbook(player);
 	    
-	    if (MagicSpells.getSpellbook(player).canCast(spell)) {
+	    if (spellbook.hasSpell(spell) && spellbook.canCast(spell)) {
+	    	
+			Long lastCastTime = lastCast.get(player.getName());
+			if (lastCastTime != null && lastCastTime + plugin.globalCooldown > System.currentTimeMillis()) {
+				return;
+			} else {
+				lastCast.put(player.getName(), System.currentTimeMillis());
+			}
+			
 	    	MagicSpells.scheduleDelayedTask(new Runnable() {
 	    		public void run() {
 	    	    	spell.cast(event.getPlayer());
 	    		}
 	    	}, 0);
 	    	event.setCancelled(true);
+	    	
 	    }
 	}
 	
