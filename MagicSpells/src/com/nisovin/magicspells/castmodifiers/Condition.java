@@ -58,6 +58,8 @@ public abstract class Condition {
 		conditions.put("hasitem", HasItemCondition.class);
 		conditions.put("healthabove", HealthAboveCondition.class);
 		conditions.put("healthbelow", HealthBelowCondition.class);
+		conditions.put("manaabove", ManaAboveCondition.class);
+		conditions.put("manabelow", ManaBelowCondition.class);
 		conditions.put("foodabove", FoodAboveCondition.class);
 		conditions.put("foodbelow", FoodBelowCondition.class);
 		conditions.put("levelabove", LevelAboveCondition.class);
