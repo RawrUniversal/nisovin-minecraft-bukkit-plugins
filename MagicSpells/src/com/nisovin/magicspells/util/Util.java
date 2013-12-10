@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -178,7 +179,11 @@ public class Util {
 							} catch (NumberFormatException ex) {						
 							}
 						}
-						meta.addEnchant(e, level, true);
+						if (meta instanceof EnchantmentStorageMeta) {
+							((EnchantmentStorageMeta)meta).addStoredEnchant(e, level, true);
+						} else {
+							meta.addEnchant(e, level, true);
+						}
 					}
 				}
 				if (enchants.size() == 0) {
@@ -303,6 +308,7 @@ public class Util {
 			
 			return item;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

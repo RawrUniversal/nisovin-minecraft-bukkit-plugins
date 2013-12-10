@@ -399,6 +399,9 @@ public class VolatileCodeEnabled_1_7_R1 implements VolatileCodeHandle {
 
 	@Override
 	public ItemStack addAttributes(ItemStack item, String[] names, String[] types, double[] amounts, int[] operations) {
+		if (!(item instanceof CraftItemStack)) {
+			item = CraftItemStack.asCraftCopy(item);
+		}
 		NBTTagCompound tag = getTag(item);
 		
 		NBTTagList list = new NBTTagList();
