@@ -20,9 +20,11 @@ public class RightClickEntityListener extends PassiveListener {
 
 	Map<EntityType, List<PassiveSpell>> types = new HashMap<EntityType, List<PassiveSpell>>();
 	List<PassiveSpell> allTypes = new ArrayList<PassiveSpell>();
+	boolean ignoreCancelled = true;
 	
 	@Override
 	public void registerSpell(PassiveSpell spell, PassiveTrigger trigger, String var) {
+		ignoreCancelled = spell.ignoreCancelled();
 		if (var == null || var.isEmpty()) {
 			allTypes.add(spell);
 		} else {
@@ -41,8 +43,9 @@ public class RightClickEntityListener extends PassiveListener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onRightClickEntity(PlayerInteractEntityEvent event) {
+		if (ignoreCancelled && event.isCancelled()) return;
 		if (!(event.getRightClicked() instanceof LivingEntity)) return;
 		if (!allTypes.isEmpty()) {
 			Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());

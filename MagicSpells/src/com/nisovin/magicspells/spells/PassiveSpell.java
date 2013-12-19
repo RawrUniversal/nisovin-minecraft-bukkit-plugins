@@ -33,6 +33,7 @@ public class PassiveSpell extends Spell {
 	private float chance;
 	private boolean castWithoutTarget;
 	private int delay;
+	private boolean ignoreCancelled;
 	private boolean sendFailureMessages;
 	
 	private List<String> spellNames;
@@ -47,6 +48,7 @@ public class PassiveSpell extends Spell {
 		chance = getConfigFloat("chance", 100F) / 100F;
 		castWithoutTarget = getConfigBoolean("cast-without-target", false);
 		delay = getConfigInt("delay", -1);
+		ignoreCancelled = getConfigBoolean("ignore-cancelled", true);
 		sendFailureMessages = getConfigBoolean("send-failure-messages", false);
 		
 		spellNames = getConfigStringList("spells", null);
@@ -143,7 +145,7 @@ public class PassiveSpell extends Spell {
 			disabled = true;
 			SpellCastEvent event = new SpellCastEvent(this, caster, SpellCastState.NORMAL, 1.0F, null, this.cooldown, this.reagents.clone(), 0);
 			Bukkit.getPluginManager().callEvent(event);
-			if (!event.isCancelled()) {
+			if (!event.isCancelled() && event.getSpellCastState() == SpellCastState.NORMAL) {
 				if (event.haveReagentsChanged() && !hasReagents(caster, event.getReagents())) {
 					return;
 				}
@@ -198,6 +200,10 @@ public class PassiveSpell extends Spell {
 				}
 			}
 		}
+	}
+	
+	public boolean ignoreCancelled() {
+		return ignoreCancelled;
 	}
 	
 	@Override

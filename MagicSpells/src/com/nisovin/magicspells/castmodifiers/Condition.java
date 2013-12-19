@@ -79,6 +79,7 @@ public abstract class Condition {
 		conditions.put("entitytype", EntityTypeCondition.class);
 		conditions.put("distancemorethan", DistanceMoreThan.class);
 		conditions.put("distancelessthan", DistanceLessThan.class);
+		conditions.put("name", NameCondition.class);
 	}
 	
 }
