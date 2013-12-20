@@ -21,7 +21,7 @@ public class SneakListener extends PassiveListener {
 			if (sneak == null) sneak = new ArrayList<PassiveSpell>();
 			sneak.add(spell);
 		} else if (trigger == PassiveTrigger.STOP_SNEAK) {
-			if (sneak == null) stopSneak = new ArrayList<PassiveSpell>();
+			if (stopSneak == null) stopSneak = new ArrayList<PassiveSpell>();
 			stopSneak.add(spell);
 		}
 	}
