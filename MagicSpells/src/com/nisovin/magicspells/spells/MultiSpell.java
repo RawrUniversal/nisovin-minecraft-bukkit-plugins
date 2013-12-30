@@ -205,18 +205,19 @@ public final class MultiSpell extends InstantSpell {
 	
 	private class DelayedSpell implements Runnable {
 		private Spell spell;
-		private Player player;
+		private String playerName;
 		private float power;
 		
 		public DelayedSpell(Spell spell, Player player, float power) {
 			this.spell = spell;
-			this.player = player;
+			this.playerName = player.getName();
 			this.power = power;
 		}
 		
 		@Override
 		public void run() {
-			if (player.isValid()) {
+			Player player = Bukkit.getPlayerExact(playerName);
+			if (player != null && player.isValid()) {
 				castSpell(player, spell, power);
 			}
 		}

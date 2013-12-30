@@ -29,7 +29,10 @@ class MagicPlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		plugin.spellbooks.remove(event.getPlayer().getName());
+		Spellbook spellbook = plugin.spellbooks.remove(event.getPlayer().getName());
+		if (spellbook != null) {
+			spellbook.destroy();
+		}
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)

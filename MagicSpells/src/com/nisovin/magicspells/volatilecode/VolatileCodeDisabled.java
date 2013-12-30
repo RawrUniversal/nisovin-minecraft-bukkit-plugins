@@ -96,8 +96,10 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	public void playSound(Location location, String sound, float volume, float pitch) {
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void playSound(Player player, String sound, float volume, float pitch) {
+		player.playSound(player.getLocation(), sound, volume, pitch);
 	}
 
 	@Override

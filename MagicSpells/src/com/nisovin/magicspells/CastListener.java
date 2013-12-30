@@ -22,8 +22,8 @@ public class CastListener implements Listener {
 
 	MagicSpells plugin;
 	
-	private HashSet<Player> noCast = new HashSet<Player>();
-	private HashMap<Player,Long> lastCast = new HashMap<Player, Long>();
+	private HashSet<String> noCast = new HashSet<String>();
+	private HashMap<String,Long> lastCast = new HashMap<String, Long>();
 
 	public CastListener(MagicSpells plugin) {
 		this.plugin = plugin;
@@ -39,10 +39,14 @@ public class CastListener implements Listener {
 		if (event.hasBlock()) {
 			Material m = event.getClickedBlock().getType();
 			if (m == Material.WOODEN_DOOR || 
+					m == Material.TRAP_DOOR ||
 					m == Material.BED || 
 					m == Material.WORKBENCH ||
 					m == Material.CHEST || 
+					m == Material.TRAPPED_CHEST ||
+					m == Material.ENDER_CHEST ||
 					m == Material.FURNACE || 
+					m == Material.HOPPER ||
 					m == Material.LEVER ||
 					m == Material.STONE_BUTTON ||
 					m == Material.ENCHANTMENT_TABLE) {
@@ -55,7 +59,7 @@ public class CastListener implements Listener {
 		}
 		if (noInteract) {
 			// special block -- don't do normal interactions
-			noCast.add(event.getPlayer());
+			noCast.add(event.getPlayer().getName());
 		} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			// left click - cast
 			if (!plugin.castOnAnimate) {
@@ -161,10 +165,11 @@ public class CastListener implements Listener {
 		if (!plugin.castOnAnimate) return;
 		
 		Player p = event.getPlayer();
-		if (noCast.contains(p)) {
+		String n = p.getName();
+		if (noCast.contains(n)) {
 			// clicking on special block -- don't cast
-			noCast.remove(p);
-			lastCast.put(p, System.currentTimeMillis());
+			noCast.remove(n);
+			lastCast.put(n, System.currentTimeMillis());
 		} else {
 			// left click -- cast spell
 			castSpell(p);
@@ -179,11 +184,11 @@ public class CastListener implements Listener {
 		if (spell != null && spell.canCastWithItem()) {
 			// first check global cooldown
 			if (plugin.globalCooldown > 0 && !spell.ignoreGlobalCooldown) {
-				Long lastCastTime = lastCast.get(player);
+				Long lastCastTime = lastCast.get(player.getName());
 				if (lastCastTime != null && lastCastTime + plugin.globalCooldown > System.currentTimeMillis()) {
 					return;
 				} else {
-					lastCast.put(player, System.currentTimeMillis());
+					lastCast.put(player.getName(), System.currentTimeMillis());
 				}
 			}
 			// cast spell
