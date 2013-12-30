@@ -44,7 +44,7 @@ import com.nisovin.magicspells.util.ReflectionHelper;
 
 public class DisguiseManager_1_7_R1_Injected extends DisguiseManager {
 
-	ReflectionHelper<Packet> refPacketNamedEntity = new ReflectionHelper<Packet>(PacketPlayOutNamedEntitySpawn.class, "b");
+	ReflectionHelper<Packet> refPacketNamedEntity = new ReflectionHelper<Packet>(PacketPlayOutNamedEntitySpawn.class, "a", "b");
 	ReflectionHelper<Packet> refPacketSpawnEntityLiving = new ReflectionHelper<Packet>(PacketPlayOutSpawnEntityLiving.class, "a", "i", "j", "k");
 	ReflectionHelper<Packet> refPacketSpawnEntity = new ReflectionHelper<Packet>(PacketPlayOutSpawnEntity.class, "a");
 	ReflectionHelper<Packet> refPacketEntityEquipment = new ReflectionHelper<Packet>(PacketPlayOutEntityEquipment.class, "a", "b");
@@ -77,9 +77,9 @@ public class DisguiseManager_1_7_R1_Injected extends DisguiseManager {
 		Entity entity = null;
 		float yOffset = 0;
 		World world = ((CraftWorld)location.getWorld()).getHandle();
-		String name = disguise.getNameplateText();
-		UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
 		if (entityType == EntityType.PLAYER) {
+			String name = disguise.getNameplateText();
+			UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8));
 			entity = new EntityHuman(world, new GameProfile(uuid.toString().replaceAll("-", ""), name)) {
 				@Override
 				public boolean a(int arg0, String arg1) {
