@@ -32,6 +32,7 @@ public class SpellCastListener extends PassiveListener {
 					if (passives == null) {
 						passives = new ArrayList<PassiveSpell>();
 					}
+					passives.add(spell);
 				}
 			}
 		}
