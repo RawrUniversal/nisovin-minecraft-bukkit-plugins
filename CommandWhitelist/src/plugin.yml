@@ -1,0 +1,11 @@
+name: CommandWhitelist
+main: com.nisovin.commandwhitelist.CommandWhitelist
+version: 3
+
+commands:
+    commandwhitelistreload:
+        permission: commandwhitelist.admin
+
+permissions:
+    commandwhitelist.admin:
+        default: op

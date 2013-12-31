@@ -1,0 +1,7 @@
+commands:
+  - who
+  - list
+  
+no-report:
+  - dance
+  - kiss
