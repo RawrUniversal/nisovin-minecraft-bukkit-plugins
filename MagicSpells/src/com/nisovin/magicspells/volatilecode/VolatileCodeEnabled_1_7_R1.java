@@ -2,6 +2,7 @@ package com.nisovin.magicspells.volatilecode;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.server.v1_7_R1.*;
@@ -423,6 +424,67 @@ public class VolatileCodeEnabled_1_7_R1 implements VolatileCodeHandle {
 		
 		setTag(item, tag);
 		return item;
+	}
+
+	@Override
+	public void addEntityAttribute(LivingEntity entity, String attribute, double amount, int operation) {
+		EntityInsentient nmsEnt = (EntityInsentient) ((CraftLivingEntity)entity).getHandle();
+		IAttribute attr = null;
+		if (attribute.equals("generic.maxHealth")) {
+			attr = GenericAttributes.a;
+		} else if (attribute.equals("generic.followRange")) {
+			attr = GenericAttributes.b;
+		} else if (attribute.equals("generic.knockbackResistance")) {
+			attr = GenericAttributes.c;
+		} else if (attribute.equals("generic.movementSpeed")) {
+			attr = GenericAttributes.e;
+		} else if (attribute.equals("generic.attackDamage")) {
+			attr = GenericAttributes.e;
+		}
+		if (attr != null) {
+			AttributeInstance attributes = nmsEnt.getAttributeInstance(attr);
+			attributes.a(new AttributeModifier("MagicSpells " + attribute, amount, operation));
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void removeAI(LivingEntity entity) {
+        try {
+        	EntityInsentient ev = (EntityInsentient)((CraftLivingEntity)entity).getHandle();
+               
+            Field goalsField = EntityInsentient.class.getDeclaredField("goalSelector");
+            goalsField.setAccessible(true);
+            PathfinderGoalSelector goals = (PathfinderGoalSelector) goalsField.get(ev);
+           
+            Field listField = PathfinderGoalSelector.class.getDeclaredField("b");
+            listField.setAccessible(true);
+            List list = (List)listField.get(goals);
+            list.clear();
+            listField = PathfinderGoalSelector.class.getDeclaredField("c");
+            listField.setAccessible(true);
+            list = (List)listField.get(goals);
+            list.clear();
+
+            goals.a(0, new PathfinderGoalFloat(ev));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+
+	@Override
+	public void addAILookAtPlayer(LivingEntity entity, int range) {
+        try {
+        	EntityInsentient ev = (EntityInsentient)((CraftLivingEntity)entity).getHandle();
+               
+            Field goalsField = EntityInsentient.class.getDeclaredField("goalSelector");
+            goalsField.setAccessible(true);
+            PathfinderGoalSelector goals = (PathfinderGoalSelector) goalsField.get(ev);
+
+            goals.a(1, new PathfinderGoalLookAtPlayer(ev, EntityHuman.class, range, 1.0F));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 
 }

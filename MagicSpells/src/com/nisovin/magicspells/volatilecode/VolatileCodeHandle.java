@@ -62,4 +62,10 @@ public interface VolatileCodeHandle {
 	
 	public ItemStack addAttributes(ItemStack item, String[] names, String[] types, double[] amounts, int[] operations);
 	
+	public void addEntityAttribute(LivingEntity entity, String attribute, double amount, int operation);
+	
+	public void removeAI(LivingEntity entity);
+	
+	public void addAILookAtPlayer(LivingEntity entity, int range);
+	
 }

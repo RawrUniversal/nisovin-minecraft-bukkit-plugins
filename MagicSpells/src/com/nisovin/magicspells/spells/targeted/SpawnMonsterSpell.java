@@ -52,6 +52,12 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 	private int duration;
 	private String nameplateText;
 	private boolean useCasterName;
+	private boolean removeAI;
+	private boolean addLookAtPlayerAI;
+	
+	private String[] attributeTypes;
+	private double[] attributeValues;
+	private int[] attributeOperations;
 	
 	private Random random = new Random();
 	
@@ -101,7 +107,9 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 					if (split.length > 1) duration = Integer.parseInt(split[1]);
 					int strength = 0;
 					if (split.length > 2) strength = Integer.parseInt(split[2]);
-					potionEffects.add(new PotionEffect(type, duration, strength, false));
+					boolean ambient = false;
+					if (split.length > 3 && split[3].equalsIgnoreCase("ambient")) ambient = true;
+					potionEffects.add(new PotionEffect(type, duration, strength, ambient));
 				} catch (Exception e) {
 					MagicSpells.debug("Invalid potion effect string on '" + internalName + "' spell: " + data);
 				}
@@ -110,7 +118,36 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 		
 		duration = getConfigInt("duration", 0);
 		nameplateText = getConfigString("nameplate-text", "");
-		useCasterName = getConfigBoolean("use-caster-name", false);
+		removeAI = getConfigBoolean("remove-ai", false);
+		addLookAtPlayerAI = getConfigBoolean("add-look-at-player-ai", false);
+		
+		List<String> attributes = getConfigStringList("attributes", null);
+		if (attributes != null && attributes.size() > 0) {
+			attributeTypes = new String[attributes.size()];
+			attributeValues = new double[attributes.size()];
+			attributeOperations = new int[attributes.size()];
+			for (int i = 0; i < attributes.size(); i++) {
+				String s = attributes.get(i);
+				try {
+					String[] data = s.split(" ");
+					String type = data[0];
+					double val = Double.parseDouble(data[1]);
+					int op = 0;
+					if (data.length > 2) {
+						if (data[2].equalsIgnoreCase("mult")) {
+							op = 1;
+						} else if (data[2].toLowerCase().contains("add") && data[2].toLowerCase().contains("perc")) {
+							op = 2;
+						}
+					}
+					attributeTypes[i] = type;
+					attributeValues[i] = val;
+					attributeOperations[i] = op;
+				} catch (Exception e) {
+					MagicSpells.error("Invalid attribute on '" + spellName + "' spell: " + s);
+				}
+			}
+		}
 		
 		if (entityType == null || !entityType.isAlive()) {
 			MagicSpells.error("SpawnMonster spell '" + spellName + "' has an invalid entity-type!");
@@ -232,6 +269,22 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 			// add potion effects
 			if (potionEffects != null) {
 				((LivingEntity)entity).addPotionEffects(potionEffects);
+			}
+			// add attributes
+			if (attributeTypes != null && attributeTypes.length > 0) {
+				for (int i = 0; i < attributeTypes.length; i++) {
+					if (attributeTypes[i] != null) {
+						//System.out.println("adding attr " + attributeTypes[i] + " " + attributeValues[i] + " " + attributeOperations[i]);
+						MagicSpells.getVolatileCodeHandler().addEntityAttribute((LivingEntity)entity, attributeTypes[i], attributeValues[i], attributeOperations[i]);
+					}
+				}
+			}
+			// set AI
+			if (removeAI) {
+				MagicSpells.getVolatileCodeHandler().removeAI((LivingEntity)entity);
+				if (addLookAtPlayerAI) {
+					MagicSpells.getVolatileCodeHandler().addAILookAtPlayer((LivingEntity)entity, 10);
+				}
 			}
 			// play effects
 			if (player != null) {

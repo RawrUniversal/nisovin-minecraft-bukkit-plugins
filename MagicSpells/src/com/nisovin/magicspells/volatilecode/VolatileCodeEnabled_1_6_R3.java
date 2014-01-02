@@ -423,4 +423,16 @@ public class VolatileCodeEnabled_1_6_R3 implements VolatileCodeHandle {
 		return item;
 	}
 
+	@Override
+	public void removeAI(LivingEntity entity) {
+	}
+
+	@Override
+	public void addEntityAttribute(LivingEntity entity, String attribute, double amount, int operation) {
+	}
+
+	@Override
+	public void addAILookAtPlayer(LivingEntity entity, int range) {
+	}
+
 }

@@ -2,7 +2,9 @@ package com.nisovin.magicspells.spells.targeted;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -44,6 +46,7 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 	private boolean noFire;
 	
 	private HashMap<Fireball,Float> fireballs;
+	private int taskId;
 	
 	public FireballSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -59,7 +62,17 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 		noExplosionDamageRange = getConfigInt("no-explosion-damage-range", 3);
 		noFire = getConfigBoolean("no-fire", false);
 		
-		fireballs = new HashMap<Fireball,Float>();
+		fireballs = new HashMap<Fireball, Float>();
+		taskId = MagicSpells.scheduleRepeatingTask(new Runnable() {
+			public void run() {
+				Iterator<Map.Entry<Fireball, Float>> iter = fireballs.entrySet().iterator();
+				while (iter.hasNext()) {
+					if (iter.next().getKey().isDead()) {
+						iter.remove();
+					}
+				}
+			}
+		}, 60 * 20, 60 * 20);
 	}
 
 	@Override
@@ -99,9 +112,9 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 			} else {
 				fireball = player.getWorld().spawn(loc, Fireball.class);
 				player.getWorld().playEffect(player.getLocation(), Effect.GHAST_SHOOT, 0);
+				fireballs.put(fireball, power);
 			}
 			fireball.setShooter(player);
-			fireballs.put(fireball,power);
 			
 			playSpellEffects(EffectPosition.CASTER, player);
 		}
@@ -230,6 +243,11 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 				}
 			}
 		}
+	}
+	
+	@Override
+	public void turnOff() {
+		MagicSpells.cancelTask(taskId);
 	}
 	
 }

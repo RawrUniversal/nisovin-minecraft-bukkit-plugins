@@ -178,4 +178,16 @@ public class VolatileCodeDisabled implements VolatileCodeHandle {
 	public ItemStack addAttributes(ItemStack item, String[] names, String[] types, double[] amounts, int[] operations) {
 		return item;
 	}
+
+	@Override
+	public void removeAI(LivingEntity entity) {
+	}
+
+	@Override
+	public void addEntityAttribute(LivingEntity entity, String attribute, double amount, int operation) {
+	}
+
+	@Override
+	public void addAILookAtPlayer(LivingEntity entity, int range) {
+	}
 }
