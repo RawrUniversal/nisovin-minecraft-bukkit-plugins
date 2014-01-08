@@ -32,7 +32,7 @@ public class TicksListener extends PassiveListener {
 				tickers.put(interval, ticker);
 			}
 			ticker.add(spell);
-		} catch (NumberFormatException e) {			
+		} catch (NumberFormatException e) {
 		}
 	}
 	
