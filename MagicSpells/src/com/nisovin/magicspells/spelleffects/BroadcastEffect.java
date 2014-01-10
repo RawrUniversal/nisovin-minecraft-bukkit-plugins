@@ -30,6 +30,25 @@ public class BroadcastEffect extends SpellEffect {
 
 	@Override
 	public void playEffectLocation(Location location) {
+		broadcast(location, message);
+	}
+	
+	@Override
+	public void playEffect(Entity entity) {
+		if (targeted) {
+			if (entity instanceof Player) {
+				MagicSpells.sendMessage((Player)entity, message);
+			}
+		} else {
+			String msg = message;
+			if (entity instanceof Player) {
+				msg = msg.replace("%a", ((Player)entity).getDisplayName()).replace("%t", ((Player)entity).getDisplayName()).replace("%n", ((Player)entity).getName());
+			}
+			broadcast(entity.getLocation(), msg);
+		}
+	}
+	
+	private void broadcast(Location location, String message) {
 		if (range <= 0) {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				MagicSpells.sendMessage(player, message);
@@ -40,17 +59,6 @@ public class BroadcastEffect extends SpellEffect {
 					MagicSpells.sendMessage(player, message);
 				}
 			}
-		}
-	}
-	
-	@Override
-	public void playEffect(Entity entity) {
-		if (targeted) {
-			if (entity instanceof Player) {
-				MagicSpells.sendMessage((Player)entity, message);
-			}
-		} else {
-			playEffectLocation(entity.getLocation());
 		}
 	}
 

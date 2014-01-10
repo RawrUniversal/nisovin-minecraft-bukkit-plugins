@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,7 +47,11 @@ public class CastItem {
 			if (this.type > 0 && !MagicSpells.ignoreCastItemNames() && item.hasItemMeta()) {
 				ItemMeta meta = item.getItemMeta();
 				if (meta.hasDisplayName()) {
-					this.name = meta.getDisplayName();
+					if (MagicSpells.ignoreCastItemNameColors()) {
+						this.name = ChatColor.stripColor(meta.getDisplayName());
+					} else {
+						this.name = meta.getDisplayName();
+					}
 				}
 			}
 			if (this.type > 0 && !MagicSpells.ignoreCastItemEnchants()) {
@@ -61,7 +66,11 @@ public class CastItem {
 			String[] temp = s.split("\\|");
 			s = temp[0];
 			if (!MagicSpells.ignoreCastItemNames() && temp.length > 1) {
-				name = temp[1];
+				if (MagicSpells.ignoreCastItemNameColors()) {
+					name = ChatColor.stripColor(temp[1]);
+				} else {
+					name = temp[1];
+				}
 			}
 		}
 		if (s.contains(";")) {
@@ -108,7 +117,11 @@ public class CastItem {
 		if (i.hasItemMeta()) {
 			ItemMeta meta = i.getItemMeta();
 			if (meta.hasDisplayName()) {
-				n = meta.getDisplayName();
+				if (MagicSpells.ignoreCastItemNameColors()) {
+					n = ChatColor.stripColor(meta.getDisplayName());
+				} else {
+					n = meta.getDisplayName();
+				}
 			}
 		}
 		if (n == null && (name == null || name.isEmpty())) return true;

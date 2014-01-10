@@ -394,8 +394,8 @@ public class DisguiseManager_1_7_R1_Injected extends DisguiseManager {
 	class BackupPacketListener implements Listener {
 
 		private Field channelField;
-		Map<Packet, Long> ignoredPackets = new HashMap<Packet, Long>();
-		BukkitTask ignoredPacketsCleanTask;
+		private Map<Packet, Long> ignoredPackets = new HashMap<Packet, Long>();
+		private BukkitTask ignoredPacketsCleanTask;
 		
 		public BackupPacketListener() {
 			try {
@@ -404,10 +404,12 @@ public class DisguiseManager_1_7_R1_Injected extends DisguiseManager {
 				Bukkit.getPluginManager().registerEvents(this, MagicSpells.getInstance());
 				ignoredPacketsCleanTask = Bukkit.getScheduler().runTaskTimer(MagicSpells.getInstance(), new Runnable() {
 					public void run() {
-						Iterator<Map.Entry<Packet, Long>> iter = ignoredPackets.entrySet().iterator();
-						while (iter.hasNext()) {
-							if (iter.next().getValue() < System.currentTimeMillis() - 30000) {
-								iter.remove();
+						synchronized (ignoredPackets) {
+							Iterator<Map.Entry<Packet, Long>> iter = ignoredPackets.entrySet().iterator();
+							while (iter.hasNext()) {
+								if (iter.next().getValue() < System.currentTimeMillis() - 30000) {
+									iter.remove();
+								}
 							}
 						}
 					}
@@ -437,11 +439,15 @@ public class DisguiseManager_1_7_R1_Injected extends DisguiseManager {
 		}
 		
 		public void ignorePacket(Packet packet) {
-			ignoredPackets.put(packet, System.currentTimeMillis());
+			synchronized (ignoredPackets) {
+				ignoredPackets.put(packet, System.currentTimeMillis());
+			}
 		}
 		
 		public boolean isPacketIgnored(Packet packet) {
-			return ignoredPackets.containsKey(packet);
+			synchronized (ignoredPackets) {
+				return ignoredPackets.containsKey(packet);
+			}
 		}
 		
 		public void destroy() {
