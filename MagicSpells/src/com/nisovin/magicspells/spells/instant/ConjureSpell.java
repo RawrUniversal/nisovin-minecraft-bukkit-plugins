@@ -28,10 +28,13 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 	
 	private boolean addToInventory;
 	private boolean addToEnderChest;
+	private boolean dropIfInventoryFull;
 	private boolean powerAffectsQuantity;
 	private boolean powerAffectsChance;
 	private boolean calculateDropsIndividually;
 	private boolean autoEquip;
+	private int requiredSlot;
+	private int preferredSlot;
 	List<String> itemList;
 	private ItemStack[] itemTypes;
 	private int[] itemMinQuantities;
@@ -44,10 +47,13 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 		
 		addToInventory = getConfigBoolean("add-to-inventory", false);
 		addToEnderChest = getConfigBoolean("add-to-ender-chest", false);
+		dropIfInventoryFull = getConfigBoolean("drop-if-inventory-full", true);
 		powerAffectsQuantity = getConfigBoolean("power-affects-quantity", false);
 		powerAffectsChance = getConfigBoolean("power-affects-chance", true);
 		calculateDropsIndividually = getConfigBoolean("calculate-drops-individually", true);
 		autoEquip = getConfigBoolean("auto-equip", false);
+		requiredSlot = getConfigInt("required-slot", -1);
+		preferredSlot = getConfigInt("preferred-slot", -1);
 		itemList = getConfigStringList("items", null);
 		randomVelocity = getConfigFloat("random-velocity", 0);
 	}
@@ -149,10 +155,17 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 						added = Util.addToInventory(player.getEnderChest(), item);
 					}
 					if (!added && addToInventory) {
-						added = Util.addToInventory(inv, item);
-						if (added) updateInv = true;
+						if (requiredSlot >= 0) {
+							inv.setItem(requiredSlot, item);
+						} else if (preferredSlot >= 0 && inv.getItem(preferredSlot) == null) {
+							inv.setItem(preferredSlot, item);
+							updateInv = true;
+						} else {
+							added = Util.addToInventory(inv, item);
+							if (added) updateInv = true;
+						}
 					}
-					if (!added) {
+					if (!added && (dropIfInventoryFull || !addToInventory)) {
 						player.getWorld().dropItem(loc, item).setItemStack(item);
 					}
 				} else {
