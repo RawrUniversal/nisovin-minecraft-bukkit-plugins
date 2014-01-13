@@ -32,6 +32,7 @@ public enum PassiveTrigger {
 	DROP_ITEM("dropitem", DropItemListener.class),
 	PICKUP_ITEM("pickupitem", PickupItemListener.class),
 	FISH("fish", FishListener.class),
+	SHOOT("shoot", ShootListener.class),
 	TELEPORT("teleport", TeleportListener.class),
 	BUFF("buff", BuffListener.class),
 	TICKS("ticks", TicksListener.class);

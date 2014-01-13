@@ -120,33 +120,41 @@ public class PassiveSpell extends Spell {
 		return activate(caster, null, null);
 	}
 	
+	public boolean activate(Player caster, float power) {
+		return activate(caster, null, null, power);
+	}
+	
 	public boolean activate(Player caster, LivingEntity target) {
-		return activate(caster, target, null);
+		return activate(caster, target, null, 1F);
 	}
 	
 	public boolean activate(Player caster, Location location) {
-		return activate(caster, null, location);
+		return activate(caster, null, location, 1F);
 	}
 	
 	public boolean activate(final Player caster, final LivingEntity target, final Location location) {
+		return activate(caster, target, location, 1F);
+	}
+	
+	public boolean activate(final Player caster, final LivingEntity target, final Location location, final float power) {
 		if (delay < 0) {
-			return activateSpells(caster, target, location);
+			return activateSpells(caster, target, location, power);
 		} else {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 				public void run() {
-					activateSpells(caster, target, location);
+					activateSpells(caster, target, location, power);
 				}
 			}, delay);
 			return false;
 		}
 	}
 	
-	private boolean activateSpells(Player caster, LivingEntity target, Location location) {
+	private boolean activateSpells(Player caster, LivingEntity target, Location location, float power) {
 		SpellCastState state = getCastState(caster);
 		MagicSpells.debug(3, "Activating passive spell '" + name + "' for player " + caster.getName() + " (state: " + state + ")");
 		if (!disabled && (chance >= .999 || random.nextFloat() <= chance) && state == SpellCastState.NORMAL) {
 			disabled = true;
-			SpellCastEvent event = new SpellCastEvent(this, caster, SpellCastState.NORMAL, 1.0F, null, this.cooldown, this.reagents.clone(), 0);
+			SpellCastEvent event = new SpellCastEvent(this, caster, SpellCastState.NORMAL, power, null, this.cooldown, this.reagents.clone(), 0);
 			Bukkit.getPluginManager().callEvent(event);
 			if (!event.isCancelled() && event.getSpellCastState() == SpellCastState.NORMAL) {
 				if (event.haveReagentsChanged() && !hasReagents(caster, event.getReagents())) {
@@ -154,7 +162,7 @@ public class PassiveSpell extends Spell {
 					return false;
 				}
 				setCooldown(caster, event.getCooldown());
-				float power = event.getPower();
+				power = event.getPower();
 				for (Spell spell : spells) {
 					MagicSpells.debug(3, "    Casting spell effect '" + spell.getName() + "'");
 					if (castWithoutTarget || (target == null && location == null) || (!(spell instanceof TargetedEntitySpell) && !(spell instanceof TargetedLocationSpell))) {
