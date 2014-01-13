@@ -38,6 +38,7 @@ import com.nisovin.magicspells.spelleffects.SpellEffect;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.ExperienceUtils;
+import com.nisovin.magicspells.util.IntMap;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MoneyHandler;
 import com.nisovin.magicspells.util.SpellReagents;
@@ -84,10 +85,13 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected Spell spellOnInterrupt;
 	
 	protected SpellReagents reagents;
+	
 	protected float cooldown;
 	protected List<String> rawSharedCooldowns;
 	protected HashMap<Spell, Float> sharedCooldowns;
 	protected boolean ignoreGlobalCooldown;
+	protected int charges;
+	protected String rechargeSound;
 
 	private List<String> modifierStrings;
 	private List<String> targetModifierStrings;
@@ -116,6 +120,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected String strXpAutoLearned;
 	
 	private HashMap<String, Long> nextCast;
+	private IntMap<String> chargesConsumed;
 	
 	public Spell(MagicConfig config, String spellName) {
 		this.config = config;
@@ -311,7 +316,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.cooldown = (float)config.getDouble(section + "." + spellName + ".cooldown", 0);
 		this.rawSharedCooldowns = config.getStringList(section + "." + spellName + ".shared-cooldowns", null);
 		this.ignoreGlobalCooldown = config.getBoolean(section + "." + spellName + ".ignore-global-cooldown", false);
+		this.charges = config.getInt(section + "." + spellName + ".charges", 0);
+		this.rechargeSound = config.getString(section + "." + spellName + ".recharge-sound", "");
 		this.nextCast = new HashMap<String, Long>();
+		this.chargesConsumed = new IntMap<String>();
 
 		// modifiers
 		this.modifierStrings = config.getStringList(section + "." + spellName + ".modifiers", null);
@@ -806,6 +814,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			return false;
 		}
 		
+		if (charges > 0) {
+			return chargesConsumed.get(player.getName()) >= charges;
+		}
+		
 		Long next = nextCast.get(player.getName());
 		if (next != null) {
 			if (next > System.currentTimeMillis()) {
@@ -821,6 +833,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @return The number of seconds remaining in the cooldown
 	 */
 	public float getCooldown(Player player) {
+		if (charges > 0) return -1;
 		Long next = nextCast.get(player.getName());
 		if (next != null) {
 			float c = (next - System.currentTimeMillis()) / 1000F;
@@ -842,11 +855,28 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * Begins the cooldown for the spell for the specified player
 	 * @param player The player to set the cooldown for
 	 */
-	public void setCooldown(Player player, float cooldown, boolean activateSharedCooldowns) {
+	public void setCooldown(final Player player, float cooldown, boolean activateSharedCooldowns) {
 		if (cooldown > 0) {
-			nextCast.put(player.getName(), System.currentTimeMillis() + (int)(cooldown * 1000));
+			if (charges <= 0) {
+				nextCast.put(player.getName(), System.currentTimeMillis() + (int)(cooldown * 1000));
+			} else {
+				final String name = player.getName();
+				chargesConsumed.increment(name);
+				MagicSpells.scheduleDelayedTask(new Runnable() {
+					public void run() {
+						chargesConsumed.decrement(name);
+						if (rechargeSound != null && !rechargeSound.isEmpty()) {
+							MagicSpells.getVolatileCodeHandler().playSound(player, rechargeSound, 1.0F, 1.0F);
+						}
+					}
+				}, Math.round(20F * cooldown));
+			}
 		} else {
-			nextCast.remove(player.getName());
+			if (charges <= 0) {
+				nextCast.remove(player.getName());
+			} else {
+				chargesConsumed.remove(player.getName());
+			}
 		}
 		if (activateSharedCooldowns && sharedCooldowns != null) {
 			for (Map.Entry<Spell, Float> scd : sharedCooldowns.entrySet()) {
