@@ -3,6 +3,7 @@ package com.nisovin.magicspells.spells;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -15,11 +16,15 @@ import org.bukkit.inventory.ItemStack;
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public class BowSpell extends Spell {
 
 	private static BowSpellHandler handler;
+	
+	BowSpell thisSpell;
 	
 	String bowName;
 	String spellNameOnShoot;
@@ -28,6 +33,7 @@ public class BowSpell extends Spell {
 	public BowSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
+		thisSpell = this;
 		bowName = ChatColor.translateAlternateColorCodes('&', getConfigString("bow-name", null));
 		spellNameOnShoot = getConfigString("spell", null);
 	}
@@ -96,9 +102,15 @@ public class BowSpell extends Spell {
 				Spellbook spellbook = MagicSpells.getSpellbook(shooter);
 				BowSpell spell = spells.get(bowName);
 				if (spell != null && spellbook.hasSpell(spell) && spellbook.canCast(spell)) {
-					event.setCancelled(true);
-					event.getProjectile().remove();
-					spell.spellOnShoot.cast(shooter, event.getForce(), null);
+					SpellCastEvent evt1 = new SpellCastEvent(thisSpell, shooter, SpellCastState.NORMAL, event.getForce(), null, thisSpell.cooldown, thisSpell.reagents, 0);
+					Bukkit.getPluginManager().callEvent(evt1);
+					if (!evt1.isCancelled()) {
+						event.setCancelled(true);
+						event.getProjectile().remove();
+						spell.spellOnShoot.cast(shooter, event.getForce(), null);
+						SpellCastedEvent evt2 = new SpellCastedEvent(thisSpell, shooter, SpellCastState.NORMAL, event.getForce(), null, thisSpell.cooldown, thisSpell.reagents, PostCastAction.HANDLE_NORMALLY);
+						Bukkit.getPluginManager().callEvent(evt2);
+					}
 				}
 			}
 		}
