@@ -51,7 +51,10 @@ public class TeleportListener extends PassiveListener {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			for (PassiveSpell spell : allTypes) {
 				if (spellbook.hasSpell(spell)) {
-					spell.activate(player);
+					boolean casted = spell.activate(player);
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		}
@@ -60,7 +63,10 @@ public class TeleportListener extends PassiveListener {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			for (PassiveSpell spell : types.get(event.getCause())) {
 				if (spellbook.hasSpell(spell)) {
-					spell.activate(player);
+					boolean casted = spell.activate(player);
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		}

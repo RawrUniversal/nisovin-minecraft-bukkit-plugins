@@ -65,7 +65,10 @@ public class FishListener extends PassiveListener {
 			Entity entity = event.getCaught();
 			for (PassiveSpell spell : allTypes) {
 				if (spellbook.hasSpell(spell)) {
-					spell.activate(player, entity instanceof LivingEntity ? (LivingEntity)entity : null);
+					boolean casted = spell.activate(player, entity instanceof LivingEntity ? (LivingEntity)entity : null);
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		}
@@ -74,21 +77,30 @@ public class FishListener extends PassiveListener {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			for (PassiveSpell spell : ground) {
 				if (spellbook.hasSpell(spell)) {
-					spell.activate(player, event.getHook().getLocation());
+					boolean casted = spell.activate(player, event.getHook().getLocation());
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		} else if (state == State.CAUGHT_FISH && fish.size() > 0) {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			for (PassiveSpell spell : fish) {
 				if (spellbook.hasSpell(spell)) {
-					spell.activate(player, event.getHook().getLocation());
+					boolean casted = spell.activate(player, event.getHook().getLocation());
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		} else if (state == State.FAILED_ATTEMPT && fail.size() > 0) {
 			Spellbook spellbook = MagicSpells.getSpellbook(player);
 			for (PassiveSpell spell : fail) {
 				if (spellbook.hasSpell(spell)) {
-					spell.activate(player, event.getHook().getLocation());
+					boolean casted = spell.activate(player, event.getHook().getLocation());
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		} else if (state == State.CAUGHT_ENTITY && types.size() > 0) {
@@ -97,7 +109,10 @@ public class FishListener extends PassiveListener {
 				Spellbook spellbook = MagicSpells.getSpellbook(player);
 				for (PassiveSpell spell : fail) {
 					if (spellbook.hasSpell(spell)) {
-						spell.activate(player, entity instanceof LivingEntity ? (LivingEntity)entity : null);
+						boolean casted = spell.activate(player, entity instanceof LivingEntity ? (LivingEntity)entity : null);
+						if (casted && spell.cancelDefaultAction()) {
+							event.setCancelled(true);
+						}
 					}
 				}
 			}

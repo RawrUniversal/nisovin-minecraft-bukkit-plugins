@@ -51,7 +51,10 @@ public class RightClickEntityListener extends PassiveListener {
 			Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
 			for (PassiveSpell spell : allTypes) {
 				if (spellbook.hasSpell(spell)) {
-					spell.activate(event.getPlayer(), (LivingEntity)event.getRightClicked());
+					boolean casted = spell.activate(event.getPlayer(), (LivingEntity)event.getRightClicked());
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		}
@@ -60,7 +63,10 @@ public class RightClickEntityListener extends PassiveListener {
 			List<PassiveSpell> list = types.get(event.getRightClicked().getType());
 			for (PassiveSpell spell : list) {
 				if (spellbook.hasSpell(spell)) {
-					spell.activate(event.getPlayer(), (LivingEntity)event.getRightClicked());
+					boolean casted = spell.activate(event.getPlayer(), (LivingEntity)event.getRightClicked());
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		}

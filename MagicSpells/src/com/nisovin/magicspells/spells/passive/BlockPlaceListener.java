@@ -53,7 +53,10 @@ public class BlockPlaceListener extends PassiveListener {
 		if (allTypes.size() > 0) {
 			for (PassiveSpell spell : allTypes) {
 				if (spellbook.hasSpell(spell, false)) {
-					spell.activate(event.getPlayer(), event.getBlock().getLocation().add(0.5, 0.5, 0.5));
+					boolean casted = spell.activate(event.getPlayer(), event.getBlock().getLocation().add(0.5, 0.5, 0.5));
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		}
@@ -62,7 +65,10 @@ public class BlockPlaceListener extends PassiveListener {
 			if (list != null) {
 				for (PassiveSpell spell : list) {
 					if (spellbook.hasSpell(spell, false)) {
-						spell.activate(event.getPlayer(), event.getBlock().getLocation().add(0.5, 0.5, 0.5));
+						boolean casted = spell.activate(event.getPlayer(), event.getBlock().getLocation().add(0.5, 0.5, 0.5));
+						if (casted && spell.cancelDefaultAction()) {
+							event.setCancelled(true);
+						}
 					}
 				}
 			}

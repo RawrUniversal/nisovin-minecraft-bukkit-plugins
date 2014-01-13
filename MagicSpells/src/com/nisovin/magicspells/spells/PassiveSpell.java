@@ -33,6 +33,7 @@ public class PassiveSpell extends Spell {
 	private float chance;
 	private boolean castWithoutTarget;
 	private int delay;
+	private boolean cancelDefaultAction;
 	private boolean ignoreCancelled;
 	private boolean sendFailureMessages;
 	
@@ -48,6 +49,7 @@ public class PassiveSpell extends Spell {
 		chance = getConfigFloat("chance", 100F) / 100F;
 		castWithoutTarget = getConfigBoolean("cast-without-target", false);
 		delay = getConfigInt("delay", -1);
+		cancelDefaultAction = getConfigBoolean("cancel-default-action", false);
 		ignoreCancelled = getConfigBoolean("ignore-cancelled", true);
 		sendFailureMessages = getConfigBoolean("send-failure-messages", false);
 		
@@ -114,31 +116,32 @@ public class PassiveSpell extends Spell {
 		return PostCastAction.ALREADY_HANDLED;
 	}
 	
-	public void activate(Player caster) {
-		activate(caster, null, null);
+	public boolean activate(Player caster) {
+		return activate(caster, null, null);
 	}
 	
-	public void activate(Player caster, LivingEntity target) {
-		activate(caster, target, null);
+	public boolean activate(Player caster, LivingEntity target) {
+		return activate(caster, target, null);
 	}
 	
-	public void activate(Player caster, Location location) {
-		activate(caster, null, location);
+	public boolean activate(Player caster, Location location) {
+		return activate(caster, null, location);
 	}
 	
-	public void activate(final Player caster, final LivingEntity target, final Location location) {
+	public boolean activate(final Player caster, final LivingEntity target, final Location location) {
 		if (delay < 0) {
-			activateSpells(caster, target, location);
+			return activateSpells(caster, target, location);
 		} else {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 				public void run() {
 					activateSpells(caster, target, location);
 				}
 			}, delay);
+			return false;
 		}
 	}
 	
-	private void activateSpells(Player caster, LivingEntity target, Location location) {
+	private boolean activateSpells(Player caster, LivingEntity target, Location location) {
 		SpellCastState state = getCastState(caster);
 		MagicSpells.debug(3, "Activating passive spell '" + name + "' for player " + caster.getName() + " (state: " + state + ")");
 		if (!disabled && (chance >= .999 || random.nextFloat() <= chance) && state == SpellCastState.NORMAL) {
@@ -147,7 +150,8 @@ public class PassiveSpell extends Spell {
 			Bukkit.getPluginManager().callEvent(event);
 			if (!event.isCancelled() && event.getSpellCastState() == SpellCastState.NORMAL) {
 				if (event.haveReagentsChanged() && !hasReagents(caster, event.getReagents())) {
-					return;
+					disabled = false;
+					return false;
 				}
 				setCooldown(caster, event.getCooldown());
 				float power = event.getPower();
@@ -186,10 +190,13 @@ public class PassiveSpell extends Spell {
 				sendMessage(caster, strCastSelf);
 				SpellCastedEvent event2 = new SpellCastedEvent(this, caster, SpellCastState.NORMAL, power, null, event.getCooldown(), event.getReagents(), PostCastAction.HANDLE_NORMALLY);
 				Bukkit.getPluginManager().callEvent(event2);
+				disabled = false;
+				return true;
 			} else {
 				MagicSpells.debug(3, "   Passive spell canceled");
+				disabled = false;
+				return false;
 			}
-			disabled = false;
 		} else if (state != SpellCastState.NORMAL && sendFailureMessages) {
 			if (state == SpellCastState.ON_COOLDOWN) {
 				MagicSpells.sendMessage(caster, formatMessage(strOnCooldown, "%c", Math.round(getCooldown(caster))+""));
@@ -200,6 +207,11 @@ public class PassiveSpell extends Spell {
 				}
 			}
 		}
+		return false;
+	}
+	
+	public boolean cancelDefaultAction() {
+		return cancelDefaultAction;
 	}
 	
 	public boolean ignoreCancelled() {

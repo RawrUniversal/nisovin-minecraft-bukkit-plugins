@@ -62,7 +62,10 @@ public class PickupItemListener extends PassiveListener {
 			Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
 			for (PassiveSpell spell : allTypes) {
 				if (spellbook.hasSpell(spell)) {
-					spell.activate(event.getPlayer());
+					boolean casted = spell.activate(event.getPlayer());
+					if (casted && spell.cancelDefaultAction()) {
+						event.setCancelled(true);
+					}
 				}
 			}
 		}
@@ -73,7 +76,10 @@ public class PickupItemListener extends PassiveListener {
 				Spellbook spellbook = MagicSpells.getSpellbook(event.getPlayer());
 				for (PassiveSpell spell : list) {
 					if (spellbook.hasSpell(spell)) {
-						spell.activate(event.getPlayer());
+						boolean casted = spell.activate(event.getPlayer());
+						if (casted && spell.cancelDefaultAction()) {
+							event.setCancelled(true);
+						}
 					}
 				}
 			}
