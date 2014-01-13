@@ -21,15 +21,21 @@ import com.nisovin.magicspells.util.MagicConfig;
 
 public class VolleySpell extends TargetedSpell implements TargetedLocationSpell, TargetedEntityFromLocationSpell {
 
+	private VolleySpell thisSpell;
+	
 	private int arrows;
 	private int speed;
 	private int spread;
 	private int shootInterval;
 	private int removeDelay;
 	private boolean noTarget;
+	private boolean powerAffectsArrowCount;
+	private boolean powerAffectsSpeed;
 	
 	public VolleySpell(MagicConfig config, String spellName) {
 		super(config, spellName);
+		
+		thisSpell = this;
 		
 		arrows = getConfigInt("arrows", 10);
 		speed = getConfigInt("speed", 20);
@@ -37,6 +43,8 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 		shootInterval = getConfigInt("shoot-interval", 0);
 		removeDelay = getConfigInt("remove-delay", 0);
 		noTarget = getConfigBoolean("no-target", false);
+		powerAffectsArrowCount = getConfigBoolean("power-affects-arrow-count", true);
+		powerAffectsSpeed = getConfigBoolean("power-affects-speed", false);
 	}
 	
 	@Override
@@ -74,9 +82,11 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 		if (shootInterval <= 0) {
 			final ArrayList<Arrow> arrowList = new ArrayList<Arrow>();
 			
-			int arrows = Math.round(this.arrows*power);
+			int arrows = powerAffectsArrowCount ? Math.round(this.arrows*power) : this.arrows;
 			for (int i = 0; i < arrows; i++) {
-				Arrow a = from.getWorld().spawnArrow(spawn, v, (speed/10.0F), (spread/10.0F));
+				float speed = this.speed / 10F;
+				if (powerAffectsSpeed) speed *= power;
+				Arrow a = from.getWorld().spawnArrow(spawn, v, speed, (spread/10.0F));
 				a.setVelocity(a.getVelocity());
 				if (player != null) {
 					a.setShooter(player);
@@ -96,7 +106,7 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 			}
 			
 		} else {
-			new ArrowShooter(player, spawn, v);
+			new ArrowShooter(player, spawn, v, power);
 		}
 		
 		if (target != null) {
@@ -145,14 +155,19 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 		Player player;
 		Location spawn;
 		Vector dir;
-		int count;
+		int arrows;
+		float speed;
 		int taskId;
+		int count;
 		HashMap<Integer, Arrow> arrowMap;
 		
-		ArrowShooter(Player player, Location spawn, Vector dir) {
+		ArrowShooter(Player player, Location spawn, Vector dir, float power) {
 			this.player = player;
 			this.spawn = spawn;
 			this.dir = dir;
+			this.arrows = powerAffectsArrowCount ? Math.round(thisSpell.arrows * power) : thisSpell.arrows;
+			this.speed = thisSpell.speed / 10F;
+			if (powerAffectsSpeed) this.speed *= power;
 			this.count = 0;
 			
 			if (removeDelay > 0) {
@@ -166,7 +181,7 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 		public void run() {			
 			// fire an arrow
 			if (count < arrows) {
-				Arrow a = spawn.getWorld().spawnArrow(spawn, dir, (speed/10.0F), (spread/10.0F));
+				Arrow a = spawn.getWorld().spawnArrow(spawn, dir, speed, (spread/10.0F));
 				a.setVelocity(a.getVelocity());
 				if (player != null) {
 					a.setShooter(player);
