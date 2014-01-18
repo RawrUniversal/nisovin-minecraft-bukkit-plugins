@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -91,6 +92,7 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 				if (player != null) {
 					a.setShooter(player);
 				}
+				a.setMetadata("MagicSpellsSource", new FixedMetadataValue(MagicSpells.plugin, "VolleySpell" + internalName));
 				if (removeDelay > 0) arrowList.add(a);
 			}
 			
@@ -186,6 +188,7 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 				if (player != null) {
 					a.setShooter(player);
 				}
+				a.setMetadata("MagicSpellsSource", new FixedMetadataValue(MagicSpells.plugin, "VolleySpell" + internalName));
 				if (removeDelay > 0) {
 					arrowMap.put(count, a);
 				}

@@ -30,6 +30,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
@@ -168,6 +169,7 @@ public class ProjectileSpell extends InstantSpell {
 				if (applySpellPowerToVelocity) {
 					projectile.setVelocity(projectile.getVelocity().multiply(power));
 				}
+				projectile.setMetadata("MagicSpellsSource", new FixedMetadataValue(MagicSpells.plugin, "ProjectileSpell_" + internalName));
 				projectiles.put(projectile, new ProjectileInfo(player, power, (effectInterval > 0 ? new RegularProjectileMonitor(projectile) : null)));
 				playSpellEffects(EffectPosition.CASTER, projectile);
 			} else if (projectileItem != null) {
