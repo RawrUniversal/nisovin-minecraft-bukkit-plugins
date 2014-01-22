@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -290,6 +291,13 @@ public abstract class BuffSpell extends Spell {
 	@Override
 	public boolean isBeneficial() {
 		return true;
+	}
+	
+	@EventHandler
+	public void onJoin(PlayerJoinEvent event) {
+		if (isActive(event.getPlayer()) && isExpired(event.getPlayer())) {
+			turnOff(event.getPlayer());
+		}
 	}
 	
 	public class DamageListener implements Listener {
