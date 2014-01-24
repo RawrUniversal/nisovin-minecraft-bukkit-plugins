@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.castmodifiers.ModifierSet;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
@@ -20,6 +21,7 @@ public final class MultiSpell extends InstantSpell {
 	private boolean castWithItem;
 	private boolean castByCommand;
 	private boolean checkIndividualCooldowns;
+	private boolean checkIndividualModifiers;
 	private boolean showIndividualMessages;
 	private boolean castRandomSpellInstead;
 	private boolean fakeCastIndividualSpells;
@@ -34,6 +36,7 @@ public final class MultiSpell extends InstantSpell {
 		castWithItem = getConfigBoolean("can-cast-with-item", true);
 		castByCommand = getConfigBoolean("can-cast-by-command", true);
 		checkIndividualCooldowns = getConfigBoolean("check-individual-cooldowns", false);
+		checkIndividualModifiers = getConfigBoolean("check-individual-modifiers", false);
 		showIndividualMessages = getConfigBoolean("show-individual-messages", false);
 		castRandomSpellInstead = getConfigBoolean("cast-random-spell-instead", false);
 		fakeCastIndividualSpells = getConfigBoolean("fake-cast-individual-spells", false);
@@ -121,6 +124,16 @@ public final class MultiSpell extends InstantSpell {
 			if (event.isCancelled()) {
 				return;
 			} else {
+				power = event.getPower();
+			}
+		} else if (checkIndividualModifiers) {
+			ModifierSet castModifiers = spell.getModifiers();
+			if (castModifiers != null) {
+				SpellCastEvent event = new SpellCastEvent(spell, player, SpellCastState.NORMAL, power, null, 0, null, 0);
+				castModifiers.apply(event);
+				if (event.isCancelled()) {
+					return;
+				}
 				power = event.getPower();
 			}
 		}

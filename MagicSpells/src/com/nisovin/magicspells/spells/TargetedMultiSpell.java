@@ -13,11 +13,16 @@ import org.bukkit.entity.Player;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.castmodifiers.ModifierSet;
+import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.events.SpellTargetEvent;
+import com.nisovin.magicspells.events.SpellTargetLocationEvent;
 import com.nisovin.magicspells.util.MagicConfig;
 
 public final class TargetedMultiSpell extends TargetedSpell implements TargetedEntitySpell, TargetedLocationSpell {
 
 	private boolean checkIndividualCooldowns;
+	private boolean checkIndividualModifiers;
 	private boolean showIndividualMessages;
 	private boolean requireEntityTarget;
 	private boolean castRandomSpellInstead;
@@ -30,6 +35,7 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 		super(config, spellName);
 		
 		checkIndividualCooldowns = getConfigBoolean("check-individual-cooldowns", false);
+		checkIndividualModifiers = getConfigBoolean("check-individual-modifiers", false);
 		showIndividualMessages = getConfigBoolean("show-individual-messages", false);
 		requireEntityTarget = getConfigBoolean("require-entity-target", false);
 		castRandomSpellInstead = getConfigBoolean("cast-random-spell-instead", false);
@@ -178,6 +184,35 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 	
 	private boolean castTargetedSpell(TargetedSpell spell, Player caster, LivingEntity entTarget, Location locTarget, float power) {
 		boolean success = false;
+		if (checkIndividualModifiers) {
+			ModifierSet castModifiers = spell.getModifiers();
+			if (castModifiers != null) {
+				SpellCastEvent event = new SpellCastEvent(spell, caster, SpellCastState.NORMAL, power, null, 0, null, 0);
+				castModifiers.apply(event);
+				if (event.isCancelled()) {
+					return false;
+				}
+				power = event.getPower();
+			}
+			ModifierSet targetModifers = spell.getTargetModifiers();
+			if (targetModifers != null) {
+				if (entTarget != null) {
+					SpellTargetEvent event = new SpellTargetEvent(spell, caster, entTarget);
+					targetModifiers.apply(event);
+					if (event.isCancelled()) {
+						return false;
+					}
+					entTarget = event.getTarget();
+				} else if (locTarget != null) {
+					SpellTargetLocationEvent event = new SpellTargetLocationEvent(spell, caster, locTarget);
+					targetModifiers.apply(event);
+					if (event.isCancelled()) {
+						return false;
+					}
+					locTarget = event.getTargetLocation();
+				}
+			}
+		}
 		if (spell instanceof TargetedEntitySpell && entTarget != null) {
 			success = ((TargetedEntitySpell)spell).castAtEntity(caster, entTarget, power);
 		} else if (spell instanceof TargetedLocationSpell) {
