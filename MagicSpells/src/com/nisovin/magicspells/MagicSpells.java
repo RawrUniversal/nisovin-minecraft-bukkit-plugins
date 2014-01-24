@@ -447,11 +447,7 @@ public class MagicSpells extends JavaPlugin {
 		// load listeners
 		registerEvents(new MagicPlayerListener(this));
 		registerEvents(new MagicSpellListener(this));
-		if (config.getBoolean("general.enable-new-spell-handling", false)) {
-			registerEvents(new CastListenerNew(this));
-		} else {
-			registerEvents(new CastListener(this));
-		}
+		registerEvents(new CastListener(this));
 		if (incantations.size() > 0) {
 			registerEvents(new MagicChatListener(this));
 		}
