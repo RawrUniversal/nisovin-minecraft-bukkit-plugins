@@ -1,7 +1,6 @@
 package com.nisovin.magicspells;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.bukkit.Material;
@@ -22,8 +21,8 @@ public class CastListener implements Listener {
 
 	MagicSpells plugin;
 	
-	private HashSet<String> noCast = new HashSet<String>();
-	private HashMap<String,Long> lastCast = new HashMap<String, Long>();
+	private HashMap<String, Long> noCastUntil = new HashMap<String, Long>();
+	//private HashMap<String,Long> lastCast = new HashMap<String, Long>();
 
 	public CastListener(MagicSpells plugin) {
 		this.plugin = plugin;
@@ -36,7 +35,7 @@ public class CastListener implements Listener {
 		
 		// first check if player is interacting with a special block
 		boolean noInteract = false;
-		if (event.hasBlock()) {
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Material m = event.getClickedBlock().getType();
 			if (m == Material.WOODEN_DOOR || 
 					m == Material.TRAP_DOOR ||
@@ -49,7 +48,10 @@ public class CastListener implements Listener {
 					m == Material.HOPPER ||
 					m == Material.LEVER ||
 					m == Material.STONE_BUTTON ||
+					m == Material.WOOD_BUTTON ||
 					m == Material.ENCHANTMENT_TABLE) {
+				noInteract = true;
+			} else if (event.hasItem() && event.getItem().getType().isBlock()) {
 				noInteract = true;
 			}
 			if (m == Material.ENCHANTMENT_TABLE) {
@@ -59,7 +61,7 @@ public class CastListener implements Listener {
 		}
 		if (noInteract) {
 			// special block -- don't do normal interactions
-			noCast.add(event.getPlayer().getName());
+			noCastUntil.put(event.getPlayer().getName(), System.currentTimeMillis() + 150);
 		} else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			// left click - cast
 			if (!plugin.castOnAnimate) {
@@ -162,21 +164,14 @@ public class CastListener implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerAnimation(PlayerAnimationEvent event) {		
-		if (!plugin.castOnAnimate) return;
-		
-		Player p = event.getPlayer();
-		String n = p.getName();
-		if (noCast.contains(n)) {
-			// clicking on special block -- don't cast
-			noCast.remove(n);
-			lastCast.put(n, System.currentTimeMillis());
-		} else {
-			// left click -- cast spell
-			castSpell(p);
+		if (plugin.castOnAnimate) {
+			castSpell(event.getPlayer());
 		}
 	}
 	
 	private void castSpell(Player player) {
+		if (noCastUntil.containsKey(player.getName()) && noCastUntil.get(player.getName()) > System.currentTimeMillis()) return;
+		
 		ItemStack inHand = player.getItemInHand();
 		if (!plugin.allowCastWithFist && (inHand == null || inHand.getType() == Material.AIR)) return;
 		
@@ -184,12 +179,7 @@ public class CastListener implements Listener {
 		if (spell != null && spell.canCastWithItem()) {
 			// first check global cooldown
 			if (plugin.globalCooldown > 0 && !spell.ignoreGlobalCooldown) {
-				Long lastCastTime = lastCast.get(player.getName());
-				if (lastCastTime != null && lastCastTime + plugin.globalCooldown > System.currentTimeMillis()) {
-					return;
-				} else {
-					lastCast.put(player.getName(), System.currentTimeMillis());
-				}
+				noCastUntil.put(player.getName(), System.currentTimeMillis() + plugin.globalCooldown);
 			}
 			// cast spell
 			spell.cast(player);
