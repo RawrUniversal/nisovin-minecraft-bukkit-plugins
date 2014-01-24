@@ -22,7 +22,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -36,6 +35,7 @@ import com.nisovin.magicspells.mana.ManaChangeReason;
 import com.nisovin.magicspells.mana.ManaHandler;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spelleffects.SpellEffect;
+import com.nisovin.magicspells.spells.PassiveSpell;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.CastItem;
 import com.nisovin.magicspells.util.ExperienceUtils;
@@ -80,7 +80,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 
 	protected int castTime;
 	protected boolean interruptOnMove;
-	protected boolean interruptOnTeleport;
 	protected boolean interruptOnDamage;
 	protected boolean interruptOnCast;
 	protected String spellNameOnInterrupt;
@@ -247,7 +246,6 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		// cast time
 		this.castTime = config.getInt(section + "." + spellName + ".cast-time", 0);
 		this.interruptOnMove = config.getBoolean(section + "." + spellName + ".interrupt-on-move", true);
-		this.interruptOnTeleport = config.getBoolean(section + "." + spellName + ".interrupt-on-teleport", true);
 		this.interruptOnDamage = config.getBoolean(section + "." + spellName + ".interrupt-on-damage", false);
 		this.interruptOnCast = config.getBoolean(section + "." + spellName + ".interrupt-on-cast", true);
 		this.spellNameOnInterrupt = config.getString(section + "." + spellName + ".spell-on-interrupt", null);
@@ -1610,18 +1608,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onSpellCast(SpellCastEvent event) {
-			if (interruptOnCast && !cancelled && event.getCaster().equals(player)) {
+			if (interruptOnCast && !cancelled && !(event.getSpell() instanceof PassiveSpell) && event.getCaster().equals(player)) {
 				cancelled = true;
-				Bukkit.getScheduler().cancelTask(taskId);
-				interrupt();
-			}
-		}
-		
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
-		public void onTeleport(PlayerTeleportEvent event) {
-			if (interruptOnTeleport && !cancelled && event.getPlayer().equals(player)) {
-				cancelled = true;
-				Bukkit.getScheduler().cancelTask(taskId);
 				interrupt();
 			}
 		}
@@ -1699,15 +1687,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		
 		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 		public void onSpellCast(SpellCastEvent event) {
-			if (interruptOnCast && !cancelled && event.getCaster().equals(player)) {
-				cancelled = true;
-				interrupt();
-			}
-		}
-		
-		@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
-		public void onTeleport(PlayerTeleportEvent event) {
-			if (interruptOnTeleport && !cancelled && event.getPlayer().equals(player)) {
+			if (interruptOnCast && !cancelled && !(event.getSpell() instanceof PassiveSpell) && event.getCaster().equals(player)) {
 				cancelled = true;
 				interrupt();
 			}
