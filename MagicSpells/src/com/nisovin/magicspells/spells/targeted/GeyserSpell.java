@@ -64,32 +64,11 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 				return noTarget(player);
 			}
 			
-			double dam = damage * power;
-			
-			// check plugins
-			if (target instanceof Player && checkPlugins) {
-				EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
-				Bukkit.getServer().getPluginManager().callEvent(event);
-				if (event.isCancelled()) {
-					return noTarget(player);
-				}
-				dam = event.getDamage();
-			}
-			
-			// do damage and launch target
-			if (dam > 0) {
-				if (ignoreArmor) {
-					double health = target.getHealth() - dam;
-					if (health < 0) health = 0;
-					target.setHealth(health);
-					target.playEffect(EntityEffect.HURT);
-				} else {
-					target.damage(dam, player);
-				}
-			}
-			
 			// do geyser action + animation
-			geyser(target, power);
+			boolean ok = geyser(player, target, power);
+			if (!ok) {
+				return noTarget(player);
+			}
 			playSpellEffects(player, target);
 			
 			sendMessages(player, target);
@@ -98,7 +77,36 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	private void geyser(LivingEntity target, float power) {
+	private boolean geyser(Player caster, LivingEntity target, float power) {
+		
+		double dam = damage * power;
+		
+		// check plugins
+		if (caster != null && target instanceof Player && checkPlugins && damage > 0) {
+			EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(caster, target, DamageCause.ENTITY_ATTACK, dam);
+			Bukkit.getServer().getPluginManager().callEvent(event);
+			if (event.isCancelled()) {
+				return false;
+			}
+			dam = event.getDamage();
+		}
+		
+		// do damage and launch target
+		if (dam > 0) {
+			if (ignoreArmor) {
+				double health = target.getHealth() - dam;
+				if (health < 0) health = 0;
+				target.setHealth(health);
+				target.playEffect(EntityEffect.HURT);
+			} else {
+				if (caster != null) {
+					target.damage(dam, caster);
+				} else {
+					target.damage(dam);
+				}
+			}
+		}
+		
 		// launch target into air
 		if (velocity > 0) {
 			target.setVelocity(new Vector(0, velocity*power, 0));
@@ -116,6 +124,8 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 			}
 			new GeyserAnimation(target.getLocation(), playersNearby);
 		}
+		
+		return true;
 	}
 
 	@Override
@@ -123,7 +133,7 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 		if (!validTargetList.canTarget(caster, target)) {
 			return false;
 		} else {
-			geyser(target, power);
+			geyser(caster, target, power);
 			playSpellEffects(caster, target);
 			return true;
 		}
@@ -134,7 +144,7 @@ public class GeyserSpell extends TargetedSpell implements TargetedEntitySpell {
 		if (!validTargetList.canTarget(target)) {
 			return false;
 		} else {
-			geyser(target, power);
+			geyser(null, target, power);
 			playSpellEffects(EffectPosition.TARGET, target);
 			return true;
 		}
