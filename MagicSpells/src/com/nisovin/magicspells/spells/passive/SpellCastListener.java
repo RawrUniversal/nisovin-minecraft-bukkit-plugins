@@ -42,7 +42,7 @@ public class SpellCastListener extends PassiveListener {
 	public void onSpellCast(SpellCastEvent event) {
 		Spellbook spellbook = MagicSpells.getSpellbook(event.getCaster());
 		for (PassiveSpell spell : anySpell) {
-			if (spellbook.hasSpell(spell, false)) {
+			if (!spell.equals(event.getSpell()) && spellbook.hasSpell(spell, false)) {
 				boolean casted = spell.activate(event.getCaster());
 				if (casted && spell.cancelDefaultAction()) {
 					event.setCancelled(true);
@@ -52,7 +52,7 @@ public class SpellCastListener extends PassiveListener {
 		List<PassiveSpell> list = spells.get(event.getSpell());
 		if (list != null) {
 			for (PassiveSpell spell : list) {
-				if (spellbook.hasSpell(spell, false)) {
+				if (!spell.equals(event.getSpell()) && spellbook.hasSpell(spell, false)) {
 					boolean casted = spell.activate(event.getCaster());
 					if (casted && spell.cancelDefaultAction()) {
 						event.setCancelled(true);
