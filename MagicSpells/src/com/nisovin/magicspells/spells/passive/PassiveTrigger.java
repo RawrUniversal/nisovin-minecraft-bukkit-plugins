@@ -19,6 +19,7 @@ public enum PassiveTrigger {
 	RIGHT_CLICK_BLOCK_COORD("rightclickblockcoord", RightClickBlockCoordListener.class),
 	RIGHT_CLICK_ENTITY("rightclickentity", RightClickEntityListener.class),
 	SPELL_CAST("spellcast", SpellCastListener.class),
+	SPELL_CASTED("spellcasted", SpellCastedListener.class),
 	SPELL_TARGET("spelltarget", SpellTargetListener.class),
 	SPELL_TARGETED("spelltargeted", SpellTargetedListener.class),
 	SPRINT("sprint", SprintListener.class),

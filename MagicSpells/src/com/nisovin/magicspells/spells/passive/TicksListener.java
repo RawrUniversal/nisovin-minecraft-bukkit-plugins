@@ -20,6 +20,7 @@ import com.nisovin.magicspells.spells.PassiveSpell;
 
 public class TicksListener extends PassiveListener {
 
+	
 	Map<Integer, Ticker> tickers = new HashMap<Integer, Ticker>();
 	
 	@Override
@@ -87,9 +88,11 @@ public class TicksListener extends PassiveListener {
 
 		int taskId;
 		Map<PassiveSpell, Collection<Player>> spells = new HashMap<PassiveSpell, Collection<Player>>();
+		String profilingKey;
 		
 		public Ticker(int interval) {
 			taskId = MagicSpells.scheduleRepeatingTask(this, interval, interval);
+			profilingKey = MagicSpells.profilingEnabled() ? "PassiveTick:" + interval : null;
 		}
 		
 		public void add(PassiveSpell spell) {
@@ -113,6 +116,7 @@ public class TicksListener extends PassiveListener {
 		
 		@Override
 		public void run() {
+			long start = System.nanoTime();
 			for (Map.Entry<PassiveSpell, Collection<Player>> entry : spells.entrySet()) {
 				if (entry.getValue().size() > 0) {
 					Iterator<Player> iter = entry.getValue().iterator();
@@ -126,6 +130,7 @@ public class TicksListener extends PassiveListener {
 					}
 				}
 			}
+			if (profilingKey != null) MagicSpells.addProfile(profilingKey, System.nanoTime() - start);
 		}
 		
 		public void turnOff() {

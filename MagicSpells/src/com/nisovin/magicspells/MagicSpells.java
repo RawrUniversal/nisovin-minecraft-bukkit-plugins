@@ -946,6 +946,23 @@ public class MagicSpells extends JavaPlugin {
 		plugin.getLogger().log(level, message);
 	}
 	
+	public static boolean profilingEnabled() {
+		return plugin.enableProfiling;
+	}
+	
+	public static void addProfile(String key, long time) {
+        if (plugin.enableProfiling) {
+        	Long total = plugin.profilingTotalTime.get(key);
+        	if (total == null) total = (long)0;
+        	total += time;
+        	plugin.profilingTotalTime.put(key, total);
+        	Integer runs = plugin.profilingRuns.get(key);
+        	if (runs == null) runs = 0;
+        	runs += 1;
+        	plugin.profilingRuns.put(key, runs);
+        }
+	}
+	
 	/**
 	 * Teaches a player a spell (adds it to their spellbook)
 	 * @param player the player to teach

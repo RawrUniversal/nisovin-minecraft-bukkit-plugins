@@ -10,12 +10,13 @@ import org.bukkit.event.EventPriority;
 
 import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
-import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.Spell.PostCastAction;
 import com.nisovin.magicspells.Spell.SpellCastState;
-import com.nisovin.magicspells.events.SpellCastEvent;
+import com.nisovin.magicspells.Spellbook;
+import com.nisovin.magicspells.events.SpellCastedEvent;
 import com.nisovin.magicspells.spells.PassiveSpell;
 
-public class SpellCastListener extends PassiveListener {
+public class SpellCastedListener extends PassiveListener {
 
 	Map<Spell, List<PassiveSpell>> spells = new HashMap<Spell, List<PassiveSpell>>();
 	List<PassiveSpell> anySpell = new ArrayList<PassiveSpell>();
@@ -41,25 +42,19 @@ public class SpellCastListener extends PassiveListener {
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
-	public void onSpellCast(SpellCastEvent event) {
-		if (event.getSpellCastState() == SpellCastState.NORMAL) {
+	public void onSpellCast(SpellCastedEvent event) {
+		if (event.getSpellCastState() == SpellCastState.NORMAL && event.getPostCastAction() != PostCastAction.ALREADY_HANDLED) {
 			Spellbook spellbook = MagicSpells.getSpellbook(event.getCaster());
 			for (PassiveSpell spell : anySpell) {
 				if (!spell.equals(event.getSpell()) && spellbook.hasSpell(spell, false)) {
-					boolean casted = spell.activate(event.getCaster());
-					if (casted && spell.cancelDefaultAction()) {
-						event.setCancelled(true);
-					}
+					spell.activate(event.getCaster());
 				}
 			}
 			List<PassiveSpell> list = spells.get(event.getSpell());
 			if (list != null) {
 				for (PassiveSpell spell : list) {
 					if (!spell.equals(event.getSpell()) && spellbook.hasSpell(spell, false)) {
-						boolean casted = spell.activate(event.getCaster());
-						if (casted && spell.cancelDefaultAction()) {
-							event.setCancelled(true);
-						}
+						spell.activate(event.getCaster());
 					}
 				}
 			}
