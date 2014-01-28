@@ -696,4 +696,8 @@ public class Util {
 		block.setTypeIdAndData(Material.FIRE.getId(), d, false);
 	}
 	
+	public static ItemStack getEggItemForEntityType(EntityType type) {
+		return new ItemStack(Material.MONSTER_EGG, 1, type.getTypeId());
+	}
+	
 }
