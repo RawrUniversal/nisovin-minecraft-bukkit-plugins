@@ -34,7 +34,7 @@ public class BroadcastEffect extends SpellEffect {
 	}
 	
 	@Override
-	public void playEffect(Entity entity) {
+	public void playEffectEntity(Entity entity) {
 		if (targeted) {
 			if (entity instanceof Player) {
 				MagicSpells.sendMessage((Player)entity, message);

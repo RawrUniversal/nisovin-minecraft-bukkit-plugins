@@ -19,6 +19,7 @@ public abstract class SpellEffect {
 	// for normal/line
 	double heightOffset = 0;
 	double forwardOffset = 0;
+	int delay = 0;
 	
 	// for line
 	double distanceBetween = 1;
@@ -43,6 +44,7 @@ public abstract class SpellEffect {
 	public final void loadFromConfiguration(ConfigurationSection config) {
 		heightOffset = config.getDouble("height-offset", heightOffset);
 		forwardOffset = config.getDouble("forward-offset", forwardOffset);
+		delay = config.getInt("delay", delay);
 		
 		distanceBetween = config.getDouble("distance-between", distanceBetween);
 		
@@ -67,8 +69,20 @@ public abstract class SpellEffect {
 	 * @param entity the entity to play the effect on
 	 * @param param the parameter specified in the spell config (can be ignored)
 	 */
-	public void playEffect(Entity entity) {
-		playEffect(entity.getLocation());
+	public final void playEffect(final Entity entity) {
+		if (delay <= 0) {
+			playEffectEntity(entity);
+		} else {
+			MagicSpells.scheduleDelayedTask(new Runnable() {
+				public void run() {
+					playEffectEntity(entity);
+				}
+			}, delay);
+		}
+	}
+	
+	protected void playEffectEntity(Entity entity) {
+		playEffectLocationReal(entity.getLocation());
 	}
 	
 	/**
@@ -76,7 +90,19 @@ public abstract class SpellEffect {
 	 * @param location location to play the effect at
 	 * @param param the parameter specified in the spell config (can be ignored)
 	 */
-	public final void playEffect(Location location) {
+	public final void playEffect(final Location location) {
+		if (delay <= 0) {
+			playEffectLocationReal(location);
+		} else {
+			MagicSpells.scheduleDelayedTask(new Runnable() {
+				public void run() {
+					playEffectLocationReal(location);
+				}
+			}, delay);
+		}
+	}
+	
+	private void playEffectLocationReal(Location location) {
 		if (heightOffset > 0 || forwardOffset > 0) {
 			Location loc = location.clone();
 			if (heightOffset > 0) {

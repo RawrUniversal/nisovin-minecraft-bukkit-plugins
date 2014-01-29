@@ -39,7 +39,7 @@ public class SoundPersonalEffect extends SpellEffect {
 	}
 
 	@Override
-	public void playEffect(Entity entity) {
+	public void playEffectEntity(Entity entity) {
 		if (entity instanceof Player) {
 			MagicSpells.getVolatileCodeHandler().playSound((Player)entity, sound, volume, pitch);
 		}

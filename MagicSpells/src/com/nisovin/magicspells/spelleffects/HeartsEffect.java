@@ -19,7 +19,7 @@ class HeartsEffect extends SpellEffect {
 	}
 	
 	@Override
-	public void playEffect(Entity entity) {
+	public void playEffectEntity(Entity entity) {
 		if (entity instanceof Tameable) {
 			entity.playEffect(EntityEffect.WOLF_HEARTS);
 		} else {

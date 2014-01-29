@@ -36,7 +36,7 @@ class SmokeSwirlEffect extends SpellEffect {
 	}
 	
 	@Override
-	public void playEffect(Entity entity) {
+	public void playEffectEntity(Entity entity) {
 		new Animator(entity, 1, duration);
 	}
 	
