@@ -166,12 +166,12 @@ public class ParticleProjectileSpell extends InstantSpell {
 			if (projectileSpread > 0) {
 				this.currentVelocity.add(new Vector(rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread));
 			}
-			if (powerAffectsVelocity) {
-				this.currentVelocity.multiply(power);
-			}
 			if (hugSurface) {
 				this.currentLocation.setY((int)this.currentLocation.getY() + heightFromSurface);
-				this.currentVelocity.setY(0);
+				this.currentVelocity.setY(0).normalize();
+			}
+			if (powerAffectsVelocity) {
+				this.currentVelocity.multiply(power);
 			}
 			this.currentVelocity.multiply(projectileVelocity / ticksPerSecond);
 			this.taskId = MagicSpells.scheduleRepeatingTask(this, 0, tickInterval);

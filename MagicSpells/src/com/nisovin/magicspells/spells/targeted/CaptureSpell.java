@@ -32,6 +32,8 @@ public class CaptureSpell extends TargetedSpell implements TargetedEntitySpell {
 			if (!ok) {
 				return noTarget(player);
 			}
+			sendMessages(player, target);
+			return PostCastAction.NO_MESSAGES;
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
