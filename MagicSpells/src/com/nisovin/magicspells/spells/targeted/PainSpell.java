@@ -18,6 +18,7 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 	private double damage;
 	private boolean ignoreArmor;
 	private boolean checkPlugins;
+	private DamageCause damageType;
 	
 	public PainSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
@@ -25,6 +26,17 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 		damage = getConfigFloat("damage", 4);
 		ignoreArmor = getConfigBoolean("ignore-armor", false);
 		checkPlugins = getConfigBoolean("check-plugins", true);
+		
+		String type = getConfigString("damage-type", "ENTITY_ATTACK");
+		for (DamageCause cause : DamageCause.values()) {
+			if (cause.name().equalsIgnoreCase(type)) {
+				damageType = cause;
+				break;
+			}
+		}
+		if (damageType == null) {
+			damageType = DamageCause.ENTITY_ATTACK;
+		}
 	}
 
 	@Override
@@ -52,7 +64,7 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 		double dam = damage * power;
 		if (target instanceof Player && checkPlugins && player != null) {
 			// handle the event myself so I can detect cancellation properly
-			EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, DamageCause.ENTITY_ATTACK, dam);
+			EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, damageType, dam);
 			Bukkit.getServer().getPluginManager().callEvent(event);
 			if (event.isCancelled()) {
 				return false;
