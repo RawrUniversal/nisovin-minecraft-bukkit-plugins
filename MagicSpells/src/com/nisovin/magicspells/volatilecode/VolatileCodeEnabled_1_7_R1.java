@@ -29,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.util.BoundingBox;
 import com.nisovin.magicspells.util.DisguiseManager;
 import com.nisovin.magicspells.util.MagicConfig;
 
@@ -353,15 +354,12 @@ public class VolatileCodeEnabled_1_7_R1 implements VolatileCodeHandle {
 	
 	@Override
 	public void playDragonDeathEffect(Location location) {
-		/*EntityEnderDragon dragon = new EntityEnderDragon(((CraftWorld)location.getWorld()).getHandle());
+		EntityEnderDragon dragon = new EntityEnderDragon(((CraftWorld)location.getWorld()).getHandle());
 		dragon.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), 0F);
 		
 		PacketPlayOutSpawnEntityLiving packet24 = new PacketPlayOutSpawnEntityLiving(dragon);
-		int dir = packet24.f + 128;
-		if (dir > 127) dir -= 256;
-		packet24.f = (byte)dir;
-		Packet38EntityStatus packet38 = new Packet38EntityStatus(dragon.id, (byte)3);
-		final Packet29DestroyEntity packet29 = new Packet29DestroyEntity(dragon.id);
+		PacketPlayOutEntityStatus packet38 = new PacketPlayOutEntityStatus(dragon, (byte)3);
+		final PacketPlayOutEntityDestroy packet29 = new PacketPlayOutEntityDestroy(dragon.getBukkitEntity().getEntityId());
 		
 		BoundingBox box = new BoundingBox(location, 64);
 		final List<Player> players = new ArrayList<Player>();
@@ -381,7 +379,7 @@ public class VolatileCodeEnabled_1_7_R1 implements VolatileCodeHandle {
 					}
 				}
 			}
-		}, 250);*/
+		}, 250);
 	}
 	
 	@Override
