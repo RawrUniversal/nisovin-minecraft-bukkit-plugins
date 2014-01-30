@@ -274,7 +274,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 				sendMessage(player, strFade);
 				return PostCastAction.ALREADY_HANDLED;
 			}
-			Player target = getTargetPlayer(player);
+			Player target = getTargetPlayer(player, power);
 			if (target != null) {
 				disguise(target);
 				sendMessages(player, target);

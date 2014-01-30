@@ -82,7 +82,7 @@ public class ReplaceSpell extends TargetedSpell implements TargetedLocationSpell
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block target = pointBlank ? player.getLocation().getBlock() : getTargetedBlock(player, range);
+			Block target = pointBlank ? player.getLocation().getBlock() : getTargetedBlock(player, power);
 			if (target == null) {
 				return noTarget(player);
 			}

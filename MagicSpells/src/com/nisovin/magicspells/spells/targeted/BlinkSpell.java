@@ -33,7 +33,7 @@ public class BlinkSpell extends TargetedSpell implements TargetedLocationSpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			int range = Math.round(this.range*power);
+			int range = getRange(power);
 			if (range <= 0) range = 25;
 			if (range > 125) range = 125;
 			BlockIterator iter; 

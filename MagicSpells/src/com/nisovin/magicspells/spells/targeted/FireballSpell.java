@@ -81,7 +81,7 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 			// get a target if required
 			boolean selfTarget = false;
 			if (requireEntityTarget) {
-				LivingEntity entity = getTargetedEntity(player);
+				LivingEntity entity = getTargetedEntity(player, power);
 				if (entity == null) {
 					return noTarget(player);
 				} else if (entity instanceof Player && checkPlugins) {

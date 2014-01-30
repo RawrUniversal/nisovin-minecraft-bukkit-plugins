@@ -30,7 +30,7 @@ public class PainSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player);
+			LivingEntity target = getTargetedEntity(player, power);
 			if (target == null) {
 				// fail -- no target
 				return noTarget(player);

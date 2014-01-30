@@ -90,11 +90,11 @@ public final class TargetedMultiSpell extends TargetedSpell implements TargetedE
 			Location locTarget = null;
 			LivingEntity entTarget = null;
 			if (requireEntityTarget) {
-				entTarget = getTargetedEntity(player);
+				entTarget = getTargetedEntity(player, power);
 			} else {
 				Block b = null;
 				try {
-					b = getTargetedBlock(player, range);
+					b = getTargetedBlock(player, power);
 					if (b != null && b.getType() != Material.AIR) {
 						locTarget = b.getLocation();
 					}

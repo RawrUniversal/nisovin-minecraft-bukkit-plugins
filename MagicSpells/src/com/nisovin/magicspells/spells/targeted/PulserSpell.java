@@ -107,7 +107,7 @@ public class PulserSpell extends TargetedSpell implements TargetedLocationSpell 
 					}
 				}
 			}
-			Block target = getTargetedBlock(player, range);
+			Block target = getTargetedBlock(player, power);
 			if (target == null || target.getType() == Material.AIR) {
 				return noTarget(player);
 			}

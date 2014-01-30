@@ -75,7 +75,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected HashMap<EffectPosition, List<SpellEffect>> effects;
 	
 	protected int minRange;
-	protected int range;
+	private int range;
+	protected boolean spellPowerAffectsRange;
 	protected boolean obeyLos;
 	protected ValidTargetList validTargetList;
 
@@ -256,6 +257,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		// targeting
 		this.minRange = config.getInt(section + "." + spellName + ".min-range", 0);
 		this.range = config.getInt(section + "." + spellName + ".range", 20);
+		this.spellPowerAffectsRange = config.getBoolean(section + "." + spellName + ".spell-power-affects-range", false);
 		this.obeyLos = config.getBoolean(section + "." + spellName + ".obey-los", true);
 		if (config.contains(section + "." + spellName + ".can-target")) {
 			String list = config.getString(section + "." + spellName + ".can-target", "");
@@ -1092,6 +1094,10 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		inventory.setContents(items);
 	}
 	
+	protected int getRange(float power) {
+		return spellPowerAffectsRange ? Math.round(range * power) : range;
+	}
+	
 	/**
 	 * Gets the player a player is currently looking at, ignoring other living entities
 	 * @param player the player to get the target for
@@ -1099,8 +1105,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	 * @param checkLos whether to obey line-of-sight restrictions
 	 * @return the targeted Player, or null if none was found
 	 */
-	protected Player getTargetedPlayer(Player player) {
-		LivingEntity entity = getTargetedEntity(player, true, null);
+	protected Player getTargetedPlayer(Player player, float power) {
+		LivingEntity entity = getTargetedEntity(player, power, true, null);
 		if (entity != null && entity instanceof Player) {
 			return (Player)entity;
 		} else {
@@ -1108,20 +1114,21 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		}
 	}
 	
-	protected Player getTargetPlayer(Player player) {
-		return getTargetedPlayer(player);
+	protected Player getTargetPlayer(Player player, float power) {
+		return getTargetedPlayer(player, power);
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player) {
-		return getTargetedEntity(player, false, null);
+	protected LivingEntity getTargetedEntity(Player player, float power) {
+		return getTargetedEntity(player, power, false, null);
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, ValidTargetChecker checker) {
-		return getTargetedEntity(player, false, checker);
+	protected LivingEntity getTargetedEntity(Player player, float power, ValidTargetChecker checker) {
+		return getTargetedEntity(player, power, false, checker);
 	}
 	
-	protected LivingEntity getTargetedEntity(Player player, boolean forceTargetPlayers, ValidTargetChecker checker) {
+	protected LivingEntity getTargetedEntity(Player player, float power, boolean forceTargetPlayers, ValidTargetChecker checker) {
 		// get nearby entities
+		int range = getRange(power);
 		List<Entity> ne = player.getNearbyEntities(range, range, range);
 		
 		// get valid targets
@@ -1211,12 +1218,12 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return null;
 	}
 	
-	protected Block getTargetedBlock(LivingEntity entity, int range) {
-		return BlockUtils.getTargetBlock(entity, range);
+	protected Block getTargetedBlock(LivingEntity entity, float power) {
+		return BlockUtils.getTargetBlock(entity, spellPowerAffectsRange ? Math.round(range * power) : range);
 	}
 	
-	protected List<Block> getLastTwoTargetedBlocks(LivingEntity entity, int range) {
-		return BlockUtils.getLastTwoTargetBlock(entity, range);
+	protected List<Block> getLastTwoTargetedBlocks(LivingEntity entity, float power) {
+		return BlockUtils.getLastTwoTargetBlock(entity, spellPowerAffectsRange ? Math.round(range * power) : range);
 	}
 	
 	protected void playSpellEffects(Entity pos1, Entity pos2) {

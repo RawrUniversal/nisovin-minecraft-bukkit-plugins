@@ -60,7 +60,7 @@ public class BuildSpell extends TargetedSpell implements TargetedLocationSpell {
 			// get target
 			List<Block> lastBlocks = null;
 			try {
-				lastBlocks = getLastTwoTargetedBlocks(player, range);
+				lastBlocks = getLastTwoTargetedBlocks(player, power);
 			} catch (IllegalStateException e) {
 				lastBlocks = null;
 			}

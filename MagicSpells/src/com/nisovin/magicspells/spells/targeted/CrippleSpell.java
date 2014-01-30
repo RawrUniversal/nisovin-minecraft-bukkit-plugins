@@ -25,7 +25,7 @@ public class CrippleSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {		
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player);
+			LivingEntity target = getTargetedEntity(player, power);
 			if (target == null) {
 				// fail
 				return noTarget(player);

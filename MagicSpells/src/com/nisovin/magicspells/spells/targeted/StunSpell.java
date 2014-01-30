@@ -48,7 +48,7 @@ public class StunSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player);
+			LivingEntity target = getTargetedEntity(player, power);
 			if (target == null) {
 				return noTarget(player);
 			} else {

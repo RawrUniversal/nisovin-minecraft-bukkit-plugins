@@ -93,7 +93,7 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 			// get target if necessary
 			Player target = null;
 			if (requirePlayerTarget) {
-				target = getTargetedPlayer(player);
+				target = getTargetedPlayer(player, power);
 				if (target == null) {
 					sendMessage(player, strNoTarget);
 					return PostCastAction.ALREADY_HANDLED;

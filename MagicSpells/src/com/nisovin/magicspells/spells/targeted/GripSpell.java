@@ -24,7 +24,7 @@ public class GripSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player);
+			LivingEntity target = getTargetedEntity(player, power);
 			if (target != null) {
 				grip(player, target);
 				sendMessages(player, target);

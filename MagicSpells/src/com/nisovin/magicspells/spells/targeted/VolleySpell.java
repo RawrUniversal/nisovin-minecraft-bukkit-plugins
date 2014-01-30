@@ -56,7 +56,7 @@ public class VolleySpell extends TargetedSpell implements TargetedLocationSpell,
 			} else {
 				Block target;
 				try {
-					target = getTargetedBlock(player, range);
+					target = getTargetedBlock(player, power);
 				} catch (IllegalStateException e) {
 					target = null;
 				}

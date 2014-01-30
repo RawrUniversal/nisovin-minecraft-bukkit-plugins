@@ -48,7 +48,7 @@ public class DrainlifeSpell extends TargetedSpell implements TargetedEntitySpell
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player);
+			LivingEntity target = getTargetedEntity(player, power);
 			if (target == null) {
 				// fail: no target
 				return noTarget(player);
@@ -123,7 +123,7 @@ public class DrainlifeSpell extends TargetedSpell implements TargetedEntitySpell
 		
 		// show animation
 		if (showSpellEffect) {
-			new DrainlifeAnim(target.getLocation(), player, give);
+			new DrainlifeAnim(target.getLocation(), player, give, power);
 		}
 		
 		return true;
@@ -166,14 +166,16 @@ public class DrainlifeSpell extends TargetedSpell implements TargetedEntitySpell
 		Player caster;
 		World world;
 		double giveAmt;
+		int range;
 		
-		public DrainlifeAnim(Location start, Player caster, double giveAmt) {
+		public DrainlifeAnim(Location start, Player caster, double giveAmt, float power) {
 			super(animationSpeed, true);
 			
 			this.current = start.toVector();
 			this.caster = caster;
 			this.world = caster.getWorld();
 			this.giveAmt = giveAmt;
+			this.range = getRange(power);
 		}
 
 		@Override

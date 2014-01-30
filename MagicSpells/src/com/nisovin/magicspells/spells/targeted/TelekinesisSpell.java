@@ -42,7 +42,7 @@ public class TelekinesisSpell extends TargetedSpell implements TargetedLocationS
 		if (state == SpellCastState.NORMAL) {
 			Block target = null;
 			try {
-				target = player.getTargetBlock(transparent, range);
+				target = player.getTargetBlock(transparent, getRange(power));
 			} catch (IllegalStateException e) {
 				target = null;
 			}

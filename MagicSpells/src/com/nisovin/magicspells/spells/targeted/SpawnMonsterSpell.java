@@ -161,7 +161,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 			Location loc = null;
 			
 			if (location.equalsIgnoreCase("target")) {
-				Block block = getTargetedBlock(player, range);
+				Block block = getTargetedBlock(player, power);
 				if (block != null && block.getType() != Material.AIR) { 
 					if (BlockUtils.isPathable(block)) {
 						loc = block.getLocation();
@@ -172,7 +172,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 			} else if (location.equalsIgnoreCase("caster")) {
 				loc = player.getLocation();
 			} else if (location.equalsIgnoreCase("random")) {				
-				loc = getRandomLocationFrom(player.getLocation());				
+				loc = getRandomLocationFrom(player.getLocation(), getRange(power));				
 			}
 			
 			if (loc == null) {
@@ -184,7 +184,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
-	private Location getRandomLocationFrom(Location location) {
+	private Location getRandomLocationFrom(Location location, int range) {
 		World world = location.getWorld();
 		int attempts = 0;
 		int x, y, z;
@@ -310,7 +310,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 		} else if (location.equalsIgnoreCase("caster")) {
 			spawnMob(caster, caster.getLocation(), caster.getLocation());
 		} else if (location.equalsIgnoreCase("random")) {
-			Location loc = getRandomLocationFrom(target);
+			Location loc = getRandomLocationFrom(target, getRange(power));
 			if (loc != null) {
 				spawnMob(caster, caster.getLocation(), loc);
 			}
@@ -325,7 +325,7 @@ public class SpawnMonsterSpell extends TargetedSpell implements TargetedLocation
 		} else if (location.equalsIgnoreCase("caster")) {
 			spawnMob(null, target, target);
 		} else if (location.equalsIgnoreCase("random")) {
-			Location loc = getRandomLocationFrom(target);
+			Location loc = getRandomLocationFrom(target, getRange(power));
 			if (loc != null) {
 				spawnMob(null, target, loc);
 			}

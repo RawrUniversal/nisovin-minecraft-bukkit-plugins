@@ -192,7 +192,7 @@ public class SeeHealthSpell extends BuffSpell {
 			for (String playerName : bars.keySet()) {
 				Player player = Bukkit.getPlayerExact(playerName);
 				if (player != null && player.isValid()) {
-					LivingEntity target = getTargetedEntity(player);
+					LivingEntity target = getTargetedEntity(player, 1F);
 					if (target != null) {
 						showHealthBar(player, target);
 					} else {

@@ -40,7 +40,7 @@ public class ForcebombSpell extends TargetedSpell implements TargetedLocationSpe
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Block block = getTargetedBlock(player, range);
+			Block block = getTargetedBlock(player, power);
 			if (block != null && block.getType() != Material.AIR) {
 				SpellTargetLocationEvent event = new SpellTargetLocationEvent(this, player, block.getLocation());
 				Bukkit.getPluginManager().callEvent(event);

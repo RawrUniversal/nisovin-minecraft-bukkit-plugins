@@ -37,7 +37,7 @@ public class FarmSpell extends TargetedSpell implements TargetedLocationSpell {
 		if (state == SpellCastState.NORMAL) {
 			Block block = null;
 			if (targeted) {
-				block = getTargetedBlock(player, range);
+				block = getTargetedBlock(player, power);
 			} else {
 				block = player.getLocation().subtract(0, 1, 0).getBlock();
 			}

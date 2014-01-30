@@ -26,7 +26,7 @@ public class UndisguiseSpell extends TargetedSpell implements TargetedEntitySpel
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (manager == null) return PostCastAction.ALREADY_HANDLED;
 		if (state == SpellCastState.NORMAL) {
-			Player target = getTargetPlayer(player);
+			Player target = getTargetPlayer(player, power);
 			if (target != null) {
 				undisguise(player, target);
 				sendMessages(player, target);

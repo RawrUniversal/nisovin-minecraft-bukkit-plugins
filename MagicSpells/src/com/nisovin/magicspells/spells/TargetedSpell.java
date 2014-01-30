@@ -93,11 +93,11 @@ public abstract class TargetedSpell extends InstantSpell {
 	}
 	
 	@Override
-	protected LivingEntity getTargetedEntity(Player player, boolean forceTargetPlayers, ValidTargetChecker checker) {
+	protected LivingEntity getTargetedEntity(Player player, float power, boolean forceTargetPlayers, ValidTargetChecker checker) {
 		if (targetSelf) {
 			return player;
 		} else {
-			return super.getTargetedEntity(player, forceTargetPlayers, checker);
+			return super.getTargetedEntity(player, power, forceTargetPlayers, checker);
 		}
 	}
 	

@@ -88,7 +88,7 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 				loc = player.getLocation();
 			} else {
 				try {
-					Block block = getTargetedBlock(player, range);
+					Block block = getTargetedBlock(player, power);
 					if (block != null && block.getType() != Material.AIR) {
 						loc = block.getLocation();
 					}

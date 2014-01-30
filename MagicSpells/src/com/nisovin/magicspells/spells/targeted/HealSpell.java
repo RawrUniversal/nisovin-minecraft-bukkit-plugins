@@ -37,7 +37,7 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			LivingEntity target = getTargetedEntity(player, checker);
+			LivingEntity target = getTargetedEntity(player, power, checker);
 			if (target == null) {
 				return noTarget(player);
 			} else if (cancelIfFull && target.getHealth() == target.getMaxHealth()) {

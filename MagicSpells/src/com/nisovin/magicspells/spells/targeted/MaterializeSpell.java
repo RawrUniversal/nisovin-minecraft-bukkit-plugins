@@ -49,7 +49,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		if (state == SpellCastState.NORMAL) {
 			List<Block> lastTwo = null;
 			try {
-				lastTwo = getLastTwoTargetedBlocks(player, range);
+				lastTwo = getLastTwoTargetedBlocks(player, power);
 			} catch (IllegalStateException e) {
 				lastTwo = null;
 			}

@@ -49,7 +49,7 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target;
 			if (targeted) {
-				target = getTargetedEntity(player);
+				target = getTargetedEntity(player, power);
 			} else {
 				target = player;
 			}

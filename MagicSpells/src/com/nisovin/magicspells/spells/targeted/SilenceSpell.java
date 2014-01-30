@@ -87,7 +87,7 @@ public class SilenceSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (state == SpellCastState.NORMAL) {
-			Player target = getTargetedPlayer(player);
+			Player target = getTargetedPlayer(player, power);
 			if (target == null) {
 				return noTarget(player);
 			}
