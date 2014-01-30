@@ -9,16 +9,18 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
+import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class SummonSpell extends TargetedSpell {
+public class SummonSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	private boolean requireExactName;
 	private boolean requireAcceptance;
@@ -141,6 +143,16 @@ public class SummonSpell extends TargetedSpell {
 			return null;
 		}
 		return tabCompletePlayerName(sender, partial);
+	}
+
+	@Override
+	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+		return target.teleport(caster);
+	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		return false;
 	}
 
 }
