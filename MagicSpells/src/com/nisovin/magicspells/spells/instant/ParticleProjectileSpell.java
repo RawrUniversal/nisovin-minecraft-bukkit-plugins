@@ -59,6 +59,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 	boolean hitSelf;
 	boolean hitGround;
 	boolean hitAirAtEnd;
+	boolean hitAirAfterDuration;
 	boolean hitAirDuring;
 	boolean stopOnHitEntity;
 	boolean stopOnHitGround;
@@ -108,6 +109,7 @@ public class ParticleProjectileSpell extends InstantSpell {
 		hitSelf = getConfigBoolean("hit-self", false);
 		hitGround = getConfigBoolean("hit-ground", true);
 		hitAirAtEnd = getConfigBoolean("hit-air-at-end", false);
+		hitAirAfterDuration = getConfigBoolean("hit-air-after-duration", false);
 		hitAirDuring = getConfigBoolean("hit-air-during", false);
 		stopOnHitEntity = getConfigBoolean("stop-on-hit-entity", true);
 		stopOnHitGround = getConfigBoolean("stop-on-hit-ground", true);
@@ -206,6 +208,10 @@ public class ParticleProjectileSpell extends InstantSpell {
 			
 			// check if duration is up
 			if (maxDuration > 0 && startTime + maxDuration < System.currentTimeMillis()) {
+				if (hitAirAfterDuration && spell != null && spell instanceof TargetedLocationSpell) {
+					((TargetedLocationSpell)spell).castAtLocation(caster, currentLocation, power);
+					playSpellEffects(EffectPosition.TARGET, currentLocation);
+				}
 				stop();
 				return;
 			}
