@@ -22,7 +22,7 @@ public class TeleportSpell extends TargetedSpell implements TargetedEntitySpell 
 			if (target == null) {
 				return noTarget(player);
 			}
-			boolean ok = castAtEntity(player, target, power);
+			boolean ok = teleport(player, target);
 			if (!ok) {
 				return noTarget(player);
 			}
@@ -31,16 +31,22 @@ public class TeleportSpell extends TargetedSpell implements TargetedEntitySpell 
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
-
-	@Override
-	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+	
+	boolean teleport(Player caster, LivingEntity target) {
 		Location casterLoc = caster.getLocation();
 		boolean ok = caster.teleport(target);
 		if (ok) {
 			playSpellEffects(EffectPosition.CASTER, casterLoc);
 			playSpellEffects(EffectPosition.TARGET, target.getLocation());
+			playSpellEffectsTrail(casterLoc, target.getLocation());
 		}
 		return ok;
+	}
+
+	@Override
+	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+		if (!validTargetList.canTarget(caster, target)) return false;
+		return teleport(caster, target);
 	}
 
 	@Override

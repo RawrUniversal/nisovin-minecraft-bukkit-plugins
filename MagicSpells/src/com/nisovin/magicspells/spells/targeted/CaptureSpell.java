@@ -4,6 +4,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -28,7 +29,7 @@ public class CaptureSpell extends TargetedSpell implements TargetedEntitySpell {
 			if (target == null) {
 				return noTarget(player);
 			}
-			boolean ok = castAtEntity(player, target, power);
+			boolean ok = capture(player, target, power);
 			if (!ok) {
 				return noTarget(player);
 			}
@@ -47,10 +48,8 @@ public class CaptureSpell extends TargetedSpell implements TargetedEntitySpell {
 			}
 		};
 	}
-
-	@Override
-	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
-		if (!target.getType().isSpawnable()) return false;
+	
+	boolean capture(Player caster, LivingEntity target, float power) {
 		ItemStack item = Util.getEggItemForEntityType(target.getType());
 		if (item != null) {
 			if (powerAffectsQuantity) {
@@ -67,14 +66,28 @@ public class CaptureSpell extends TargetedSpell implements TargetedEntitySpell {
 			if (!added) {
 				target.getWorld().dropItem(target.getLocation().add(0, 1, 0), item).setItemStack(item);
 			}
+			if (caster != null) {
+				playSpellEffects(caster, target.getLocation());
+			} else {
+				playSpellEffects(EffectPosition.TARGET, target.getLocation());
+			}
 			return true;
 		}
 		return false;
 	}
 
 	@Override
+	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+		if (!target.getType().isSpawnable()) return false;
+		if (!validTargetList.canTarget(caster, target)) return false;
+		return capture(caster, target, power);
+	}
+
+	@Override
 	public boolean castAtEntity(LivingEntity target, float power) {
-		return castAtEntity(null, target, power);
+		if (!target.getType().isSpawnable()) return false;
+		if (!validTargetList.canTarget(target)) return false;
+		return capture(null, target, power);
 	}
 
 }

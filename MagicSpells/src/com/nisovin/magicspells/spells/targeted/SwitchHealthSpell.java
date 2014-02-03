@@ -20,7 +20,7 @@ public class SwitchHealthSpell extends TargetedSpell implements TargetedEntitySp
 			if (target == null) {
 				return noTarget(player);
 			}
-			boolean ok = castAtEntity(player, target, power);
+			boolean ok = switchHealth(player, target);
 			if (!ok) {
 				return noTarget(player);
 			}
@@ -29,9 +29,8 @@ public class SwitchHealthSpell extends TargetedSpell implements TargetedEntitySp
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
-
-	@Override
-	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+	
+	boolean switchHealth(Player caster, LivingEntity target) {
 		if (caster.isDead() || target.isDead()) return false;
 		double casterPct = caster.getHealth() / caster.getMaxHealth();
 		double targetPct = target.getHealth() / target.getMaxHealth();
@@ -39,6 +38,14 @@ public class SwitchHealthSpell extends TargetedSpell implements TargetedEntitySp
 		target.setHealth(casterPct * target.getMaxHealth());
 		playSpellEffects(caster, target);
 		return true;
+	}
+
+	@Override
+	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+		if (!validTargetList.canTarget(caster, target)) {
+			return false;
+		}
+		return switchHealth(caster, target);
 	}
 
 	@Override
