@@ -28,7 +28,7 @@ public class ForcepushSpell extends InstantSpell {
 		force = getConfigInt("pushback-force", 30);
 		yForce = getConfigInt("additional-vertical-force", 15);
 		maxYForce = getConfigInt("max-vertical-force", 20);
-		callTargetEvents = getConfigBoolean("call-target-events", false);
+		callTargetEvents = getConfigBoolean("call-target-events", true);
 	}
 
 	@Override
