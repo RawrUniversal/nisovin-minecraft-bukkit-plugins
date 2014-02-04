@@ -260,7 +260,9 @@ public class DestroySpell extends TargetedSpell implements TargetedLocationSpell
 
 	@Override
 	public boolean castAtEntityFromLocation(Location from, LivingEntity target, float power) {
-		return false;
+		doIt(from, target.getLocation());
+		playSpellEffects(from, target);
+		return true;
 	}
 	
 	class FallingBlockListener implements Listener {

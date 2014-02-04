@@ -15,12 +15,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
+import com.nisovin.magicspells.spells.TargetedEntityFromLocationSpell;
 import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedSpell;
 import com.nisovin.magicspells.util.BlockUtils;
 import com.nisovin.magicspells.util.MagicConfig;
 
-public class SummonSpell extends TargetedSpell implements TargetedEntitySpell {
+public class SummonSpell extends TargetedSpell implements TargetedEntitySpell, TargetedEntityFromLocationSpell {
 
 	private boolean requireExactName;
 	private boolean requireAcceptance;
@@ -153,6 +154,16 @@ public class SummonSpell extends TargetedSpell implements TargetedEntitySpell {
 	@Override
 	public boolean castAtEntity(LivingEntity target, float power) {
 		return false;
+	}
+
+	@Override
+	public boolean castAtEntityFromLocation(Player caster, Location from, LivingEntity target, float power) {
+		return target.teleport(from);
+	}
+
+	@Override
+	public boolean castAtEntityFromLocation(Location from, LivingEntity target, float power) {
+		return target.teleport(from);
 	}
 
 }
