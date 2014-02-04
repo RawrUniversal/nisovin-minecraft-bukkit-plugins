@@ -172,7 +172,7 @@ public class SeeHealthSpell extends BuffSpell {
 			if (event.getEntity() instanceof LivingEntity) {
 				Entity damager = event.getDamager();
 				if (damager instanceof Projectile && ((Projectile)damager).getShooter() != null) {
-					damager = ((Projectile)damager).getShooter();
+					damager = (LivingEntity)((Projectile)damager).getShooter();
 				}
 				// update bar?
 			}

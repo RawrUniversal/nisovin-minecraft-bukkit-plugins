@@ -373,7 +373,7 @@ public class DisguiseSpell extends TargetedSpell implements TargetedEntitySpell 
 						manager.removeDisguise((Player)e);
 					}
 				} else if (e instanceof Projectile) {
-					LivingEntity shooter = ((Projectile)e).getShooter();
+					LivingEntity shooter = (LivingEntity)((Projectile)e).getShooter();
 					if (shooter instanceof Player && disguised.containsKey(((Player)shooter).getName().toLowerCase())) {
 						manager.removeDisguise((Player)shooter);
 					}

@@ -170,7 +170,7 @@ public class FireballSpell extends TargetedSpell implements TargetedEntityFromLo
 						for (Entity entity : inRange) {
 							if (entity instanceof LivingEntity) {
 								if (validTargetList.canTarget((LivingEntity)entity)) {
-									((LivingEntity)entity).damage(Math.round(noExplosionDamage * power), fireball.getShooter());
+									((LivingEntity)entity).damage(Math.round(noExplosionDamage * power), (LivingEntity)fireball.getShooter());
 								}
 							}
 						}
