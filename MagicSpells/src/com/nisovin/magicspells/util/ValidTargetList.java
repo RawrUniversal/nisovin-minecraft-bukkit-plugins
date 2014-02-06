@@ -1,6 +1,7 @@
 package com.nisovin.magicspells.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,26 +30,37 @@ public class ValidTargetList {
 	public ValidTargetList(Spell spell, String list) {
 		if (list != null) {
 			String[] ss = list.replace(" ", "").split(",");
-			for (String s : ss) {
-				if (s.equalsIgnoreCase("self") || s.equalsIgnoreCase("caster")) {
-					targetSelf = true;
-				} else if (s.equalsIgnoreCase("players") || s.equalsIgnoreCase("player")) {
-					targetPlayers = true;
-				} else if (s.equalsIgnoreCase("invisible") || s.equalsIgnoreCase("invisibles")) {
-					targetInvisibles = true;
-				} else if (s.equalsIgnoreCase("nonplayers") || s.equalsIgnoreCase("nonplayer")) {
-					targetNonPlayers = true;
-				} else if (s.equalsIgnoreCase("monsters") || s.equalsIgnoreCase("monster")) {
-					targetMonsters = true;
-				} else if (s.equalsIgnoreCase("animals") || s.equalsIgnoreCase("animal")) {
-					targetAnimals = true;
+			init(spell, Arrays.asList(ss));
+		}
+	}
+	
+	public ValidTargetList(Spell spell, List<String> list) {
+		if (list != null) {
+			init(spell, list);
+		}
+	}
+	
+	void init(Spell spell, List<String> list) {
+		for (String s : list) {
+			s = s.trim();
+			if (s.equalsIgnoreCase("self") || s.equalsIgnoreCase("caster")) {
+				targetSelf = true;
+			} else if (s.equalsIgnoreCase("players") || s.equalsIgnoreCase("player")) {
+				targetPlayers = true;
+			} else if (s.equalsIgnoreCase("invisible") || s.equalsIgnoreCase("invisibles")) {
+				targetInvisibles = true;
+			} else if (s.equalsIgnoreCase("nonplayers") || s.equalsIgnoreCase("nonplayer")) {
+				targetNonPlayers = true;
+			} else if (s.equalsIgnoreCase("monsters") || s.equalsIgnoreCase("monster")) {
+				targetMonsters = true;
+			} else if (s.equalsIgnoreCase("animals") || s.equalsIgnoreCase("animal")) {
+				targetAnimals = true;
+			} else {
+				EntityType type = Util.getEntityType(s);
+				if (type != null) {
+					types.add(type);
 				} else {
-					EntityType type = Util.getEntityType(s);
-					if (type != null) {
-						types.add(type);
-					} else {
-						MagicSpells.error("Invalid target type '" + s + "' on spell '" + spell.getInternalName() + "'");
-					}
+					MagicSpells.error("Invalid target type '" + s + "' on spell '" + spell.getInternalName() + "'");
 				}
 			}
 		}

@@ -260,8 +260,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		this.spellPowerAffectsRange = config.getBoolean(section + "." + spellName + ".spell-power-affects-range", false);
 		this.obeyLos = config.getBoolean(section + "." + spellName + ".obey-los", true);
 		if (config.contains(section + "." + spellName + ".can-target")) {
-			String list = config.getString(section + "." + spellName + ".can-target", "");
-			validTargetList = new ValidTargetList(this, list);
+			if (config.isList(section + "." + spellName + ".can-target")) {
+				validTargetList = new ValidTargetList(this, config.getStringList(section + "." + spellName + ".can-target", null));
+			} else {
+				validTargetList = new ValidTargetList(this, config.getString(section + "." + spellName + ".can-target", ""));
+			}
 		} else {
 			boolean targetPlayers = config.getBoolean(section + "." + spellName + ".target-players", true);
 			boolean targetNonPlayers = config.getBoolean(section + "." + spellName + ".target-non-players", true);
