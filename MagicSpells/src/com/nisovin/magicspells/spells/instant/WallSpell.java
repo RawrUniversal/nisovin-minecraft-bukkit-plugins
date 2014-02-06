@@ -52,7 +52,7 @@ public class WallSpell extends InstantSpell {
 	
 	@Override
 	public void initialize() {
-		if (preventBreaking || preventDrops) {
+		if ((preventBreaking || preventDrops) && wallDuration > 0) {
 			registerEvents(new BreakListener());
 		}
 	}
@@ -90,13 +90,15 @@ public class WallSpell extends InstantSpell {
 						}
 					}
 				}
-				blockSets.add(blockSet);
-				blockSet.removeAfter(Math.round(wallDuration*power), new BlockSetRemovalCallback() {
-					@Override
-					public void run(TemporaryBlockSet set) {
-						blockSets.remove(set);
-					}
-				});
+				if (wallDuration > 0) {
+					blockSets.add(blockSet);
+					blockSet.removeAfter(Math.round(wallDuration*power), new BlockSetRemovalCallback() {
+						@Override
+						public void run(TemporaryBlockSet set) {
+							blockSets.remove(set);
+						}
+					});
+				}
 				
 				playSpellEffects(EffectPosition.CASTER, player);
 			}
