@@ -1,6 +1,9 @@
 package com.nisovin.magicspells.spells.buff;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,6 +16,7 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class EmpowerSpell extends BuffSpell {
 
 	private float extraPower;
+	private Set<String> spells;
 	
 	private HashMap<Player, Float> empowered;
 	
@@ -20,6 +24,10 @@ public class EmpowerSpell extends BuffSpell {
 		super(config, spellName);
 		
 		extraPower = getConfigFloat("power-multiplier", 1.5F);
+		List<String> list = getConfigStringList("spells", null);
+		if (list != null && list.size() > 0) {
+			spells = new HashSet<String>(list);
+		}
 		
 		empowered = new HashMap<Player, Float>();
 	}
@@ -34,7 +42,7 @@ public class EmpowerSpell extends BuffSpell {
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onSpellCast(SpellCastEvent event) {
 		Player player = event.getCaster();
-		if (empowered.containsKey(player)) {
+		if (empowered.containsKey(player) && (spells == null || spells.contains(event.getSpell().getInternalName()))) {
 			event.increasePower(empowered.get(player));
 			addUseAndChargeCost(player);
 		}
