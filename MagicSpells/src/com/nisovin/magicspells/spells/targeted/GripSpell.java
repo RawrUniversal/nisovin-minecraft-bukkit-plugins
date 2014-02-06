@@ -14,11 +14,18 @@ import com.nisovin.magicspells.util.MagicConfig;
 public class GripSpell extends TargetedSpell implements TargetedEntitySpell, TargetedEntityFromLocationSpell {
 
 	float locationOffset;
+	float yOffset;
+	boolean beneficial;
+	
+	String strCantGrip;
 	
 	public GripSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
 		locationOffset = getConfigFloat("location-offset", 0);
+		yOffset = getConfigFloat("y-offset", 0.5F);
+		beneficial = getConfigBoolean("beneficial", false);
+		strCantGrip = getConfigString("str-cant-grip", "");
 	}
 
 	@Override
@@ -26,7 +33,10 @@ public class GripSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 		if (state == SpellCastState.NORMAL) {
 			LivingEntity target = getTargetedEntity(player, power);
 			if (target != null) {
-				grip(player, target);
+				boolean ok = grip(player, target);
+				if (!ok) {
+					return noTarget(player, strCantGrip);
+				}
 				sendMessages(player, target);
 				return PostCastAction.NO_MESSAGES;
 			} else {
@@ -36,20 +46,20 @@ public class GripSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 	
-	private void grip(Player player, LivingEntity target) {
+	private boolean grip(Player player, LivingEntity target) {
 		Location loc = player.getLocation().add(player.getLocation().getDirection().setY(0).normalize().multiply(locationOffset));
+		loc.add(0, yOffset, 0);
 		if (!BlockUtils.isSafeToStand(loc)) {
-			loc = player.getLocation();
+			return false;
 		}
 		playSpellEffects(player, target);
-		target.teleport(loc);
+		return target.teleport(loc);
 	}
 
 	@Override
 	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
 		if (validTargetList.canTarget(caster, target)) {
-			grip(caster, target);
-			return true;
+			return grip(caster, target);
 		} else {
 			return false;
 		}
@@ -86,6 +96,11 @@ public class GripSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public boolean isBeneficial() {
+		return beneficial;
 	}
 
 }
