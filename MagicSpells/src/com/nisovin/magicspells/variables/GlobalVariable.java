@@ -2,19 +2,17 @@ package com.nisovin.magicspells.variables;
 
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.Spell;
-
 public class GlobalVariable extends Variable {
 
 	double value = 0;
 	
-	public GlobalVariable(double defaultValue, double minValue, double maxValue) {
-		super(defaultValue, minValue, maxValue);
+	public GlobalVariable(double defaultValue, double minValue, double maxValue, boolean permanent) {
+		super(defaultValue, minValue, maxValue, permanent);
 		value = defaultValue;
 	}
 	
 	@Override
-	public void modify(Player player, Spell spell, double amount) {
+	public void modify(Player player, double amount) {
 		value += amount;
 		if (value > maxValue) {
 			value = maxValue;
@@ -24,12 +22,17 @@ public class GlobalVariable extends Variable {
 	}
 
 	@Override
-	public double getValue(Player player, Spell spell) {
+	public void set(String player, double amount) {
+		value = amount;
+	}
+
+	@Override
+	public double getValue(String player) {
 		return value;
 	}
 
 	@Override
-	public void reset(Player player, Spell spell) {
+	public void reset(Player player) {
 		value = defaultValue;
 	}
 

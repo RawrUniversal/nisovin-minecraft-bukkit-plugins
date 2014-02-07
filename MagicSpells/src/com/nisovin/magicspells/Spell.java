@@ -109,6 +109,9 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected Map<String, Integer> xpRequired;
 	protected List<String> worldRestrictions;
 	
+	protected Map<String, Double> variableModsCast;
+	protected Map<String, Double> variableModsTarget;
+	
 	protected String strCost;
 	protected String strCastSelf;
 	protected String strCastOthers;
@@ -365,6 +368,37 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 				}
 			}
 		}
+		
+		// variable options
+		List<String> varModsCast = config.getStringList(section + "." + spellName + ".variable-mods-cast", null);
+		if (varModsCast != null && varModsCast.size() > 0) {
+			variableModsCast = new HashMap<String, Double>();
+			for (String s : varModsCast) {
+				try {
+					String[] data = s.split(" ");
+					String var = data[0];
+					double val = Double.parseDouble(data[1]);
+					variableModsCast.put(var, val);
+				} catch (Exception e) {
+					MagicSpells.error("Invalid variable-mods-cast option for spell '" + spellName + "': " + s);
+				}
+			}
+		}
+		List<String> varModsTarget = config.getStringList(section + "." + spellName + ".variable-mods-target", null);
+		if (varModsTarget != null && varModsTarget.size() > 0) {
+			variableModsTarget = new HashMap<String, Double>();
+			for (String s : varModsTarget) {
+				try {
+					String[] data = s.split(" ");
+					String var = data[0];
+					double val = Double.parseDouble(data[1]);
+					variableModsTarget.put(var, val);
+				} catch (Exception e) {
+					MagicSpells.error("Invalid variable-mods-target option for spell '" + spellName + "': " + s);
+				}
+			}
+		}
+		
 		
 		// strings
 		this.strCost = config.getString(section + "." + spellName + ".str-cost", null);
@@ -1487,6 +1521,13 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return nextCast;
 	}
 	
+	public Map<String, Double> getVariableModsCast() {
+		return variableModsCast;
+	}
+	
+	public Map<String, Double> getVariableModsTarget() {
+		return variableModsTarget;
+	}	
 	
 	void setCooldownManually(String name, long nextCast) {
 		this.nextCast.put(name, nextCast);

@@ -51,6 +51,7 @@ import com.nisovin.magicspells.util.ExperienceBarManager;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.MoneyHandler;
 import com.nisovin.magicspells.util.Util;
+import com.nisovin.magicspells.variables.VariableManager;
 import com.nisovin.magicspells.volatilecode.*;
 import com.nisovin.magicspells.zones.NoMagicZoneManager;
 
@@ -131,6 +132,7 @@ public class MagicSpells extends JavaPlugin {
 	ItemNameResolver itemNameResolver;
 	MoneyHandler moneyHandler;
 	MagicXpHandler magicXpHandler;
+	VariableManager variableManager;
 	MagicLogger magicLogger;
 	
 	// profiling
@@ -320,6 +322,13 @@ public class MagicSpells extends JavaPlugin {
 				}
 			}
 		}
+		
+		// load variables
+		ConfigurationSection varSec = null;
+		if (config.contains("general.variables") && config.isSection("general.variables")) {
+			varSec = config.getSection("general.variables");
+		}
+		variableManager = new VariableManager(this, varSec);		
 		
 		// load spells
 		loadSpells(config, pm, permGrantChildren, permLearnChildren, permCastChildren, permTeachChildren);
@@ -731,6 +740,10 @@ public class MagicSpells extends JavaPlugin {
 		return plugin.magicXpHandler;
 	}
 	
+	public static VariableManager getVariableManager() {
+		return plugin.variableManager;
+	}
+	
 	/**
 	 * Formats a string by performing the specified replacements.
 	 * @param message the string to format
@@ -1061,6 +1074,10 @@ public class MagicSpells extends JavaPlugin {
 		if (magicLogger != null) {
 			magicLogger.disable();
 			magicLogger = null;
+		}
+		if (variableManager != null) {
+			variableManager.disable();
+			variableManager = null;
 		}
 		expBarManager = null;
 		itemNameResolver = null;

@@ -2,24 +2,33 @@ package com.nisovin.magicspells.variables;
 
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.Spell;
-
 public abstract class Variable {
 
 	protected double defaultValue = 0;
 	protected double maxValue = Double.MAX_VALUE;
 	protected double minValue = 0;
+	protected boolean permanent;
 	
-	public Variable(double defaultValue, double minValue, double maxValue) {
+	public Variable(double defaultValue, double minValue, double maxValue, boolean permanent) {
 		this.defaultValue = defaultValue;
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 	}
 	
-	public abstract void modify(Player player, Spell spell, double amount);
+	public abstract void modify(Player player, double amount);
 	
-	public abstract double getValue(Player player, Spell spell);
+	public void set(Player player, double amount) {
+		set(player.getName(), amount);
+	}
 	
-	public abstract void reset(Player player, Spell spell);
+	public abstract void set(String player, double amount);
+	
+	public double getValue(Player player) {
+		return getValue(player.getName());
+	}
+	
+	public abstract double getValue(String player);
+	
+	public abstract void reset(Player player);
 	
 }

@@ -5,19 +5,17 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import com.nisovin.magicspells.Spell;
-
 public class PlayerVariable extends Variable {
 
 	Map<String, Double> map = new HashMap<String, Double>();
 
-	public PlayerVariable(double defaultValue, double minValue, double maxValue) {
-		super(defaultValue, minValue, maxValue);
+	public PlayerVariable(double defaultValue, double minValue, double maxValue, boolean permanent) {
+		super(defaultValue, minValue, maxValue, permanent);
 	}
 	
 	@Override
-	public void modify(Player player, Spell spell, double amount) {
-		double value = getValue(player, spell);
+	public void modify(Player player, double amount) {
+		double value = getValue(player);
 		value += amount;
 		if (value > maxValue) {
 			value = maxValue;
@@ -27,16 +25,21 @@ public class PlayerVariable extends Variable {
 	}
 
 	@Override
-	public double getValue(Player player, Spell spell) {
-		if (map.containsKey(player.getName())) {
-			return map.get(player.getName()).doubleValue();
+	public void set(String player, double amount) {
+		map.put(player, amount);
+	}
+
+	@Override
+	public double getValue(String player) {
+		if (map.containsKey(player)) {
+			return map.get(player).doubleValue();
 		} else {
 			return defaultValue;
 		}
 	}
 
 	@Override
-	public void reset(Player player, Spell spell) {
+	public void reset(Player player) {
 		map.remove(player.getName());
 	}
 

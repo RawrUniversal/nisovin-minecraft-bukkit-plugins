@@ -154,7 +154,7 @@ public class PasteSpell extends TargetedSpell implements TargetedLocationSpell {
 			for (int y = 0; y < size.getBlockY(); y++) {
 				for (int x = 0; x < size.getBlockX(); x++) {
 					for (int z = 0; z < size.getBlockZ(); z++) {
-						BaseBlock b = clipboard.getPoint(new Vector(x, y, z));
+						BaseBlock b = clipboard.getBlock(new Vector(x, y, z));
 						int blockX = target.getBlockX() + x + offset.getBlockX();
 						int blockY = target.getBlockY() + y + offset.getBlockY();
 						int blockZ = target.getBlockZ() + z + offset.getBlockZ();

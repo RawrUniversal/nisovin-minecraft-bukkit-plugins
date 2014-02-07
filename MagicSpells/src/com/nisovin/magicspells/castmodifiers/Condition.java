@@ -81,6 +81,9 @@ public abstract class Condition {
 		conditions.put("distancelessthan", DistanceLessThan.class);
 		conditions.put("name", NameCondition.class);
 		conditions.put("uptime", UpTimeCondition.class);
+		conditions.put("variablemorethan", VariableMoreThanCondition.class);
+		conditions.put("variablelessthan", VariableLessThanCondition.class);
+		conditions.put("variableequals", VariableEqualsCondition.class);
 	}
 	
 }

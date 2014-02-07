@@ -99,6 +99,14 @@ public class MagicConfig {
 							for (String itemKey : spellConfig.getConfigurationSection("predefined-items").getKeys(false)) {
 								sec.set(itemKey, spellConfig.get("predefined-items." + itemKey));
 							}
+						} else if (key.equals("variables")) {
+							ConfigurationSection sec = mainConfig.getConfigurationSection("general.variables");
+							if (sec == null) {
+								sec = mainConfig.createSection("general.variables");
+							}
+							for (String itemKey : spellConfig.getConfigurationSection("variables").getKeys(false)) {
+								sec.set(itemKey, spellConfig.get("variables." + itemKey));
+							}
 						} else {
 							mainConfig.set("spells." + key, spellConfig.get(key));
 						}
