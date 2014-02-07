@@ -106,7 +106,7 @@ public class MaterializeSpell extends TargetedSpell implements TargetedLocationS
 		if (resetDelay > 0 && !falling) {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(MagicSpells.plugin, new Runnable() {
 				public void run() {
-					if (material.equals(block)) {
+					if (material.getMaterial().equals(block.getType())) {
 						block.setType(Material.AIR);
 						playSpellEffects(EffectPosition.DELAYED, block.getLocation());
 						if (playBreakEffect) {
