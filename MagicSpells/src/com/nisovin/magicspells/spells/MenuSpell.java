@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -46,7 +47,7 @@ public class MenuSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 	public MenuSpell(MagicConfig config, String spellName) {
 		super(config, spellName);
 		
-		title = getConfigString("title", "Window Title " + spellName);
+		title = ChatColor.translateAlternateColorCodes('&', getConfigString("title", "Window Title " + spellName));
 		delay = getConfigInt("delay", 0);
 		requireEntityTarget = getConfigBoolean("require-entity-target", false);
 		requireLocationTarget = getConfigBoolean("require-location-target", false);
