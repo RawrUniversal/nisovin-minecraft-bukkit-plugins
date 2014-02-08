@@ -7,6 +7,7 @@ import java.util.Random;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -16,13 +17,14 @@ import com.nisovin.magicspells.MagicSpells;
 import com.nisovin.magicspells.Spell;
 import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
+import com.nisovin.magicspells.spells.TargetedEntitySpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.spells.command.ScrollSpell;
 import com.nisovin.magicspells.spells.command.TomeSpell;
 import com.nisovin.magicspells.util.MagicConfig;
 import com.nisovin.magicspells.util.Util;
 
-public class ConjureSpell extends InstantSpell implements TargetedLocationSpell {
+public class ConjureSpell extends InstantSpell implements TargetedEntitySpell, TargetedLocationSpell {
 
 	Random rand = new Random();
 	
@@ -115,71 +117,74 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 		itemList = null;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public PostCastAction castSpell(Player player, SpellCastState state, float power, String[] args) {
 		if (itemTypes == null) return PostCastAction.ALREADY_HANDLED;
 		if (state == SpellCastState.NORMAL) {
-			
-			// get items to drop
-			List<ItemStack> items = new ArrayList<ItemStack>();
-			if (calculateDropsIndividually) {
-				individual(items, rand, power);
-			} else {
-				together(items, rand, power);
-			}
-			
-			// drop items
-			Location loc = player.getEyeLocation().add(player.getLocation().getDirection());
-			boolean updateInv = false;
-			for (ItemStack item : items) {
-				boolean added = false;
-				PlayerInventory inv = player.getInventory();
-				if (autoEquip && item.getAmount() == 1) {
-					if (item.getType().name().endsWith("HELMET") && inv.getHelmet() == null) {
-						inv.setHelmet(item);
-						added = true;
-					} else if (item.getType().name().endsWith("CHESTPLATE") && inv.getChestplate() == null) {
-						inv.setChestplate(item);
-						added = true;
-					} else if (item.getType().name().endsWith("LEGGINGS") && inv.getLeggings() == null) {
-						inv.setLeggings(item);
-						added = true;
-					} else if (item.getType().name().endsWith("BOOTS") && inv.getBoots() == null) {
-						inv.setBoots(item);
-						added = true;
-					}
-				}
-				if (!added) {
-					if (addToEnderChest) {
-						added = Util.addToInventory(player.getEnderChest(), item);
-					}
-					if (!added && addToInventory) {
-						if (requiredSlot >= 0) {
-							inv.setItem(requiredSlot, item);
-						} else if (preferredSlot >= 0 && inv.getItem(preferredSlot) == null) {
-							inv.setItem(preferredSlot, item);
-							updateInv = true;
-						} else {
-							added = Util.addToInventory(inv, item);
-							if (added) updateInv = true;
-						}
-					}
-					if (!added && (dropIfInventoryFull || !addToInventory)) {
-						player.getWorld().dropItem(loc, item).setItemStack(item);
-					}
-				} else {
-					updateInv = true;
-				}
-			}
-			if (updateInv) {
-				player.updateInventory();
-			}
-			
-			playSpellEffects(EffectPosition.CASTER, player);
+			conjureItems(player, power);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 		
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void conjureItems(Player player, float power) {
+		// get items to drop
+		List<ItemStack> items = new ArrayList<ItemStack>();
+		if (calculateDropsIndividually) {
+			individual(items, rand, power);
+		} else {
+			together(items, rand, power);
+		}
+		
+		// drop items
+		Location loc = player.getEyeLocation().add(player.getLocation().getDirection());
+		boolean updateInv = false;
+		for (ItemStack item : items) {
+			boolean added = false;
+			PlayerInventory inv = player.getInventory();
+			if (autoEquip && item.getAmount() == 1) {
+				if (item.getType().name().endsWith("HELMET") && inv.getHelmet() == null) {
+					inv.setHelmet(item);
+					added = true;
+				} else if (item.getType().name().endsWith("CHESTPLATE") && inv.getChestplate() == null) {
+					inv.setChestplate(item);
+					added = true;
+				} else if (item.getType().name().endsWith("LEGGINGS") && inv.getLeggings() == null) {
+					inv.setLeggings(item);
+					added = true;
+				} else if (item.getType().name().endsWith("BOOTS") && inv.getBoots() == null) {
+					inv.setBoots(item);
+					added = true;
+				}
+			}
+			if (!added) {
+				if (addToEnderChest) {
+					added = Util.addToInventory(player.getEnderChest(), item);
+				}
+				if (!added && addToInventory) {
+					if (requiredSlot >= 0) {
+						inv.setItem(requiredSlot, item);
+					} else if (preferredSlot >= 0 && inv.getItem(preferredSlot) == null) {
+						inv.setItem(preferredSlot, item);
+						updateInv = true;
+					} else {
+						added = Util.addToInventory(inv, item);
+						if (added) updateInv = true;
+					}
+				}
+				if (!added && (dropIfInventoryFull || !addToInventory)) {
+					player.getWorld().dropItem(loc, item).setItemStack(item);
+				}
+			} else {
+				updateInv = true;
+			}
+		}
+		if (updateInv) {
+			player.updateInventory();
+		}
+		
+		playSpellEffects(EffectPosition.CASTER, player);
 	}
 	
 	private void individual(List<ItemStack> items, Random rand, float power) {
@@ -250,6 +255,21 @@ public class ConjureSpell extends InstantSpell implements TargetedLocationSpell 
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public boolean castAtEntity(Player caster, LivingEntity target, float power) {
+		return castAtEntity(target, power);
+	}
+
+	@Override
+	public boolean castAtEntity(LivingEntity target, float power) {
+		if (target instanceof Player) {
+			conjureItems((Player)target, power);
+			return true;
+		} else {
+			return false;
+		}		
 	}
 	
 
