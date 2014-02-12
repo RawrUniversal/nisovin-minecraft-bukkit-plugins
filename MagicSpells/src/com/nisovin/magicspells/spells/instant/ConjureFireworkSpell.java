@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 
+import com.nisovin.magicspells.spelleffects.EffectPosition;
 import com.nisovin.magicspells.spells.InstantSpell;
 import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.MagicConfig;
@@ -108,12 +109,14 @@ public class ConjureFireworkSpell extends InstantSpell implements TargetedLocati
 			if (!added) {
 				player.getWorld().dropItem(player.getLocation(), item).setItemStack(item);
 			}
+			playSpellEffects(EffectPosition.CASTER, player);
 		}
 		return PostCastAction.HANDLE_NORMALLY;
 	}
 
 	@Override
 	public boolean castAtLocation(Player caster, Location target, float power) {
+		playSpellEffects(EffectPosition.CASTER, caster);
 		return castAtLocation(target, power);
 	}
 
