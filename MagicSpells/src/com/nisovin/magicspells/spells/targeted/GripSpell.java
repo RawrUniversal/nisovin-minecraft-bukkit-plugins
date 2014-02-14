@@ -15,7 +15,6 @@ public class GripSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 
 	float locationOffset;
 	float yOffset;
-	boolean beneficial;
 	
 	String strCantGrip;
 	
@@ -24,7 +23,6 @@ public class GripSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 		
 		locationOffset = getConfigFloat("location-offset", 0);
 		yOffset = getConfigFloat("y-offset", 0.5F);
-		beneficial = getConfigBoolean("beneficial", false);
 		strCantGrip = getConfigString("str-cant-grip", "");
 	}
 
@@ -96,11 +94,6 @@ public class GripSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 		} else {
 			return false;
 		}
-	}
-	
-	@Override
-	public boolean isBeneficial() {
-		return beneficial;
 	}
 
 }

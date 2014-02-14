@@ -289,7 +289,7 @@ public abstract class BuffSpell extends Spell {
 	protected abstract void turnOff();
 	
 	@Override
-	public boolean isBeneficial() {
+	public boolean isBeneficialDefault() {
 		return true;
 	}
 	

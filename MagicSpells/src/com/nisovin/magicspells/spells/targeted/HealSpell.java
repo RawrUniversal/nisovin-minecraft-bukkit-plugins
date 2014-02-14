@@ -97,7 +97,7 @@ public class HealSpell extends TargetedSpell implements TargetedEntitySpell {
 	}
 	
 	@Override
-	public boolean isBeneficial() {
+	public boolean isBeneficialDefault() {
 		return true;
 	}
 	

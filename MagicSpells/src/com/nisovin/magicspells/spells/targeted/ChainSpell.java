@@ -27,7 +27,6 @@ public class ChainSpell extends TargetedSpell implements TargetedEntitySpell, Ta
 	int bounces;
 	int bounceRange;
 	int interval;
-	boolean beneficial;
 	boolean targetPlayers;
 	boolean targetNonPlayers;
 	
@@ -38,7 +37,6 @@ public class ChainSpell extends TargetedSpell implements TargetedEntitySpell, Ta
 		bounces = getConfigInt("bounces", 3);
 		bounceRange = getConfigInt("bounce-range", 8);
 		interval = getConfigInt("interval", 10);
-		beneficial = getConfigBoolean("beneficial", true);
 		targetPlayers = getConfigBoolean("target-players", true);
 		targetNonPlayers = getConfigBoolean("target-non-players", false);
 	}
@@ -178,11 +176,6 @@ public class ChainSpell extends TargetedSpell implements TargetedEntitySpell, Ta
 	public boolean castAtEntityFromLocation(Location from, LivingEntity target, float power) {
 		chain(null, from, target, power);
 		return true;
-	}
-	
-	@Override
-	public boolean isBeneficial() {
-		return beneficial;
 	}
 
 	class ChainBouncer implements Runnable {

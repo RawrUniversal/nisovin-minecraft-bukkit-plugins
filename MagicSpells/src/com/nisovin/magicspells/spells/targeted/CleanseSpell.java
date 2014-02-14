@@ -23,7 +23,6 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 
 	boolean targetPlayers;
 	boolean targetNonPlayers;
-	boolean beneficial;
 	
 	List<PotionEffectType> potionEffectTypes;
 	List<BuffSpell> buffSpells;
@@ -36,7 +35,6 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 		
 		targetPlayers = getConfigBoolean("target-players", true);
 		targetNonPlayers = getConfigBoolean("target-non-players", false);
-		beneficial = getConfigBoolean("beneficial", true);
 		
 		potionEffectTypes = new ArrayList<PotionEffectType>();
 		buffSpells = new ArrayList<BuffSpell>();
@@ -130,8 +128,8 @@ public class CleanseSpell extends TargetedSpell implements TargetedEntitySpell {
 	}
 	
 	@Override
-	public boolean isBeneficial() {
-		return beneficial;
+	public boolean isBeneficialDefault() {
+		return true;
 	}
 	
 	@Override

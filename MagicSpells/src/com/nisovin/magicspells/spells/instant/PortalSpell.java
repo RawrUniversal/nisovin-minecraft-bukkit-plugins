@@ -120,7 +120,7 @@ public class PortalSpell extends InstantSpell {
 	}
 	
 	@Override
-	public boolean isBeneficial() {
+	public boolean isBeneficialDefault() {
 		return true;
 	}
 	

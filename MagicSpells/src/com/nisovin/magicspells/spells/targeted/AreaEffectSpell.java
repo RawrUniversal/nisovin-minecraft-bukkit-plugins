@@ -31,7 +31,6 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 	private boolean pointBlank;
 	private boolean failIfNoTargets;
 	private int maxTargets;
-	private boolean beneficial;
 	private List<String> spellNames;
 	private boolean spellSourceInCenter;
 	private List<TargetedSpell> spells;
@@ -45,7 +44,6 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 		pointBlank = getConfigBoolean("point-blank", true);
 		failIfNoTargets = getConfigBoolean("fail-if-no-targets", true);
 		maxTargets = getConfigInt("max-targets", 0);
-		beneficial = getConfigBoolean("beneficial", false);
 		spellSourceInCenter = getConfigBoolean("spell-source-in-center", false);
 		spellNames = getConfigStringList("spells", null);
 	}
@@ -189,11 +187,6 @@ public class AreaEffectSpell extends TargetedSpell implements TargetedLocationSp
 	@Override
 	public boolean castAtLocation(Location target, float power) {
 		return doAoe(null, target, power);
-	}
-
-	@Override
-	public boolean isBeneficial() {
-		return beneficial;
 	}
 	
 }

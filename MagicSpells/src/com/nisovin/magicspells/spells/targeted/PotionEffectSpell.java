@@ -18,7 +18,6 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 	private int strength;
 	private boolean ambient;
 	private boolean targeted;
-	private boolean beneficial;
 	private boolean spellPowerAffectsDuration;
 	private boolean spellPowerAffectsStrength;
 	
@@ -30,7 +29,6 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 		strength = getConfigInt("strength", 0);
 		ambient = getConfigBoolean("ambient", false);
 		targeted = getConfigBoolean("targeted", false);
-		beneficial = getConfigBoolean("beneficial", false);
 		spellPowerAffectsDuration = getConfigBoolean("spell-power-affects-duration", true);
 		spellPowerAffectsStrength = getConfigBoolean("spell-power-affects-strength", true);
 	}
@@ -108,11 +106,6 @@ public class PotionEffectSpell extends TargetedSpell implements TargetedEntitySp
 			playSpellEffects(EffectPosition.TARGET, target);
 			return true;
 		}			
-	}
-	
-	@Override
-	public boolean isBeneficial() {
-		return beneficial;
 	}
 
 }

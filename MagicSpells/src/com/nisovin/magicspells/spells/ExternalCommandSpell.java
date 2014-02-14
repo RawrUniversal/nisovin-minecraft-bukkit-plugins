@@ -34,7 +34,6 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 	private boolean temporaryOp;
 	private boolean requirePlayerTarget;
 	private boolean blockChatOutput;
-	private boolean beneficial;
 	private boolean executeAsTargetInstead;
 	private boolean executeOnConsoleInstead;
 	private String strCantUseCommand;
@@ -57,7 +56,6 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 		temporaryOp = getConfigBoolean("temporary-op", false);
 		requirePlayerTarget = getConfigBoolean("require-player-target", false);
 		blockChatOutput = getConfigBoolean("block-chat-output", false);
-		beneficial = getConfigBoolean("beneficial", false);
 		executeAsTargetInstead = getConfigBoolean("execute-as-target-instead", false);
 		executeOnConsoleInstead = getConfigBoolean("execute-on-console-instead", false);
 		strCantUseCommand = getConfigString("str-cant-use-command", "&4You don't have permission to do that.");
@@ -238,11 +236,6 @@ public class ExternalCommandSpell extends TargetedSpell implements TargetedEntit
 	@Override
 	public boolean canCastWithItem() {
 		return castWithItem;
-	}
-	
-	@Override
-	public boolean isBeneficial() {
-		return beneficial;
 	}
 	
 	@Override

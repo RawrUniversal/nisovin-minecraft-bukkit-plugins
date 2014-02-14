@@ -79,6 +79,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected boolean spellPowerAffectsRange;
 	protected boolean obeyLos;
 	protected ValidTargetList validTargetList;
+	protected boolean beneficial;
 
 	protected int castTime;
 	protected boolean interruptOnMove;
@@ -273,6 +274,7 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			boolean targetNonPlayers = config.getBoolean(section + "." + spellName + ".target-non-players", true);
 			validTargetList = new ValidTargetList(targetPlayers, targetNonPlayers);
 		}
+		this.beneficial = config.getBoolean(section + "." + spellName + ".beneficial", isBeneficialDefault());
 		
 		// graphical effects
 		if (config.contains(section + "." + spellName + ".effects")) {
@@ -1489,7 +1491,11 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 		return strWrongCastItem;
 	}
 	
-	public boolean isBeneficial() {
+	public final boolean isBeneficial() {
+		return beneficial;
+	}
+	
+	public boolean isBeneficialDefault() {
 		return false;
 	}
 	
