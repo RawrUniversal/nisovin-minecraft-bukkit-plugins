@@ -30,6 +30,8 @@ import com.nisovin.magicspells.util.Util;
 public class ParticleProjectileSpell extends InstantSpell {
 
 	float projectileVelocity;
+	float projectileVelocityVertOffset;
+	float projectileVelocityHorizOffset;
 	float projectileGravity;
 	float projectileSpread;
 	boolean powerAffectsVelocity;
@@ -75,6 +77,8 @@ public class ParticleProjectileSpell extends InstantSpell {
 		thisSpell = this;
 		
 		projectileVelocity = getConfigFloat("projectile-velocity", 10F);
+		projectileVelocityVertOffset = getConfigFloat("projectile-velocity-vert-offset", 0F);
+		projectileVelocityHorizOffset = getConfigFloat("projectile-velocity-horiz-offset", 0F);
 		projectileGravity = getConfigFloat("projectile-gravity", 0.25F);
 		projectileSpread = getConfigFloat("projectile-spread", 0F);
 		powerAffectsVelocity = getConfigBoolean("power-affects-velocity", true);
@@ -165,6 +169,12 @@ public class ParticleProjectileSpell extends InstantSpell {
 			this.previousLocation = startLocation.clone();
 			this.currentLocation = startLocation.clone();
 			this.currentVelocity = caster.getLocation().getDirection();
+			if (projectileVelocityHorizOffset != 0) {
+				Util.rotateVector(this.currentVelocity, projectileVelocityHorizOffset);
+			}
+			if (projectileVelocityVertOffset != 0) {
+				this.currentVelocity.add(new Vector(0, projectileVelocityVertOffset, 0)).normalize();
+			}
 			if (projectileSpread > 0) {
 				this.currentVelocity.add(new Vector(rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread, rand.nextFloat() * projectileSpread));
 			}
