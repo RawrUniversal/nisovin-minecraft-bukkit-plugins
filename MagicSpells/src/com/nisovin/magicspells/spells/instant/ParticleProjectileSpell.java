@@ -77,8 +77,8 @@ public class ParticleProjectileSpell extends InstantSpell {
 		thisSpell = this;
 		
 		projectileVelocity = getConfigFloat("projectile-velocity", 10F);
-		projectileVelocityVertOffset = getConfigFloat("projectile-velocity-vert-offset", 0F);
-		projectileVelocityHorizOffset = getConfigFloat("projectile-velocity-horiz-offset", 0F);
+		projectileVelocityVertOffset = getConfigFloat("projectile-vert-offset", 0F);
+		projectileVelocityHorizOffset = getConfigFloat("projectile-horiz-offset", 0F);
 		projectileGravity = getConfigFloat("projectile-gravity", 0.25F);
 		projectileSpread = getConfigFloat("projectile-spread", 0F);
 		powerAffectsVelocity = getConfigBoolean("power-affects-velocity", true);
