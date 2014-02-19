@@ -76,12 +76,34 @@ public class VariableManager implements Listener {
 	}
 	
 	public void modify(String variable, Player player, double amount) {
+		modify(variable, player.getName(), amount);
+	}
+	
+	public void modify(String variable, String player, double amount) {
 		Variable var = variables.get(variable);
 		if (var != null) {
 			var.modify(player, amount);
 			if (var.permanent) {
 				if (var instanceof PlayerVariable) {
-					dirtyPlayerVars.add(player.getName());
+					dirtyPlayerVars.add(player);
+				} else if (var instanceof GlobalVariable) {
+					dirtyGlobalVars = true;
+				}
+			}
+		}
+	}
+	
+	public void set(String variable, Player player, double amount) {
+		set(variable, player.getName(), amount);
+	}
+	
+	public void set(String variable, String player, double amount) {
+		Variable var = variables.get(variable);
+		if (var != null) {
+			var.set(player, amount);
+			if (var.permanent) {
+				if (var instanceof PlayerVariable) {
+					dirtyPlayerVars.add(player);
 				} else if (var instanceof GlobalVariable) {
 					dirtyGlobalVars = true;
 				}

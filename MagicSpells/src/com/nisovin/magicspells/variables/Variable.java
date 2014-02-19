@@ -15,7 +15,11 @@ public abstract class Variable {
 		this.maxValue = maxValue;
 	}
 	
-	public abstract void modify(Player player, double amount);
+	public void modify(Player player, double amount) {
+		modify(player.getName(), amount);
+	}
+	
+	public abstract void modify(String player, double amount);
 	
 	public void set(Player player, double amount) {
 		set(player.getName(), amount);

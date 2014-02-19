@@ -98,6 +98,22 @@ public class CastCommand implements CommandExecutor, TabCompleter {
 						plugin.mana.addMana(p, plugin.mana.getMaxMana(p), ManaChangeReason.OTHER);
 						sender.sendMessage(plugin.textColor + p.getName() + "'s mana reset.");
 					}
+				} else if (sender.isOp() && args[0].equals("modifyvariable") && args.length == 4) {
+					String var = args[1];
+					String player = args[2];
+					boolean set = false;
+					double num = 0;
+					if (args[3].startsWith("=")) {
+						set = true;
+						num = Double.parseDouble(args[3].substring(1));
+					} else {
+						num = Double.parseDouble(args[3]);
+					}
+					if (set) {
+						MagicSpells.getVariableManager().set(var, player, num);
+					} else {
+						MagicSpells.getVariableManager().modify(var, player, num);
+					}
 				} else if (sender.isOp() && args[0].equals("magicitem") && args.length > 1 && sender instanceof Player) {
 					ItemStack item = Util.getItemStackFromString(args[1]);
 					if (item != null) {

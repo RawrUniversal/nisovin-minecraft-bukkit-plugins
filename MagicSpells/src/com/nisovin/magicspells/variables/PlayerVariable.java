@@ -14,7 +14,7 @@ public class PlayerVariable extends Variable {
 	}
 	
 	@Override
-	public void modify(Player player, double amount) {
+	public void modify(String player, double amount) {
 		double value = getValue(player);
 		value += amount;
 		if (value > maxValue) {
@@ -22,6 +22,7 @@ public class PlayerVariable extends Variable {
 		} else if (value < minValue) {
 			value = minValue;
 		}
+		map.put(player, value);
 	}
 
 	@Override

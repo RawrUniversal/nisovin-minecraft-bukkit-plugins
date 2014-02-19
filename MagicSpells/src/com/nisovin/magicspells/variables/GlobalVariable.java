@@ -12,7 +12,7 @@ public class GlobalVariable extends Variable {
 	}
 	
 	@Override
-	public void modify(Player player, double amount) {
+	public void modify(String player, double amount) {
 		value += amount;
 		if (value > maxValue) {
 			value = maxValue;
