@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,6 +28,8 @@ import com.nisovin.magicspells.util.Util;
 
 public class MenuSpell extends TargetedSpell implements TargetedEntitySpell, TargetedLocationSpell {
 
+	Random random = new Random();
+	
 	String title;	
 	int delay;
 	boolean requireEntityTarget;
@@ -68,8 +71,16 @@ public class MenuSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 				items.add(null);
 				spells.add(null);
 				powers[i] = 1;
-				ItemStack item = Util.getItemStackFromString(confItems.get(i));
+				String[] s = Util.splitParams(confItems.get(i));
+				if (s.length > 2 && s[2].matches("^[0-9]+%?$")) {
+					int chance = Integer.parseInt(s[2].replace("%", ""));
+					if (random.nextInt(100) > chance) continue;
+				}
+				ItemStack item = Util.getItemStackFromString(s[0]);
 				if (item != null) {
+					if (s.length > 1 && s[1].matches("^[0-9]+$")) {
+						item.setAmount(Integer.parseInt(s[1]));
+					}
 					items.set(i, item);
 					if (confPowers != null && confPowers.size() > i) {
 						try {
@@ -193,7 +204,7 @@ public class MenuSpell extends TargetedSpell implements TargetedEntitySpell, Tar
 			final Player player = (Player)event.getWhoClicked();
 			
 			int slot = event.getRawSlot();
-			if (slot >= 0 && spells.size() > slot) {
+			if (slot >= 0 && spells.size() > slot && event.getCurrentItem() != null) {
 				Spell spell = spells.get(slot);
 				if (spell != null) {
 					float power = powers[slot];
