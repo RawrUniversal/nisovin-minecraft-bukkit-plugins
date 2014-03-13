@@ -2,10 +2,15 @@ package com.nisovin.magicspells.castmodifiers;
 
 import org.bukkit.entity.Player;
 
+import com.nisovin.magicspells.MagicSpells;
+import com.nisovin.magicspells.Spell;
+import com.nisovin.magicspells.Spell.SpellCastState;
 import com.nisovin.magicspells.events.ManaChangeEvent;
 import com.nisovin.magicspells.events.SpellCastEvent;
 import com.nisovin.magicspells.events.SpellTargetEvent;
 import com.nisovin.magicspells.events.SpellTargetLocationEvent;
+import com.nisovin.magicspells.spells.TargetedEntitySpell;
+import com.nisovin.magicspells.spells.TargetedLocationSpell;
 import com.nisovin.magicspells.util.Util;
 
 public class Modifier {
@@ -15,6 +20,7 @@ public class Modifier {
 	String modifierVar;
 	float modifierVarFloat;
 	int modifierVarInt;
+	String modifierVarString;
 	
 	public static Modifier factory(String s) {
 		Modifier m = new Modifier();
@@ -81,6 +87,17 @@ public class Modifier {
 			}
 		} else if (check == false && type == ModifierType.CONTINUE) {
 			return false;
+		} else if (check == true && type == ModifierType.CAST) {
+			Spell spell = MagicSpells.getSpellByInternalName(modifierVar);
+			if (spell != null) {
+				spell.cast(event.getCaster(), event.getPower(), event.getSpellArgs());
+			}
+		} else if (check == true && type == ModifierType.CAST_INSTEAD) {
+			Spell spell = MagicSpells.getSpellByInternalName(modifierVar);
+			if (spell != null) {
+				spell.cast(event.getCaster(), event.getPower(), event.getSpellArgs());
+			}
+			event.setCancelled(true);
 		}
 		return true;
 	}
@@ -108,6 +125,11 @@ public class Modifier {
 			int newAmt = event.getNewAmount() + (int)modifierVarFloat;
 			if (newAmt > event.getMaxMana()) newAmt = event.getMaxMana();
 			event.setNewAmount(newAmt);
+		} else if (check == true && (type == ModifierType.CAST || type == ModifierType.CAST_INSTEAD)) {
+			Spell spell = MagicSpells.getSpellByInternalName(modifierVar);
+			if (spell != null) {
+				spell.cast(event.getPlayer(), 1, null);
+			}
 		}
 		return true;
 	}
@@ -125,6 +147,20 @@ public class Modifier {
 			return false;
 		} else if (check == false && type == ModifierType.CONTINUE) {
 			return false;
+		} else if (check == true && type == ModifierType.CAST) {
+			Spell spell = MagicSpells.getSpellByInternalName(modifierVar);
+			if (spell != null) {
+				spell.cast(event.getCaster(), 1, null);
+			}
+		} else if (check == true && type == ModifierType.CAST_INSTEAD) {
+			Spell spell = MagicSpells.getSpellByInternalName(modifierVar);
+			if (spell != null) {
+				if (spell instanceof TargetedEntitySpell) {
+					((TargetedEntitySpell)spell).castAtEntity(event.getCaster(), event.getTarget(), 1F);
+				} else {
+					spell.castSpell(event.getCaster(), SpellCastState.NORMAL, 1F, null);
+				}
+			}
 		}
 		return true;
 	}
@@ -142,6 +178,14 @@ public class Modifier {
 			return false;
 		} else if (check == false && type == ModifierType.CONTINUE) {
 			return false;
+		} else if (check == true && (type == ModifierType.CAST || type == ModifierType.CAST_INSTEAD)) {
+			Spell spell = MagicSpells.getSpellByInternalName(modifierVar);
+			if (spell != null && spell instanceof TargetedLocationSpell) {
+				((TargetedLocationSpell)spell).castAtLocation(event.getCaster(), event.getTargetLocation(), 1F);
+				if (type == ModifierType.CAST_INSTEAD) {
+					event.setCancelled(true);
+				}
+			}
 		}
 		return true;
 	}
@@ -165,6 +209,10 @@ public class Modifier {
 			return ModifierType.STOP;
 		} else if (name.equalsIgnoreCase("continue")) {
 			return ModifierType.CONTINUE;
+		} else if (name.equalsIgnoreCase("cast")) {
+			return ModifierType.CAST;
+		} else if (name.equalsIgnoreCase("castinstead")) {
+			return ModifierType.CAST_INSTEAD;
 		} else {
 			return null;
 		}
@@ -179,7 +227,9 @@ public class Modifier {
 		REAGENTS,
 		CAST_TIME,
 		STOP,
-		CONTINUE
+		CONTINUE,
+		CAST,
+		CAST_INSTEAD
 	}
 	
 }
