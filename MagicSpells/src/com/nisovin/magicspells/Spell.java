@@ -21,7 +21,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -80,6 +82,8 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 	protected boolean obeyLos;
 	protected ValidTargetList validTargetList;
 	protected boolean beneficial;
+	private DamageCause targetDamageCause;
+	private double targetDamageAmount;
 
 	protected int castTime;
 	protected boolean interruptOnMove;
@@ -275,6 +279,17 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 			validTargetList = new ValidTargetList(targetPlayers, targetNonPlayers);
 		}
 		this.beneficial = config.getBoolean(section + "." + spellName + ".beneficial", isBeneficialDefault());
+		this.targetDamageCause = null;
+		String causeStr = config.getString(section + "." + spellName + ".target-damage-cause", null);
+		if (causeStr != null) {
+			for (DamageCause cause : DamageCause.values()) {
+				if (cause.name().equalsIgnoreCase(causeStr)) {
+					this.targetDamageCause = cause;
+					break;
+				}
+			}
+		}
+		this.targetDamageAmount = config.getDouble(section + "." + spellName + ".target-damage-amount", 0);
 		
 		// graphical effects
 		if (config.contains(section + "." + spellName + ".effects")) {
@@ -1237,6 +1252,16 @@ public abstract class Spell implements Comparable<Spell>, Listener {
 								continue;
 							} else {
 								target = event.getTarget();
+							}
+						}
+						
+						// call damage event
+						if (targetDamageCause != null) {
+							EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(player, target, targetDamageCause, targetDamageAmount);
+							Bukkit.getServer().getPluginManager().callEvent(event);
+							if (event.isCancelled()) {
+								target = null;
+								continue;
 							}
 						}
 						
