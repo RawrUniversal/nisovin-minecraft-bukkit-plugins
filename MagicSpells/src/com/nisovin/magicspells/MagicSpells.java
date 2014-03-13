@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -783,6 +785,18 @@ public class MagicSpells extends JavaPlugin {
 	 */
 	static public void sendMessage(Player player, String message) {
 		if (message != null && !message.equals("")) {
+			// do var replacements
+			if (plugin.variableManager != null && message.contains("%var")) {
+				Matcher matcher = chatVarMatchPattern.matcher(message);
+				while (matcher.find()) {
+					String varText = matcher.group();
+					String[] varData = varText.substring(5, varText.length() - 1).split(":");
+					double val = plugin.variableManager.getValue(varData[0], player);
+					String sval = varData.length == 1 ? getStringNumber(val, -1) : getStringNumber(val, Integer.parseInt(varData[1]));
+					message = message.replace(varText, sval);
+				}
+			}
+			// send messages
 			String [] msgs = message.replaceAll("&([0-9a-fk-or])", "\u00A7$1").split("\n");
 			for (String msg : msgs) {
 				if (!msg.equals("")) {
@@ -790,6 +804,14 @@ public class MagicSpells extends JavaPlugin {
 				}
 			}
 		}
+	}
+	static private Pattern chatVarMatchPattern = Pattern.compile("%var:[A-Za-z0-9_]+(:[0-9]+)?%", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	
+	static private String getStringNumber(double number, int places) {
+		if (places < 0) return number+"";
+		if (places == 0) return (int)Math.round(number) + "";
+		int x = (int)Math.pow(10, places);
+		return ((double)Math.round(number * x) / x) + "";
 	}
 	
 	public static void registerEvents(final Listener listener) {
