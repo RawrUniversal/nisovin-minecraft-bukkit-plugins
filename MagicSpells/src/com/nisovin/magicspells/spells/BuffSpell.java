@@ -40,7 +40,7 @@ public abstract class BuffSpell extends Spell {
 	protected SpellReagents reagents;
 	protected int useCostInterval;
 	protected int numUses;
-	protected int duration;
+	protected float duration;
 	protected boolean powerAffectsDuration;
 	protected boolean cancelOnGiveDamage;
 	protected boolean cancelOnTakeDamage;
@@ -64,7 +64,7 @@ public abstract class BuffSpell extends Spell {
 		reagents = getConfigReagents("use-cost");
 		useCostInterval = getConfigInt("use-cost-interval", 0);
 		numUses = getConfigInt("num-uses", 0);
-		duration = getConfigInt("duration", 0);
+		duration = getConfigFloat("duration", 0);
 		powerAffectsDuration = getConfigBoolean("power-affects-duration", true);
 		cancelOnGiveDamage = getConfigBoolean("cancel-on-give-damage", false);
 		cancelOnTakeDamage = getConfigBoolean("cancel-on-take-damage", false);
